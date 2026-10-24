@@ -9,7 +9,7 @@ import { StatusBadge } from '../components/StatusBadge'
 import { Timeline } from '../components/Timeline'
 import { TierBadge } from '../components/Icons'
 import { XrayTable } from '../components/XrayTable'
-import { diffAlerts, latestLab } from '../history/check'
+import { latestLab } from '../history/check'
 import { doctorName, longDate, rangeLabel, shortDate, todayIso } from '../history/labels'
 import { runHistory } from '../history/run'
 import type { AlertChange, HistoryAlert, HistoryResult, LabResult, Order } from '../history/types'
@@ -127,11 +127,12 @@ export const OrderPage = () => {
     if (!order) return
     let live = true
     setFailed(false)
-    runHistory(order)
+    const diffAgainst = wantDiff.current ? (previous.current ?? undefined) : undefined
+    runHistory(order, diffAgainst)
       .then((r) => {
         if (!live) return
-        if (wantDiff.current && previous.current) {
-          setChanges(diffAlerts(previous.current.alerts, r.alerts))
+        if (diffAgainst) {
+          setChanges(r.changes ?? [])
           wantDiff.current = false
         }
         previous.current = r

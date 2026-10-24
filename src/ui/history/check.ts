@@ -1,17 +1,13 @@
-// History check: a customer's dated prescriptions -> one timeline -> overlap windows -> alerts that name the doctors.
-// Composed here from the single-prescription engine (one run per window) until Track C's `checkHistory` lands; the
-// result has the shape of proposed contract 7 so the swap is this file only.
-import type { Alert, Patient, Tier } from '../../engine/contracts'
-import type { Resolver } from '../../engine/resolver'
-import { parseSig } from '../../engine/sig'
-import { createCheck, type EngineDeps, type PatientPrompt } from '../engine'
-import defaults from './defaults.json'
-import type { AlertChange, HistoryAlert, HistoryLine, HistoryResult, HistoryWindow, LabResult, Order, OrderStatus, Prescribed } from './types'
+// History check for the review desk. The engine's `checkHistory` (Track C) does the work: timeline, overlap windows,
+// doses per window, cross-doctor alerts, status, priority and the re-check diff. This file only maps its result onto the
+// shapes the screens use (indices into lines, the prescribers named, days per alert), so the UI never decides an alert.
+import type { Alert, HistoryResult as EngineResult, Patient, Tier } from '../../engine/contracts'
+import { cockcroftGault } from '../../engine/limits/crcl'
+import { createRealEngine } from '../../engine/wiring'
+import type { EngineDeps, PatientPrompt } from '../engine'
+import type { AlertChange, HistoryAlert, HistoryLine, HistoryResult, HistoryWindow, LabResult, Order, Prescribed } from './types'
 
 const RANK: Record<Tier, number> = { interrupt: 0, inform: 1, silent: 2 }
-
-/** The window used for a line that writes no duration. A placeholder in data, marked unverified. */
-export const DEFAULT_WINDOW_DAYS: number = defaults.default_window_days
 
 export const addDays = (iso: string, days: number): string => {
   const d = new Date(`${iso}T00:00:00Z`)
@@ -22,141 +18,105 @@ export const addDays = (iso: string, days: number): string => {
 export const latestLab = (labs: LabResult[]): LabResult | undefined =>
   labs.filter((l) => l.type === 'serum_creatinine').sort((a, b) => b.date.localeCompare(a.date))[0]
 
+/** The customer as the engine takes them. The engine picks the latest creatinine from the labs itself. */
 export const patientFor = (order: Order): Patient => {
-  const lab = latestLab(order.labs)
   const { age_years, sex, weight_kg } = order.customer
-  return { age_years, ...(sex && { sex }), ...(weight_kg && { weight_kg }), ...(lab && { serum_creatinine: lab.value }) }
-}
-
-/** Every medicine on every prescription, with the days it counts as taken. */
-export function buildLines(order: Order, resolver: Resolver): HistoryLine[] {
-  const lines: HistoryLine[] = []
-  for (const rx of order.prescriptions) {
-    for (const l of resolver.resolveText(rx.text, { age_years: order.customer.age_years })) {
-      const sig = parseSig(l.sig_text)
-      lines.push({
-        index: lines.length,
-        rx_id: rx.id,
-        doctor: rx.doctor,
-        start: rx.date,
-        end: addDays(rx.date, sig.duration_days ?? DEFAULT_WINDOW_DAYS),
-        end_assumed: sig.duration_days === undefined,
-        text: `${l.resolved.raw} ${l.sig_text}`.trim(),
-        resolved: l.resolved,
-        sig,
-        unverified: l.resolved.brand === null && l.resolved.ingredients.length === 0,
-      })
-    }
-  }
-  return lines
-}
-
-/** Cut the timeline at every start and stop; each stretch with at least one active line is a window. */
-export function windowSpans(lines: HistoryLine[]): { start: string; end: string; lines: number[] }[] {
-  const cuts = [...new Set(lines.flatMap((l) => [l.start, l.end]))].sort()
-  const spans: { start: string; end: string; lines: number[] }[] = []
-  for (let i = 0; i < cuts.length - 1; i++) {
-    const active = lines.filter((l) => l.start <= cuts[i] && l.end > cuts[i]).map((l) => l.index)
-    if (active.length > 0) spans.push({ start: cuts[i], end: cuts[i + 1], lines: active })
-  }
-  return spans
+  return { age_years, ...(sex && { sex }), ...(weight_kg && { weight_kg }) }
 }
 
 export const touches = (a: Alert, l: HistoryLine) =>
   a.ingredients.some((id) => l.resolved.ingredients.some((i) => i.id === id)) || (a.brands ?? []).some((b) => b === l.resolved.brand || b === l.resolved.raw)
 
-export const alertKey = (a: Alert) => `${a.type}|${[...a.ingredients].sort().join(',')}|${a.ingredients.length === 0 ? (a.brands ?? []).join(',') : ''}`
-
-const prescribedBy = (lines: HistoryLine[], rxDate: (id: string) => string): Prescribed[] => {
-  const seen = new Map<string, Prescribed>()
-  for (const l of lines) if (!seen.has(l.rx_id)) seen.set(l.rx_id, { rx_id: l.rx_id, doctor: l.doctor, date: rxDate(l.rx_id) })
-  return [...seen.values()].sort((a, b) => a.date.localeCompare(b.date))
-}
-
 const count = (alerts: Alert[], tier: Tier) => alerts.filter((a) => a.tier === tier).length
 
-export function statusOf(alerts: Alert[], unverified: number, prompts: number): OrderStatus {
-  if (count(alerts, 'interrupt') > 0) return 'hold_contact_doctor'
-  return count(alerts, 'inform') > 0 || unverified > 0 || prompts > 0 ? 'clear_with_note' : 'clear'
-}
-
-/** Alerts that exist in `after` and not in `before`, the other way round, and the ones that changed tier. */
-export function diffAlerts(before: HistoryAlert[], after: HistoryAlert[]): AlertChange[] {
-  const was = new Map(before.map((a) => [alertKey(a), a]))
-  const now = new Map(after.map((a) => [alertKey(a), a]))
-  const changes: AlertChange[] = []
-  for (const [k, a] of now) {
-    const old = was.get(k)
-    if (!old) changes.push({ kind: 'added', alert: a })
-    else if (old.tier !== a.tier) changes.push({ kind: 'tier_changed', alert: a, was: old.tier })
-  }
-  for (const [k, a] of was) if (!now.has(k)) changes.push({ kind: 'cleared', alert: a })
-  return changes.sort((a, b) => RANK[a.alert.tier] - RANK[b.alert.tier])
+/** Is `a` about something that is actually being taken in this stretch of days? (An alert's own window spans several stretches.) */
+function appliesIn(a: Alert, w: { start: string; end: string; ledger: HistoryWindow['ledger'] }, active: HistoryLine[]): boolean {
+  if (a.window && !(a.window.start < w.end && a.window.end > w.start)) return false
+  if (a.ingredients.length === 0) return active.some((l) => touches(a, l))
+  if (!a.ingredients.every((id) => active.some((l) => l.resolved.ingredients.some((i) => i.id === id)))) return false
+  if (a.type.startsWith('dose_excess')) return a.ingredients.some((id) => (w.ledger[id]?.limit_mg_day ?? Infinity) < (w.ledger[id]?.total_mg_day ?? 0))
+  return true
 }
 
 export function createHistoryCheck(deps: EngineDeps) {
-  const check = createCheck(deps)
-  return async (order: Order): Promise<HistoryResult> => {
-    const lines = buildLines(order, deps.resolver)
-    if (lines.length === 0) throw new Error('No medicines found in the prescriptions')
-    const patient = patientFor(order)
-    const rxDate = (id: string) => order.prescriptions.find((p) => p.id === id)?.date ?? ''
+  const { checkHistory } = createRealEngine(deps)
+  return async (order: Order, previous?: HistoryResult): Promise<HistoryResult> => {
+    const { resolver } = deps
+    const earliest = order.prescriptions.map((p) => p.date).sort()[0]
+    // `from` = the first prescription date, so overlaps that have already ended still show on the timeline.
+    const r: EngineResult = await checkHistory(order.prescriptions, patientFor(order), order.labs, { ...(earliest && { from: earliest }), ...(previous && { previous: previous.engine }) })
+    if (r.lines.length === 0) throw new Error('No medicines found in the prescriptions')
 
-    const windows: HistoryWindow[] = []
-    const prompts = new Map<PatientPrompt['field'], PatientPrompt>()
-    let crcl: number | null = null
-    for (const span of windowSpans(lines)) {
-      const r = await check(span.lines.map((i) => lines[i].text).join('; '), patient)
-      windows.push({ ...span, ledger: r.ledger, alerts: r.alerts })
-      for (const p of r.prompts) prompts.set(p.field, p)
-      crcl ??= r.crcl
-    }
-
-    // One alert per problem, however many windows it appears in: keep its worst form and the days it spans.
-    const merged = new Map<string, HistoryAlert>()
-    const fullest = new Map<string, number>() // lines active in the window the kept wording came from
-    for (const w of windows) {
-      for (const a of w.alerts) {
-        const involved = prescribedBy(
-          w.lines.map((i) => lines[i]).filter((l) => touches(a, l)),
-          rxDate,
-        )
-        const key = alertKey(a)
-        const cur = merged.get(key)
-        if (!cur) {
-          merged.set(key, { ...a, prescribed: involved, cross_doctor: new Set(involved.map((p) => p.doctor)).size > 1, from: w.start, to: w.end })
-          fullest.set(key, w.lines.length)
-          continue
-        }
-        const all = [...cur.prescribed, ...involved].filter((p, i, arr) => arr.findIndex((q) => q.rx_id === p.rx_id) === i).sort((x, y) => x.date.localeCompare(y.date))
-        // Keep the wording of the worst tier; at the same tier, the window with the most lines active (its totals are the fullest).
-        const worse = RANK[a.tier] < RANK[cur.tier] || (RANK[a.tier] === RANK[cur.tier] && w.lines.length > (fullest.get(key) ?? 0))
-        if (worse) fullest.set(key, w.lines.length)
-        merged.set(key, {
-          ...(worse ? a : cur),
-          prescribed: all,
-          cross_doctor: new Set(all.map((p) => p.doctor)).size > 1,
-          from: cur.from < w.start ? cur.from : w.start,
-          to: cur.to > w.end ? cur.to : w.end,
-        })
+    const rxById = new Map(order.prescriptions.map((p) => [p.id, p]))
+    const prescribedBy = (a: Alert): Prescribed[] =>
+      (a.rx_ids ?? [])
+        .flatMap((id) => rxById.get(id) ?? [])
+        .map((p) => ({ rx_id: p.id, doctor: p.doctor, date: p.date }))
+        .sort((x, y) => x.date.localeCompare(y.date))
+    const spanStart = r.windows[0]?.start ?? r.as_of ?? ''
+    const spanEnd = r.windows[r.windows.length - 1]?.end ?? spanStart
+    const asHistoryAlert = (a: Alert): HistoryAlert => {
+      const prescribed = prescribedBy(a)
+      return {
+        ...a,
+        prescribed,
+        cross_doctor: a.cross_doctor ?? new Set(prescribed.map((p) => p.doctor)).size > 1,
+        from: a.window?.start ?? spanStart,
+        to: a.window?.end ?? spanEnd,
       }
     }
-    const alerts = [...merged.values()].sort((a, b) => RANK[a.tier] - RANK[b.tier] || Number(b.cross_doctor) - Number(a.cross_doctor) || a.from.localeCompare(b.from))
 
+    // The sig wording of each line, in the order the resolver reads them, for the timeline tooltip.
+    const sigTexts = new Map(order.prescriptions.map((p) => [p.id, resolver.resolveText(p.text, { age_years: order.customer.age_years }).map((l) => l.sig_text)]))
+    const seenPerRx = new Map<string, number>()
+    const lines: HistoryLine[] = r.lines.map((l, index) => {
+      const n = seenPerRx.get(l.rx_id) ?? 0
+      seenPerRx.set(l.rx_id, n + 1)
+      const start = l.start
+      return {
+        index,
+        rx_id: l.rx_id,
+        doctor: l.doctor,
+        start,
+        end: l.end ?? start,
+        end_assumed: l.default_window === true,
+        text: `${l.resolved.raw} ${sigTexts.get(l.rx_id)?.[n] ?? ''}`.trim(),
+        resolved: l.resolved,
+        sig: l.sig,
+        unverified: l.unverified === true,
+      }
+    })
+
+    const alerts = r.alerts.map(asHistoryAlert)
+    const windows: HistoryWindow[] = r.windows.map((w) => {
+      const active = lines.filter((l) => l.start <= w.start && l.end > w.start && w.rx_ids.includes(l.rx_id))
+      return { start: w.start, end: w.end, lines: active.map((l) => l.index), ledger: w.ledger, alerts: alerts.filter((a) => appliesIn(a, w, active)) }
+    })
     const score = (w: HistoryWindow) => count(w.alerts, 'interrupt') * 1000 + count(w.alerts, 'inform') * 10 + w.lines.length
     const peak = windows.reduce((best, w, i) => (score(w) > score(windows[best]) ? i : best), 0)
-    const unverified = lines.filter((l) => l.unverified)
-    const promptList = [...prompts.values()]
+
+    const changes: AlertChange[] | undefined = r.changes && [
+      ...r.changes.added.map((a): AlertChange => ({ kind: 'added', alert: asHistoryAlert(a) })),
+      ...r.changes.cleared.map((a): AlertChange => ({ kind: 'cleared', alert: asHistoryAlert(a) })),
+      ...r.changes.changed.map((c): AlertChange => ({ kind: 'tier_changed', alert: asHistoryAlert(c.after), was: c.before.tier })),
+    ].sort((a, b) => RANK[a.alert.tier] - RANK[b.alert.tier])
+
+    const lab = latestLab(order.labs)
+    const crcl = cockcroftGault({ ...patientFor(order), ...(lab && { serum_creatinine: lab.value }) }).value
+    const prompts: PatientPrompt[] = (r.needs ?? []).filter((n): n is typeof n & { field: PatientPrompt['field'] } => n.field !== 'sex').map((n) => ({ field: n.field, reason: n.reason }))
+
     return {
       lines,
       windows,
       alerts,
       peak,
-      status: statusOf(alerts, unverified.length, promptList.length),
-      priority: count(alerts, 'interrupt') * 1000 + count(alerts, 'inform') * 100 + unverified.length * 50 + alerts.filter((a) => a.cross_doctor).length * 10,
-      unverified,
-      prompts: promptList,
+      status: r.status,
+      priority: r.priority,
+      unverified: lines.filter((l) => l.unverified),
+      prompts,
       crcl,
+      ...(changes && { changes }),
+      engine: r,
     }
   }
 }

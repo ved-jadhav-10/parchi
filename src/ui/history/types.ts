@@ -1,7 +1,7 @@
 // Review-desk shapes (Track D). Prescription, LabResult and OrderStatus are the shared contracts (src/engine/contracts.ts).
 // The rest are what the screens need around them: an order, a line with its dates, an alert with the prescribers named.
-// Track C's `checkHistory` now exists on main; src/ui/history/check.ts can be replaced by it, mapping its result to these.
-import type { Alert, Ledger, ResolvedBrand, Sig, Tier } from '../../engine/contracts'
+// src/ui/history/check.ts maps Track C's `checkHistory` result onto these.
+import type { Alert, HistoryResult as EngineHistoryResult, Ledger, ResolvedBrand, Sig, Tier } from '../../engine/contracts'
 import type { PatientPrompt } from '../engine'
 
 // Contracts 5 and 6 and the status of contract 7 now live in src/engine/contracts.ts (Track C landed them).
@@ -83,6 +83,10 @@ export interface HistoryResult {
   unverified: HistoryLine[]
   prompts: PatientPrompt[]
   crcl: number | null
+  /** Set when the check was given the previous result: what the new data added, cleared or moved. */
+  changes?: AlertChange[]
+  /** The engine's own result (contract 7), kept so a re-check can pass it back as `previous`. */
+  engine: EngineHistoryResult
 }
 
 export interface AlertChange {
