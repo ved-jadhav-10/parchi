@@ -98,10 +98,10 @@
 .home-slip__rows { margin: 14px 0 16px; padding: 0; list-style: none; }
 .home-slip__rows li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px dashed rgb(18 32 86 / 0.22); font-size: var(--text-sm); }
 .home-slip__rows span:last-child { color: var(--color-ink-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-/* One red accent (the badge). No icon and no coloured edge. The rest stays neutral so the card does not shout. */
-.home-alert { display: grid; gap: 8px; padding: 14px 16px; border-radius: 8px; background: var(--color-surface); box-shadow: 0 0 0 1px var(--color-border); }
-.home-alert p { margin: 0; font-size: var(--text-sm); font-weight: 500; line-height: 1.45; }
-.home-tier { display: inline-flex; align-items: center; gap: 6px; justify-self: start; padding: 2px 10px; border-radius: var(--radius-pill); background: var(--tier-interrupt-bg); color: var(--tier-interrupt); font-size: 0.75rem; font-weight: 600; }
+/* The alert reads as one more line on the slip: no box, no fill. Red is only the word "Interrupt"; everything else is ink. */
+.home-alert { display: grid; gap: 6px; padding: 0; background: none; }
+.home-alert p { margin: 0; font-size: var(--text-sm); font-weight: 400; line-height: 1.5; color: var(--color-ink); }
+.home-tier { justify-self: start; color: var(--tier-interrupt); font-size: var(--text-xs); font-weight: 600; letter-spacing: 0.02em; }
 .home-limit { margin-top: 4px; }
 /* Neutral up to the limit; only the part over it is red, so the bar says "just over" without being a red slab. */
 .home-limit__track { position: relative; height: 6px; border-radius: var(--radius-pill); background: var(--color-tint); }
