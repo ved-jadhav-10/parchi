@@ -5,7 +5,7 @@ import { loadResolver, type Resolver } from '../engine/resolver'
 import { loadDdi, type DdiIndex } from '../engine/resolver/ddi'
 import { loadAlertRules, type AlertRules } from '../engine/rules'
 import { parseSig } from '../engine/sig'
-import { ddiGapNames } from './lib/coverage'
+import { ddiGapNames, limitGapNames } from './lib/coverage'
 
 /** Ask-only-when-needed: a patient field the engine wants before it can apply a limit, with the reason to show. */
 export interface PatientPrompt {
@@ -30,6 +30,8 @@ export interface CheckResult {
   notes: DoseResult['notes']
   /** Ingredients the interaction data has no entry for: "no alert" means nothing on file for these. */
   ddi_gaps: string[]
+  /** Totalled ingredients with no daily limit applied: "no dose alert" means not checked for these. */
+  limit_gaps: string[]
 }
 
 export interface EngineDeps {
@@ -60,6 +62,7 @@ export function createCheck(deps: EngineDeps) {
       crcl,
       notes,
       ddi_gaps: ddiGapNames(lines, ddi, resolver),
+      limit_gaps: limitGapNames([ledger], resolver),
     }
   }
 }
