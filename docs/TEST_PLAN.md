@@ -69,6 +69,7 @@ Not usable: KEGG (download prohibited), MIMIC (credentialing), handwriting image
 H3 (plugs into their console, medThinks screenshot), H8 (bring your own catalogue), H11 (price from H1 minutes saved), H15 (map each slide to a key challenge), H18, H26 (say what is built and what is unproven).
 
 ## 4. Order of work
+0. **Done 25 Oct:** Phases 2-6 of `FIX_PLAN.md`; the interrupt evidence, limits-vs-labels and composition cross-checks; 31 realistic scenarios.
 1. **Done 24 Oct:** this plan; NFI dose test; ONC end-to-end test; `eval/reviewer_list.md`; `VERIFIED.md`; H7 wording test; H10 measurement.
 2. Next: Phase 2 pregnancy rule backed by the NFI pregnancy categories; Synthea false-alarm run; `VERIFIED.md`; UI badges (H4, H12).
 3. Last: doctor session on the reviewer list only.

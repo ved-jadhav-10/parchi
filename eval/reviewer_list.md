@@ -60,3 +60,24 @@ A recorded penicillin allergy stops on any penicillin, including amoxicillin ins
 
 ## G. Paracetamol limit (replaces the old age-65 cap)
 Healthy adult 4,000 mg/day at any age. 3,000 mg/day with liver disease or heavy alcohol use. 60 mg/kg/day under 50 kg (recalled, not read from a label). Numbers are drafts. **Do you agree age alone should not lower it?**
+
+## H. Judgement calls the engine currently shows as a note (from `scenarios.json`, marked "judgement call")
+Not reviewed. The question for each is the same: **stop (S), tell (T) or leave alone (N)?** A pair that DDInter calls "major" but that no label or list we hold says must stop stays a note.
+| # | Scenario | We show | Why it might deserve a stop |
+|---|---|---|---|
+| 16 | R04: warfarin, then co-trimoxazole (Septran DS) | Tell | raises INR; common and serious |
+| 17 | R05: warfarin, then metronidazole (Metrogyl) | Tell | same |
+| 18 | R11: Deriphyllin (theophylline) with ciprofloxacin | Tell | raises theophylline levels: toxicity, seizures |
+| 19 | R13: lithium with ibuprofen (Combiflam) | Tell | raises lithium levels |
+| 20 | R16: rifampicin (inside the Akt 4 TB pack) with warfarin | Tell | lowers warfarin effect |
+| 21 | R18: digoxin with amiodarone | Tell | raises digoxin levels |
+| 22 | Methotrexate with co-trimoxazole | **Stop** | **No FDA label sentence and not on the ONC list**; we stop on consensus alone. Right? |
+
+## I. Workflow rules (Phase 3), each a judgement
+- **Two doctors, two medicines of one class** is shown as "possible switch: confirm the earlier one was stopped" (a note). Two NSAIDs in a high-risk patient still stops. Right call?
+- **No dosing written** (a cart line): the line is left out of the dose totals and the pharmacist is told, instead of assuming once a day. For a weekly drug (methotrexate) the note says it is normally weekly. Right?
+- **No course length:** the ordered quantity is used (10 tablets twice a day = 5 days); antibiotics with neither are assumed to run 7 days; everything else keeps the 30-day default so a real overlap is not hidden. Is 7 days a fair antibiotic assumption?
+- **A failed batch** (CDSCO list) is a quiet log line unless the batch number on the order matches, which then becomes a note.
+
+## J. For a pharmacist with the strip in hand
+`data/reports/composition_crosscheck.csv`: 480 brands where a second listing (same upstream, 1mg) has an ingredient we do not, 28 of them paracetamol and 40 paracetamol or an NSAID (for example Ace Proxyvon TH 4 lacks paracetamol in our data). 478 are already flagged "composition may be incomplete". Needs the pack, not an opinion.
