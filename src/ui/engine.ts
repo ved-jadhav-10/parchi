@@ -4,7 +4,7 @@ import { createPipeline } from '../engine/pipeline'
 import { loadResolver, type Resolver } from '../engine/resolver'
 import { loadDdi, type DdiIndex } from '../engine/resolver/ddi'
 import { loadAlertRules, type AlertRules } from '../engine/rules'
-import { parseSig } from '../engine/sig'
+import { parseSig, parseSigSmart } from '../engine/sig'
 import { ddiGapNames, limitGapNames } from './lib/coverage'
 
 /** Ask-only-when-needed: a patient field the engine wants before it can apply a limit, with the reason to show. */
@@ -49,7 +49,8 @@ export function createCheck(deps: EngineDeps) {
   const { resolver, ddi, rules } = deps
   // computeDose (not just a ledger) lets the pipeline raise Track B's findings as alerts: weekly drugs written daily,
   // kidney warnings, unclear sigs, liquids with no known volume. Without it those are silently dropped.
-  const check = createPipeline({ resolver, ddi, rules, parseSig: (text) => parseSig(text), computeDose })
+  // Online only: lines the rules could not read go to /api/parse-sig (sig text only); offline the rules result stands.
+  const check = createPipeline({ resolver, ddi, rules, parseSig: (text) => parseSig(text), computeDose, refineSig: (text) => parseSigSmart(text) })
   return async (rxText: string, patient: Patient): Promise<CheckResult> => {
     const { lines, ledger, alerts, needs, crcl, notes } = await check(rxText, patient)
     if (lines.length === 0) throw new Error('No medicines found in the text')
