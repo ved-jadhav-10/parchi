@@ -6,8 +6,8 @@
   {
    "name": "Parchi engine",
    "n_rx": 54,
-   "alerts_per_rx": 0.87,
-   "interrupts_per_rx": 0.19,
+   "alerts_per_rx": 0.93,
+   "interrupts_per_rx": 0.17,
    "clean_fp_rate": 0.0,
    "by_type": {
     "dose_excess": {
@@ -23,7 +23,7 @@
      "recall": 1.0
     },
     "ddi": {
-     "precision": 1.0,
+     "precision": 0.909,
      "recall": 1.0
     },
     "renal": {
@@ -47,7 +47,7 @@
      "recall": 1.0
     }
    },
-   "median_ms": 1.29
+   "median_ms": 1.12
   }
  ]
 }

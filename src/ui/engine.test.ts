@@ -27,7 +27,7 @@ describe('the real engine behind the UI', () => {
 
   it('raises the two Interrupts the demo case expects and logs the Pan-D failed batch quietly', async () => {
     const r = await check(demoRxText, demoPatient)
-    expect(r.alerts.filter((a) => a.tier === 'interrupt').map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_renal'])
+    expect(r.alerts.filter((a) => a.tier === 'interrupt').map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_double_high_risk'])
     expect(r.alerts.find((a) => a.type === 'nsq')?.tier).toBe('silent')
     expect(r.alerts.every((a) => a.approved !== true || ['nsq', 'banned_fdc'].includes(a.type))).toBe(true)
   })

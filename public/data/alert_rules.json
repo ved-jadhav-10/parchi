@@ -3,8 +3,17 @@
   "_note": "Track C alert policy. Draft values: every entry has pharmacist_approved=false until the pharmacist session (PS_ANALYSIS section 4, Q4/Q6/Q9). Do not present as clinical limits.",
   "alert_budget": {
     "max_interrupts_per_rx": 2,
-    "note": "Extra interrupts are shown as 'inform' (budget_demoted). The demo Rx needs 2; the average-per-Rx target of <=1 is measured by eval/.",
-    "pharmacist_approved": false
+    "note": "Extra routine interrupts are shown as 'inform' (budget_demoted). Types in never_demote (contraindicated interactions, banned FDCs, kidney 'avoid', weekly-read-as-daily, high-risk stacks) are never demoted and do not use up the budget. The average-per-Rx target of <=1 is measured by eval/.",
+    "pharmacist_approved": false,
+    "never_demote": [
+      "ddi",
+      "banned_fdc",
+      "renal_avoid",
+      "schedule_mismatch",
+      "triple_whammy",
+      "bleeding_anticoagulant_nsaid",
+      "bleeding_dual_antiplatelet_nsaid"
+    ]
   },
   "ddi_tiers": {
     "major": "inform",
@@ -107,10 +116,22 @@
       "classes": [
         "nsaid"
       ],
-      "crcl_below": 60,
+      "crcl_below": 30,
       "tier": "interrupt",
-      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can reduce kidney function. Pharmacist to review before dispensing.",
-      "source": "Draft renal rule, threshold unverified",
+      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs are generally avoided below 30 mL/min (kidney injury). Pharmacist to review before dispensing.",
+      "source": "Draft renal rule, matches limits.json (avoid below CrCl 30); FIX_PLAN 1.3",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "nsaid_renal_caution",
+      "classes": [
+        "nsaid"
+      ],
+      "crcl_below": 60,
+      "crcl_at_least": 30,
+      "tier": "inform",
+      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to review.",
+      "source": "Draft renal rule, matches limits.json (caution at CrCl 30-59); stops only together with another kidney stressor (see stack_rules); FIX_PLAN 1.3",
       "pharmacist_approved": false
     },
     {
@@ -268,7 +289,11 @@
         "dose_excess": 30,
         "renal_avoid": 30,
         "nsaid_renal": 20,
-        "ddi": 5
+        "ddi": 5,
+        "triple_whammy": 30,
+        "bleeding_anticoagulant_nsaid": 30,
+        "bleeding_dual_antiplatelet_nsaid": 30,
+        "nsaid_double_high_risk": 20
       },
       "cross_doctor_bonus": 15,
       "pharmacist_approved": false
@@ -375,5 +400,242 @@
       "polymyxin_b": "reserve",
       "tigecycline": "reserve"
     }
-  }
+  },
+  "stack_rules": [
+    {
+      "id": "triple_whammy",
+      "label": "ACE inhibitor/ARB + diuretic + NSAID",
+      "groups": [
+        {
+          "label": "ACE inhibitor or ARB",
+          "classes": [
+            "ace_inhibitor",
+            "arb"
+          ]
+        },
+        {
+          "label": "diuretic",
+          "classes": [
+            "thiazide_diuretic",
+            "loop_diuretic"
+          ],
+          "ingredients": [
+            "indapamide",
+            "metolazone"
+          ]
+        },
+        {
+          "label": "NSAID",
+          "classes": [
+            "nsaid"
+          ]
+        }
+      ],
+      "tier": "interrupt",
+      "reason": "{names} together: a blood-pressure drug acting on the kidney, a diuretic and an NSAID (the 'triple whammy') raise the risk of acute kidney injury (age {age}, CrCl {crcl} mL/min). Pharmacist to review before dispensing.",
+      "source": "Lapi F et al., BMJ 2013;346:e8525 (triple combination and acute kidney injury). Draft rule, FIX_PLAN 1.4",
+      "pharmacist_approved": false,
+      "supersedes": [
+        "ddi"
+      ]
+    },
+    {
+      "id": "bleeding_anticoagulant_nsaid",
+      "label": "Anticoagulant + NSAID",
+      "groups": [
+        {
+          "label": "anticoagulant",
+          "classes": [
+            "anticoagulant"
+          ],
+          "ingredients": [
+            "apixaban",
+            "rivaroxaban"
+          ]
+        },
+        {
+          "label": "NSAID",
+          "classes": [
+            "nsaid"
+          ]
+        }
+      ],
+      "tier": "interrupt",
+      "reason": "{names} together: an anticoagulant with an NSAID markedly raises the risk of serious bleeding. Pharmacist to review before dispensing.",
+      "source": "Anticoagulant and NSAID product labelling; AGS Beers Criteria 2023 (interactions to avoid). Draft rule, FIX_PLAN 1.4",
+      "pharmacist_approved": false,
+      "supersedes": [
+        "ddi",
+        "class_duplication"
+      ]
+    },
+    {
+      "id": "bleeding_dual_antiplatelet_nsaid",
+      "label": "Two antiplatelets + NSAID",
+      "groups": [
+        {
+          "label": "antiplatelets",
+          "classes": [
+            "antiplatelet"
+          ],
+          "min": 2
+        },
+        {
+          "label": "NSAID",
+          "classes": [
+            "nsaid"
+          ]
+        }
+      ],
+      "tier": "interrupt",
+      "reason": "{names} together: two antiplatelet drugs plus an NSAID raise the risk of stomach and other serious bleeding. Pharmacist to review before dispensing.",
+      "source": "Antiplatelet and NSAID product labelling. Draft rule, FIX_PLAN 1.4",
+      "pharmacist_approved": false,
+      "supersedes": [
+        "ddi",
+        "class_duplication"
+      ]
+    },
+    {
+      "id": "nsaid_double_high_risk",
+      "label": "Two NSAIDs in a high-risk patient",
+      "groups": [
+        {
+          "label": "NSAIDs",
+          "classes": [
+            "nsaid"
+          ],
+          "min": 2
+        }
+      ],
+      "tier": "inform",
+      "supersedes": [
+        "class_duplication"
+      ],
+      "escalate": {
+        "tier": "interrupt",
+        "age_at_least": 65,
+        "crcl_below": 60,
+        "classes": [
+          "anticoagulant",
+          "antiplatelet"
+        ]
+      },
+      "reason": "{names}: two NSAIDs at once add stomach-bleeding and kidney risk without more pain relief (age {age}, CrCl {crcl} mL/min). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023; NSAID product labelling. Stops at age 65+, CrCl below 60 or with an anticoagulant/antiplatelet. Draft rule, FIX_PLAN 1.4",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "hyperkalaemia_stack",
+      "label": "Several potassium-raising drugs",
+      "groups": [
+        {
+          "label": "ACE inhibitor or ARB",
+          "classes": [
+            "ace_inhibitor",
+            "arb"
+          ]
+        },
+        {
+          "label": "potassium-sparing diuretic",
+          "classes": [
+            "potassium_sparing_diuretic"
+          ],
+          "ingredients": [
+            "eplerenone",
+            "amiloride",
+            "triamterene"
+          ]
+        },
+        {
+          "label": "trimethoprim",
+          "ingredients": [
+            "trimethoprim"
+          ]
+        },
+        {
+          "label": "potassium salt",
+          "ingredients": [
+            "potassium_chloride",
+            "potassium_citrate",
+            "potassium_magnesium_citrate"
+          ]
+        }
+      ],
+      "min_groups": 2,
+      "tier": "inform",
+      "escalate": {
+        "tier": "interrupt",
+        "crcl_below": 30
+      },
+      "reason": "{names}: each raises blood potassium; together high potassium is likely, more so with weak kidneys (CrCl {crcl} mL/min). Pharmacist to review.",
+      "source": "Product labelling; AGS Beers Criteria 2023 (interactions to avoid). Draft rule, FIX_PLAN 1.4",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "serotonergic_stack",
+      "label": "SSRI/SNRI + tramadol or dextromethorphan",
+      "groups": [
+        {
+          "label": "SSRI or SNRI",
+          "classes": [
+            "ssri"
+          ],
+          "ingredients": [
+            "venlafaxine",
+            "desvenlafaxine",
+            "duloxetine"
+          ]
+        },
+        {
+          "label": "serotonergic painkiller or cough medicine",
+          "ingredients": [
+            "tramadol",
+            "tapentadol",
+            "dextromethorphan"
+          ]
+        }
+      ],
+      "tier": "inform",
+      "reason": "{names}: together they raise the risk of serotonin syndrome (and seizures with tramadol); cough syrups and painkillers can hide the second drug. Pharmacist to review.",
+      "source": "Product labelling (tramadol, dextromethorphan, SSRIs). Draft rule, tier to confirm, FIX_PLAN 1.4",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "qt_stack",
+      "label": "Several QT-prolonging drugs",
+      "groups": [
+        {
+          "label": "QT drugs (known risk)",
+          "ingredients": [
+            "azithromycin",
+            "clarithromycin",
+            "erythromycin",
+            "ciprofloxacin",
+            "levofloxacin",
+            "moxifloxacin",
+            "domperidone",
+            "ondansetron",
+            "hydroxychloroquine",
+            "chloroquine",
+            "haloperidol",
+            "escitalopram",
+            "amiodarone",
+            "sotalol",
+            "fluconazole",
+            "donepezil"
+          ],
+          "min": 2
+        }
+      ],
+      "tier": "inform",
+      "escalate": {
+        "tier": "interrupt",
+        "min_ingredients": 3
+      },
+      "reason": "{names}: each can prolong the QT interval; together the risk of a dangerous heart rhythm rises (age {age}). Pharmacist to review.",
+      "source": "Drug list transcribed from the CredibleMeds 'known risk of TdP' category; to verify against the registered QTdrugs list (non-commercial use). Draft rule, FIX_PLAN 1.4",
+      "pharmacist_approved": false
+    }
+  ]
 }

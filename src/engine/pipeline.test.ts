@@ -22,26 +22,26 @@ describe('pipeline on the demo Rx', () => {
     expect(count('inform')).toBeLessThanOrEqual(demo.expected.alerts.inform_max)
   })
 
-  it('interrupts for paracetamol over 4 g and NSAIDs with CrCl ~34', async () => {
+  it('interrupts for paracetamol over the cap and for two NSAIDs in a 68-year-old with CrCl ~34', async () => {
     const { alerts } = await check(demo.rx_text, patient)
     const stops = alerts.filter((a) => a.tier === 'interrupt')
-    expect(stops.map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_renal'])
+    expect(stops.map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_double_high_risk'])
     const dose = stops.find((a) => a.type === 'dose_excess')!
     expect(dose.reason).toContain('4,100 mg/day')
     expect(dose.brands).toEqual(['Dolo 650', 'Crocin Cold & Flu Max', 'Zerodol-P'])
-    const renal = stops.find((a) => a.type === 'nsaid_renal')!
+    const renal = stops.find((a) => a.type === 'nsaid_double_high_risk')!
     expect(renal.reason).toContain('CrCl 34')
     expect(renal.ingredients).toEqual(['aceclofenac', 'ibuprofen'])
   })
 
-  it('informs on NSAID + NSAID, PPI + PPI, ibuprofen + aspirin and domperidone in the elderly', async () => {
+  it('informs on NSAID kidney caution, PPI + PPI, ibuprofen + aspirin and domperidone in the elderly', async () => {
     const { alerts } = await check(demo.rx_text, patient)
     const informs = alerts.filter((a) => a.tier === 'inform')
     expect(informs.map((a) => `${a.type}:${a.ingredients.join('+')}`).sort()).toEqual([
-      'class_duplication:aceclofenac+ibuprofen',
       'class_duplication:omeprazole+pantoprazole',
       'ddi:aspirin+ibuprofen',
       'domperidone_elderly:domperidone',
+      'nsaid_renal_caution:aceclofenac+ibuprofen',
     ])
   })
 
@@ -63,7 +63,7 @@ describe('pipeline on the demo Rx', () => {
     const { alerts } = await check(demo.rx_text, patient)
     const tiers = alerts.map((a) => a.tier)
     expect(tiers).toEqual([...tiers].sort((a, b) => ['interrupt', 'inform', 'silent'].indexOf(a) - ['interrupt', 'inform', 'silent'].indexOf(b)))
-    expect(alerts.find((a) => a.type === 'nsaid_renal')!.approved).toBe(false)
+    expect(alerts.find((a) => a.type === 'nsaid_double_high_risk')!.approved).toBe(false)
     expect(alerts.find((a) => a.type === 'dose_excess')!.approved).toBe(false)
   })
 

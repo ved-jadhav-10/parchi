@@ -61,7 +61,7 @@ describe('order 1087: three doctors, no kidney result yet', () => {
   it('asks for the kidney result and raises no kidney alert without it', async () => {
     const r = await run(order('ORD-1087'))
     expect(r.prompts.map((p) => p.field)).toContain('serum_creatinine')
-    expect(find(r.alerts, 'nsaid_renal')).toBeUndefined()
+    expect(find(r.alerts, 'nsaid_renal_caution')).toBeUndefined()
     expect(r.crcl).toBeNull()
   })
 
@@ -71,7 +71,7 @@ describe('order 1087: three doctors, no kidney result yet', () => {
     expect(after.crcl).toBeGreaterThan(30)
     expect(after.crcl).toBeLessThan(40)
     const changes = after.changes!
-    expect(changes.find((c) => c.alert.type === 'nsaid_renal')?.kind).toBe('added')
+    expect(changes.find((c) => c.alert.type === 'nsaid_renal_caution')?.kind).toBe('added')
     expect(after.prompts.map((p) => p.field)).not.toContain('serum_creatinine')
     expect(changes.every((c) => ['added', 'cleared', 'tier_changed'].includes(c.kind))).toBe(true)
   })

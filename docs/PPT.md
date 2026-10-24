@@ -1,6 +1,6 @@
 # Parchi: final deck content (HYPNEXIS '26, HM-02)
 
-Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, branch `v1`: Tracks A to D are built and in the app. 738 automated tests (Vitest) and 102 Python tests pass; the app builds and runs offline. The engine, the Phase 2 review desk (history timeline, kidney re-check, unverified brands, ranked queue), FHIR import and draft export, and an online customer-leaflet function are working. The benchmark has run the engine on a 54-case **draft** gold set (labels written by the team from drug labels and guidelines, not yet reviewed by a pharmacist); no chatbot has been scored yet. All limits and rules are still unapproved drafts. The pitch targets e-pharmacies and pharmacy chains (`BUSINESS_MODEL.md`); the demo script is `docs/DEMO.md`.
+Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, branch `v1`: Tracks A to D are built and in the app. 814 automated tests (Vitest, re-run 24 Oct late) and 102 Python tests pass; the app builds and runs offline. The engine, the Phase 2 review desk (history timeline, kidney re-check, unverified brands, ranked queue), FHIR import and draft export, and an online customer-leaflet function are working. The benchmark has run the engine on a 54-case **draft** gold set (labels written by the team from drug labels and guidelines, not yet reviewed by a pharmacist); no chatbot has been scored yet. All limits and rules are still unapproved drafts. The pitch targets e-pharmacies and pharmacy chains (`BUSINESS_MODEL.md`); the demo script is `docs/DEMO.md`.
 
 **Clinical review update (24 Oct 2026, late):** a clinical-realism review found severity problems (contraindicated pairs only Inform; the per-Rx cap can demote a third real Interrupt; any NSAID below CrCl 60 Interrupts; no allergy/pregnancy fields; test cases mostly one molecule under two brands). The fixes are planned in `docs/FIX_PLAN.md` (Phases 0-6) and **not yet built**. This file now follows Phase 0: no claim on a slide goes beyond what the app does today.
 
@@ -69,11 +69,11 @@ Fit: 16 pt, plain, 4.70 × 0.38 in
 #### Problem statement title
 Paste the exact official HM-02 title; if it runs past one line, drop this field to 14 pt.
 Fit: 16 pt, plain, 4.70 × 0.38 in
-> Indian Brand-Name Prescription Safety Checker
+> Prescription Safety Checker for Indian Brand Medicines
 
 #### Theme / domain
 Fit: 16 pt, plain, 4.70 × 0.38 in
-> [Theme, e.g. HealthTech]
+> Health & MedTech
 
 #### Category
 Fit: 16 pt, plain, 4.70 × 0.38 in
@@ -114,7 +114,7 @@ Fit: 12 pt, bullets, 5.40 × 2.25 in, after 3
 ### Image box
 Concept diagram, no numbers, labels 11 pt: prescription slip with brand names → each brand split into ingredients → one daily-total bar per ingredient against its limit → tier label (Interrupt / Inform / Silent). Tag it "concept".
 
-*Presenter note: "Parchi" means the prescription slip. "Built" means code and automated tests exist but the screen is not built yet. Do not demo anything live unless it has been built into the app and re-checked.*
+*Presenter note: "Parchi" means the prescription slip. "Built" means working code with automated tests, shown in the app. Do not demo anything live unless it has been built into the app and re-checked.*
 
 ---
 
@@ -125,7 +125,7 @@ The card holds a flow chart (top) and the pipeline steps (bottom).
 
 Flow chart: drawn with shapes in the area x 0.80 to 6.20 in, y 2.50 to 4.20 in; labels 10 pt. Three columns, left to right, with arrows labelled "Prescription in" and "Alerts out":
 - Left, **Inputs (from the e-pharmacy or chain):** Order and Rx history (brands, doctor, date) · Age, sex, weight · Kidney test results · Approved limits and suppression list
-- Middle, **Safety check layer** (built and tested; history merge planned), six stacked chips: 1 Brand Matcher · 2 Dosing Reader · 3 Dose Totals · 4 Patient Limits · 5 Duplicates & Interactions · 6 Alert Tiers & Ranking. Strip under the chips: **Data, cached offline (built):** brand table · source-tagged limits · interaction and banned lists
+- Middle, **Safety check layer** (built and tested, incl. history merge), six stacked chips: 1 Brand Matcher · 2 Dosing Reader · 3 Dose Totals · 4 Patient Limits · 5 Duplicates & Interactions · 6 Alert Tiers & Ranking. Strip under the chips: **Data, cached offline (built):** brand table · source-tagged limits · interaction and banned lists
 - Right, **Pharmacist review console + check API:** ranked queue, "Prescription X-ray" (built)
 
 #### Pipeline steps
@@ -200,7 +200,7 @@ Wireframe area (template placeholder, 3.40 × 1.80 in): [Screenshot of the Presc
 
 ### TECHNICAL FEASIBILITY
 Fit: 14 pt, bullets, 3.40 × 3.80 in
-- **Engine built:** Brand matcher, dosing reader, dose totals, limits and alert rules pass 738 automated tests.
+- **Engine built:** Brand matcher, dosing reader, dose totals, limits and alert rules pass 814 automated tests.
 - **Demo case tested:** A test file fixes the demo's expected outputs (slide 4); engine tests check them.
 - **Proven libraries:** Fuzzy-search, sound-alike and offline-caching libraries chosen; no new algorithms needed.
 - **Runs on what counters have:** Any phone, tablet or PC with a browser; no special hardware.
