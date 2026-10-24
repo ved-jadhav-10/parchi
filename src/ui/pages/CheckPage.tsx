@@ -210,7 +210,7 @@ export const CheckPage = () => {
           <Card title="Prescription" icon="flask" description="Type it as written: one medicine per line, or separated by semicolons.">
             <textarea
               className="rx-input"
-              rows={6}
+              rows={4}
               value={rx}
               placeholder="Dolo 650 1-1-1 x5d; Pan D OD; ..."
               onChange={(e) => setRx(e.target.value)}
@@ -265,28 +265,13 @@ export const CheckPage = () => {
             </EmptyState>
           ) : !result ? (
             <EmptyState title="No prescription checked yet">
-              <p>Enter the patient's age and the prescription, then select Check prescription. Each line is checked for:</p>
-              <ul className="checks">
-                <li>
-                  <strong>Daily totals</strong>
-                  <span>Each ingredient added up across every brand on the slip, against the limit on file.</span>
-                </li>
-                <li>
-                  <strong>Age and kidney function</strong>
-                  <span>Weight or creatinine is asked for only when a medicine needs it.</span>
-                </li>
-                <li>
-                  <strong>Interactions</strong>
-                  <span>With a severity and the source it comes from.</span>
-                </li>
-                <li>
-                  <strong>Duplicate classes</strong>
-                  <span>Two NSAIDs, two PPIs, or any other pair from one class.</span>
-                </li>
-                <li>
-                  <strong>Banned combinations</strong>
-                  <span>Fixed-dose combinations on the banned list.</span>
-                </li>
+              <p>Add the age and the prescription, then press Check prescription. Each line is checked for:</p>
+              <ul className="checklist">
+                <li>Daily totals across brands</li>
+                <li>Kidney and age limits</li>
+                <li>Interactions, with a source</li>
+                <li>Duplicate classes</li>
+                <li>Banned combinations</li>
               </ul>
             </EmptyState>
           ) : (

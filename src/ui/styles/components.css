@@ -388,3 +388,32 @@ code { padding: 1px var(--space-1); border-radius: var(--radius-sm); background:
 .ask-fold > summary .num { color: var(--color-ink-muted); font-weight: 400; }
 
 .card:has(.select[data-open='true']), .decisionbar:has(.select[data-open='true']) { position: relative; z-index: 40; }
+
+/* Override log: one line per override, the detail behind a link */
+.logsum { margin: 0; color: var(--color-ink-muted); }
+.logsum strong { color: var(--color-ink); }
+.logrows { display: grid; margin: 0; padding: 0; list-style: none; }
+.logrow { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: var(--space-4); padding: var(--space-3) 0; border-top: 1px solid var(--color-border); }
+.logrow:first-child { border-top: 0; }
+.logrow[data-tier='interrupt'] .logrow__when { box-shadow: -4px 0 0 var(--tier-interrupt); padding-left: var(--space-3); margin-left: 4px; }
+.logrow__when { display: grid; align-content: start; font-size: var(--text-sm); line-height: var(--leading-sm); }
+.logrow__when span { color: var(--color-ink-muted); font-size: var(--text-xs); }
+.logrow__main { display: grid; gap: var(--space-1); min-width: 0; }
+.logrow__head { display: flex; align-items: baseline; gap: var(--space-2) var(--space-3); flex-wrap: wrap; margin: 0; font-weight: 600; }
+.logrow__head .tier-badge { flex: none; }
+.logrow__why { margin: 0; color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
+.logrow__why strong { color: var(--color-ink); }
+.logrow__more > summary { min-height: 32px; display: inline-flex; align-items: center; cursor: pointer; color: var(--color-accent-strong); font-size: var(--text-sm); font-weight: 600; }
+.logrow__more > p { margin: 0 0 var(--space-2); color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
+
+/* Empty result: a line and five chips, not a page */
+.checklist { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-3) 0 0; padding: 0; list-style: none; }
+.checklist li { padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); background: var(--color-tint); color: var(--color-accent-strong); font-size: var(--text-sm); font-weight: 600; }
+
+/* Density: less scrolling between the thing you did and the thing it shows */
+.intro { margin: var(--space-4) 0 var(--space-3); }
+.intro h1 { font-size: 1.5rem; line-height: 2rem; }
+.rx-input { min-height: 96px; }
+.alert[data-tier='interrupt'] { padding: var(--space-4); }
+.select__value { flex: 1; text-align: left; }
+@media (min-width: 960px) { .workspace { padding: var(--space-4); gap: var(--space-4); } }

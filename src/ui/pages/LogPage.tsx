@@ -1,12 +1,11 @@
 import { Select } from '../components/Select'
 import { useState } from 'react'
-import { ScrollRegion } from '../components/ScrollRegion'
 import type { Tier } from '../../engine/contracts'
-import { Card, KpiCard } from '../components/Card'
+import { Card } from '../components/Card'
 import { Icon, TierBadge } from '../components/Icons'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { downloadText, toCsv } from '../lib/csv'
-import { titleCase } from '../lib/format'
+import { trimReason } from '../history/queue'
 import { decisionLabel, STATUS_LABEL } from '../history/labels'
 import { useOverrides } from '../storage/overrides'
 import { useDecisions } from '../storage/orders'
@@ -33,11 +32,17 @@ export const LogPage = () => {
 
       {!error && (
         <div className="workspace workspace--single">
-          <div className="kpis">
-            <KpiCard label="Overrides" value={rows.length} hint="Stored on this device" />
-            <KpiCard label="Interrupts overridden" value={rows.filter((r) => r.tier === 'interrupt').length} tier="interrupt" />
-            <KpiCard label="Latest" value={rows[0] ? new Date(rows[0].at).toLocaleDateString('en-IN') : '—'} />
-          </div>
+          <p className="logsum" role="status">
+            <strong className="num">{rows.length}</strong> {rows.length === 1 ? 'override' : 'overrides'} on this device
+            {rows.length > 0 && (
+              <>
+                {' · '}
+                <strong className="num">{rows.filter((r) => r.tier === 'interrupt').length}</strong> of an Interrupt
+                {' · latest '}
+                {new Date(rows[0].at).toLocaleDateString('en-IN', { dateStyle: 'medium' })}
+              </>
+            )}
+          </p>
 
           <Card title="Overrides" icon="log">
             <div className="toolbar">
@@ -68,100 +73,87 @@ export const LogPage = () => {
             {!ready ? null : shown.length === 0 ? (
               <p className="hint">{rows.length === 0 ? 'No overrides yet. They appear here when an Interrupt is overridden with a reason.' : 'No overrides match these filters.'}</p>
             ) : (
-              <ScrollRegion className="xray" label="Overrides, scrolls sideways">
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">When</th>
-                      <th scope="col">Alert</th>
-                      <th scope="col">Reason given</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {shown.map((r) => (
-                      <tr key={r.id}>
-                        <th scope="row">{new Date(r.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</th>
-                        <td>
-                          <div className="log__alert">
-                            <TierBadge tier={r.tier} />
-                            <span>{titleCase(r.type)}</span>
-                          </div>
-                          <p className="log__text">{r.alert_reason}</p>
-                          <span className="chips">
-                            {r.ingredients.map((i) => (
-                              <span key={i} className="chip">
-                                {i}
-                              </span>
-                            ))}
-                            <span className="chip chip--source">{r.source}</span>
-                          </span>
-                          {r.order_id && (
-                            <p className="log__text">
-                              Order <a href={`#/order/${encodeURIComponent(r.order_id)}`}>{r.order_id}</a>
-                            </p>
-                          )}
-                        </td>
-                        <td>
-                          <strong>{r.override_reason}</strong>
-                          {r.note && <p className="log__text">{r.note}</p>}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </ScrollRegion>
+              <ol className="logrows">
+                {shown.map((r) => (
+                  <li key={r.id} className="logrow" data-tier={r.tier}>
+                    <time className="logrow__when" dateTime={r.at}>
+                      <strong>{new Date(r.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</strong>
+                      <span>{new Date(r.at).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })}</span>
+                    </time>
+                    <div className="logrow__main">
+                      <p className="logrow__head">
+                        <TierBadge tier={r.tier} />
+                        <span>{trimReason(r.alert_reason)}</span>
+                      </p>
+                      <p className="logrow__why">
+                        <strong>{r.override_reason}</strong>
+                        {r.note && <span> · {r.note}</span>}
+                        {r.order_id && (
+                          <>
+                            {' · '}
+                            <a href={`#/order/${encodeURIComponent(r.order_id)}`}>{r.order_id}</a>
+                          </>
+                        )}
+                      </p>
+                      <details className="logrow__more">
+                        <summary>Full alert and source</summary>
+                        <p>{r.alert_reason}</p>
+                        <span className="chips">
+                          {r.ingredients.map((i) => (
+                            <span key={i} className="chip">
+                              {i}
+                            </span>
+                          ))}
+                          <span className="chip chip--source">{r.source}</span>
+                        </span>
+                      </details>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             )}
           </Card>
 
           <Card title="Order decisions" icon="shield" description="What the pharmacist decided on each order in the review queue, and what Parchi had suggested">
-            <div className="toolbar">
-              <button
-                className="btn btn--secondary toolbar__end"
-                disabled={decisions.length === 0}
-                onClick={() =>
-                  downloadText(
-                    'order-decisions.csv',
-                    toCsv(['at', 'order_id', 'customer', 'suggested', 'decision', 'reason', 'note', 'interrupts', 'informs'], decisions as unknown as Record<string, unknown>[]),
-                    'text/csv',
-                  )
-                }
-              >
-                <Icon name="download" size={16} /> Export CSV
-              </button>
-            </div>
+            {decisions.length > 0 && (
+              <div className="toolbar">
+                <button
+                  className="btn btn--secondary toolbar__end"
+                  disabled={decisions.length === 0}
+                  onClick={() =>
+                    downloadText(
+                      'order-decisions.csv',
+                      toCsv(['at', 'order_id', 'customer', 'suggested', 'decision', 'reason', 'note', 'interrupts', 'informs'], decisions as unknown as Record<string, unknown>[]),
+                      'text/csv',
+                    )
+                  }
+                >
+                  <Icon name="download" size={16} /> Export CSV
+                </button>
+              </div>
+            )}
             {decisions.length === 0 ? (
               <p className="hint">No decisions yet. They appear here when a pharmacist saves one on an order.</p>
             ) : (
-              <ScrollRegion className="xray" label="Order decisions, scrolls sideways">
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">When</th>
-                      <th scope="col">Order</th>
-                      <th scope="col">Decision</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {decisions.map((d) => (
-                      <tr key={d.id}>
-                        <th scope="row">{new Date(d.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</th>
-                        <td>
-                          <a href={`#/order/${encodeURIComponent(d.order_id)}`}>{d.customer}</a>
-                          <p className="log__text">
-                            {d.order_id} · {d.interrupts} Interrupt, {d.informs} Inform
-                          </p>
-                        </td>
-                        <td>
-                          <strong>{decisionLabel(d.decision)}</strong>
-                          <p className="log__text">
-                            Parchi suggested: {STATUS_LABEL[d.suggested]}. Reason: {d.reason}.{d.note ? ` ${d.note}` : ''}
-                          </p>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </ScrollRegion>
+              <ol className="logrows">
+                {decisions.map((d) => (
+                  <li key={d.id} className="logrow">
+                    <time className="logrow__when" dateTime={d.at}>
+                      <strong>{new Date(d.at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</strong>
+                      <span>{new Date(d.at).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })}</span>
+                    </time>
+                    <div className="logrow__main">
+                      <p className="logrow__head">
+                        <a href={`#/order/${encodeURIComponent(d.order_id)}`}>{d.customer}</a>
+                        <strong>{decisionLabel(d.decision)}</strong>
+                      </p>
+                      <p className="logrow__why">
+                        {d.order_id} · {d.interrupts} Interrupt, {d.informs} Inform · Parchi suggested {STATUS_LABEL[d.suggested]}. Reason: {d.reason}.{d.note ? ` ${d.note}` : ''}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             )}
           </Card>
         </div>
