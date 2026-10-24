@@ -1,5 +1,6 @@
 import '../styles/demo.css'
 import { TrailerVideo } from '../components/TrailerVideo'
+import { Icon } from '../components/Icons'
 import { PageIntro } from '../components/PageIntro'
 import { SCENARIOS } from '../tour/scenarios'
 import { startTour } from '../tour/store'
@@ -15,7 +16,7 @@ export const DemoPage = () => (
         <h2 id="stories-title" className="stories__title">
           Pick a story
         </h2>
-        <p className="hint">Each one runs on the real app and the sample account. It types and clicks for you, or lets you press the button yourself.</p>
+        <p className="hint">Each one runs on the real app and the sample account. Watch it play like a film, or drive it yourself and press the lit buttons. Either way a pointer shows what it is doing.</p>
         <ol className="stories__list">
           {SCENARIOS.map((s, i) => (
             <li key={s.id} className="story">
@@ -29,9 +30,14 @@ export const DemoPage = () => (
                   {s.minutes} · {s.steps.length} steps
                 </p>
               </div>
-              <button type="button" className={`btn ${i === 0 ? 'btn--primary' : 'btn--secondary'}`} onClick={() => startTour(s.id)}>
-                Start<span className="sr-only"> {s.title}</span>
-              </button>
+              <div className="story__go">
+                <button type="button" className="btn btn--primary" onClick={() => startTour(s.id, true)}>
+                  <Icon name="play" size={14} /> Watch it play<span className="sr-only">: {s.title}</span>
+                </button>
+                <button type="button" className="btn btn--secondary" onClick={() => startTour(s.id)}>
+                  I'll drive<span className="sr-only">: {s.title}</span>
+                </button>
+              </div>
             </li>
           ))}
         </ol>

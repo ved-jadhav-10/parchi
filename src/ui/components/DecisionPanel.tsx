@@ -1,3 +1,4 @@
+import { Select } from './Select'
 import { useState } from 'react'
 import { DECISIONS, STATUS_LABEL, decisionLabel } from '../history/labels'
 import type { Decision, HistoryResult, Order, OrderStatus } from '../history/types'
@@ -105,15 +106,15 @@ export const DecisionPanel = ({ order, result, last, progress, onSaved }: { orde
       {chosen && <p className="decisionbar__hint">{chosen.hint}</p>}
 
       {differs && (
-        <label className="field decisionbar__reason">
-          <span className="field__label">Why differ from the suggestion? (required)</span>
-          <select className="field__input" value={reason} onChange={(e) => setReason(e.target.value)}>
-            <option value="">Choose a reason</option>
-            {OVERRIDE_REASONS.map((r) => (
-              <option key={r}>{r}</option>
-            ))}
-          </select>
-        </label>
+        <div className="decisionbar__reason">
+          <Select
+            label="Why differ from the suggestion? (required)"
+            value={reason}
+            onChange={setReason}
+            placeholder="Choose a reason"
+            options={OVERRIDE_REASONS.map((r) => ({ value: r, label: r }))}
+          />
+        </div>
       )}
       {releasing && interrupts.length > 0 && (
         <p className="decisionbar__hint">

@@ -6,6 +6,7 @@ import { BrandMatch } from '../components/BrandMatch'
 import { Card, KpiCard } from '../components/Card'
 import { FlagSummary } from '../components/FlagSummary'
 import { Icon } from '../components/Icons'
+import { Select } from '../components/Select'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { panelId, tabId, Tabs, type TabItem } from '../components/Tabs'
@@ -154,28 +155,32 @@ export const CheckPage = () => {
           <Card id="patient" title="Patient" icon="user">
             <div className="fields">
               <Field label="Age (years)" type="number" inputMode="numeric" min={0} value={patient.age} onChange={set('age')} />
-              <label className="field">
-                <span className="field__label">Sex</span>
-                <select className="field__input" value={patient.sex} onChange={set('sex')}>
-                  <option value="">Not given</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                </select>
-              </label>
+              <Select
+                label="Sex"
+                value={patient.sex}
+                onChange={(sex) => setPatient({ ...patient, sex })}
+                options={[
+                  { value: '', label: 'Not given' },
+                  { value: 'M', label: 'Male' },
+                  { value: 'F', label: 'Female' },
+                ]}
+              />
             </div>
             <details className="more">
               <summary>More about the patient (optional)</summary>
               <p className="hint">Checked only if filled in. Leaving a box empty means "not entered", never "none".</p>
               <Field label="Known allergies" placeholder="penicillin, sulfa, NSAIDs, or a medicine name" value={patient.allergies} onChange={set('allergies')} />
               {canBePregnant && (
-                <label className="field">
-                  <span className="field__label">Pregnant?</span>
-                  <select className="field__input" value={patient.pregnancy} onChange={set('pregnancy')}>
-                    <option value="">Not entered</option>
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
-                  </select>
-                </label>
+                <Select
+                  label="Pregnant?"
+                  value={patient.pregnancy}
+                  onChange={(pregnancy) => setPatient({ ...patient, pregnancy })}
+                  options={[
+                    { value: '', label: 'Not entered' },
+                    { value: 'no', label: 'No' },
+                    { value: 'yes', label: 'Yes' },
+                  ]}
+                />
               )}
               <Field label="Lab eGFR (mL/min/1.73 m²)" type="number" inputMode="decimal" value={patient.egfr} onChange={set('egfr')} />
               <label className="check">
@@ -334,13 +339,17 @@ export const CheckPage = () => {
                     <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
                     <HerbalCard report={result.herbal} />
                     {ask.length > 0 && (
-                      <Card title="Ask the customer" description="Parchi only sees this order. These are commonly bought without a prescription.">
+                      <details className="card ask-fold">
+                        <summary>
+                          Ask the customer <span className="num">{ask.length}</span>
+                        </summary>
+                        <p className="hint">Parchi only sees this order. These are commonly bought without a prescription.</p>
                         <ul className="ask">
                           {ask.map((q) => (
                             <li key={q}>{q}</li>
                           ))}
                         </ul>
-                      </Card>
+                      </details>
                     )}
                     {silent.length > 0 && (
                       <details className="silent-log">

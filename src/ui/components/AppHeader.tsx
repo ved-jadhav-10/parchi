@@ -39,7 +39,8 @@ const PillNav = ({ route, onNavigate }: { route: Route; onNavigate: () => void }
   }, [more])
 
   const link = (r: (typeof routes)[number]) => (
-    <a href={`#/${r.id}`} className="pillnav__link" aria-current={current(route, r.id) ? 'page' : undefined} onClick={() => (setMore(false), onNavigate())}>
+    <a href={`#/${r.id}`} className={`pillnav__link${r.id === 'demo' ? ' pillnav__link--demo' : ''}`} aria-current={current(route, r.id) ? 'page' : undefined} onClick={() => (setMore(false), onNavigate())}>
+      {r.id === 'demo' && <Icon name="play" size={13} />}
       {r.label}
     </a>
   )

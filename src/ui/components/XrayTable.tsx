@@ -39,7 +39,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
   )
   return (
     <ScrollRegion className="xray xray--stack" label="Prescription X-ray, scrolls sideways">
-      <p className="hint xray__key">The bar is the daily dose against the limit. The mark beside an ingredient is its strongest alert, which may be about something other than dose.</p>
+      <p className="hint xray__key">The bar is the daily dose against the limit on file.</p>
       <table>
         <thead>
           <tr>
@@ -74,21 +74,23 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
                 <td role="cell">
                   <LimitBar total={row.total_mg_day} limit={row.limit_mg_day} />
                   <span className="sr-only">{mg(row.total_mg_day)} milligrams per day</span>
-                  {(row.sos_mg_day ?? 0) > 0 && <span className="xray__line">Includes up to {mg(row.sos_mg_day!)} mg as needed (worst case).</span>}
-                  {row.limit_basis && (
+                  {((row.sos_mg_day ?? 0) > 0 || row.limit_basis || (row.caveats?.length ?? 0) > 0) && (
                     <details className="xray__basis">
-                      <summary>
-                        {row.limit_basis}
-                        {row.limit_pharmacist_approved === false && ', unverified'}
-                      </summary>
-                      <p>{row.limit_source}</p>
+                      <summary>{(row.sos_mg_day ?? 0) > 0 || (row.caveats?.length ?? 0) > 0 ? 'Notes' : 'Limit source'}</summary>
+                      {(row.sos_mg_day ?? 0) > 0 && <span className="xray__line">Includes up to {mg(row.sos_mg_day!)} mg as needed (worst case).</span>}
+                      {row.limit_basis && (
+                        <span className="xray__line">
+                          Limit: {row.limit_basis}
+                          {row.limit_pharmacist_approved === false && ', unverified'}. {row.limit_source}
+                        </span>
+                      )}
+                      {row.caveats?.map((c) => (
+                        <span key={c} className="xray__line">
+                          {c}
+                        </span>
+                      ))}
                     </details>
                   )}
-                  {row.caveats?.map((c) => (
-                    <span key={c} className="xray__line">
-                      {c}
-                    </span>
-                  ))}
                 </td>
               </tr>
             )

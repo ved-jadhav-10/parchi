@@ -23,6 +23,29 @@
 }
 .tour__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
 .tour__eyebrow { margin: 0; color: var(--color-accent-strong); font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: 600; }
+.tour__auto {
+  margin-left: auto; padding: 0 var(--space-3); min-height: 32px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); background: var(--color-tint);
+  color: var(--color-accent-strong); font: inherit; font-size: var(--text-sm); font-weight: 600; cursor: pointer;
+}
+.tour__auto[aria-pressed='true'] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
+.tour__timer { height: 3px; border-radius: var(--radius-pill); background: var(--color-accent); transform-origin: left; animation: tour-timer linear both; }
+@keyframes tour-timer { from { transform: scaleX(0); } }
+.tour__done { color: var(--status-ok); }
+.tour__done circle { fill: var(--status-ok-bg); stroke: currentColor; stroke-width: 2.5; }
+.tour__done path { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40; stroke-dashoffset: 40; animation: tour-draw 0.6s 0.25s ease-out forwards; }
+@keyframes tour-draw { to { stroke-dashoffset: 0; } }
+.tour__card { animation: tour-in 0.38s cubic-bezier(0.2, 0.9, 0.25, 1.1) both; }
+@keyframes tour-in { from { opacity: 0; transform: translateY(14px) scale(0.96); } }
+.tour__card > :not(.tour__timer) { animation: tour-line 0.4s ease both; }
+.tour__card > :nth-child(2) { animation-delay: 60ms; }
+.tour__card > :nth-child(3) { animation-delay: 120ms; }
+.tour__card > :nth-child(4) { animation-delay: 180ms; }
+@keyframes tour-line { from { opacity: 0; transform: translateY(6px); } }
+.tour__cursor { position: fixed; top: 0; left: 0; z-index: 1002; width: 28px; height: 28px; margin: -3px 0 0 -4px; pointer-events: none; transition: transform 0.8s cubic-bezier(0.45, 0, 0.2, 1); filter: drop-shadow(0 3px 5px rgb(18 32 86 / 0.35)); }
+.tour__cursor svg { transition: transform 0.12s ease; transform-origin: 4px 3px; }
+.tour__cursor.is-press svg { transform: scale(0.82); }
+.tour__ripple { position: absolute; left: 0; top: 0; width: 18px; height: 18px; margin: -6px 0 0 -2px; border-radius: 50%; border: 2px solid var(--color-accent); animation: tour-ripple 0.55s ease-out forwards; }
+@keyframes tour-ripple { to { transform: scale(3.4); opacity: 0; } }
 .tour__x {
   display: grid; place-items: center; width: var(--tap-min); height: var(--tap-min); margin: calc(var(--space-2) * -1); border: 0; border-radius: var(--radius-pill);
   background: transparent; color: var(--color-ink-muted); font: inherit; font-size: var(--text-xl); line-height: 1; cursor: pointer;
@@ -37,5 +60,6 @@
 .tour__hint { margin: 0; color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); text-align: right; }
 
 @media (prefers-reduced-motion: reduce) {
-  .tour__dim, .tour__ring { transition: none; animation: none; }
+  .tour__dim, .tour__ring, .tour__card, .tour__card > *, .tour__cursor { transition: none; animation: none; }
+  .tour__timer { animation: none; transform: none; }
 }

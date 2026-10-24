@@ -13,7 +13,7 @@ export const FlagSummary = ({ lines }: { lines: { resolved: ResolvedBrand }[] })
   const flagged = lines.map((l) => ({ name: brandLabel(l.resolved), flags: l.resolved.flags.filter((f) => SHOWN.includes(f)) })).filter((l) => l.flags.length > 0)
   if (flagged.length === 0) return null
   return (
-    <Card title="Check before dispensing" icon="shield" description="Flags on the brands themselves, apart from the dose and interaction alerts. Open Brand matches for the detail.">
+    <Card title="Check before dispensing" icon="shield" description="Flags on the brand itself. Detail is under Brand matches.">
       <ul className="flags">
         {flagged.map((l, i) => (
           <li key={`${l.name}-${i}`}>

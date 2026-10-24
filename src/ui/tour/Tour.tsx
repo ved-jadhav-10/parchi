@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import '../styles/tour.css'
-import { findTarget, reducedMotion, runAction, sleep, waitFor } from './dom'
+import { clickWithCursor, findTarget, hideCursor, reducedMotion, runAction, sleep, waitFor } from './dom'
 import { scenarioById } from './scenarios'
-import { backStep, exitTour, nextStep, useTour } from './store'
+import { backStep, exitTour, nextStep, setAuto, useTour } from './store'
 
 interface Box {
   top: number
@@ -35,7 +35,7 @@ const place = (box: Box | null): React.CSSProperties => {
 
 /** Spotlight tour over the real app. A story moves between pages, types and clicks for the visitor, and lights up what it is describing. */
 export const Tour = () => {
-  const { id, index } = useTour()
+  const { id, index, auto } = useTour()
   const scenario = id ? scenarioById(id) : undefined
   const step = scenario?.steps[index]
   const [busy, setBusy] = useState(true)
@@ -107,6 +107,32 @@ export const Tour = () => {
   }, [step, busy])
 
   useEffect(() => {
+    if (!scenario) hideCursor()
+    return hideCursor
+  }, [scenario])
+
+  // Autoplay: read time scales with the words on the card; a step that waits for a click gets one after a beat.
+  const dwell = step ? (step.userClicks ? 1600 : Math.min(7500, 2200 + (step.title.length + step.body.length) * 26)) : 0
+  const lastStep = !!scenario && index === scenario.steps.length - 1
+  useEffect(() => {
+    if (!auto || busy || !step || lastStep) return
+    const t = setTimeout(() => {
+      if (step.userClicks) {
+        const el = findTarget(step.userClicks)
+        if (el) void clickWithCursor(el)
+        else nextStep()
+      } else nextStep()
+    }, dwell)
+    return () => clearTimeout(t)
+  }, [auto, busy, step, lastStep, dwell])
+
+  useEffect(() => {
+    if (!lastStep) return
+    if (auto) setAuto(false)
+    hideCursor()
+  }, [auto, lastStep])
+
+  useEffect(() => {
     if (!scenario) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') exitTour()
@@ -127,7 +153,7 @@ export const Tour = () => {
   }
   const doIt = () => {
     const el = step.userClicks && findTarget(step.userClicks)
-    if (el) el.click()
+    if (el) void clickWithCursor(el)
     else nextStep()
   }
 
@@ -151,21 +177,33 @@ export const Tour = () => {
           Working on it…
         </p>
       ) : (
-        <div ref={popover} className="tour__card" style={place(lit ? box : null)} role="dialog" aria-modal="false" aria-labelledby="tour-title" tabIndex={-1}>
+        <div key={`${id}-${index}`} ref={popover} className="tour__card" style={place(lit ? box : null)} role="dialog" aria-modal="false" aria-labelledby="tour-title" tabIndex={-1}>
           <div className="tour__top">
             <p className="tour__eyebrow">
               {scenario.title} · {index + 1} of {scenario.steps.length}
             </p>
+            {!lastStep && (
+              <button type="button" className="tour__auto" onClick={() => setAuto(!auto)} aria-pressed={auto}>
+                {auto ? 'Pause' : 'Autoplay'}
+              </button>
+            )}
             <button type="button" className="tour__x" onClick={exitTour} aria-label="Leave the tour">
               ×
             </button>
           </div>
+          {step.cta && (
+            <svg className="tour__done" width="44" height="44" viewBox="0 0 48 48" aria-hidden="true">
+              <circle cx="24" cy="24" r="21" />
+              <path d="m14 25 7 7 14-15" />
+            </svg>
+          )}
           <h2 id="tour-title" className="tour__title">
             {step.title}
           </h2>
           <p className="tour__body" aria-live="polite">
             {step.body}
           </p>
+          {auto && !lastStep && <div className="tour__timer" key={`t${index}`} style={{ animationDuration: `${dwell}ms` }} aria-hidden="true" />}
           <div className="tour__dots" aria-hidden="true">
             {scenario.steps.map((s, i) => (
               <span key={s.title} data-on={i <= index} />

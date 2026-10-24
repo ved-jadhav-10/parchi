@@ -1,3 +1,4 @@
+import { Select } from '../components/Select'
 import { useState } from 'react'
 import { ScrollRegion } from '../components/ScrollRegion'
 import type { Tier } from '../../engine/contracts'
@@ -40,15 +41,17 @@ export const LogPage = () => {
 
           <Card title="Overrides" icon="log">
             <div className="toolbar">
-              <label className="field">
-                <span className="field__label">Tier</span>
-                <select className="field__input" value={tier} onChange={(e) => setTier(e.target.value as '' | Tier)}>
-                  <option value="">All</option>
-                  <option value="interrupt">Interrupt</option>
-                  <option value="inform">Inform</option>
-                  <option value="silent">Silent</option>
-                </select>
-              </label>
+              <Select
+                label="Tier"
+                value={tier}
+                onChange={setTier}
+                options={[
+                  { value: '', label: 'All' },
+                  { value: 'interrupt', label: 'Interrupt' },
+                  { value: 'inform', label: 'Inform' },
+                  { value: 'silent', label: 'Silent' },
+                ]}
+              />
               <label className="field">
                 <span className="field__label">From date</span>
                 <input className="field__input" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
