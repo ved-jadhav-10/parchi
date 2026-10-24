@@ -9,11 +9,11 @@
     ]
    }
   ],
-  "ms": 29.95
+  "ms": 22.69
  },
  "S02": {
   "alerts": [],
-  "ms": 1.19
+  "ms": 1.02
  },
  "S03": {
   "alerts": [
@@ -25,7 +25,7 @@
     ]
    }
   ],
-  "ms": 12.33
+  "ms": 4.35
  },
  "S04": {
   "alerts": [
@@ -37,7 +37,7 @@
     ]
    }
   ],
-  "ms": 3.45
+  "ms": 7.54
  },
  "S05": {
   "alerts": [
@@ -56,7 +56,7 @@
     ]
    }
   ],
-  "ms": 4.16
+  "ms": 3.38
  },
  "S06": {
   "alerts": [
@@ -68,7 +68,7 @@
     ]
    }
   ],
-  "ms": 4.21
+  "ms": 4.17
  },
  "S07": {
   "alerts": [
@@ -95,7 +95,7 @@
     ]
    }
   ],
-  "ms": 3.03
+  "ms": 3.2
  },
  "S08": {
   "alerts": [
@@ -121,12 +121,12 @@
     ]
    }
   ],
-  "ms": 1.73
+  "ms": 1.89
  },
  "S09": {
   "alerts": [
    {
-    "type": "class_duplication",
+    "type": "nsaid_double_high_risk",
     "tier": "inform",
     "ingredients": [
      "aceclofenac",
@@ -134,7 +134,7 @@
     ]
    }
   ],
-  "ms": 2.71
+  "ms": 2.36
  },
  "S10": {
   "alerts": [
@@ -154,7 +154,7 @@
     ]
    }
   ],
-  "ms": 1.27
+  "ms": 1.22
  },
  "S11": {
   "alerts": [
@@ -167,7 +167,7 @@
     ]
    }
   ],
-  "ms": 5.48
+  "ms": 1.51
  },
  "S12": {
   "alerts": [
@@ -188,12 +188,20 @@
     ]
    }
   ],
-  "ms": 2.07
+  "ms": 3.84
  },
  "S13": {
   "alerts": [
    {
     "type": "class_duplication",
+    "tier": "inform",
+    "ingredients": [
+     "ciprofloxacin",
+     "levofloxacin"
+    ]
+   },
+   {
+    "type": "qt_stack",
     "tier": "inform",
     "ingredients": [
      "ciprofloxacin",
@@ -209,7 +217,7 @@
     ]
    }
   ],
-  "ms": 1.27
+  "ms": 1.19
  },
  "S14": {
   "alerts": [
@@ -222,7 +230,7 @@
     ]
    }
   ],
-  "ms": 1.36
+  "ms": 1.25
  },
  "S15": {
   "alerts": [
@@ -235,20 +243,20 @@
     ]
    }
   ],
-  "ms": 1.09
+  "ms": 0.95
  },
  "S16": {
   "alerts": [
    {
-    "type": "ddi",
-    "tier": "inform",
+    "type": "bleeding_anticoagulant_nsaid",
+    "tier": "interrupt",
     "ingredients": [
      "diclofenac",
      "warfarin"
     ]
    }
   ],
-  "ms": 1.23
+  "ms": 0.93
  },
  "S17": {
   "alerts": [
@@ -261,10 +269,18 @@
     ]
    }
   ],
-  "ms": 0.98
+  "ms": 0.78
  },
  "S18": {
   "alerts": [
+   {
+    "type": "serotonergic_stack",
+    "tier": "inform",
+    "ingredients": [
+     "escitalopram",
+     "tramadol"
+    ]
+   },
    {
     "type": "ddi",
     "tier": "inform",
@@ -274,10 +290,18 @@
     ]
    }
   ],
-  "ms": 1.38
+  "ms": 1.11
  },
  "S19": {
   "alerts": [
+   {
+    "type": "hyperkalaemia_stack",
+    "tier": "inform",
+    "ingredients": [
+     "ramipril",
+     "spironolactone"
+    ]
+   },
    {
     "type": "ddi",
     "tier": "inform",
@@ -287,7 +311,7 @@
     ]
    }
   ],
-  "ms": 1.39
+  "ms": 1.12
  },
  "S20": {
   "alerts": [
@@ -300,35 +324,35 @@
     ]
    }
   ],
-  "ms": 1
+  "ms": 0.79
  },
  "S21": {
   "alerts": [
    {
-    "type": "nsaid_renal",
-    "tier": "interrupt",
+    "type": "nsaid_renal_caution",
+    "tier": "inform",
     "ingredients": [
      "ibuprofen"
     ]
    }
   ],
-  "ms": 0.74
+  "ms": 0.61
  },
  "S22": {
   "alerts": [],
-  "ms": 0.52
+  "ms": 0.41
  },
  "S23": {
   "alerts": [
    {
-    "type": "nsaid_renal",
-    "tier": "interrupt",
+    "type": "nsaid_renal_caution",
+    "tier": "inform",
     "ingredients": [
      "aceclofenac"
     ]
    }
   ],
-  "ms": 1.19
+  "ms": 0.58
  },
  "S24": {
   "alerts": [
@@ -340,7 +364,7 @@
     ]
    }
   ],
-  "ms": 0.75
+  "ms": 0.58
  },
  "S25": {
   "alerts": [
@@ -352,7 +376,7 @@
     ]
    }
   ],
-  "ms": 0.83
+  "ms": 1.22
  },
  "S26": {
   "alerts": [
@@ -364,7 +388,7 @@
     ]
    }
   ],
-  "ms": 0.63
+  "ms": 0.56
  },
  "S27": {
   "alerts": [
@@ -384,7 +408,7 @@
     ]
    }
   ],
-  "ms": 0.6
+  "ms": 0.49
  },
  "S28": {
   "alerts": [
@@ -397,7 +421,7 @@
     ]
    }
   ],
-  "ms": 0.55
+  "ms": 0.49
  },
  "S29": {
   "alerts": [
@@ -409,7 +433,7 @@
     ]
    }
   ],
-  "ms": 0.58
+  "ms": 0.51
  },
  "S30": {
   "alerts": [
@@ -421,7 +445,7 @@
     ]
    }
   ],
-  "ms": 0.55
+  "ms": 0.44
  },
  "S31": {
   "alerts": [
@@ -433,11 +457,11 @@
     ]
    }
   ],
-  "ms": 0.69
+  "ms": 0.56
  },
  "S32": {
   "alerts": [],
-  "ms": 0.48
+  "ms": 0.46
  },
  "S33": {
   "alerts": [
@@ -449,7 +473,7 @@
     ]
    }
   ],
-  "ms": 1.02
+  "ms": 0.83
  },
  "S41": {
   "alerts": [
@@ -461,7 +485,7 @@
     ]
    }
   ],
-  "ms": 0.5
+  "ms": 0.44
  },
  "S42": {
   "alerts": [
@@ -473,7 +497,7 @@
     ]
    }
   ],
-  "ms": 0.27
+  "ms": 0.23
  },
  "S43": {
   "alerts": [
@@ -492,11 +516,11 @@
     ]
    }
   ],
-  "ms": 0.17
+  "ms": 0.15
  },
  "S44": {
   "alerts": [],
-  "ms": 0.1
+  "ms": 0.34
  },
  "S34": {
   "alerts": [
@@ -510,7 +534,7 @@
     ]
    }
   ],
-  "ms": 1.44
+  "ms": 1.2
  },
  "S35": {
   "alerts": [
@@ -522,7 +546,7 @@
     ]
    }
   ],
-  "ms": 0.22
+  "ms": 0.3
  },
  "S36": {
   "alerts": [
@@ -542,7 +566,7 @@
     ]
    }
   ],
-  "ms": 2.63
+  "ms": 2.2
  },
  "S37": {
   "alerts": [
@@ -554,19 +578,19 @@
     ]
    }
   ],
-  "ms": 1.96
+  "ms": 1.58
  },
  "S38": {
   "alerts": [],
-  "ms": 3.54
+  "ms": 2.58
  },
  "S39": {
   "alerts": [],
-  "ms": 1.33
+  "ms": 1.07
  },
  "S40": {
   "alerts": [],
-  "ms": 1.82
+  "ms": 1.98
  },
  "H01": {
   "alerts": [
@@ -578,7 +602,7 @@
     ]
    }
   ],
-  "ms": 6.24
+  "ms": 5.28
  },
  "H02": {
   "alerts": [
@@ -590,11 +614,11 @@
     ]
    }
   ],
-  "ms": 2.52
+  "ms": 2.25
  },
  "H03": {
   "alerts": [],
-  "ms": 1.71
+  "ms": 1.39
  },
  "H04": {
   "alerts": [
@@ -614,13 +638,13 @@
     ]
    }
   ],
-  "ms": 1.79
+  "ms": 1.56
  },
  "H05": {
   "alerts": [
    {
-    "type": "nsaid_renal",
-    "tier": "interrupt",
+    "type": "nsaid_renal_caution",
+    "tier": "inform",
     "ingredients": [
      "ibuprofen"
     ]
@@ -634,20 +658,20 @@
     ]
    }
   ],
-  "ms": 1.57
+  "ms": 1.28
  },
  "H06": {
   "alerts": [
    {
-    "type": "ddi",
-    "tier": "inform",
+    "type": "bleeding_anticoagulant_nsaid",
+    "tier": "interrupt",
     "ingredients": [
      "diclofenac",
      "warfarin"
     ]
    }
   ],
-  "ms": 1.3
+  "ms": 0.98
  },
  "H07": {
   "alerts": [
@@ -667,7 +691,7 @@
     ]
    }
   ],
-  "ms": 0.97
+  "ms": 0.69
  },
  "H08": {
   "alerts": [
@@ -694,7 +718,7 @@
     ]
    }
   ],
-  "ms": 2.81
+  "ms": 1.63
  },
  "H09": {
   "alerts": [
@@ -714,10 +738,10 @@
     ]
    }
   ],
-  "ms": 2.05
+  "ms": 2
  },
  "H10": {
   "alerts": [],
-  "ms": 0.51
+  "ms": 0.4
  }
 }
