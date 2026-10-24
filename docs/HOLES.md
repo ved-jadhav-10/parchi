@@ -16,8 +16,13 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | Scoring rubric and weights | **Not disclosed yet** | unknown: we assume equal weights, unverified |
 | Round 1 format | **PPT + prototype + presentation of both, in 10 minutes** | confirmed |
 | Finals format, panel make-up, Q&A length | not known | unknown |
+| Judges shared across tracks? | not known (nothing announced) | unknown |
+| Interactive demo (judge types own prescription) | **Yes, as long as it cannot produce a wrong answer** | decision |
+| Pharmacist / pharmacy-student help for the test set | A friend's grandfather has offered; his profession and background not yet confirmed | open |
+| Presentation work | **Deferred**: first clarify the PS and develop new things, then finalise the presentation | decision |
 | Judge-run hidden test set or baseline | **Unknown to the team** (none established so far) | unknown |
-| Deliverables and hard rules (AI-assisted code, external APIs, scraped data, live URL) | **Not answered clearly**; `PPT.md` refers to an "official 9-slide HYPNEXIS template" | open question |
+| Deliverables | An official slide **template exists** (the team will share it). Other required items (repo, live URL, video) not confirmed | partly confirmed |
+| Hard rules (AI-assisted code, external APIs, scraped data) | not stated by the organisers as far as the team knows | unknown |
 | Schedule | no round has happened; the team aims to finish the entire solution **by Round 1** | confirmed |
 | Win condition | **First place overall**, across all six tracks | confirmed |
 
@@ -62,6 +67,10 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | H17 | "Try it on this prescription I just wrote" | H | _not brainstormed yet_ | - | - | open |
 | H18 | "You're judged against AI, Web3, climate and hardware teams. Why does a pharmacy tool win overall?" | M | _not brainstormed yet_ | - | - | open |
 | H19 | "You said everything is done by Round 1. What is not verified?" | H | _not brainstormed yet_ | - | - | open |
+| H20 | "The doctor already has the patient's previous prescriptions. Your solution is of no use" | H | _not brainstormed yet_ | - | - | open |
+| H21 | "The local pharmacist has no time and no incentive to do any of this" | H | _not brainstormed yet_ | - | - | open |
+| H22 | "People buy medicines right after a diagnosis. Two doctors' prescriptions at once is rare. Where is the problem?" | H | _not brainstormed yet_ | - | - | open |
+| H23 | "If Parchi shows no alert, is it safe? Your interaction data has gaps" | M | _not brainstormed yet_ | - | - | open |
 
 ## Details
 
@@ -106,6 +115,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **USP:** "Bring your own catalogue." The IP is the curated rules layer, not the scraped table.
 
 ### H9. "Where does patient data go?" (DPDP Act)
+- **Verified in code (24 Oct 2026, Track B):** nothing in `api/` writes, stores or logs, and only the sig text is sent to the model (a test asserts brand and patient data are not). Not verified: what the host (Vercel) and the model provider keep on their side.
 - **Fixes:** the engine runs in the browser, so offline checks never leave the device. Verify and state that `api/check` and `api/parse-sig` store nothing and that the LLM fallback sends only sig text, no patient identifiers (unverified until checked in code).
 - **USP:** privacy by architecture, not by policy.
 
@@ -149,6 +159,25 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **Why it's a hole:** the team's plan is to finish the whole solution by Round 1. Several things cannot be finished by then without outside people: pharmacist-approved limits, a labelled test set, a measured chatbot comparison, a real-user timing (H1), a live deployment with offline use actually tested, and the unknown rubric. If any appears on a slide as done and is not, that is the hole a judge finds.
 - **Risk:** H. **Status:** open.
 
+### H20. "The doctor already has the patient's previous prescriptions. Your solution is of no use"
+- **Raised by:** the team (anticipated question).
+- **Why it's a hole:** when a patient sees one doctor, that doctor can see their own earlier prescriptions, and doctor-side systems such as HealthPlix and Eka already raise interaction alerts inside the doctor's records (`PS_ANALYSIS.md` §3, company claims). Parchi's value is only where records are split across doctors, pharmacies and over-the-counter purchases. We have not yet shown, with any evidence from a pharmacist or doctor, how often a doctor really lacks that picture.
+- **Risk:** H. **Status:** open.
+
+### H21. "The local pharmacist has no time and no incentive to do any of this"
+- **Raised by:** the team (anticipated question). Related: H13, H11.
+- **Why it's a hole:** an independent chemist is paid for dispensing, not for reviewing; a safety check adds work with no reward. Our buyer story (e-pharmacies and chains, where a pharmacist already verifies every order) answers this for those buyers, but that claim rests on a source in `BUSINESS_MODEL.md` that we have not checked with a person who works at one. The independent chemist, who is the free tier, remains unanswered.
+- **Risk:** H. **Status:** open.
+
+### H22. "People buy medicines right after a diagnosis. Two doctors' prescriptions at once is rare. Where is the problem?"
+- **Raised by:** the team (anticipated question).
+- **Why it's a hole:** Phase 2 and our history timeline assume one customer holding prescriptions from several doctors at overlapping times. We have no measurement of how often that happens. The statistics we cite are about older Indian adults' polypharmacy (Bhagavathula 2021) and self-medication (Rashid 2020), which are not the same thing as simultaneous multi-doctor purchases. Separately, Phase 1's own example (two brands that both contain paracetamol) does not need two doctors at all, so we have not yet said which of the two we claim is the real problem.
+- **Risk:** H. **Status:** open.
+
+### H23. "If Parchi shows no alert, is it safe? Your interaction data has gaps"
+- **Why it's a hole:** DDInter has no entry for several common Indian drugs (aceclofenac, domperidone, nimesulide, etoricoxib, ambroxol) and some drug groups (`track-a-data.md`). The UI is careful ("No alerts from the checks run") and the Data page documents the gaps, but a result screen does not say which of the prescription's ingredients were not covered, so a quiet result can still read as reassurance.
+- **Risk:** M. **Status:** open.
+
 ## USP shortlist (pick 3-4 for the deck)
 Ranked by judge impact ÷ effort. Update after each council run.
 1. Measured with a real pharmacist (H1)
@@ -161,3 +190,4 @@ Ranked by judge impact ÷ effort. Update after each council run.
 |---|---|---|---|
 | 24 Oct 2026 | Initial list (Claude review of docs) | H1-H13 | Goal = win HM-02 |
 | 24 Oct 2026 | Grill 1: problem statement and parameters (Q1-Q7) | H14-H19 | PS text recorded verbatim. Round 1 = deck + prototype + presentation in 10 min. Win = first overall. Rubric, panel, finals format, hidden test and hard rules still unknown |
+| 24 Oct 2026 | Grill 2: pharmacist help, the judge's hardest questions | H20-H23 | Presentation work deferred until the PS and new features are clear. Interactive demo allowed only if it cannot give a wrong answer. Slide template exists (to be shared). Panel sharing across tracks unknown. H9 partly verified in code |
