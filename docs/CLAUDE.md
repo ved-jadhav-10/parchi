@@ -2,7 +2,7 @@
 
 Project: HM-02 Indian brand-name prescription safety checker (HYPNEXIS '26). Offline-capable PWA. 4 developers, 4 tracks, working in parallel.
 
-**Read order:** this file -> `PLAN.md` (stack, your track, contracts). Open `PS_ANALYSIS.md` only for the specific section you need; it is large.
+**Read order:** this file -> `PLAN.md` (stack, your track, contracts). Open `PS_ANALYSIS.md` only for the specific section you need; it is large. Any UI work: follow `DESIGN.md` (tokens in `src/ui/styles/tokens.css`).
 
 ## Start of every session
 1. `git status`, confirm you are on your own branch `dev/track-<x>` (never `main`). Branches are `dev/track-a` .. `dev/track-d`; ask the user which track they are if unknown.

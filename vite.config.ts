@@ -8,12 +8,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      workbox: { globPatterns: ['**/*.{js,css,html,json,svg,png}'] },
+      workbox: { globPatterns: ['**/*.{js,css,html,json,svg,png,woff2}'] },
       manifest: {
         name: 'Rx Safety Checker',
         short_name: 'RxCheck',
-        theme_color: '#0f766e',
-        background_color: '#ffffff',
+        theme_color: '#122056',
+        background_color: '#fafafd',
         display: 'standalone',
         icons: [],
       },

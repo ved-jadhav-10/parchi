@@ -1,0 +1,63 @@
+/* Design tokens. Source of truth for colour, type and space; see docs/DESIGN.md. */
+:root {
+  /* Brand */
+  --color-ink: #122056;
+  --color-ink-muted: #5c6488;
+  --color-accent: #5b65dc;
+  --color-accent-strong: #4a53c7;
+  --color-tint: #eeeffd;
+  --color-bg: #fafafd;
+  --color-surface: #ffffff;
+  --color-border: #dcdff0;
+  --color-on-accent: #ffffff;
+
+  /* Clinical status: never reuse brand accent for these */
+  --tier-interrupt: #b42318;
+  --tier-interrupt-bg: #fef0ee;
+  --tier-inform: #9a4a00;
+  --tier-inform-bg: #fff4e5;
+  --tier-silent: #5c6488;
+  --tier-silent-bg: #f1f2f8;
+  --status-ok: #1e7a46;
+  --status-ok-bg: #eaf6ef;
+
+  /* Type */
+  --font-sans: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+  --leading-xs: 1rem;
+  --leading-sm: 1.25rem;
+  --leading-md: 1.5rem;
+  --leading-lg: 1.75rem;
+  --leading-xl: 2.25rem;
+
+  /* Space (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Shape */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --shadow-card: 0 1px 2px rgb(18 32 86 / 0.06), 0 4px 12px rgb(18 32 86 / 0.06);
+
+  /* Layout */
+  --content-max: 1200px;
+  --sidebar-width: 400px;
+  --tap-min: 44px;
+  --gutter: var(--space-4);
+}
+
+@media (min-width: 960px) {
+  :root {
+    --gutter: var(--space-5);
+  }
+}
