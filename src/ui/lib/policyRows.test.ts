@@ -36,7 +36,9 @@ describe('policy rows for the Data page', () => {
     expect(rows[0].name).toBe('Alert budget')
     expect(rows[0].value).toMatch(/Interrupts a prescription$/)
     expect(rows.some((r) => r.name === 'Interactions')).toBe(true)
-    expect(rows.some((r) => r.name === 'Nsaid renal' && /CrCl below 60/.test(r.detail))).toBe(true)
+    expect(rows.some((r) => r.name === 'Nsaid renal' && /CrCl below 30/.test(r.detail))).toBe(true)
+    expect(rows.some((r) => r.name === 'Nsaid renal caution' && /CrCl 30 to below 60/.test(r.detail))).toBe(true)
+    expect(rows.find((r) => r.name === 'ACE inhibitor/ARB + diuretic + NSAID')?.value).toBe('Interrupt')
   })
 
   it('lists the suppression rules, and counts approvals', () => {

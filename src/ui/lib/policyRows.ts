@@ -39,17 +39,24 @@ export function sosRows(limits: LimitsData): DataRow[] {
 
 const tierName = (t: string | null) => (t ? titleCase(t) : 'Not raised')
 
-/** The alert policy (Track C, public/data/alert_rules.json): budget, interaction tiers, duplicate classes, patient rules. */
+/** The alert policy (Track C, public/data/alert_rules.json): budget, interaction tiers, duplicate classes, patient rules, stacking rules. */
 export function ruleRows(rules: AlertRules): DataRow[] {
   const b = rules.alert_budget
   const d = rules.ddi_tiers
   return [
-    row('Alert budget', 'Extra Interrupts are shown as Inform', `${b.max_interrupts_per_rx} Interrupts a prescription`, 'Team setting', b.pharmacist_approved),
+    row('Alert budget', b.never_demote?.length ? 'Extra routine Interrupts are shown as Inform; contraindications and kidney "avoid" never are' : 'Extra Interrupts are shown as Inform', `${b.max_interrupts_per_rx} Interrupts a prescription`, 'Team setting', b.pharmacist_approved),
     row('Interactions', 'Severity to tier: major, moderate, minor', `${tierName(d.major)}, ${tierName(d.moderate)}, ${tierName(d.minor)}`, d.source, d.pharmacist_approved),
     ...rules.class_duplication.map((c) => row(c.label, 'Two or more in one prescription', tierName(c.tier), c.source, c.pharmacist_approved)),
     ...rules.patient_rules.map((p) => {
-      const when = [p.age_at_least !== undefined ? `Age ${p.age_at_least} and over` : '', p.crcl_below !== undefined ? `CrCl below ${p.crcl_below} mL/min` : ''].filter(Boolean).join(', ')
+      const crcl = p.crcl_below === undefined ? '' : p.crcl_at_least !== undefined ? `CrCl ${p.crcl_at_least} to below ${p.crcl_below} mL/min` : `CrCl below ${p.crcl_below} mL/min`
+      const when = [p.age_at_least !== undefined ? `Age ${p.age_at_least} and over` : '', crcl].filter(Boolean).join(', ')
       return row(titleCase(p.id), when || 'Any patient', tierName(p.tier), p.source, p.pharmacist_approved)
+    }),
+    ...rules.stack_rules.map((s) => {
+      const groups = s.groups.map((g) => (g.min && g.min > 1 ? `${g.min}+ ${g.label}` : g.label)).join(' + ')
+      const need = s.min_groups !== undefined && s.min_groups < s.groups.length ? `any ${s.min_groups} of: ${groups}` : groups
+      const tier = s.escalate ? `${tierName(s.tier)}; ${tierName(s.escalate.tier)} when higher risk` : tierName(s.tier)
+      return row(s.label, need, tier, s.source, s.pharmacist_approved)
     }),
     ...awareRows(rules),
   ]
@@ -67,8 +74,8 @@ const awareRows = (rules: AlertRules): DataRow[] => {
 export function supplementRows(json: unknown): DataRow[] {
   const rules = (json as { rules?: unknown } | null)?.rules
   if (!Array.isArray(rules)) return []
-  return rules.map((r: { id?: string; a?: string[]; b?: string[]; level?: string; note?: string; source?: string; pharmacist_approved?: boolean }) =>
-    row(titleCase(String(r.id ?? '')), `${(r.a ?? []).join(', ')} with ${(r.b ?? []).join(', ')}: ${r.note ?? ''}`, titleCase(String(r.level ?? '')), String(r.source ?? ''), r.pharmacist_approved),
+  return rules.map((r: { id?: string; a?: string[]; b?: string[]; level?: string; note?: string; source?: string; pharmacist_approved?: boolean; interrupt?: boolean }) =>
+    row(titleCase(String(r.id ?? '')), `${(r.a ?? []).join(', ')} with ${(r.b ?? []).join(', ')}: ${r.note ?? ''}`, r.interrupt ? 'Interrupt (contraindicated)' : titleCase(String(r.level ?? '')), String(r.source ?? ''), r.pharmacist_approved),
   )
 }
 
