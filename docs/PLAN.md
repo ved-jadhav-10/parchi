@@ -80,7 +80,7 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 | A |  | `dev/track-a` |  |  |  |
 | B |  | `dev/track-b` |  |  |  |
 | C |  | `dev/track-c` |  |  |  |
-| D |  | `dev/track-d` |  |  |  |
+| D | Jayesh | `dev/track-d` | Design base: `DESIGN.md`, tokens, font | PWA shell, RxInput, X-ray view |  |
 
 ## Not doing
 OCR, WhatsApp/voice, generic DDI-only checker, NPPA price flag.
