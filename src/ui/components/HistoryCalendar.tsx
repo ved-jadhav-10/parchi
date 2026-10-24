@@ -116,7 +116,7 @@ export const HistoryCalendar = ({ lines, windows, placed, initial, onPickWindow,
                 {n > 0 && (
                   <span className="cal__meds">
                     {n}
-                    <span className="cal__unit"> {n === 1 ? 'medicine' : 'medicines'}</span>
+                    <span className="cal__unit"> {n === 1 ? 'med' : 'meds'}</span>
                   </span>
                 )}
                 {d.written && <span className="cal__rx">Rx</span>}
