@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { routes, useOnline, type Route } from '../route'
 import { Icon } from './Icons'
+import { LogoMark } from './LogoMark'
 
 const ConnectionPill = () => {
   const online = useOnline()
@@ -37,7 +38,7 @@ export const AppHeader = ({ route }: { route: Route }) => {
     <header className="app-header">
       <a href="#/check" className="brand">
         <span className="brand__mark">
-          <Icon name="pulse" size={20} />
+          <LogoMark size={44} />
         </span>
         Parchi
       </a>
