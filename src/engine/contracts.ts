@@ -77,6 +77,10 @@ export interface ResolvedBrand {
   nsq?: NsqRef[]
   /** Jan Aushadhi generics with the same ingredients and strengths (not a safety flag). Pharmacist confirms equivalence. */
   jan_aushadhi?: JanAushadhiRef[]
+  /** Track A, optional: usual labelled schedule is not daily (methotrexate tablets, alendronate 70 mg: weekly; ibandronate 150 mg: monthly). Track C can warn on a daily sig. Sourced per drug in data/curated/schedule_hints.csv. */
+  schedule_hint?: 'weekly' | 'monthly'
+  /** Source URL for `schedule_hint`. */
+  schedule_source?: string
   /** Short reasons for the pharmacist, e.g. "Assumed 650 mg; Dolo is also sold as 500 mg". */
   notes?: string[]
 }
