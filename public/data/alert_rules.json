@@ -189,10 +189,7 @@
     "pharmacist_approved": false
   },
   "history": {
-    "_note": "Phase 2 policy: overlap windows, order status and review-queue ranking. Draft, pharmacist_approved=false.",
-    "default_window_days": 30,
-    "default_window_source": "Assumed: a line with no written duration runs 30 days (a usual month's supply). Pharmacist to confirm.",
-    "default_window_pharmacist_approved": false,
+    "_note": "Phase 2 policy: order status and review-queue ranking. The default length of a line with no written duration is Track B's (limits.json windows.default_duration_days). Draft, pharmacist_approved=false.",
     "status_by_tier": {
       "interrupt": "hold_contact_doctor",
       "inform": "clear_with_note",

@@ -71,10 +71,6 @@ export interface BurdenScale {
 
 /** Policy for the whole-history check (Phase 2). */
 export interface HistoryPolicy {
-  /** days a line with no written duration is assumed to run, for overlap windows only */
-  default_window_days: number
-  default_window_source: string
-  default_window_pharmacist_approved: boolean
   /** order status from the worst tier on the order */
   status_by_tier: Record<Tier, OrderStatus>
   /** review-queue ranking: higher = look first */
@@ -120,9 +116,6 @@ const DEFAULT_DOSE_POLICY: DosePolicy = {
 }
 
 const DEFAULT_HISTORY: HistoryPolicy = {
-  default_window_days: 30,
-  default_window_source: 'Assumed: a line with no written duration runs 30 days. Pharmacist to confirm.',
-  default_window_pharmacist_approved: false,
   status_by_tier: { interrupt: 'hold_contact_doctor', inform: 'clear_with_note', silent: 'clear' },
   queue: { tier_weight: { interrupt: 100, inform: 10, silent: 0 }, type_bonus: {}, cross_doctor_bonus: 0, pharmacist_approved: false },
 }

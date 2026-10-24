@@ -1,6 +1,7 @@
 // checkHistory: a customer's dated prescriptions (several doctors) + lab values -> one timeline -> overlap windows ->
 // the usual pipeline per window -> merged, ranked alerts. Doses are added up only where the windows overlap.
 import type { Alert, HistoryLine, HistoryResult, HistoryWindow, LabResult, Ledger, Patient, Prescription, Tier } from '../contracts'
+import { lineWindow } from '../ledger/windows'
 import type { Engine } from '../pipeline'
 import type { LineOrigin } from '../rules'
 import { joinNames } from '../rules/types'
@@ -73,8 +74,9 @@ export function createHistoryChecker(engine: Engine): CheckHistory {
         const confirmed = options.confirmations?.[`${rx.id}#${i}`]
         const resolved = confirmed ? resolver.resolve(confirmed, { age_years: person.age_years }) : first
         const sig = engine.sigFor(sig_text, resolved)
-        const hasDuration = sig.duration_days !== undefined && sig.duration_days > 0
-        const days = hasDuration ? Math.ceil(sig.duration_days!) : policy.default_window_days
+        // Track B owns the window length: the written duration, else the default in limits.json (flagged as assumed).
+        const win = lineWindow(isoDay(day), sig)!
+        const days = win.days
         lines.push({
           resolved,
           sig,
@@ -85,7 +87,7 @@ export function createHistoryChecker(engine: Engine): CheckHistory {
           startDay: day,
           endDay: day + days,
           ...(resolved.match === 'none' && resolved.ingredients.length === 0 ? { unverified: true } : {}),
-          ...(hasDuration ? {} : { default_window: true }),
+          ...(win.duration_assumed ? { default_window: true } : {}),
         })
       })
     }

@@ -27,7 +27,7 @@ const { prescriptions, labs, warnings } = fhirToHistory(bundlesOrOneBundle)     
 `prescriptions` / `labs` are contracts 5 and 6 (`{id, doctor, date, text}`, `{type:'serum_creatinine', value, date}`). Fixtures: `tests/fixtures/demo_history.json` (3 doctors, 3 orders, creatinine arriving later, with expected statuses and queue order) and `fhir_prescriptions.json` (hand-written, not an official NRCeS sample).
 
 How it works:
-- Each line runs from its Rx date for its sig duration (`x10d`); no duration = `history.default_window_days` (30, unverified; the line says `default_window: true`). End is exclusive.
+- Each line runs from its Rx date for its sig duration (`x10d`); no duration = Track B's `windows.default_duration_days` in `limits.json` (30, unverified; the line says `default_window: true`; B's `lineWindow` supplies both). End is exclusive.
 - The order under review is `asOf` (default: latest Rx). Later prescriptions are ignored; the timeline runs from `asOf` (`from` can start earlier to show past overlaps). It is cut at every start and end; B's `computeDose` and all rules run per window, so doses add up only for medicines taken together. An alert seen in several windows is reported once, from its worst window, with `window` = the whole span it holds.
 - Cross-doctor: reasons name each brand with doctor and date; `cross_doctor`, `doctors`, `rx_ids` are set. A same-ingredient "in 2 brands" alert is dropped where a dose-excess alert already names the brands.
 - Creatinine: the latest `serum_creatinine` lab (by date, even if after `asOf`, so a late result re-checks an open order) overrides the patient's value. Pass the old result as `previous` for the "what changed" diff. Patient rules (e.g. `nsaid_renal`) are keyed by rule, so one NSAID ending does not split the alert.
@@ -66,4 +66,4 @@ AWaRe antibiotic checks (Finals), FHIR export (D, Finals), history in `api/check
 
 ## Open pharmacist questions (PS_ANALYSIS section 4)
 
-CrCl threshold for NSAIDs (draft 60), domperidone age (65), which DDI pairs are Interrupt (Q6), the real suppression list (Q4), Interrupt budget, default window for a line with no duration (30), whether `schedule_mismatch` is an Interrupt, queue weights, ACB scores and CNS class list.
+CrCl threshold for NSAIDs (draft 60), domperidone age (65), which DDI pairs are Interrupt (Q6), the real suppression list (Q4), Interrupt budget, whether `schedule_mismatch` is an Interrupt, queue weights, ACB scores and CNS class list.

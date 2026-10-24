@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import hist from '../../../tests/fixtures/demo_history.json'
 import type { Alert, LabResult, Patient, Prescription } from '../contracts'
+import { LIMITS } from '../limits'
 import { alertRules, realHistory } from '../rules/testing'
 import { alertKey, buildWindows, dayNumber, diffAlerts, isoDay, latestCreatinine, orderPriority, orderStatus, rankQueue } from './index'
 
@@ -120,9 +121,9 @@ describe('only overlapping supply is added up', () => {
     expect(r.status).toBe('clear_with_note')
   })
 
-  it('uses the default window (from alert_rules.json) when no duration is written, and says so', async () => {
+  it('uses the default window (limits.json, Track B) when no duration is written, and says so', async () => {
     const r = await check([dolo('a', 'Dr A', '2026-10-01', 'Omez 20 OD')], adult)
-    const days = alertRules().history.default_window_days
+    const days = LIMITS.windows.default_duration_days
     expect(r.lines[0].default_window).toBe(true)
     expect(r.lines[0].end).toBe(isoDay(dayNumber('2026-10-01') + days))
   })
