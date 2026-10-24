@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "_note": "Hand-curated interaction rules that DDInter lacks: its bulk files do not hold several cardiovascular pairs, and Indian-only drugs are missing. Each rule expands to every a x b pair. Where DDInter also lists a pair, the more severe level is used. Severity and wording are drafts for the pharmacist to confirm. A rule with \"interrupt\": true is a contraindicated pair that stops the pharmacist (FIX_PLAN 1.1); \"basis\" names the label or list behind it, still to be verified by a pharmacist.",
+  "_note": "Hand-curated interaction rules that DDInter lacks: its bulk files do not hold several cardiovascular pairs, and Indian-only drugs are missing. Each rule expands to every a x b pair. Where DDInter also lists a pair, the more severe level is used. Severity and wording are drafts for the pharmacist to confirm. A rule with \"interrupt\": true is a contraindicated pair that stops the pharmacist (FIX_PLAN 1.1); \"basis\" names the label or list behind it, still to be verified by a pharmacist. Rules with \"effect\" say how the pair interacts (\"reduces_effect\": one drug weakens the drugs in \"reduces\"; \"adds_effect\": both add to the same effect) and carry the label sentences behind them in \"evidence\". \"non_systemic\" names ingredients whose eye/ear/skin lines still count (timolol eye drops are absorbed).",
   "rules": [
     {
       "id": "acei_arb_dual_blockade",
@@ -476,6 +476,386 @@
       "pharmacist_approved": false,
       "interrupt": true,
       "basis": "onc_high_priority: rule 27"
+    },
+    {
+      "id": "clopidogrel_omeprazole",
+      "a": [
+        "clopidogrel"
+      ],
+      "b": [
+        "omeprazole",
+        "esomeprazole"
+      ],
+      "level": "major",
+      "note": "omeprazole and esomeprazole block the enzyme (CYP2C19) that turns clopidogrel into its active form, so it protects the heart less; the label says to avoid the combination (not a contraindication, so not an Interrupt: FIX_PLAN 1.1)",
+      "source": "US FDA label (DailyMed setid 0078fb3d-3595-4ae1-a059-1d5e81c879cf), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "clopidogrel"
+      ],
+      "mechanism": "activation_blocked",
+      "evidence": [
+        {
+          "set_id": "0078fb3d-3595-4ae1-a059-1d5e81c879cf",
+          "quote": "avoid concomitant use of clopidogrel with omeprazole or esomeprazole"
+        }
+      ]
+    },
+    {
+      "id": "ibuprofen_low_dose_aspirin",
+      "a": [
+        "ibuprofen"
+      ],
+      "b": [
+        "aspirin"
+      ],
+      "level": "major",
+      "note": "ibuprofen can block low-dose aspirin's antiplatelet effect, so aspirin may protect the heart less",
+      "source": "US FDA label (DailyMed setid 0170876a-d8cd-4a2d-8397-db2acdf72ffb), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "aspirin"
+      ],
+      "mechanism": "opposing_action",
+      "evidence": [
+        {
+          "set_id": "0170876a-d8cd-4a2d-8397-db2acdf72ffb",
+          "quote": "pharmacodynamic studies have demonstrated interference with the antiplatelet activity of aspirin when ibuprofen 400 mg, given three times daily, is administered with enteric-coated low-dose aspirin"
+        }
+      ]
+    },
+    {
+      "id": "nsaid_ace_inhibitor_effect",
+      "a": [
+        "ibuprofen",
+        "diclofenac",
+        "naproxen",
+        "aceclofenac",
+        "etoricoxib",
+        "nimesulide",
+        "ketorolac",
+        "piroxicam",
+        "mefenamic_acid"
+      ],
+      "b": [
+        "ramipril",
+        "enalapril",
+        "lisinopril"
+      ],
+      "level": "moderate",
+      "note": "NSAIDs can weaken the blood-pressure lowering of ACE inhibitors",
+      "source": "US FDA label (DailyMed setid 0170876a-d8cd-4a2d-8397-db2acdf72ffb), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "ramipril",
+        "enalapril",
+        "lisinopril"
+      ],
+      "mechanism": "opposing_action",
+      "evidence": [
+        {
+          "set_id": "0170876a-d8cd-4a2d-8397-db2acdf72ffb",
+          "quote": "reports suggest that nsaids may diminish the antihypertensive effect of ace-inhibitors"
+        }
+      ]
+    },
+    {
+      "id": "nsaid_diuretic_effect",
+      "a": [
+        "ibuprofen",
+        "diclofenac",
+        "naproxen",
+        "aceclofenac",
+        "etoricoxib",
+        "nimesulide",
+        "ketorolac",
+        "piroxicam",
+        "mefenamic_acid"
+      ],
+      "b": [
+        "furosemide",
+        "torasemide",
+        "hydrochlorothiazide"
+      ],
+      "level": "moderate",
+      "note": "NSAIDs can weaken the effect of loop and thiazide diuretics",
+      "source": "US FDA label (DailyMed setid 0387bfaa-daca-48ec-b718-0216a848c16a), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "furosemide",
+        "torasemide",
+        "hydrochlorothiazide"
+      ],
+      "mechanism": "opposing_action",
+      "evidence": [
+        {
+          "set_id": "0387bfaa-daca-48ec-b718-0216a848c16a",
+          "quote": "ibuprofen tablets can reduce the natriuretic effect of furosemide and thiazides in some patients"
+        }
+      ]
+    },
+    {
+      "id": "quinolone_cations",
+      "a": [
+        "ciprofloxacin",
+        "levofloxacin",
+        "ofloxacin",
+        "norfloxacin",
+        "moxifloxacin"
+      ],
+      "b": [
+        "calcium",
+        "calcium_carbonate",
+        "iron",
+        "ferrous_sulfate",
+        "ferrous_fumarate",
+        "zinc",
+        "magnesium_hydroxide",
+        "aluminium_hydroxide",
+        "sucralfate"
+      ],
+      "level": "major",
+      "note": "calcium, iron, zinc, antacids and sucralfate bind the antibiotic in the gut, so less is absorbed; the label separates the doses",
+      "source": "US FDA label (DailyMed setid 0fac4466-fbe5-49d2-96e3-e3ac2739bd5b), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "ciprofloxacin",
+        "levofloxacin",
+        "ofloxacin",
+        "norfloxacin",
+        "moxifloxacin"
+      ],
+      "mechanism": "absorption_blocked",
+      "evidence": [
+        {
+          "set_id": "0fac4466-fbe5-49d2-96e3-e3ac2739bd5b",
+          "quote": "ciprofloxacin should be taken at least two hours before or six hours after multivalent cation-containing products administration"
+        }
+      ]
+    },
+    {
+      "id": "tetracycline_cations",
+      "a": [
+        "doxycycline",
+        "minocycline",
+        "tetracycline"
+      ],
+      "b": [
+        "calcium",
+        "calcium_carbonate",
+        "iron",
+        "ferrous_sulfate",
+        "ferrous_fumarate",
+        "zinc",
+        "magnesium_hydroxide",
+        "aluminium_hydroxide",
+        "sucralfate"
+      ],
+      "level": "major",
+      "note": "antacids, calcium and iron bind tetracyclines in the gut, so less is absorbed",
+      "source": "US FDA label (DailyMed setid 0106a3d3-db4d-f6ee-e063-6294a90a25e9), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "doxycycline",
+        "minocycline",
+        "tetracycline"
+      ],
+      "mechanism": "absorption_blocked",
+      "evidence": [
+        {
+          "set_id": "0106a3d3-db4d-f6ee-e063-6294a90a25e9",
+          "quote": "absorption of tetracyclines is impaired by antacids containing aluminum, calcium, or magnesium, and iron-containing preparations"
+        }
+      ]
+    },
+    {
+      "id": "levothyroxine_binders",
+      "a": [
+        "levothyroxine"
+      ],
+      "b": [
+        "calcium",
+        "calcium_carbonate",
+        "iron",
+        "ferrous_sulfate",
+        "ferrous_fumarate",
+        "sucralfate",
+        "aluminium_hydroxide"
+      ],
+      "level": "major",
+      "note": "calcium, iron and antacids bind levothyroxine in the gut and can leave the thyroid under-treated; the label separates the doses by 4 hours",
+      "source": "US FDA label (DailyMed setid 008de8fd-150f-4022-8ccb-c8bfa94875c7), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "levothyroxine"
+      ],
+      "mechanism": "absorption_blocked",
+      "evidence": [
+        {
+          "set_id": "008de8fd-150f-4022-8ccb-c8bfa94875c7",
+          "quote": "concurrent use may reduce the efficacy of levothyroxine sodium by binding and delaying or preventing absorption, potentially resulting in hypothyroidism"
+        }
+      ]
+    },
+    {
+      "id": "rifampicin_hormonal_contraceptives",
+      "a": [
+        "rifampicin"
+      ],
+      "b": [
+        "ethinylestradiol",
+        "levonorgestrel",
+        "norethisterone",
+        "desogestrel"
+      ],
+      "level": "major",
+      "note": "rifampicin speeds up the breakdown of hormonal contraceptives, which may then fail",
+      "source": "US FDA label (DailyMed setid 0391f1e1-70d4-4b15-8b58-055bb6a385b8), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "ethinylestradiol",
+        "levonorgestrel",
+        "norethisterone",
+        "desogestrel"
+      ],
+      "mechanism": "faster_breakdown",
+      "evidence": [
+        {
+          "set_id": "0391f1e1-70d4-4b15-8b58-055bb6a385b8",
+          "quote": "the reliability of oral or other systemic hormonal contraceptives may be affected; consideration should be given to using alternative contraceptive measures"
+        }
+      ]
+    },
+    {
+      "id": "carbamazepine_hormonal_contraceptives",
+      "a": [
+        "carbamazepine"
+      ],
+      "b": [
+        "ethinylestradiol",
+        "levonorgestrel",
+        "norethisterone",
+        "desogestrel"
+      ],
+      "level": "major",
+      "note": "carbamazepine lowers the levels of hormonal contraceptives, which may then fail",
+      "source": "US FDA label (DailyMed setid 047bc284-060a-4db9-bf37-75d10f95a0a6), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "ethinylestradiol",
+        "levonorgestrel",
+        "norethisterone",
+        "desogestrel"
+      ],
+      "mechanism": "faster_breakdown",
+      "evidence": [
+        {
+          "set_id": "047bc284-060a-4db9-bf37-75d10f95a0a6",
+          "quote": "carbamazepine causes, or would be expected to cause, decreased levels of the following drugs"
+        }
+      ]
+    },
+    {
+      "id": "carbamazepine_paracetamol",
+      "a": [
+        "carbamazepine"
+      ],
+      "b": [
+        "paracetamol"
+      ],
+      "level": "moderate",
+      "note": "carbamazepine lowers paracetamol levels, so pain or fever relief may be weaker",
+      "source": "US FDA label (DailyMed setid 047bc284-060a-4db9-bf37-75d10f95a0a6), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "paracetamol"
+      ],
+      "mechanism": "faster_breakdown",
+      "evidence": [
+        {
+          "set_id": "047bc284-060a-4db9-bf37-75d10f95a0a6",
+          "quote": "carbamazepine causes, or would be expected to cause, decreased levels of the following drugs, for which monitoring of concentrations or dosage adjustment may be necessary: acetaminophen"
+        }
+      ]
+    },
+    {
+      "id": "beta_blocker_beta_agonist",
+      "a": [
+        "timolol",
+        "propranolol"
+      ],
+      "b": [
+        "salbutamol",
+        "levosalbutamol",
+        "terbutaline",
+        "formoterol",
+        "salmeterol"
+      ],
+      "level": "major",
+      "note": "non-selective beta-blockers, including timolol eye drops, block the reliever inhaler and can trigger bronchospasm in asthma",
+      "source": "US FDA label (DailyMed setid 04c8a345-0a0d-5a01-e063-6294a90a40d2, 02d89d37-cbca-4e06-83ef-2a10f988f1ea), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "reduces_effect",
+      "reduces": [
+        "salbutamol",
+        "levosalbutamol",
+        "terbutaline",
+        "formoterol",
+        "salmeterol"
+      ],
+      "mechanism": "opposing_action",
+      "non_systemic": [
+        "timolol"
+      ],
+      "evidence": [
+        {
+          "set_id": "04c8a345-0a0d-5a01-e063-6294a90a40d2",
+          "quote": "beta-blockers not only block the pulmonary effect of beta-agonists, such as albuterol sulfate hfa, but may also produce severe bronchospasm in patients with asthma"
+        },
+        {
+          "set_id": "02d89d37-cbca-4e06-83ef-2a10f988f1ea",
+          "quote": "potentiation of respiratory reactions including asthma"
+        }
+      ]
+    },
+    {
+      "id": "timolol_eye_oral_beta_blocker",
+      "a": [
+        "timolol"
+      ],
+      "b": [
+        "metoprolol",
+        "atenolol",
+        "propranolol",
+        "bisoprolol",
+        "nebivolol",
+        "carvedilol"
+      ],
+      "level": "moderate",
+      "note": "timolol eye drops are absorbed into the body and add to an oral beta-blocker (slow pulse, low blood pressure)",
+      "source": "US FDA label (DailyMed setid 02d89d37-cbca-4e06-83ef-2a10f988f1ea), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "effect": "adds_effect",
+      "mechanism": "same_action",
+      "non_systemic": [
+        "timolol"
+      ],
+      "evidence": [
+        {
+          "set_id": "02d89d37-cbca-4e06-83ef-2a10f988f1ea",
+          "quote": "patients who are receiving a beta-adrenergic blocking agent orally and dorzolamide hydrochloride and timolol maleate ophthalmic solution should be observed for potential additive effects"
+        }
+      ]
     }
   ]
 }
