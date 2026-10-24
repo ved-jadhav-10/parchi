@@ -30,13 +30,15 @@ const dose = computeDose(lines, patient, { classesOf: (id) => resolver.ingredien
 | `volume_ml_per_dose`, `dose_unit` | liquids: `5 ml`, `1 tsp` (5 mL), `1 tbsp` (15 mL). Drops and puffs are not converted to mg |
 | `confidence`, `assumptions`, `unparsed` | below 0.7 means something was assumed or not understood; show `assumptions` to the pharmacist |
 
-Rules worth knowing: a range (`1-2 tab TDS`) uses the upper end; several phases (`2 tab stat then 1 tab TDS`, tapers) use the highest daily phase; no dosing written = once daily at confidence 0.4; meal words (`AC`, `khane ke baad`, `breakfast`) are ignored.
+Rules worth knowing: a range (`1-2 tab TDS`) uses the upper end; several phases (`2 tab stat then 1 tab TDS`, tapers) use the highest daily phase; no dosing written = once daily at confidence 0.4; meal words (`AC`, `khane ke baad`, `breakfast`) are ignored; weekly and monthly sigs are 1/7 and 1/30 per day.
 
 ## Ledger rules
 
 - Every ingredient is summed across all brands. `total_mg_day` = `scheduled_mg_day` + `sos_mg_day` (SOS at worst case). A finding with `sos_dependent: true` means only the SOS worst case crosses the limit.
-- Left out of the total and reported in `notes`, never counted as 0: ingredients with no mg strength (IU, % w/w), drops/puffs, topical/eye/ear/nasal products, unresolved lines.
+- Left out of the total and reported in `notes`, never counted as 0: ingredients with no mg strength (IU, % w/w), oral liquids whose strength has no stated volume (`unquantified_volume`, e.g. Wikoryl and Sinarest Paediatric drops), dosing written in drops/puffs, topical/eye/ear/nasal products, unresolved lines.
 - Liquids: mg = strength x mL per day / `per_volume_ml`. No volume written = one measure per dose assumed (note `assumed_measure`).
+- `schedule_mismatch` note (Track A `schedule_hint`): a weekly or monthly drug (methotrexate, alendronate 70 mg, ibandronate 150 mg) whose sig reads daily, or has no sig. The total still counts what was written; Track C should raise it as an alert candidate.
+- `per_volume_assumed` (Track A inferred the usual per-5-mL syrup strength) adds a caveat on the entry.
 - `caveats` on an entry: incomplete composition, uncertain brand match, assumed dosing, assumed SOS cap. Show them next to the total.
 
 ## Limits (`src/engine/limits/limits.json`)

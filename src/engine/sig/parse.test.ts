@@ -62,6 +62,8 @@ const cases: [string, number, number, boolean, number | undefined][] = [
   ['once weekly', 1 / 7, 1 / 7, false, undefined],
   ['twice a week', 2 / 7, 2 / 7, false, undefined],
   ['alternate days', 0.5, 0.5, false, undefined],
+  ['once monthly', 1 / 30, 1 / 30, false, undefined],
+  ['monthly', 1 / 30, 1 / 30, false, undefined],
   // STAT
   ['STAT', 1, 1, false, undefined],
 ]

@@ -10,7 +10,16 @@ export interface LedgerLine {
 }
 
 export interface LedgerNote {
-  kind: 'unresolved' | 'not_systemic' | 'unquantified_strength' | 'unquantified_dose' | 'sos_cap_assumed' | 'assumed_measure' | 'volume_on_solid'
+  kind:
+    | 'unresolved'
+    | 'not_systemic'
+    | 'unquantified_strength'
+    | 'unquantified_dose'
+    | 'unquantified_volume'
+    | 'sos_cap_assumed'
+    | 'assumed_measure'
+    | 'volume_on_solid'
+    | 'schedule_mismatch'
   line: number
   brand: string
   ingredient?: string
@@ -24,6 +33,10 @@ export interface LedgerOptions {
 }
 
 const NON_SYSTEMIC: Route[] = ['topical', 'ophthalmic', 'otic', 'nasal', 'vaginal', 'inhaled', 'rectal']
+/** Oral liquid forms (Track A form names): the strength is per some volume, so without `per_volume_ml` mg/day is unknown. */
+const ORAL_LIQUID_FORMS = new Set(['syrup', 'suspension', 'dry_syrup', 'oral_solution', 'oral_drops'])
+/** Administrations per day above which a weekly or monthly drug is being read as taken more often than labelled. */
+const SCHEDULE_MAX_PER_DAY = { weekly: 1 / 7, monthly: 1 / 28 } as const
 const round2 = (n: number) => Math.round(n * 100) / 100
 
 function countsSystemically(r: ResolvedBrand): boolean {
@@ -53,7 +66,27 @@ export function computeLedger(lines: LedgerLine[], opts: LedgerOptions = {}): { 
       return
     }
 
+    const perDay = sig.administrations_per_day ?? sig.doses_per_day
+    if (r.schedule_hint && !sig.sos && perDay > SCHEDULE_MAX_PER_DAY[r.schedule_hint] + 1e-9) {
+      notes.push({
+        kind: 'schedule_mismatch',
+        line: i,
+        brand: name,
+        message: `${name} is normally taken ${r.schedule_hint === 'weekly' ? 'once a week' : 'once a month'} (${r.schedule_source ?? 'labelled schedule'}), but the dosing reads as ${round2(perDay)} time${perDay === 1 ? '' : 's'} a day`,
+      })
+    }
+
     for (const ing of r.ingredients) {
+      if (ORAL_LIQUID_FORMS.has(r.form) && !(ing.per_volume_ml && ing.per_volume_ml > 0) && !ing.strength_unknown && !ing.other_unit && ing.mg > 0) {
+        notes.push({
+          kind: 'unquantified_volume',
+          line: i,
+          brand: name,
+          ingredient: ing.id,
+          message: `${name} is a liquid and the source does not say what volume its ${ing.mg} mg of ${ing.id} is in, so it is not added to the totals; check the pack`,
+        })
+        continue
+      }
       if (ing.strength_unknown || ing.other_unit || !(ing.mg > 0)) {
         notes.push({
           kind: 'unquantified_strength',
@@ -120,6 +153,7 @@ export function computeLedger(lines: LedgerLine[], opts: LedgerOptions = {}): { 
 
       const caveats = (entry.caveats ??= [])
       const push = (c: string) => caveats.includes(c) || caveats.push(c)
+      if (ing.per_volume_assumed) push(`${name}: strength per ${ing.per_volume_ml} mL was not stated and is assumed (usual syrup convention); check the pack`)
       if (r.composition_complete === false) push(`${name}: the source may list only some of its ingredients, so this total could be understated`)
       if (r.needs_pharmacist || r.confidence < 0.75) push(`${name}: brand match is uncertain (${Math.round(r.confidence * 100)}%); confirm it`)
       if ((sig.confidence ?? 1) < 0.7 || sig.assumptions?.length) push(`${name}: dosing was assumed (${sig.assumptions?.join('; ') ?? 'unclear'})`)
