@@ -79,7 +79,7 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 |---|---|---|---|---|---|
 | A | Palash | `dev/track-a` | Canonical ids (271 curated), 32k-brand index, resolver (fuzzy/phonetic/strength, LASA, generic), banned FDC 156+16, DDInter export, NSQ/spurious export + `nsq` flag, Jan Aushadhi generics (`jan_aushadhi`), docs/track-a-data.md | Pharmacist-verified brands (needs D's pharmacist session) | |
 | B |  | `dev/track-b` |  |  |  |
-| C |  | `dev/track-c` |  |  |  |
+| C | Ved | `dev/track-c` | Rules (dose, class dup, DDI, renal/geriatric, resolver flags), 3-tier engine (suppression, budget), `pipeline.ts` with B injected, `alert_rules.json`, docs/track-c-engine.md | Wire B's real sig/ledger, Beers + CNS/ACB stacking, pharmacist-approved thresholds | B: `parseSig`, `buildLedger` + limits |
 | D |  | `dev/track-d` |  |  |  |
 
 ## Not doing
