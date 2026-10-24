@@ -1,0 +1,108 @@
+// Review-desk shapes (Track D). Prescription, LabResult and OrderStatus are the shared contracts (src/engine/contracts.ts).
+// The rest are what the screens need around them: an order, a line with its dates, an alert with the prescribers named.
+// Track C's `checkHistory` now exists on main; src/ui/history/check.ts can be replaced by it, mapping its result to these.
+import type { Alert, Ledger, ResolvedBrand, Sig, Tier } from '../../engine/contracts'
+import type { PatientPrompt } from '../engine'
+
+// Contracts 5 and 6 and the status of contract 7 now live in src/engine/contracts.ts (Track C landed them).
+export type { LabResult, OrderStatus, Prescription } from '../../engine/contracts'
+import type { LabResult, OrderStatus, Prescription } from '../../engine/contracts'
+
+export interface Customer {
+  name: string
+  age_years: number
+  sex?: 'M' | 'F'
+  weight_kg?: number
+}
+
+/** One order on the review desk: a customer, their dated prescriptions and the labs known for them. */
+export interface Order {
+  id: string
+  /** ISO date the order was placed */
+  placed: string
+  customer: Customer
+  prescriptions: Prescription[]
+  labs: LabResult[]
+  /** Results that reached the platform but are not in the check yet; adding one triggers a re-check. */
+  incoming_labs?: LabResult[]
+}
+
+export interface HistoryLine {
+  /** Position in `HistoryResult.lines` */
+  index: number
+  rx_id: string
+  doctor: string
+  /** ISO date the line starts (the prescription date) */
+  start: string
+  /** ISO date the line stops, exclusive */
+  end: string
+  /** true when the prescription wrote no duration and the default window was used (unverified) */
+  end_assumed: boolean
+  /** The line as the engine reads it: brand text plus dosing text */
+  text: string
+  resolved: ResolvedBrand
+  sig: Sig
+  /** Not recognised: shown as unverified and left out of the totals */
+  unverified: boolean
+}
+
+export interface Prescribed {
+  rx_id: string
+  doctor: string
+  date: string
+}
+
+export interface HistoryAlert extends Alert {
+  /** The prescriptions behind this alert, so a cross-doctor problem names the doctors and dates */
+  prescribed: Prescribed[]
+  cross_doctor: boolean
+  /** ISO dates: the first and last day (exclusive) of the windows where this alert applies */
+  from: string
+  to: string
+}
+
+/** A stretch of days during which the same lines are active; the engine runs once on it. */
+export interface HistoryWindow {
+  start: string
+  end: string
+  /** `HistoryLine.index` of the active lines */
+  lines: number[]
+  ledger: Ledger
+  alerts: Alert[]
+}
+
+export interface HistoryResult {
+  lines: HistoryLine[]
+  windows: HistoryWindow[]
+  alerts: HistoryAlert[]
+  /** Index into `windows` of the one with the most serious alerts */
+  peak: number
+  status: OrderStatus
+  /** Higher = review sooner (the queue is sorted by this) */
+  priority: number
+  unverified: HistoryLine[]
+  prompts: PatientPrompt[]
+  crcl: number | null
+}
+
+export interface AlertChange {
+  kind: 'added' | 'cleared' | 'tier_changed'
+  alert: HistoryAlert
+  /** For `tier_changed`: the tier it had before */
+  was?: Tier
+}
+
+/** The pharmacist's decision on an order. Saved on this device and listed in the audit log. */
+export interface Decision {
+  id?: number
+  at: string
+  order_id: string
+  customer: string
+  suggested: OrderStatus
+  decision: OrderStatus
+  reason: string
+  note?: string
+  /** What the pharmacist was looking at: counts per tier at the time */
+  interrupts: number
+  informs: number
+}
