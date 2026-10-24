@@ -80,7 +80,7 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 | A |  | `dev/track-a` |  |  |  |
 | B |  | `dev/track-b` |  |  |  |
 | C |  | `dev/track-c` |  |  |  |
-| D | Jayesh | `dev/track-d` | Design base, app shell, Check page on mock data (`UI_PLAN.md`) | Wire engine, override log |  |
+| D | Jayesh | `dev/track-d` | All 4 pages, override log, icons (`UI_PLAN.md`); Check runs on mock engine | Wire real engine, pharmacist session, benchmark data |  |
 
 ## Not doing
 OCR, WhatsApp/voice, generic DDI-only checker, NPPA price flag.
