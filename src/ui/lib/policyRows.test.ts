@@ -50,7 +50,7 @@ describe('policy rows for the Data page', () => {
 describe('curated interaction rows', () => {
   it('lists each rule with its medicines, level, source and approval', () => {
     const rows = supplementRows({ rules: [{ id: 'acei_k_sparing', a: ['ramipril'], b: ['spironolactone'], level: 'major', note: 'both raise potassium', source: 'Labelling', pharmacist_approved: false }] })
-    expect(rows).toEqual([{ name: 'Acei K Sparing', detail: 'ramipril with spironolactone: both raise potassium', value: 'Major', source: 'Labelling', approved: false }])
+    expect(rows).toEqual([{ name: 'Acei k sparing', detail: 'ramipril with spironolactone: both raise potassium', value: 'Major', source: 'Labelling', approved: false }])
   })
   it('gives no rows for unreadable input', () => {
     expect(supplementRows(null)).toEqual([])
