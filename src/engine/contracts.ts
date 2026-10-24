@@ -176,6 +176,8 @@ export interface Alert {
   suppressed?: string
   /** true = was 'interrupt' but the alert budget moved it to 'inform'. */
   budget_demoted?: boolean
+  /** true = was 'interrupt' but rests on a brand match the resolver could not confirm, so it is an 'inform'. */
+  uncertain_match?: boolean
   /** Why the numbers behind this alert may be off (assumed measure, SOS cap assumed, ...), from the ledger. */
   caveats?: string[]
   /** Interactions from a curated rule: one drug weakens another, or both add to the same effect. */
