@@ -16,9 +16,32 @@ const SMALL_COUNT = /^(?:[1-4]|½|¼|¾|1\/2|1\.5|0\.5)$/
 const ML_GLUED = /^(\d+(?:\.\d+)?)ml$/
 const MAX_DOSE_ML = 20
 
+// Words that can open the dosing part after a comma ("..., after food", "..., empty stomach"), so no new line starts.
+const SIG_CONTINUATION = new Set([
+  ...SIG_WORDS, 'empty', 'food', 'meal', 'meals', 'water', 'milk', 'if', 'when', 'as', 'only', 'then', 'till', 'until',
+  'both', 'left', 'right', 'each', 'in', 'on', 'at', 'every', 'per', 'one', 'two', 'three', 'half', 'continue', 'stop',
+])
+
+/** Does a comma-separated piece start like dosing rather than like the next medicine? */
+function continuesSig(piece: string): boolean {
+  const first = piece.trim().toLowerCase().split(/\s+/)[0] ?? ''
+  return first === '' || /^[\d½¼¾(]/.test(first) || SIG_CONTINUATION.has(first) || SIG_TOKEN.test(first) || DOSE_UNIT.test(first) || DOSE_PATTERN.test(first)
+}
+
+/** "dolo 650 1-1-1 x 5 days, crocin advance sos" is two lines; "Pan 40 OD, before food" is one. */
+function splitCommas(line: string): string[] {
+  const out: string[] = []
+  for (const piece of line.split(',')) {
+    if (out.length && continuesSig(piece)) out[out.length - 1] += `,${piece}`
+    else out.push(piece)
+  }
+  return out
+}
+
 export function splitRx(text: string): string[] {
   return text
     .split(/\r?\n|;/)
+    .flatMap(splitCommas)
     .map((l) => l.replace(/^\s*(?:\d{1,2}[.)]|[-*•])\s+/, '').trim())
     .filter((l) => l.length > 0)
 }
