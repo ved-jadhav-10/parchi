@@ -6,23 +6,81 @@
 .backlink + .intro { margin-top: 0; }
 
 /* Queue */
-.queue { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+/* Ruled rows, not cards inside a card. Phone: line 1 is rank, customer, status, Review; line 2 the facts; line 3 the finding that ranks it. */
+.queue { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--color-border); }
 .queue__row {
-  display: grid; grid-template-columns: 32px minmax(0, 1.6fr) minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: var(--space-4); align-items: center;
-  padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm); background: var(--color-tint);
+  position: relative; display: grid; align-items: center; column-gap: var(--space-2); row-gap: var(--space-1);
+  grid-template-columns: 20px minmax(0, 1fr) auto auto;
+  grid-template-areas: 'rank name status open' 'meta meta meta meta' 'note note note note';
+  padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border);
 }
-.queue__row[data-decided='true'] { background: var(--color-bg); box-shadow: inset 0 0 0 1px var(--color-border); }
-.queue__rank { color: var(--color-ink-muted); font-weight: 700; }
-.queue__who, .queue__status, .queue__decision { display: grid; gap: var(--space-1); min-width: 0; }
-.queue__name { color: var(--color-ink); font-weight: 600; text-decoration: none; }
-.queue__name:hover { text-decoration: underline; }
-.queue__id { margin-left: var(--space-1); color: var(--color-ink-muted); font-weight: 400; }
+.queue__row[data-decided='true'] { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: 'name status open' 'meta meta meta' 'note note note'; }
+.queue__rank { grid-area: rank; color: var(--color-ink-muted); font-weight: 700; }
+.queue__name { grid-area: name; min-width: 0; margin: 0; color: var(--color-ink); font-weight: 600; overflow-wrap: anywhere; }
+/* One link per row: the Review button's hit area stretches over the whole row, so the row is one tab stop. */
+.queue__open::after { content: ''; position: absolute; inset: 0; }
+.queue__row:hover .queue__name { text-decoration: underline; }
+.queue__doctors { color: var(--color-ink); font-weight: 600; }
+.queue__failed { white-space: nowrap; }
+.queue__id { display: block; color: var(--color-ink-muted); font-size: var(--text-sm); font-weight: 400; }
 .queue__meta { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
-.queue__status .tier-badge { justify-self: start; }
-@media (max-width: 959px) {
-  .queue__row { grid-template-columns: 28px 1fr; gap: var(--space-2) var(--space-3); }
-  .queue__status, .queue__decision, .queue__row > .btn { grid-column: 2; }
-  .queue__row > .btn { justify-self: start; }
+.queue__info { grid-area: meta; display: flex; flex-wrap: wrap; column-gap: var(--space-2); margin: 0; }
+.queue__info > span { white-space: nowrap; }
+.queue__info > span + span::before { content: '\00b7'; margin-right: var(--space-2); }
+.queue__status { grid-area: status; display: grid; justify-items: end; gap: 2px; }
+.queue__counts { display: none; color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
+.queue__note { grid-area: note; min-width: 0; display: grid; gap: 2px; font-size: var(--text-sm); line-height: var(--leading-sm); }
+.queue__why { display: flex; gap: var(--space-2); min-width: 0; color: var(--color-ink); }
+.queue__why-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.queue__more { flex: none; color: var(--color-ink-muted); }
+.queue__open { grid-area: open; display: inline-flex; align-items: center; padding: 0 var(--space-3); text-decoration: none; }
+.tier-badge[data-compact] { white-space: nowrap; }
+/* Phone: the short word shows, the full label is kept for screen readers. Wide rows show the full label. */
+.tier-badge__long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.queue__add { margin: var(--space-4) 0 0; }
+.queue__clear { min-height: var(--tap-min); font-weight: 600; white-space: nowrap; }
+
+.queue__toolbar { flex-wrap: nowrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+.queue__views { display: inline-flex; min-width: 0; border-radius: var(--radius-pill); background: var(--color-tint); }
+.queue__view {
+  min-height: var(--tap-min); padding: 0 var(--space-3); border: 1px solid transparent; border-radius: var(--radius-pill); background: transparent;
+  color: var(--color-ink-muted); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer;
+}
+.queue__view[aria-pressed='true'] { border-color: var(--color-border); background: var(--color-surface); color: var(--color-ink); }
+.queue__notice {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--space-3); margin: 0 0 var(--space-3); padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm);
+}
+.queue__notice .btn--link { min-height: var(--tap-min); font-weight: 600; }
+
+/* Loading keeps the row structure and its pitch: flat bars where the text will be, no shimmer. */
+.queue__bar { display: block; height: 14px; border-radius: 4px; background: var(--color-tint); }
+.queue__bar--rank { grid-area: rank; width: 16px; }
+.queue__bar--name { grid-area: name; width: 55%; height: 18px; }
+.queue__bar--status { grid-area: status; width: 64px; height: 24px; border-radius: var(--radius-pill); }
+.queue__bar--meta { grid-area: meta; width: 80%; }
+.queue__bar--note { grid-area: note; width: 65%; }
+.queue__row--loading { min-height: 112px; align-content: center; }
+
+@media (max-width: 479px) {
+  .queue__view, .queue__clear { font-size: var(--text-sm); }
+}
+
+@media (min-width: 960px) {
+  .queue__row {
+    grid-template-columns: 32px minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.6fr) auto; column-gap: var(--space-4);
+    grid-template-areas: 'rank name status note open' 'rank meta status note open';
+  }
+  .queue__row[data-decided='true'] { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1.6fr) auto; grid-template-areas: 'name status note open' 'meta status note open'; }
+  .queue__id { display: inline; margin-left: var(--space-1); font-size: inherit; }
+  .queue__status { justify-items: start; }
+  .tier-badge__short { display: none; }
+  .tier-badge__long { position: static; width: auto; height: auto; overflow: visible; clip: auto; }
+  .queue__counts { display: block; }
+  .queue__name { align-self: end; }
+  .queue__info { align-self: start; }
+  .queue__why { display: grid; gap: 2px; }
+  .queue__why-text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; white-space: normal; }
 }
 
 /* Order page */

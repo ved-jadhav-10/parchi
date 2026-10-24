@@ -5,7 +5,7 @@ The single reference for how the app looks, reads and behaves. Tokens live in `s
 Palette reference: `docs/design/palette-reference.jpg`. Pages and build order: `UI_PLAN.md`.
 
 ## Visual language
-Flat page ground (`--color-bg`), opaque white cards (`--ring`, `--shadow-card`) on one flat panel tone (`--color-panel`), pill-shaped nav and buttons (`--radius-pill`), a tinted pill with an accent border for the active nav item, and big-number KPI tiles. No gradients, no blur, no shadow on buttons or nav. Tier colour appears only as a 4 px left bar plus icon and label.
+Flat page ground (`--color-bg`), opaque white cards (1 px `--color-border`, no shadow) on one flat panel tone (`--color-panel`), pill-shaped nav and buttons (`--radius-pill`), a tinted pill with an accent border for the active nav item, and big-number KPI tiles. No gradients, no blur, no shadow on buttons or nav. Tier colour appears only as a 4 px left bar plus icon and label.
 
 ## Principles
 1. **Informs, never decides.** The pharmacist decides. Every screen and string says "review", "check", "consider", never "stop", "unsafe" or "approved".
@@ -61,7 +61,7 @@ Weights: 400 body, 600 labels and headings, 700 only for the Interrupt headline.
 ## Space, radius, elevation
 - Spacing scale (4 px base): `--space-1` 4, `-2` 8, `-3` 12, `-4` 16, `-5` 24, `-6` 32, `-7` 48.
 - Radius: `--radius-sm` 6 (chips, inputs), `--radius-md` 12 (cards), `--radius-lg` 20 (page panels, like the reference).
-- Shadow: `--shadow-card` only on cards and the Interrupt banner. Keep it flat otherwise.
+- Shadow: `--shadow-card` only on what floats (the mobile menu, dialogs). Resting cards, rows and buttons are separated by a 1 px border or a tone step, never a shadow.
 - Tap targets >= 44 px tall.
 
 ## Layout
@@ -114,7 +114,7 @@ Hindi copy (Finals leaflet) follows the same rules.
 `#/home` (also the root with no hash). It has its own navigation and footer: `src/ui/pages/HomePage.tsx` and `styles/home.css`, every class prefixed `home-`. An indigo hero panel on a lilac ground (`--color-lilac`), a cream sample slip (`--color-slip`), then white, navy and tint panels. Landing-only tokens: `--color-lilac`, `--color-slip`, `--color-accent-soft`, `--color-on-ink-muted`. The slip shows the demo case and is labelled "Sample"; the page carries no results of its own. Smooth scrolling (Lenis, `src/ui/lib/smoothScroll.ts`) runs on this page only, off under reduced motion; the working screens keep native scrolling. Preview: `docs/design/parchi-landing-preview.html`.
 
 ## Review desk (Phase 2)
-`#/queue`, `#/order/<id>`, `#/history`. The user is the buyer's verifying pharmacist, so the order page answers one question first: what does Parchi suggest, and what do you decide? Status is icon + words + a tier colour (hold = Interrupt colours, clear with a note = Inform, no alerts = neutral grey, never green: it does not mean safe). The queue order is Parchi's priority; any order can be opened. The timeline is one lane per doctor, one row per medicine, one hue; a bar is outlined in its tier colour when an alert names it; a dotted end means no duration was written and the default window is assumed (unverified). Alerts name the doctors and days ("Prescribed by Dr Mehta (19 Oct) and Dr Rao (21 Oct)"). Choosing a decision other than the suggestion needs a reason; decisions are listed in the audit log. Data: `src/ui/history/` (types mirror proposed contracts 5 to 7), demo account in `tests/fixtures/demo_orders.json`.
+`#/queue`, `#/order/<id>`, `#/history`. The user is the buyer's verifying pharmacist, so the order page answers one question first: what does Parchi suggest, and what do you decide? Status is icon + words + a tier colour (hold = Interrupt colours, clear with a note = Inform, no alerts = neutral grey, never green: it does not mean safe). The queue order is Parchi's priority (the engine's weight per finding, oldest first on a tie); any order can be opened. Each row shows the finding that weighs most, with "+N more"; the four counts (waiting, hold, note, clear) add up. Decided orders sit under a separate Decided view, not in the waiting list. Rows are ruled lines, not cards; on a phone a row is rank, customer, status and Review on line 1, the facts on line 2 and the finding on line 3, and the status badge uses a one-word label ("Hold", "Note", "Clear") with the full sentence kept for screen readers. The timeline is one lane per doctor, one row per medicine, one hue; a bar is outlined in its tier colour when an alert names it; a dotted end means no duration was written and the default window is assumed (unverified). Alerts name the doctors and days ("Prescribed by Dr Mehta (19 Oct) and Dr Rao (21 Oct)"). Choosing a decision other than the suggestion needs a reason; decisions are listed in the audit log. Data: `src/ui/history/` (types mirror proposed contracts 5 to 7), demo account in `tests/fixtures/demo_orders.json`.
 
 ## Not doing
 Dark mode, custom illustration, animation-heavy transitions, any colour outside `tokens.css`.

@@ -2,22 +2,50 @@ import { useEffect, useMemo, useState } from 'react'
 import { Card, KpiCard } from '../components/Card'
 import { StatusBadge } from '../components/StatusBadge'
 import { EmptyState, PageIntro } from '../components/PageIntro'
-import { decisionLabel, doctorName, longDate } from '../history/labels'
+import { decisionLabel, doctorName, shortDate } from '../history/labels'
+import { byQueueOrder, leadFinding, suggestionCounts, waitedLabel } from '../history/queue'
 import { runHistory } from '../history/run'
-import type { Decision, HistoryResult, Order } from '../history/types'
+import type { Decision, HistoryResult, Order, OrderStatus } from '../history/types'
 import { useDecisions, useOrders } from '../storage/orders'
 
-type Row = { order: Order; result: HistoryResult | 'failed' | undefined }
+type Result = HistoryResult | 'failed' | undefined
+type Row = { order: Order; result: Result }
+type View = 'waiting' | 'decided'
+type Filter = 'all' | OrderStatus
 
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
 
 const tierCount = (r: HistoryResult, tier: 'interrupt' | 'inform') => r.alerts.filter((a) => a.tier === tier).length
 
+const openHref = (order: Order) => `#/order/${encodeURIComponent(order.id)}`
+
+/** Keys j and k move focus between the orders' Review links, as in a mail list. Ignored while typing. */
+const useRowKeys = () =>
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.key !== 'j' && e.key !== 'k') || e.ctrlKey || e.metaKey || e.altKey) return
+      const t = e.target as HTMLElement
+      if (t.closest('input, textarea, select, [contenteditable="true"]')) return
+      const links = [...document.querySelectorAll<HTMLAnchorElement>('.queue__open')]
+      if (links.length === 0) return
+      const at = links.indexOf(document.activeElement as HTMLAnchorElement)
+      const next = at === -1 ? 0 : Math.min(links.length - 1, Math.max(0, at + (e.key === 'j' ? 1 : -1)))
+      links[next].focus()
+      links[next].closest('li')?.scrollIntoView({ block: 'nearest' })
+      e.preventDefault()
+    }
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [])
+
 /** Orders waiting for a pharmacist, riskiest first. The order of the queue is Parchi's suggestion; the pharmacist can open any. */
 export const QueuePage = () => {
-  const { orders, ready, error } = useOrders()
-  const { decisions } = useDecisions()
+  const { orders, ready, error, refresh: refreshOrders } = useOrders()
+  const { decisions, error: decisionsError, refresh: refreshDecisions } = useDecisions()
   const [results, setResults] = useState<Record<string, HistoryResult | 'failed'>>({})
+  const [view, setView] = useState<View>('waiting')
+  const [filter, setFilter] = useState<Filter>('all')
+  useRowKeys()
 
   useEffect(() => {
     let live = true
@@ -33,91 +61,172 @@ export const QueuePage = () => {
     return latest
   }, [decisions])
 
-  const rows: Row[] = orders
-    .map((order) => ({ order, result: results[order.id] }))
-    .sort((a, b) => {
-      const pa = typeof a.result === 'object' ? a.result.priority : -1
-      const pb = typeof b.result === 'object' ? b.result.priority : -1
-      return pb - pa || a.order.placed.localeCompare(b.order.placed)
-    })
+  const rows: Row[] = orders.map((order) => ({ order, result: results[order.id] })).sort(byQueueOrder)
 
   const waiting = rows.filter((r) => !decided.has(r.order.id))
-  const suggested = (s: string) => waiting.filter((r) => typeof r.result === 'object' && r.result.status === s).length
+  const done = rows.filter((r) => decided.has(r.order.id)).sort((a, b) => decided.get(b.order.id)!.at.localeCompare(decided.get(a.order.id)!.at))
+  const { counts, running, failed } = suggestionCounts(waiting.map((r) => r.result))
+  const shown =
+    view === 'decided' ? done : filter === 'all' ? waiting : waiting.filter((r) => typeof r.result === 'object' && r.result.status === filter)
+  const storageError = error || decisionsError
+  const retry = () => {
+    refreshOrders()
+    refreshDecisions()
+  }
+  const pick = (f: Filter) => {
+    setView('waiting')
+    setFilter((now) => (now === f && f !== 'all' ? 'all' : f))
+  }
+  const firstOpen = shown.findIndex((r) => !decided.has(r.order.id))
+  const announce = !ready
+    ? 'Loading orders'
+    : `${plural(shown.length, view === 'decided' ? 'decided order' : 'waiting order')} shown${running > 0 ? `, ${running} still being checked` : ''}${failed > 0 ? `, ${failed} could not be checked` : ''}`
+  const waitingHint = [running > 0 && `${running} still being checked`, failed > 0 && `${failed} not checked`].filter(Boolean).join(', ')
 
   return (
     <>
-      <PageIntro title="Review queue" note="Orders waiting for a pharmacist, riskiest first." />
+      <PageIntro title="Review queue" note="Ranked by findings, interrupts first; the oldest order goes first on a tie. Keys j and k move between orders." />
       <div className="workspace workspace--single">
-        <div className="kpis">
-          <KpiCard label="Waiting" value={waiting.length} hint="No decision yet" />
-          <KpiCard label="Suggested hold" value={suggested('hold_contact_doctor')} hint="Contact the doctor" tier="interrupt" />
-          <KpiCard label="Clear, with a note" value={suggested('clear_with_note')} tier="inform" />
-          <KpiCard label="Decided" value={decided.size} hint="Saved on this device" />
+        <div className="kpis kpis--queue" role="group" aria-label="Filter waiting orders by suggestion">
+          <KpiCard label="Waiting" value={ready ? waiting.length : '–'} hint={waitingHint || undefined} short="Waiting" pressed={view === 'waiting' && filter === 'all'} onSelect={() => pick('all')} />
+          <KpiCard label="Suggested hold" value={ready ? counts.hold_contact_doctor : '–'} tier="interrupt" short="Hold" pressed={view === 'waiting' && filter === 'hold_contact_doctor'} onSelect={() => pick('hold_contact_doctor')} />
+          <KpiCard label="Clear, with a note" value={ready ? counts.clear_with_note : '–'} tier="inform" short="With note" pressed={view === 'waiting' && filter === 'clear_with_note'} onSelect={() => pick('clear_with_note')} />
+          <KpiCard label="No alerts" value={ready ? counts.clear : '–'} tier="silent" short="No alerts" pressed={view === 'waiting' && filter === 'clear'} onSelect={() => pick('clear')} />
         </div>
 
-        <Card title="Orders" icon="log" description="Sample account until real orders are connected. Select an order to see its timeline and alerts.">
-          <div className="toolbar">
-            <a className="btn btn--primary toolbar__end" href="#/history">
-              New order
-            </a>
+        <Card title="Orders" icon="log" description="Sample account, not real orders.">
+          <div className="toolbar queue__toolbar">
+            <div className="queue__views" role="group" aria-label="Show orders">
+              {(['waiting', 'decided'] as const).map((v) => (
+                <button key={v} type="button" className="queue__view" aria-pressed={view === v} onClick={() => setView(v)}>
+                  {v === 'waiting' ? 'Waiting' : 'Decided'} <span className="num">{ready ? (v === 'waiting' ? waiting.length : done.length) : '–'}</span>
+                </button>
+              ))}
+            </div>
+            {view === 'waiting' && filter !== 'all' && (
+              <button type="button" className="btn--link queue__clear" onClick={() => setFilter('all')}>
+                Show all waiting
+              </button>
+            )}
           </div>
-          {error && <p className="hint">This browser cannot store data, so new orders and decisions will not be kept. The sample orders still show.</p>}
-          {!ready ? null : rows.length === 0 ? (
-            <EmptyState title="No orders yet">
-              <p>Add an order with its prescriptions to see it here.</p>
+          <p className="sr-only" role="status">
+            {announce}
+          </p>
+          {storageError && (
+            <p className="queue__notice" role="alert">
+              <span>This browser cannot store data. New orders and decisions will not be kept.</span>
+              <button type="button" className="btn--link" onClick={retry}>
+                Try again
+              </button>
+            </p>
+          )}
+          {!ready ? (
+            <ol className="queue" aria-busy="true" aria-label="Loading orders">
+              {[0, 1, 2].map((i) => (
+                <li key={i} className="queue__row queue__row--loading" aria-hidden="true">
+                  <span className="queue__bar queue__bar--rank" />
+                  <span className="queue__bar queue__bar--name" />
+                  <span className="queue__bar queue__bar--status" />
+                  <span className="queue__bar queue__bar--meta" />
+                  <span className="queue__bar queue__bar--note" />
+                </li>
+              ))}
+            </ol>
+          ) : shown.length === 0 ? (
+            <EmptyState
+              title={view === 'decided' ? 'No decisions yet' : filter !== 'all' ? 'No waiting orders with this suggestion' : decided.size > 0 ? 'No orders waiting' : 'No orders yet'}
+            >
+              <p>
+                {view === 'decided'
+                  ? 'A decision you save on an order is listed here.'
+                  : filter !== 'all'
+                    ? 'Choose Waiting to see every order.'
+                    : decided.size > 0
+                      ? 'Every order has a decision. They are under Decided.'
+                      : 'Add an order with its prescriptions to see it here.'}
+              </p>
             </EmptyState>
           ) : (
-            <ol className="queue">
-              {rows.map(({ order, result }, i) => {
+            <ol className="queue" data-view={view} aria-label={view === 'decided' ? 'Decided orders, latest first' : 'Waiting orders, review first at the top'}>
+              {shown.map(({ order, result }, i) => {
                 const d = decided.get(order.id)
                 const doctors = new Set(order.prescriptions.map((p) => doctorName(p.doctor)))
+                const lead = typeof result === 'object' ? leadFinding(result) : undefined
+                const interrupts = typeof result === 'object' ? tierCount(result, 'interrupt') : 0
+                const informs = typeof result === 'object' ? tierCount(result, 'inform') : 0
                 return (
-                  <li key={order.id} className="queue__row" data-decided={!!d}>
-                    <span className="queue__rank num" aria-label={`Position ${i + 1}`}>
-                      {i + 1}
-                    </span>
-                    <div className="queue__who">
-                      <a className="queue__name" href={`#/order/${encodeURIComponent(order.id)}`}>
-                        {order.customer.name} <span className="queue__id">{order.id}</span>
-                      </a>
-                      <span className="queue__meta">
-                        {order.customer.age_years} y{order.customer.sex ? `, ${order.customer.sex === 'M' ? 'male' : 'female'}` : ''} · placed {longDate(order.placed)} ·{' '}
-                        {plural(order.prescriptions.length, 'prescription')} from {plural(doctors.size, 'doctor')}
+                  <li key={order.id} className="queue__row" data-decided={!!d} data-failed={result === 'failed' || undefined}>
+                    {!d && (
+                      <span className="queue__rank num" aria-hidden="true">
+                        {i + 1}
                       </span>
-                    </div>
+                    )}
+                    <p className="queue__name">
+                      {order.customer.name} <span className="queue__id">{order.id}</span>
+                    </p>
                     <div className="queue__status">
                       {result === undefined ? (
                         <span className="queue__meta">Checking…</span>
                       ) : result === 'failed' ? (
-                        <span className="queue__meta">Could not check this order</span>
+                        <span className="tier-badge queue__failed" data-tier="interrupt">
+                          Not checked
+                        </span>
                       ) : (
                         <>
-                          <StatusBadge status={result.status} />
-                          <span className="queue__meta num">
-                            {tierCount(result, 'interrupt')} Interrupt · {tierCount(result, 'inform')} Inform
-                            {result.unverified.length > 0 && ` · ${result.unverified.length} unverified`}
-                          </span>
+                          <StatusBadge status={result.status} compact />
+                          {(interrupts > 0 || informs > 0 || result.unverified.length > 0) && (
+                            <span className="queue__counts num">
+                              {[interrupts > 0 && `${interrupts} Interrupt`, informs > 0 && `${informs} Inform`, result.unverified.length > 0 && `${result.unverified.length} unverified`]
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </span>
+                          )}
                         </>
                       )}
                     </div>
-                    <div className="queue__decision">
+                    <p className="queue__meta queue__info">
+                      <span>
+                        {order.customer.age_years} y{order.customer.sex ? `, ${order.customer.sex === 'M' ? 'male' : 'female'}` : ''}
+                      </span>
+                      <span>{d ? `placed ${shortDate(order.placed)}` : waitedLabel(order.placed)}</span>
+                      <span>
+                        {plural(order.prescriptions.length, 'Rx', 'Rx')},{' '}
+                        {doctors.size > 1 ? <strong className="queue__doctors">{plural(doctors.size, 'doctor')}</strong> : plural(doctors.size, 'doctor')}
+                      </span>
+                    </p>
+                    <div className="queue__note">
                       {d ? (
                         <>
                           <strong>{decisionLabel(d.decision)}</strong>
                           <span className="queue__meta">{new Date(d.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</span>
                         </>
-                      ) : (
-                        <span className="queue__meta">Waiting for a decision</span>
-                      )}
+                      ) : lead ? (
+                        <span className="queue__why" title={lead.full !== lead.text ? lead.full : undefined}>
+                          <span className="queue__why-text">{lead.text}</span>
+                          {lead.more > 0 && (
+                            <span className="queue__more num">
+                              +{lead.more} more<span className="sr-only"> {lead.more === 1 ? 'finding' : 'findings'}</span>
+                            </span>
+                          )}
+                        </span>
+                      ) : result === 'failed' ? (
+                        <span className="queue__why-text">Could not check this order. Review every prescription by hand.</span>
+                      ) : null}
                     </div>
-                    <a className="btn btn--secondary" href={`#/order/${encodeURIComponent(order.id)}`}>
+                    <a className={`btn ${i === firstOpen ? 'btn--primary' : 'btn--secondary'} queue__open`} href={openHref(order)}>
                       {d ? 'Open' : 'Review'}
+                      <span className="sr-only"> {order.customer.name}</span>
                     </a>
                   </li>
                 )
               })}
             </ol>
           )}
+          <p className="queue__add">
+            <a className="btn btn--secondary" href="#/history">
+              New order
+            </a>
+          </p>
         </Card>
       </div>
     </>
