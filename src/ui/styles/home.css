@@ -273,3 +273,23 @@
 .home-proof strong { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--color-accent-strong); }
 .home-proof span { font-weight: 600; }
 .home-proof small { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
+
+/* ---------- wide and one screen per section ---------- */
+@media (min-width: 901px) {
+  .home-page { max-width: 1800px; padding: 8px; gap: 8px; }
+  .home-frame { padding: 8px; border-radius: 28px; }
+  .home-hero { min-height: max(540px, calc(100dvh - 116px)); margin-top: 8px; padding: 48px 72px; }
+  .home-hero__copy { max-width: 680px; }
+  .home-hero__art { width: min(56%, 900px); }
+
+  .home-trailer { padding: 8px; border-radius: 28px; }
+  .home-trailer__video { width: 100%; height: calc(100dvh - 150px); min-height: 360px; object-fit: contain; background: var(--color-accent); border-radius: 22px; }
+
+  .home-section { min-height: calc(100dvh - 120px); align-content: center; padding: 48px 72px; border-radius: 28px; }
+  .home-section.home-how, .home-section.home-compare-section { display: grid; align-content: center; padding: 40px 0 0; }
+  .home-how__head { padding: 0 72px 28px; }
+  .home-how .home-lead, .home-compare-section .home-lead { max-width: 80ch; }
+  .home-proof { border-radius: 28px; padding: 40px 72px; }
+  .home-cta { min-height: calc(100dvh - 120px); align-content: center; padding: 48px 72px; border-radius: 28px; }
+  .home-footer { border-radius: 28px; padding: 28px 72px; }
+}
