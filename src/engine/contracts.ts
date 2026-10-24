@@ -12,6 +12,8 @@ export interface Ingredient {
   other_unit?: { unit: string; amount: number }
   /** Track A, optional: the source gives no usable strength. `mg` is 0 then. */
   strength_unknown?: boolean
+  /** Track A, optional: per_volume_ml was not stated but inferred (per-5-mL syrup convention or a sibling ingredient). */
+  per_volume_assumed?: boolean
 }
 
 /** Track A, optional detail. Only systemic routes count toward the daily mg ledger. */
