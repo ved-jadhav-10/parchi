@@ -198,3 +198,8 @@
   .home-cta__art { width: 100%; opacity: 0.3; }
   .home-footer { padding: 28px 24px; }
 }
+
+/* Stacked cards (second and third sections): each sticks near the top and the next slides over it. Switched on by StackedSections. */
+.home-stack { display: grid; gap: 12px; }
+.home-stack[data-stack='on'] .home-stack__item { position: sticky; top: var(--stack-top); }
+.home-stack[data-stack='on'] .home-stack__item > * { transform-origin: top center; will-change: transform; box-shadow: 0 -10px 30px rgb(18 32 86 / 0.1); }

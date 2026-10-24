@@ -9,6 +9,7 @@
 import { useState } from 'react'
 import { LogoMark } from '../components/LogoMark'
 import { scrollToTarget, useSmoothScroll } from '../lib/smoothScroll'
+import { StackedSections } from '../components/StackedSections'
 import { useOnline } from '../route'
 
 const SECTIONS = [
@@ -223,6 +224,7 @@ export const HomePage = () => {
           </section>
         </div>
 
+        <StackedSections>
         <section className="home-section home-section--white home-how" id="how" aria-labelledby="how-title">
           <div className="home-how__head">
             <h2 id="how-title" tabIndex={-1}>How a prescription is checked</h2>
@@ -264,6 +266,8 @@ export const HomePage = () => {
             ))}
           </ul>
         </section>
+
+        </StackedSections>
 
         <section className="home-section home-section--tint" id="evidence" aria-labelledby="evidence-title">
           <div>
