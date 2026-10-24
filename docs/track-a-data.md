@@ -13,6 +13,11 @@ resolver.resolve('Brufan 400')                  // one brand string
 resolver.canonicalId('Chlorpheniramine Maleate') // 'chlorphenamine' (never hand-type ids)
 resolver.ingredient('chlorphenamine')            // { name: 'Chlorpheniramine', atc: ['R06AB04'], classes: [...] }
 resolver.sameComposition(resolved)               // other brands with the identical composition
+
+import { loadDdi } from './engine/resolver/ddi'    // DDInter interactions (Track C)
+const ddi = await loadDdi()
+ddi.among(['ibuprofen', 'aspirin', 'omeprazole']) // [{ a, b, level: 'major', source: 'DDInter20 / DDInter900' }]
+ddi.covers('domperidone')                        // false: not in DDInter, so "no hit" means unknown, not safe
 ```
 
 `splitRx` / `splitBrandAndSig` (in `segment.ts`) cut each line at the first token that can only be dosing (`1-0-1`, `OD`, `SOS`, `x5d`, `khane ke baad`...). Track B may replace them.
@@ -35,15 +40,17 @@ Rules worth knowing:
 - **Strength not written:** if the exact base product exists ("Zerodol P" -> Zerodol-P 325) it wins and other strengths go in `candidates`; otherwise the highest strength is assumed and `needs_pharmacist` is set ("Dolo" -> Dolo 1000mg).
 - **Form not written:** oral solids for adults, liquids when `age_years < 12`.
 - **Generic input** ("Paracetamol 500", "Cetirizine + Paracetamol + Phenylephrine") gives `brand: null, match: 'generic'` with real ingredients. Unresolved text gives `brand: null, match: 'none', ingredients: []`.
-- **Class duplication:** `ingredients.json` has `classes` (e.g. `nsaid`, `ppi`, `antihistamine`, `sedating_antihistamine`) and WHO `atc` codes for 264 curated ingredients. Aspirin is `antiplatelet|salicylate`, not `nsaid`.
+- **Class duplication:** `ingredients.json` has `classes` (e.g. `nsaid`, `ppi`, `antihistamine`, `sedating_antihistamine`) and WHO `atc` codes for 271 curated ingredients. Aspirin is `antiplatelet|salicylate`, not `nsaid`.
+- **DDI gaps:** DDInter bulk files cover ATC groups A, B, D, H, L, P, R, V only, so some cardiovascular-only pairs (spironolactone + ramipril) are missing, and Indian-only drugs (aceclofenac, nimesulide, domperidone, etoricoxib, ambroxol) are not in DDInter. Use `ddi.covers(id)` before saying "no interaction".
 
 ## Data files (`public/data`, built by `python data/build.py`)
 
 | File | Content | Size |
 |---|---|---|
 | `brands.json` | ~32k brands (whole product lines whose best variant is in the top 1,000 of its letter by popularity), 5.8k compositions, flags | 1.05 MB |
-| `ingredients.json` | 1,378 ids, 1,612 aliases, classes, ATC, parity examples | 0.15 MB |
+| `ingredients.json` | 1,377 ids, 1,777 aliases, classes, ATC, parity examples | 0.15 MB |
 | `banned_fdc.json` | 172 banned FDCs: 156 (S.O. 3285-3440(E), 02.08.2024) + 16 (S.O. 3068-3083(E), 11.06.2026) | 0.04 MB |
+| `ddi.json` | 70,144 DDInter pairs (major/moderate/minor/unknown) among 770 of our ingredients, CC BY-NC-SA 4.0 | 0.86 MB |
 
 All stay under Workbox's 2 MiB per-file precache limit. Decoder: `src/engine/resolver/data.ts`.
 
