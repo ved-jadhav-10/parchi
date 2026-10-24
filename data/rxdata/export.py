@@ -161,6 +161,23 @@ def write_ddi(path: Path, pairs: dict[tuple[str, str], int], ddinter_id: dict[st
     return {"pairs": len(kept), "ingredients": len(ids)}
 
 
+def write_nsq(path: Path, rows: list[dict], meta: dict) -> dict:
+    """CDSCO NSQ / spurious rows as columns + tuples. Matched to resolved brands by name in nsq.ts."""
+    columns = ["brand", "product", "batch", "mfg", "exp", "manufacturer", "result", "reported_by", "month", "spurious", "remarks"]
+    doc = {
+        "schema": SCHEMA,
+        **meta,
+        "months": sorted({r["month"] for r in rows}, key=lambda m: (m[-4:], _MONTHS.index(m[:3]))),
+        "columns": columns,
+        "entries": [[r.get(c) if c != "spurious" else int(r["spurious"]) for c in columns] for r in rows],
+    }
+    _dump(path, doc)
+    return {"entries": len(rows), "with_brand": sum(1 for r in rows if r["brand"]), "spurious": sum(1 for r in rows if r["spurious"])}
+
+
+_MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+
+
 def banned_matches(entry: BannedFdc, brand: Brand) -> bool:
     """Same rule as src/engine/resolver/banned.ts (kept in sync by a parity test)."""
     ids = sorted({c.id for c in brand.components} - EXCIPIENT_LIKE)

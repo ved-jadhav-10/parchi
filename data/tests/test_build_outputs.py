@@ -39,7 +39,7 @@ def decode(doc, display):
     return out
 
 
-@pytest.mark.parametrize("name", ["brands.json", "ingredients.json", "banned_fdc.json", "ddi.json"])
+@pytest.mark.parametrize("name", ["brands.json", "ingredients.json", "banned_fdc.json", "ddi.json", "nsq.json"])
 def test_files_fit_the_offline_precache(name):
     assert (DATA / name).stat().st_size < WORKBOX_LIMIT
 
@@ -117,3 +117,19 @@ def test_ddi_subset_is_consistent():
     assert pairs[("aspirin", "ibuprofen")] == "major"
     known = set(load("ingredients.json")["ingredients"])
     assert set(ids) <= known
+
+
+def test_nsq_rows_match_the_parsed_cdsco_lists():
+    from pathlib import Path as _P
+    from rxdata.nsq import load_month_files
+
+    raw = _P(__file__).resolve().parents[1] / "raw" / "cdsco"
+    if not any(raw.glob("nsq_*.json")):
+        pytest.skip("data/raw/cdsco not fetched")
+    doc = load("nsq.json")
+    rows = load_month_files(raw)
+    assert len(doc["entries"]) == len(rows)
+    col = {c: i for i, c in enumerate(doc["columns"])}
+    assert sum(e[col["spurious"]] for e in doc["entries"]) == sum(r["spurious"] for r in rows)
+    assert all(e[col["batch"]] for e in doc["entries"] if e[col["brand"]])
+    assert doc["months"][0] == "APR-2026" and doc["months"][-1] == "SEP-2026"

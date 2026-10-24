@@ -31,8 +31,9 @@ ddi.covers('domperidone')                        // false: not in DDInter, so "n
 | `route`, `systemic` | only `systemic: true` lines count toward daily mg (gels, eye/ear drops are excluded) | B |
 | `confidence`, `match` | 1.0 curated exact, 0.97 dataset exact, lower for fuzzy (`Brufan` -> Brufen 400) | C, D |
 | `needs_pharmacist` | ask before trusting the line: low confidence, look-alike brands, assumed strength, unknown form | C, D |
-| `flags` | `banned_fdc`, `lasa` (look-alike with different ingredients), `discontinued` | C |
+| `flags` | `banned_fdc`, `lasa` (look-alike with different ingredients), `discontinued`, `nsq` | C |
 | `banned_fdc[]` | `{so, date, list, text, certain}` for the source chip, e.g. `S.O. 3385(E)`. `certain: false` = composition may be incomplete | C |
+| `nsq[]` | `{batch, month, result, product, manufacturer, spurious}`: CDSCO failed/spurious batches (Apr-Sep 2026) of this brand name. Batch-specific, so Silent/Inform and "check the batch on the strip", never Interrupt. Matches by brand name (and strength when the alert names one); ~half the CDSCO rows name no brand and are not matched. Demo Rx: Pan-D has one (Jul 2026) | C, D |
 | `composition_complete` | `false` = source shows at most two ingredients and may hide more. ~34% of dataset brands. Suggest Silent/Inform, never Interrupt by itself | C, D |
 | `candidates`, `notes` | what else the text could mean, and one-line reasons for the pharmacist | D |
 
@@ -50,6 +51,7 @@ Rules worth knowing:
 | `brands.json` | ~32k brands (whole product lines whose best variant is in the top 1,000 of its letter by popularity), 5.8k compositions, flags | 1.05 MB |
 | `ingredients.json` | 1,377 ids, 1,777 aliases, classes, ATC, parity examples | 0.15 MB |
 | `banned_fdc.json` | 172 banned FDCs: 156 (S.O. 3285-3440(E), 02.08.2024) + 16 (S.O. 3068-3083(E), 11.06.2026) | 0.04 MB |
+| `nsq.json` | 1,272 CDSCO NSQ/spurious rows, Apr-Sep 2026 (652 name a brand). Optional at load: the resolver works without it | 0.30 MB |
 | `ddi.json` | 70,144 DDInter pairs (major/moderate/minor/unknown) among 770 of our ingredients, CC BY-NC-SA 4.0 | 0.86 MB |
 
 All stay under Workbox's 2 MiB per-file precache limit. Decoder: `src/engine/resolver/data.ts`.

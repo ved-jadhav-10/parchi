@@ -70,10 +70,20 @@ export interface BrandRecord {
   tier: number
 }
 
+export interface NsqJson {
+  schema: number
+  months: string[]
+  columns: string[]
+  /** rows in `columns` order; spurious is 0/1 */
+  entries: (string | number | null)[][]
+}
+
 export interface ResolverData {
   brands: BrandRecord[]
   ingredients: IngredientsJson
   banned: BannedJson
+  /** optional: online-refreshed list; absent when it could not be loaded */
+  nsq?: NsqJson
   systemicRoutes: Set<string>
 }
 
@@ -86,7 +96,7 @@ function decodeIngredient(entry: CompEntry, ids: string[]): Ingredient {
   return out
 }
 
-export function decodeData(brandsJson: BrandsJson, ingredientsJson: IngredientsJson, bannedJson: BannedJson): ResolverData {
+export function decodeData(brandsJson: BrandsJson, ingredientsJson: IngredientsJson, bannedJson: BannedJson, nsqJson?: NsqJson): ResolverData {
   if (brandsJson.schema !== 1 || ingredientsJson.schema !== 1 || bannedJson.schema !== 1) {
     throw new Error('Unsupported data schema; rebuild public/data with data/build.py')
   }
@@ -108,20 +118,22 @@ export function decodeData(brandsJson: BrandsJson, ingredientsJson: IngredientsJ
     if (flags & bits.curated) rec.curated = brandsJson.curated[String(index)]
     return rec
   })
-  return { brands, ingredients: ingredientsJson, banned: bannedJson, systemicRoutes: new Set(brandsJson.systemic_routes) }
+  if (nsqJson && nsqJson.schema !== 1) nsqJson = undefined
+  return { brands, ingredients: ingredientsJson, banned: bannedJson, nsq: nsqJson, systemicRoutes: new Set(brandsJson.systemic_routes) }
 }
 
-/** Browser loader: the three files are precached by the service worker, so this works offline. */
+/** Browser loader: the files are precached by the service worker, so this works offline. NSQ is optional. */
 export async function fetchResolverData(baseUrl: string): Promise<ResolverData> {
   const get = async <T,>(name: string): Promise<T> => {
     const res = await fetch(`${baseUrl}${name}`)
     if (!res.ok) throw new Error(`Failed to load ${name}: ${res.status}`)
     return (await res.json()) as T
   }
-  const [b, i, f] = await Promise.all([
+  const [b, i, f, n] = await Promise.all([
     get<BrandsJson>('brands.json'),
     get<IngredientsJson>('ingredients.json'),
     get<BannedJson>('banned_fdc.json'),
+    get<NsqJson>('nsq.json').catch(() => undefined),
   ])
-  return decodeData(b, i, f)
+  return decodeData(b, i, f, n)
 }

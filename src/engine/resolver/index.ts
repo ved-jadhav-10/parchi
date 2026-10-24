@@ -4,6 +4,7 @@ import { distance } from 'fastest-levenshtein'
 import { doubleMetaphone } from 'double-metaphone'
 import type { Ingredient, ResolvedBrand, Route } from '../contracts'
 import { createBannedIndex } from './banned'
+import { createNsqIndex } from './nsq'
 import { fetchResolverData, type BrandRecord, type IngredientInfo, type ResolverData } from './data'
 import { HINT_FORMS, MODIFIERS, canonicalize, normaliseText, parseName, type ParsedName } from './normalize'
 import { splitBrandAndSig, splitRx } from './segment'
@@ -110,6 +111,7 @@ function maxMg(ings: Ingredient[]): number {
 export function createResolver(data: ResolverData): Resolver {
   const ingJson = data.ingredients
   const banned = createBannedIndex(data.banned)
+  const nsq = createNsqIndex(data.nsq)
 
   /** "Zerodol-P 100mg/500mg (Aceclofenac 100 mg + Paracetamol 500 mg)" for pharmacist-facing notes. */
   function describe(rec: BrandRecord): string {
@@ -316,6 +318,14 @@ export function createResolver(data: ResolverData): Resolver {
         res.flags.push('discontinued')
         const alts = sameCompositionOf(chosen, 3)
         notes.push(`Marked discontinued in the source data${alts.length ? `; same composition: ${alts.join(', ')}` : ''}.`)
+      }
+    }
+    if (chosen && res.brand) {
+      const alerts = nsq.check(res.brand, res.ingredients)
+      if (alerts.length) {
+        res.flags.push('nsq')
+        res.nsq = alerts
+        notes.push(`CDSCO lists ${alerts.length} failed batch${alerts.length > 1 ? 'es' : ''} of ${res.brand} (${alerts.map((a) => a.batch).join(', ')}); check the batch number on the strip.`)
       }
     }
     if (res.ingredients.length) {
