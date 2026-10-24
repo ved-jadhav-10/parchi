@@ -1,13 +1,13 @@
 // Alerts from the resolver's own flags: banned FDC, NSQ batch, look-alike, discontinued, unsure match.
 import type { Alert } from '../contracts'
-import { joinNames, lineLabel, type Rule } from './types'
+import { joinNames, lineLabel, originFields, type Rule } from './types'
 
 export const flagRule: Rule = (ctx) => {
   const alerts: Alert[] = []
   for (const line of ctx.lines) {
     const r = line.resolved
     const label = lineLabel(line)
-    const base = { ingredients: r.ingredients.map((i) => i.id), brands: [label], confidence: r.confidence }
+    const base = { ingredients: r.ingredients.map((i) => i.id), brands: [label], confidence: r.confidence, ...originFields([line]) }
     const push = (a: Omit<Alert, 'ingredients' | 'brands' | 'confidence'>) => alerts.push({ ...base, ...a })
 
     if (r.match === 'none' && r.ingredients.length === 0) {

@@ -1,10 +1,12 @@
 // Patient-specific rules (renal, geriatric) from alert_rules.json. Asks for missing inputs instead of silently skipping.
 import type { Alert } from '../contracts'
-import { cockcroftGault } from './crcl'
+import { cockcroftGault, crclMissing } from './crcl'
 import type { PatientRule } from './config'
-import { confidenceOf, joinNames, lineLabel, linesByIngredient, uniqueLines, type Rule, type RuleContext } from './types'
+import { confidenceOf, joinNames, lineLabel, linesByIngredient, originFields, uniqueLines, type Rule, type RuleContext } from './types'
 
-export type PatientInput = 'weight_kg' | 'serum_creatinine'
+export type PatientInput = 'weight_kg' | 'serum_creatinine' | 'sex'
+
+const INPUT_LABEL: Record<PatientInput, string> = { weight_kg: 'weight', serum_creatinine: 'serum creatinine', sex: 'sex' }
 
 function matchedIds(ctx: RuleContext, rule: PatientRule): string[] {
   return [...linesByIngredient(ctx).keys()]
@@ -21,8 +23,7 @@ export function neededInputs(ctx: RuleContext): PatientInput[] {
   const need = new Set<PatientInput>()
   for (const rule of ctx.config.patient_rules) {
     if (rule.crcl_below === undefined || !applies(ctx, rule) || !matchedIds(ctx, rule).length) continue
-    if (!ctx.patient.serum_creatinine) need.add('serum_creatinine')
-    if (!ctx.patient.weight_kg) need.add('weight_kg')
+    for (const field of crclMissing(ctx.patient)) need.add(field)
   }
   return [...need]
 }
@@ -35,15 +36,17 @@ export const patientRule: Rule = (ctx) => {
     const ids = matchedIds(ctx, rule)
     if (!ids.length || !applies(ctx, rule)) continue
     const lines = uniqueLines(ids.flatMap((id) => byIng.get(id) ?? []))
-    const base = { ingredients: ids, brands: lines.map(lineLabel), confidence: confidenceOf(lines), approved: rule.pharmacist_approved }
+    const base = { ingredients: ids, brands: lines.map(lineLabel), confidence: confidenceOf(lines), approved: rule.pharmacist_approved, ...originFields(lines) }
     const names = joinNames(ids.map((id) => ctx.info(id).name))
     if (rule.crcl_below !== undefined) {
       if (crcl === null) {
+        const missing = crclMissing(ctx.patient)
+        if (!missing.length) continue // a child: the adult formula does not apply, so there is nothing to ask for
         alerts.push({
           ...base,
           tier: 'inform',
           type: 'input_needed',
-          reason: `${names} needs a kidney check, but weight or serum creatinine is not entered. Enter them to run the check.`,
+          reason: `${names} needs a kidney check, but ${joinNames(missing.map((f) => INPUT_LABEL[f]))} ${missing.length > 1 ? 'are' : 'is'} not entered. Enter ${missing.length > 1 ? 'them' : 'it'} to run the check.`,
           source: rule.source,
           approved: true,
         })

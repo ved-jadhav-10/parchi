@@ -16,23 +16,97 @@
     "pharmacist_approved": false
   },
   "class_duplication": [
-    { "class": "nsaid", "label": "NSAIDs", "tier": "inform", "source": "Therapeutic duplication, ATC M01A", "pharmacist_approved": false },
-    { "class": "ppi", "label": "proton pump inhibitors", "tier": "inform", "source": "Therapeutic duplication, ATC A02BC", "pharmacist_approved": false },
-    { "class": "h2_blocker", "label": "H2 blockers", "tier": "inform", "source": "Therapeutic duplication, ATC A02BA", "pharmacist_approved": false },
-    { "class": "antihistamine", "label": "antihistamines", "tier": "inform", "source": "Therapeutic duplication, ATC R06A", "pharmacist_approved": false },
-    { "class": "benzodiazepine", "label": "benzodiazepines", "tier": "inform", "source": "Therapeutic duplication, ATC N05BA/N05CD", "pharmacist_approved": false },
-    { "class": "ssri", "label": "SSRIs", "tier": "inform", "source": "Therapeutic duplication, ATC N06AB", "pharmacist_approved": false },
-    { "class": "statin", "label": "statins", "tier": "inform", "source": "Therapeutic duplication, ATC C10AA", "pharmacist_approved": false },
-    { "class": "ace_inhibitor", "label": "ACE inhibitors", "tier": "inform", "source": "Therapeutic duplication, ATC C09A", "pharmacist_approved": false },
-    { "class": "arb", "label": "ARBs", "tier": "inform", "source": "Therapeutic duplication, ATC C09C", "pharmacist_approved": false },
-    { "class": "fluoroquinolone", "label": "fluoroquinolones", "tier": "inform", "source": "Therapeutic duplication, ATC J01M", "pharmacist_approved": false },
-    { "class": "cephalosporin", "label": "cephalosporins", "tier": "inform", "source": "Therapeutic duplication, ATC J01D", "pharmacist_approved": false },
-    { "class": "macrolide", "label": "macrolides", "tier": "inform", "source": "Therapeutic duplication, ATC J01FA", "pharmacist_approved": false }
+    {
+      "class": "nsaid",
+      "label": "NSAIDs",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC M01A",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "ppi",
+      "label": "proton pump inhibitors",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC A02BC",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "h2_blocker",
+      "label": "H2 blockers",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC A02BA",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "antihistamine",
+      "label": "antihistamines",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC R06A",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "benzodiazepine",
+      "label": "benzodiazepines",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC N05BA/N05CD",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "ssri",
+      "label": "SSRIs",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC N06AB",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "statin",
+      "label": "statins",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC C10AA",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "ace_inhibitor",
+      "label": "ACE inhibitors",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC C09A",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "arb",
+      "label": "ARBs",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC C09C",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "fluoroquinolone",
+      "label": "fluoroquinolones",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC J01M",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "cephalosporin",
+      "label": "cephalosporins",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC J01D",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "macrolide",
+      "label": "macrolides",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC J01FA",
+      "pharmacist_approved": false
+    }
   ],
   "patient_rules": [
     {
       "id": "nsaid_renal",
-      "classes": ["nsaid"],
+      "classes": [
+        "nsaid"
+      ],
       "crcl_below": 60,
       "tier": "interrupt",
       "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can reduce kidney function. Pharmacist to review before dispensing.",
@@ -41,7 +115,9 @@
     },
     {
       "id": "domperidone_elderly",
-      "ingredients": ["domperidone"],
+      "ingredients": [
+        "domperidone"
+      ],
       "age_at_least": 65,
       "tier": "inform",
       "reason": "{names} in a patient aged {age}: higher cardiac (QT) risk in older adults. Pharmacist to review.",
@@ -53,10 +129,58 @@
     {
       "id": "vitamin_duplicate",
       "type": "duplicate_ingredient",
-      "all_in_classes": ["vitamin", "vitamin_b12", "supplement", "probiotic"],
+      "all_in_classes": [
+        "vitamin",
+        "vitamin_b12",
+        "supplement",
+        "probiotic"
+      ],
       "reason": "Repeated vitamins/supplements are logged, not shown",
       "source": "Draft suppression, to confirm (Q4)",
       "pharmacist_approved": false
     }
-  ]
+  ],
+  "dose_policy": {
+    "_note": "Tiers for Track B's dose facts. Track B reports facts; the tier is our policy. All draft until the pharmacist session.",
+    "renal_avoid": "interrupt",
+    "renal_caution": "inform",
+    "over_limit_sos_only": "inform",
+    "notes": {
+      "schedule_mismatch": "interrupt",
+      "unquantified_volume": "inform",
+      "unquantified_dose": "inform"
+    },
+    "sig_unclear_below": 0.7,
+    "sig_unclear_tier": "inform",
+    "source": "Dose policy (draft), to confirm with the pharmacist (Q2, Q3)",
+    "pharmacist_approved": false
+  },
+  "history": {
+    "_note": "Phase 2 policy: overlap windows, order status and review-queue ranking. Draft, pharmacist_approved=false.",
+    "default_window_days": 30,
+    "default_window_source": "Assumed: a line with no written duration runs 30 days (a usual month's supply). Pharmacist to confirm.",
+    "default_window_pharmacist_approved": false,
+    "status_by_tier": {
+      "interrupt": "hold_contact_doctor",
+      "inform": "clear_with_note",
+      "silent": "clear"
+    },
+    "queue": {
+      "tier_weight": {
+        "interrupt": 100,
+        "inform": 10,
+        "silent": 0
+      },
+      "type_bonus": {
+        "banned_fdc": 50,
+        "schedule_mismatch": 40,
+        "dose_excess": 30,
+        "renal_avoid": 30,
+        "nsaid_renal": 20,
+        "ddi": 5
+      },
+      "cross_doctor_bonus": 15,
+      "pharmacist_approved": false
+    }
+  }
 }
