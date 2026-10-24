@@ -12,12 +12,22 @@ export interface DdiJson {
   pairs: [number, number, number][]
 }
 
+/** Hand-curated rules for pairs DDInter lacks (public/data/ddi_supplement.json). Each expands to every a x b pair. */
+export interface DdiSupplementJson {
+  schema: number
+  rules: { id: string; a: string[]; b: string[]; level: DdiLevel; note: string; source: string; pharmacist_approved: boolean }[]
+}
+
 export interface DdiHit {
   a: string
   b: string
   level: DdiLevel
   /** source chip, e.g. "DDInter20 / DDInter900" */
   source: string
+  /** Why, in a few words. Only curated rules carry one. */
+  note?: string
+  /** false = a curated rule not yet checked by the pharmacist. Absent for DDInter pairs. */
+  curated?: boolean
 }
 
 export interface DdiIndex {
@@ -29,18 +39,33 @@ export interface DdiIndex {
   gaps: string
 }
 
-export function createDdiIndex(json: DdiJson): DdiIndex {
+export function createDdiIndex(json: DdiJson, supplement?: DdiSupplementJson): DdiIndex {
   if (json.schema !== 1) throw new Error('Unsupported ddi.json schema; rebuild with data/build.py')
   const level = new Map<string, number>()
   for (const [i, j, lv] of json.pairs) level.set(`${json.ingredients[i]}|${json.ingredients[j]}`, lv)
   const covered = new Set(Object.keys(json.ddinter_ids))
+  const curated = new Map<string, DdiHit>()
+  for (const rule of supplement?.schema === 1 ? supplement.rules : []) {
+    for (const p of rule.a) {
+      for (const q of rule.b) {
+        if (p === q) continue
+        const [x, y] = p < q ? [p, q] : [q, p]
+        const have = curated.get(`${x}|${y}`)
+        if (!have || json.levels.indexOf(rule.level) > json.levels.indexOf(have.level)) {
+          curated.set(`${x}|${y}`, { a: x, b: y, level: rule.level, source: `Curated: ${rule.source}`, note: rule.note, curated: true })
+        }
+      }
+    }
+  }
 
   function lookup(a: string, b: string): DdiHit | null {
     if (a === b) return null
     const [x, y] = a < b ? [a, b] : [b, a]
     const lv = level.get(`${x}|${y}`)
-    if (lv === undefined) return null
-    return { a: x, b: y, level: json.levels[lv], source: `${json.ddinter_ids[x] ?? x} / ${json.ddinter_ids[y] ?? y}` }
+    const base: DdiHit | null = lv === undefined ? null : { a: x, b: y, level: json.levels[lv], source: `${json.ddinter_ids[x] ?? x} / ${json.ddinter_ids[y] ?? y}` }
+    const extra = curated.get(`${x}|${y}`)
+    // Where both list the pair, the more severe one wins (a curated rule never softens DDInter).
+    return extra && (!base || json.levels.indexOf(extra.level) > json.levels.indexOf(base.level)) ? extra : base
   }
 
   return {
@@ -65,5 +90,7 @@ export function createDdiIndex(json: DdiJson): DdiIndex {
 export async function loadDdi(baseUrl = `${import.meta.env.BASE_URL}data/`): Promise<DdiIndex> {
   const res = await fetch(`${baseUrl}ddi.json`)
   if (!res.ok) throw new Error(`Failed to load ddi.json: ${res.status}`)
-  return createDdiIndex((await res.json()) as DdiJson)
+  // The curated supplement is optional: without it the index is DDInter only.
+  const extra = await fetch(`${baseUrl}ddi_supplement.json`).then((r) => (r.ok ? (r.json() as Promise<DdiSupplementJson>) : undefined)).catch(() => undefined)
+  return createDdiIndex((await res.json()) as DdiJson, extra)
 }

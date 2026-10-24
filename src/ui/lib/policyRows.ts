@@ -63,6 +63,15 @@ const awareRows = (rules: AlertRules): DataRow[] => {
   return (['reserve', 'watch'] as const).map((g) => row(`${titleCase(g)} antibiotics (AWaRe)`, `${listed(g)} antibiotics listed`, tierName(a.tiers[g] ?? null), a.label, a.pharmacist_approved))
 }
 
+/** Hand-curated interaction rules (public/data/ddi_supplement.json) that DDInter lacks. Unreadable input gives no rows. */
+export function supplementRows(json: unknown): DataRow[] {
+  const rules = (json as { rules?: unknown } | null)?.rules
+  if (!Array.isArray(rules)) return []
+  return rules.map((r: { id?: string; a?: string[]; b?: string[]; level?: string; note?: string; source?: string; pharmacist_approved?: boolean }) =>
+    row(titleCase(String(r.id ?? '')), `${(r.a ?? []).join(', ')} with ${(r.b ?? []).join(', ')}: ${r.note ?? ''}`, titleCase(String(r.level ?? '')), String(r.source ?? ''), r.pharmacist_approved),
+  )
+}
+
 /** Alerts the pharmacist chose to log without showing. */
 export function suppressionRows(rules: AlertRules): DataRow[] {
   return rules.suppression.map((s) => row(titleCase(s.id), s.reason, 'Logged, not shown', s.source, s.pharmacist_approved))

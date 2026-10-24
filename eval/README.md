@@ -38,4 +38,4 @@ py -m venv .venv && .venv/Scripts/python.exe -m pip install pytest   # once; .ve
 
 - The gold labels are a **draft**: written by the developer from drug labels and guidelines, not yet reviewed by a pharmacist. A pharmacist review (and a second rater for kappa) is what turns this into a validation.
 - The cases were written with the engine's scope in mind, so a high engine score shows it does what it claims, not that it catches everything a pharmacist would.
-- Where the engine misses a case, `report.md` says which. At the time of writing: ACE inhibitor + spironolactone and ARB + ACE inhibitor, because DDInter's bulk files do not cover cardiovascular drug groups.
+- Where the engine misses a case, `report.md` says which. Two cases (ACE inhibitor + spironolactone, ARB + ACE inhibitor) were misses until the curated rules in `public/data/ddi_supplement.json` were added: DDInter's bulk files do not hold those pairs. The curated rules are unverified drafts.

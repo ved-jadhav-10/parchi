@@ -4,11 +4,10 @@ Gold set: 54 cases. draft: expected alerts were written by the developer from dr
 
 ## Parchi engine
 
-alerts per Rx 0.83, interrupts per Rx 0.19, false alarms on clean Rx 0.0
+alerts per Rx 0.87, interrupts per Rx 0.19, false alarms on clean Rx 0.0
 
 Missed (expected, not raised):
-- S19: ddi:ramipril+spironolactone
-- S20: ddi:telmisartan+ramipril
+- none
 
 Extra (raised, not expected):
 - none
