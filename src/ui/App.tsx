@@ -8,6 +8,7 @@ import { AppHeader } from './components/AppHeader'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { UpdateToast } from './components/UpdateToast'
 import { HomePage } from './pages/HomePage'
+import { CLINICAL_DATA_VERSION } from '../engine/rules'
 import { routes, useRoute, useRouteParam, type Route } from './route'
 
 /** "Review queue - Parchi"; an order or a history edit names its id. The landing page is just the name. */
@@ -96,7 +97,10 @@ export default function App() {
         </ErrorBoundary>
       </main>
       <footer className="disclaimer">
-        <span>Decision support for a pharmacist. Not a substitute for professional judgement.</span>
+        <span>
+          Decision support for a pharmacist. Not a substitute for professional judgement. Dose limits and alert rules are drafts until a pharmacist signs them off; an alert marked
+          “Approved rule” is the exception (data version {CLINICAL_DATA_VERSION}).
+        </span>
         <a href="#/home">About Parchi</a>
       </footer>
       <UpdateToast />

@@ -1,41 +1,52 @@
 import { useState } from 'react'
-import { DECISIONS, DECISION_REASONS, STATUS_LABEL, decisionLabel } from '../history/labels'
+import { DECISIONS, STATUS_LABEL, decisionLabel } from '../history/labels'
 import type { Decision, HistoryResult, Order, OrderStatus } from '../history/types'
-import { decisionShortcut, targetOf, useSingleKeys } from '../lib/shortcuts'
+import { buildNote, type Audience } from '../lib/message'
+import { addOverride } from '../storage/overrides'
 import { addDecision } from '../storage/orders'
+import { OVERRIDE_REASONS } from './OverrideDialog'
 
 const count = (r: HistoryResult, tier: 'interrupt' | 'inform') => r.alerts.filter((a) => a.tier === tier).length
 
-type Props = {
-  order: Order
-  result: HistoryResult
-  last?: Decision
-  onSaved: () => void
-  /** The next waiting order, in queue order, or null when none is left */
-  next: string | null
-  othersWaiting: number
-  /** Interrupts on this order and how many already have an override reason saved */
-  interrupts?: { total: number; acknowledged: number }
+export interface Progress {
+  done: number
+  total: number
+  /** The order to open next, if any is still waiting */
+  next?: { id: string; name: string }
 }
 
 /**
- * The pharmacist's decision on an order. Parchi suggests a status; choosing a different one needs a reason. Saved to the audit log.
- * A suggested hold starts with nothing chosen, so agreeing with it is a choice rather than a default. Keys 1 to 3 choose, Ctrl+Enter saves.
+ * The pharmacist's decision on an order, as a bar that stays at the foot of the page while the alerts are read. Parchi suggests a
+ * status; choosing a different one needs a reason. Releasing an order that has Interrupts logs that reason against each Interrupt
+ * (the override log), so there is one decision, not a decision plus a separate override per alert. Saved to the audit log.
  */
-export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaiting, interrupts }: Props) => {
-  const [decision, setDecision] = useState<OrderStatus | null>(last?.decision ?? (result.status === 'hold_contact_doctor' ? null : result.status))
+export const DecisionPanel = ({ order, result, last, progress, onSaved }: { order: Order; result: HistoryResult; last?: Decision; progress?: Progress; onSaved: () => void }) => {
+  const [decision, setDecision] = useState<OrderStatus>(last?.decision ?? result.status)
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
+  const [more, setMore] = useState(false)
   const [failed, setFailed] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [copied, setCopied] = useState<Audience | null>(null)
 
-  const differs = decision !== null && decision !== result.status
+  const copy = async (audience: Audience) => {
+    const text = buildNote(audience, { name: order.customer.name, age_years: order.customer.age_years }, result.alerts)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(audience)
+    } catch {
+      window.prompt('Copy this note', text)
+    }
+  }
+
+  const interrupts = result.alerts.filter((a) => a.tier === 'interrupt')
+  const releasing = decision !== 'hold_contact_doctor'
+  const differs = decision !== result.status
   const needsNote = reason === 'Other'
-  const valid = decision !== null && (!differs || reason !== '') && (!needsNote || note.trim() !== '')
+  const valid = (!differs || reason !== '') && (!needsNote || note.trim() !== '')
+  const chosen = DECISIONS.find((d) => d.value === decision)
 
-  const save = async (andNext: boolean) => {
-    if (!valid || decision === null || saving) return
-    setSaving(true)
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault()
     try {
       await addDecision({
         at: new Date().toISOString(),
@@ -45,136 +56,121 @@ export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaitin
         decision,
         reason: differs ? reason : 'As suggested',
         ...(note.trim() && { note: note.trim() }),
-        interrupts: count(result, 'interrupt'),
+        interrupts: interrupts.length,
         informs: count(result, 'inform'),
       })
+      if (releasing) {
+        for (const a of interrupts) {
+          await addOverride({
+            at: new Date().toISOString(),
+            tier: a.tier,
+            type: a.type,
+            ingredients: a.ingredients,
+            alert_reason: a.reason,
+            source: a.source,
+            override_reason: differs ? reason : 'As suggested',
+            note: `${order.id}: released with this Interrupt open${note.trim() ? `. ${note.trim()}` : ''}`,
+          })
+        }
+      }
       setFailed(false)
       setReason('')
       setNote('')
+      setMore(false)
       onSaved()
-      if (andNext && next) location.hash = `#/order/${encodeURIComponent(next)}`
     } catch {
       setFailed(true)
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  // The keys belong to this form: a key pressed anywhere else on the page, or in the override dialog, never reaches it.
-  const [singleKeys, setSingleKeys] = useSingleKeys()
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const action = decisionShortcut(e, targetOf(e.target), singleKeys, DECISIONS.length)
-    if (!action) return
-    e.preventDefault()
-    if (action.kind === 'save') save(true)
-    else {
-      setDecision(DECISIONS[action.index].value)
-      setReason('')
     }
   }
 
   return (
-    <form
-      className="decision"
-      onKeyDown={onKeyDown}
-      onSubmit={(e) => {
-        e.preventDefault()
-        save(true)
-      }}
-    >
-      {last && (
-        <p className="decision__saved" role="status">
-          Saved: <strong>{decisionLabel(last.decision)}</strong>, {new Date(last.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}.
+    <form className="decisionbar" onSubmit={save} aria-label="Your decision">
+      <div className="decisionbar__row">
+        <p className="decisionbar__suggest">
+          Parchi suggests <strong>{STATUS_LABEL[result.status]}</strong>. You decide:
         </p>
-      )}
-      {interrupts && interrupts.total > 0 && (
-        <p className="hint decision__ack">
-          {interrupts.acknowledged === interrupts.total
-            ? `All ${interrupts.total} ${interrupts.total === 1 ? 'Interrupt has' : 'Interrupts have'} an override reason saved.`
-            : `${interrupts.acknowledged} of ${interrupts.total} ${interrupts.total === 1 ? 'Interrupt has' : 'Interrupts have'} an override reason saved.`}
-        </p>
-      )}
-      <fieldset className="reasons">
-        <legend className="field__label">Parchi suggests: {STATUS_LABEL[result.status]}. What do you decide?</legend>
-        {DECISIONS.map((d, i) => (
-          <label key={d.value} className="reasons__option decision__option">
-            <input
-              type="radio"
-              name="decision"
-              value={d.value}
-              checked={decision === d.value}
-              onChange={() => {
-                setDecision(d.value)
-                setReason('')
-              }}
-            />
-            <span>
-              {d.label} <kbd className="decision__key" aria-hidden="true">{i + 1}</kbd>
-              <span className="decision__hint">{d.hint}</span>
-            </span>
-          </label>
-        ))}
-      </fieldset>
-
-      {differs && (
-        <fieldset className="reasons decision__why">
-          <legend className="field__label">Why differ from the suggestion? (required)</legend>
-          {DECISION_REASONS.map((r) => (
-            <label key={r} className="reasons__option">
-              <input type="radio" name="decision-reason" value={r} checked={reason === r} onChange={() => setReason(r)} />
-              {r}
+        <fieldset className="segmented">
+          <legend className="sr-only">Decision</legend>
+          {DECISIONS.map((d) => (
+            <label key={d.value} className="segmented__option">
+              <input type="radio" name="decision" value={d.value} checked={decision === d.value} onChange={() => setDecision(d.value)} />
+              <span>{d.short}</span>
             </label>
           ))}
         </fieldset>
-      )}
-      <label className="field">
-        <span className="field__label">Note{needsNote ? ' (required)' : ' (optional)'}</span>
-        <textarea className="rx-input decision__note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} />
-      </label>
+        <button type="submit" className="btn btn--primary" disabled={!valid} aria-describedby={valid ? undefined : 'decision-needs'}>
+          Save decision
+        </button>
+      </div>
+      {chosen && <p className="decisionbar__hint">{chosen.hint}</p>}
 
-      {decision !== null && (
-        <p className="hint decision__confirm">
-          Parchi suggested {STATUS_LABEL[result.status]}. You chose {decisionLabel(decision)}
-          {differs && reason ? `, because: ${reason}` : ''}. Saving records this, with the time, in the order decisions log on this device.
+      {differs && (
+        <label className="field decisionbar__reason">
+          <span className="field__label">Why differ from the suggestion? (required)</span>
+          <select className="field__input" value={reason} onChange={(e) => setReason(e.target.value)}>
+            <option value="">Choose a reason</option>
+            {OVERRIDE_REASONS.map((r) => (
+              <option key={r}>{r}</option>
+            ))}
+          </select>
+        </label>
+      )}
+      {releasing && interrupts.length > 0 && (
+        <p className="decisionbar__hint">
+          Releasing with {interrupts.length === 1 ? 'an Interrupt' : `${interrupts.length} Interrupts`} open logs this reason against {interrupts.length === 1 ? 'it' : 'each'} in the override log.
         </p>
       )}
+
+      <details className="decisionbar__more" open={more || needsNote} onToggle={(e) => setMore((e.target as HTMLDetailsElement).open)}>
+        <summary>Note{needsNote ? ' (required)' : ''} and messages to copy</summary>
+        <label className="field">
+          <span className="field__label">Note{needsNote ? ' (required)' : ' (optional)'}</span>
+          <textarea className="rx-input decision__note" rows={2} value={note} onChange={(e) => setNote(e.target.value)} />
+        </label>
+        <div className="actions">
+          <button type="button" className="btn btn--secondary" onClick={() => copy('prescriber')}>
+            Copy a note for the prescriber
+          </button>
+          <button type="button" className="btn btn--secondary" onClick={() => copy('customer')}>
+            Copy a note for the customer
+          </button>
+        </div>
+        {copied && (
+          <p className="hint" role="status">
+            Copied the note for the {copied}. It quotes the alerts and adds no advice; read it before sending.
+          </p>
+        )}
+      </details>
 
       {failed && (
         <p className="dialog__error" role="alert">
-          Could not save on this device. The decision was not recorded. Press save again. If it keeps failing, ask whoever looks after this device: the browser may be blocking storage.
-        </p>
-      )}
-      <div className="actions">
-        <button type="submit" className="btn btn--primary" disabled={!valid || saving} aria-describedby={valid ? undefined : 'decision-needs'}>
-          {next ? 'Save and open next' : 'Save decision'}
-        </button>
-        {next && (
-          <button type="button" className="btn btn--secondary" disabled={!valid || saving} onClick={() => save(false)}>
-            Save and stay
-          </button>
-        )}
-      </div>
-      {next ? (
-        <p className="hint">
-          {othersWaiting} more {othersWaiting === 1 ? 'order waits' : 'orders wait'}. The next one is the highest in the queue.
-        </p>
-      ) : (
-        <p className="hint">
-          No other order is waiting. <a href="#/queue">Back to the review queue</a>
+          Could not save on this device. The decision was not recorded.
         </p>
       )}
       {!valid && (
         <p className="hint" id="decision-needs">
-          {decision === null ? 'Choose what you decide.' : differs && reason === '' ? 'Choose why this differs from the suggestion.' : 'Add a note for “Other”.'}
+          {differs && reason === '' ? 'Choose why this differs from the suggestion.' : 'Add a note for “Other”.'}
         </p>
       )}
-      <div className="hint decision__keys">
-        <label className="decision__switch">
-          <input type="checkbox" checked={singleKeys} onChange={(e) => setSingleKeys(e.target.checked)} />
-          <span>Keys 1, 2, 3 choose a decision here.</span>
-        </label>
-        <span>Ctrl+Enter (Cmd+Enter on a Mac) saves and opens the next order.</span>
-      </div>
+      {last && (
+        <div className="decisionbar__saved" role="status">
+          <span>
+            Saved: <strong>{decisionLabel(last.decision)}</strong>, {new Date(last.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}.
+            {progress && ` ${progress.done} of ${progress.total} orders decided.`}
+          </span>
+          {progress?.next ? (
+            <a className="btn btn--primary" href={`#/order/${encodeURIComponent(progress.next.id)}`}>
+              Next order: {progress.next.name} →
+            </a>
+          ) : (
+            progress && (
+              <a className="btn btn--secondary" href="#/queue">
+                No orders waiting. Back to the queue
+              </a>
+            )
+          )}
+        </div>
+      )}
     </form>
   )
 }

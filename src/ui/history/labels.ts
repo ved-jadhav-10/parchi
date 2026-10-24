@@ -4,7 +4,7 @@ import type { OrderStatus } from './types'
 
 export const STATUS_LABEL: Record<OrderStatus, string> = {
   hold_contact_doctor: 'Needs pharmacist attention',
-  clear_with_note: 'Clear, with a note',
+  clear_with_note: 'Note to check',
   clear: 'No alerts from the checks run',
 }
 
@@ -14,7 +14,7 @@ export const STATUS_LABEL: Record<OrderStatus, string> = {
  */
 export const STATUS_SHORT: Record<OrderStatus, string> = {
   hold_contact_doctor: 'Attention',
-  clear_with_note: 'With note',
+  clear_with_note: 'Note',
   clear: 'No alerts',
 }
 
@@ -26,10 +26,10 @@ export const STATUS_TIER: Record<OrderStatus, Tier> = {
 }
 
 /** What the pharmacist can decide, in the order they are offered. */
-export const DECISIONS: { value: OrderStatus; label: string; hint: string }[] = [
-  { value: 'hold_contact_doctor', label: 'Hold the order', hint: 'The order waits while the pharmacist asks the customer or clarifies with the prescriber (a note can be copied below).' },
-  { value: 'clear_with_note', label: 'Release, with a note', hint: 'Dispatch, and record what the pharmacist checked.' },
-  { value: 'clear', label: 'Release', hint: 'Dispatch with nothing further to note.' },
+export const DECISIONS: { value: OrderStatus; label: string; short: string; hint: string }[] = [
+  { value: 'hold_contact_doctor', label: 'Hold the order', short: 'Hold', hint: 'The order waits while the pharmacist asks the customer or clarifies with the prescriber (a note can be copied).' },
+  { value: 'clear_with_note', label: 'Release, with a note', short: 'Release, with note', hint: 'Dispatch, and record what the pharmacist checked.' },
+  { value: 'clear', label: 'Release', short: 'Release', hint: 'Dispatch with nothing further to note.' },
 ]
 
 /**

@@ -1,46 +1,38 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { AlertCard } from '../components/AlertCard'
+import { AlertCard, NestedAlert, type InputAction } from '../components/AlertCard'
+import { AlertGroups } from '../components/AlertGroups'
+import { DayDetail } from '../components/DayDetail'
+import { FlagSummary } from '../components/FlagSummary'
 import { BrandMatch } from '../components/BrandMatch'
 import { Card } from '../components/Card'
 import { CoverageNote } from '../components/CoverageNote'
-import { HerbalCard } from '../components/HerbalCard'
 import { LeafletCard } from '../components/LeafletCard'
 import { DecisionPanel } from '../components/DecisionPanel'
-import { DecisionSheet } from '../components/DecisionSheet'
-import { HistoryCalendar } from '../components/HistoryCalendar'
-import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
-import { QueryDraftCard } from '../components/QueryDraftCard'
-import { SilentLog } from '../components/SilentLog'
+import { HerbalCard } from '../components/HerbalCard'
 import { StatusBadge } from '../components/StatusBadge'
-import { TierKey } from '../components/TierKey'
+import { panelId, tabId, Tabs, type TabItem } from '../components/Tabs'
 import { Timeline } from '../components/Timeline'
 import { TierBadge } from '../components/Icons'
 import { XrayTable } from '../components/XrayTable'
 import { latestLab } from '../history/check'
-import { doctorName, longDate, rangeLabel, shortDate, STATUS_LABEL, STATUS_TIER, todayIso } from '../history/labels'
-import { leadAlert } from '../history/queue'
+import { dayBefore, doctorName, longDate, rangeLabel, shortDate, todayIso } from '../history/labels'
+import { shortFinding } from '../history/queue'
 import { runHistory } from '../history/run'
 import type { AlertChange, HistoryAlert, HistoryLine, HistoryResult, LabResult, Order } from '../history/types'
-import { useNextWaiting } from '../history/useNext'
 import { downloadText } from '../lib/csv'
 import { orderToFhir } from '../lib/fhirOrder'
 import { alertTypeLabel, candidateLabel } from '../lib/resolved'
 import { pct } from '../lib/format'
-import { useMedia } from '../lib/useMedia'
 import { useRouteParam } from '../route'
-import { addOverride, useOverrides } from '../storage/overrides'
 import { useCatalogue } from '../storage/catalogue'
 import { saveOrder, useDecisions, useOrders } from '../storage/orders'
+import { useQueueProgress } from '../lib/useQueueProgress'
 
+type TabKey = 'alerts' | 'timeline' | 'xray' | 'prescriptions' | 'leaflet'
 const count = (r: HistoryResult, tier: 'interrupt' | 'inform') => r.alerts.filter((a) => a.tier === tier).length
 const sameLab = (a: LabResult, b: LabResult) => a.date === b.date && a.value === b.value
 const PRESCRIBED_JOIN = (r: HistoryAlert) => r.prescribed.map((p) => `${doctorName(p.doctor)} (${shortDate(p.date)})`).join(' and ')
-const alertKey = (a: { type: string; ingredients: string[] }) => a.type + a.ingredients.join()
-const overrideDomId = (a: { type: string; ingredients: string[] }) => `ov-${alertKey(a).replace(/[^a-z0-9]+/gi, '-')}`
-
-/** How many Informs are shown in full; the rest fold into one list so a single Interrupt is never buried under amber cards. */
-const INFORMS_SHOWN = 2
 
 /** Who prescribed what is the point of the history view: a cross-doctor problem names the doctors and the days. */
 const Prescribers = ({ alert }: { alert: HistoryAlert }) =>
@@ -71,14 +63,13 @@ const Changes = ({ changes }: { changes: AlertChange[] }) => (
   </Card>
 )
 
-const Kidney = ({ order, result, onAdd }: { order: Order; result: HistoryResult; onAdd: (lab: LabResult) => void }) => {
+const KidneyCard = ({ order, result, onAdd }: { order: Order; result: HistoryResult; onAdd: (lab: LabResult) => void }) => {
   const lab = latestLab(order.labs)
   const [value, setValue] = useState('')
   const [date, setDate] = useState(todayIso())
   const ok = Number(value) > 0 && date !== ''
   return (
-    <div className="kidney">
-      <h3 className="order__sub">Kidney function</h3>
+    <Card id="kidney" title="Kidney function" icon="user">
       <p className="hint kidney__now">
         {result.crcl !== null && lab
           ? `Estimated creatinine clearance ${result.crcl.toFixed(0)} mL/min, from creatinine ${lab.value} mg/dL on ${longDate(lab.date)}.`
@@ -115,10 +106,11 @@ const Kidney = ({ order, result, onAdd }: { order: Order; result: HistoryResult;
           Add and re-check
         </button>
       </form>
-    </div>
+    </Card>
   )
 }
 
+/** One order: what Parchi suggests, the pharmacist's decision, and the evidence (timeline, alerts, totals, brands). */
 /** Brands the resolver did not recognise: the closest matches to choose from, and the ones already confirmed (with undo). */
 const UnverifiedBrands = ({ result, onConfirm, onUndo }: { result: HistoryResult; onConfirm: (l: HistoryLine, brand: string) => void; onUndo: (l: HistoryLine) => void }) => {
   const confirmed = result.lines.filter((l) => l.confirmed)
@@ -181,65 +173,30 @@ const UnverifiedBrands = ({ result, onConfirm, onUndo }: { result: HistoryResult
   )
 }
 
-/**
- * The answer first: what Parchi suggests, the finding that weighs most (in full, with its source, the prescribers and the
- * override), and the counts. Everything else is evidence below it; the decision sits beside it.
- */
-const Verdict = ({ result, children }: { result: HistoryResult; children?: React.ReactNode }) => {
-  const unverified = result.unverified.length
-  const shown = result.alerts.filter((a) => a.tier !== 'silent').length
-  return (
-    <section className="verdict" data-tier={STATUS_TIER[result.status]} aria-labelledby="verdict-title">
-      <h2 id="verdict-title" className="sr-only">
-        What Parchi suggests
-      </h2>
-      <header className="verdict__head">
-        <StatusBadge status={result.status} />
-        <span className="verdict__counts">
-          {count(result, 'interrupt')} Interrupt, {count(result, 'inform')} Inform
-          {unverified > 0 && `, ${unverified} unverified ${unverified === 1 ? 'brand' : 'brands'}`}
-          {shown > 1 && ` · ${shown - 1} more below`}
-        </span>
-      </header>
-      {children ?? <p className="verdict__lead">No alerts from the checks run. This is not a statement that the order is safe.</p>}
-      <p className="hint verdict__note">Parchi suggests; the pharmacist decides. Limits and alert rules are drafts until a pharmacist signs them off.</p>
-      <TierKey />
-    </section>
-  )
-}
-
-/** One order: what Parchi suggests, the pharmacist's decision, and the evidence (timeline, alerts, totals, brands). */
 export const OrderPage = () => {
   const id = useRouteParam()
   const { orders, ready, refresh } = useOrders()
   const { decisions, refresh: refreshDecisions } = useDecisions()
-  const { rows: overrideRows, refresh: refreshOverrides } = useOverrides()
-  const { catalogue } = useCatalogue()
   const order = orders.find((o) => o.id === id)
 
-  // A result belongs to the order it was computed for: after a move to another order the old one must not show, not even for a frame.
-  const [held, setHeld] = useState<{ id: string; result: HistoryResult } | null>(null)
-  const result = held?.id === id ? held.result : null
+  const [result, setResult] = useState<HistoryResult | null>(null)
   const [failed, setFailed] = useState(false)
   const [changes, setChanges] = useState<AlertChange[] | null>(null)
   const [windowIdx, setWindowIdx] = useState<number | null>(null)
-  const [overriding, setOverriding] = useState<HistoryAlert | null>(null)
+  const [tab, setTab] = useState<TabKey>('alerts')
+  const [day, setDay] = useState<string | null>(null)
   const [saveFailed, setSaveFailed] = useState(false)
-  const [toolsOpen, setToolsOpen] = useState(false)
-  const [workingsOpen, setWorkingsOpen] = useState(() => typeof matchMedia !== 'undefined' && matchMedia('(min-width: 960px)').matches)
   const previous = useRef<HistoryResult | null>(null)
   const wantDiff = useRef(false)
 
   useEffect(() => {
-    setHeld(null)
+    setResult(null)
     setChanges(null)
+    setTab('alerts')
+    setDay(null)
     previous.current = null
     wantDiff.current = false
   }, [id])
-
-  // A result waiting to be added opens the kidney tools by itself, so a new value is never missed.
-  const hasIncoming = (order?.incoming_labs ?? []).length > 0
-  useEffect(() => setToolsOpen(hasIncoming), [id, hasIncoming])
 
   useEffect(() => {
     if (!order) return
@@ -254,8 +211,9 @@ export const OrderPage = () => {
           wantDiff.current = false
         }
         previous.current = r
-        setHeld({ id: order.id, result: r })
+        setResult(r)
         setWindowIdx(null)
+        setDay(null)
       })
       .catch(() => live && setFailed(true))
     return () => {
@@ -264,22 +222,9 @@ export const OrderPage = () => {
   }, [order])
 
   const last = useMemo(() => decisions.find((d) => d.order_id === id), [decisions, id])
-  const nextWaiting = useNextWaiting(orders, decisions, id)
+  const progress = useQueueProgress(id, orders, decisions)
+  const { catalogue } = useCatalogue()
 
-  // The overrides already saved for this order, so a reload does not offer one again.
-  const overridden = useMemo(() => {
-    const out: Record<string, string> = {}
-    for (const r of [...overrideRows].sort((a, b) => a.at.localeCompare(b.at))) if (r.order_id === id) out[r.type + r.ingredients.join()] = r.override_reason
-    return out
-  }, [overrideRows, id])
-
-  // On a wide screen the decision sits beside the evidence. On a phone it is a sheet that a bar at the bottom of the screen opens,
-  // so it is never a thousand pixels of scrolling away. Only one copy of the form exists at a time.
-  const narrow = useMedia('(max-width: 959px)')
-  const [sheetOpen, setSheetOpen] = useState(false)
-  useEffect(() => setSheetOpen(false), [id, narrow])
-
-  /** Save a changed order (a lab, a confirmed brand) and let the page check it again, with the diff against what it showed. */
   const saveAndRecheck = async (next: Order) => {
     wantDiff.current = true
     try {
@@ -294,7 +239,7 @@ export const OrderPage = () => {
 
   const addLab = (lab: LabResult) => {
     if (!order) return
-    void saveAndRecheck({ ...order, labs: [...order.labs, lab], incoming_labs: (order.incoming_labs ?? []).filter((l) => !sameLab(l, lab)) })
+    return saveAndRecheck({ ...order, labs: [...order.labs, lab], incoming_labs: (order.incoming_labs ?? []).filter((l) => !sameLab(l, lab)) })
   }
 
   const confirmBrand = (l: HistoryLine, brand: string) => {
@@ -309,33 +254,19 @@ export const OrderPage = () => {
     void saveAndRecheck(Object.keys(rest).length > 0 ? { ...without, confirmations: rest } : without)
   }
 
-  const saveOverride = async (reason: string, note: string) => {
-    if (!overriding) return
-    const saved = overriding
-    await addOverride({
-      at: new Date().toISOString(),
-      tier: saved.tier,
-      type: saved.type,
-      ingredients: saved.ingredients,
-      alert_reason: saved.reason,
-      source: saved.source,
-      override_reason: reason,
-      order_id: order?.id,
-      ...(note && { note }),
-    })
-    await refreshOverrides()
-    setOverriding(null)
-    // The button that opened the dialog is gone now; put the cursor on what replaced it.
-    setTimeout(() => document.getElementById(overrideDomId(saved))?.focus(), 60)
-  }
-
-  /** "Add it now" on an alert that waits for an input: the kidney form when creatinine is missing, else the edit page. */
-  const needInput = () => {
-    if (!order) return
-    if (result?.prompts.some((p) => p.field === 'serum_creatinine')) {
-      setToolsOpen(true)
-      setTimeout(() => document.getElementById('kidney-creatinine')?.focus(), 60)
-    } else location.hash = `#/history/${encodeURIComponent(order.id)}`
+  /** Where the missing value goes on this page: the kidney card (or the edit form for a weight), or the waiting result. */
+  const inputAction = (a: HistoryAlert): InputAction => {
+    const incoming = (order?.incoming_labs ?? [])[0]
+    if (incoming && /creatinine/i.test(a.reason)) return { label: `Re-check with creatinine ${incoming.value} mg/dL`, onClick: () => addLab(incoming) }
+    if (/weight/i.test(a.reason) && !/creatinine/i.test(a.reason)) return { label: 'Add the weight', onClick: () => (location.hash = `#/history/${encodeURIComponent(id)}`) }
+    return {
+      label: 'Add creatinine',
+      onClick: () => {
+        const el = document.getElementById('kidney-creatinine')
+        el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        el?.focus({ preventScroll: true })
+      },
+    }
   }
 
   if (!ready) return <PageIntro title="Order" note="Loading." />
@@ -352,51 +283,29 @@ export const OrderPage = () => {
     )
   }
 
+
   const w = result ? result.windows[windowIdx ?? result.peak] : null
   const doctors = new Set(order.prescriptions.map((p) => doctorName(p.doctor)))
-  const shownAlerts = result?.alerts.filter((a) => a.tier !== 'silent') ?? []
-  const silentAlerts = result?.alerts.filter((a) => a.tier === 'silent') ?? []
-  const lead = result ? leadAlert(result) : undefined
-  const rest = shownAlerts.filter((a) => a !== lead)
-  const interrupts = rest.filter((a) => a.tier === 'interrupt')
-  const informs = rest.filter((a) => a.tier === 'inform')
-  const interruptAlerts = shownAlerts.filter((a) => a.tier === 'interrupt')
-  const acknowledged = interruptAlerts.filter((a) => overridden[alertKey(a)] !== undefined).length
+  const shown = result?.alerts.filter((a) => a.tier !== 'silent') ?? []
+  const interrupts = result ? count(result, 'interrupt') : 0
+  const first = result ? result.lines.reduce((m, l) => (l.start < m ? l.start : m), result.lines[0].start) : ''
+  const lastDay = result ? dayBefore(result.lines.reduce((m, l) => (l.end > m ? l.end : m), result.lines[0].end)) : ''
+  const chosenDay = day ?? (result ? result.windows[result.peak].start : '')
+  const tabs: TabItem<TabKey>[] = [
+    { id: 'alerts', label: 'Alerts', count: shown.length },
+    { id: 'timeline', label: 'Timeline' },
+    { id: 'xray', label: 'X-ray' },
+    { id: 'prescriptions', label: 'Prescriptions' },
+    { id: 'leaflet', label: 'Leaflet' },
+  ]
 
-  const decisionForm = result && (
-    <DecisionPanel
-      key={order.id}
-      order={order}
-      result={result}
-      last={last}
-      onSaved={() => {
-        void refreshDecisions()
-        setSheetOpen(false)
-      }}
-      next={nextWaiting.next}
-      othersWaiting={nextWaiting.othersWaiting}
-      interrupts={{ total: interruptAlerts.length, acknowledged }}
-    />
-  )
-
-  const renderAlert = (a: HistoryAlert, variant: 'card' | 'lead' = 'card') => (
-    <AlertCard
-      key={alertKey(a)}
-      alert={a}
-      variant={variant}
-      extra={<Prescribers alert={a} />}
-      overriddenReason={overridden[alertKey(a)]}
-      overrideId={overrideDomId(a)}
-      onNeedInput={needInput}
-      onOverride={a.tier === 'interrupt' ? () => setOverriding(a) : undefined}
-    />
-  )
-
-  const statusLine = result
-    ? `${count(result, 'interrupt')} Interrupt, ${count(result, 'inform')} Inform${result.unverified.length > 0 ? `, ${result.unverified.length} unverified` : ''}. Parchi suggests: ${STATUS_LABEL[result.status]}.`
-    : failed
-      ? 'Could not check this order.'
-      : 'Checking the order.'
+  /** Choosing a day also points the X-ray at the stretch of days that holds it. */
+  const pickDay = (iso: string) => {
+    if (!result) return
+    setDay(iso)
+    const i = result.windows.findIndex((x) => x.start <= iso && x.end > iso)
+    if (i >= 0) setWindowIdx(i)
+  }
 
   return (
     <>
@@ -407,9 +316,6 @@ export const OrderPage = () => {
         title={order.customer.name}
         note={`${order.id} · ${order.customer.age_years} y${order.customer.sex ? `, ${order.customer.sex === 'M' ? 'male' : 'female'}` : ''}${order.customer.weight_kg ? `, ${order.customer.weight_kg} kg` : ''} · placed ${longDate(order.placed)} · ${order.prescriptions.length} prescriptions from ${doctors.size} doctors`}
       />
-      <p className="sr-only" role="status">
-        {statusLine}
-      </p>
 
       {failed && (
         <EmptyState title="Could not check this order">
@@ -419,158 +325,134 @@ export const OrderPage = () => {
       {!failed && !result && <p className="hint">Checking…</p>}
 
       {result && w && (
-        <div className="workspace order">
-          <div className="workspace__result">
-            <div className="result">
-              <Verdict result={result}>{lead && renderAlert(lead, 'lead')}</Verdict>
+        <>
+          <p className="order__status">
+            <StatusBadge status={result.status} />
+            <span className="hint">
+              {interrupts} Interrupt, {count(result, 'inform')} Inform
+              {result.unverified.length > 0 && `, ${result.unverified.length} unverified ${result.unverified.length === 1 ? 'brand' : 'brands'}`}. Parchi suggests; the pharmacist decides below.
+            </span>
+          </p>
 
-              {changes && <Changes changes={changes} />}
+          <div className="workspace workspace--flat workspace--order">
+            <div className="workspace__result">
+              <div className="result">
+                <div aria-live="polite">{changes && <Changes changes={changes} />}</div>
 
-              {(interrupts.length > 0 || informs.length > 0) && (
-                <div className="alerts">
-                  {interrupts.map((a) => renderAlert(a))}
-                  {informs.slice(0, INFORMS_SHOWN).map((a) => renderAlert(a))}
-                  {informs.length > INFORMS_SHOWN && (
-                    <details className="silent-log">
-                      <summary>{informs.length - INFORMS_SHOWN} more Inform {informs.length - INFORMS_SHOWN === 1 ? 'alert' : 'alerts'}</summary>
-                      {informs.slice(INFORMS_SHOWN).map((a) => renderAlert(a))}
-                    </details>
-                  )}
-                </div>
-              )}
-
-              <SilentLog alerts={silentAlerts} />
-
-              <UnverifiedBrands result={result} onConfirm={confirmBrand} onUndo={undoConfirm} />
-
-              <HerbalCard report={result.herbal} />
-
-              <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
-
-              <details className="card workings" open={workingsOpen || undefined} onToggle={(e) => setWorkingsOpen(e.currentTarget.open)}>
-                <summary>Workings: calendar, timeline, daily totals and what was written</summary>
-                <div className="workings__body">
-                  <section aria-labelledby="w-calendar">
-                    <h3 id="w-calendar" className="order__sub">
-                      History calendar
-                    </h3>
-                    <p className="hint">Every day with a medicine, a prescription or an alert. Choose a day to see what is taken then.</p>
-                    <HistoryCalendar
-                      key={`${order.id}-${result.windows.length}`}
-                      lines={result.lines}
-                      windows={result.windows}
-                      placed={order.placed}
-                      initial={result.windows[result.peak].start}
-                      onPickWindow={setWindowIdx}
-                      onOpenXray={() => document.getElementById('w-xray')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })}
-                    />
-                  </section>
-
-                  <section aria-labelledby="w-timeline">
-                    <h3 id="w-timeline" className="order__sub">
-                      Timeline
-                    </h3>
-                    <p className="hint">Every medicine, by doctor and day. Where bars from different doctors overlap, doses add up. A line with no written duration uses an unverified default window.</p>
-                    <Timeline lines={result.lines} alerts={result.alerts} placed={order.placed} />
-                  </section>
-
-                  <section aria-labelledby="w-xray">
-                    <h3 id="w-xray" className="order__sub">
-                      Prescription X-ray
-                    </h3>
-                    <p className="hint">Daily total per ingredient for the days chosen, against the limit on file.</p>
-                    <div className="windows" role="group" aria-label="Days to show">
-                      {result.windows.map((win, i) => (
-                        <button key={win.start} className="windows__btn" aria-pressed={i === (windowIdx ?? result.peak)} onClick={() => setWindowIdx(i)}>
-                          {rangeLabel(win.start, win.end)}
-                          {i === result.peak && <span className="windows__peak"> · most serious</span>}
-                        </button>
-                      ))}
-                    </div>
-                    <XrayTable ledger={w.ledger} alerts={w.alerts} />
-                  </section>
-
-                  <section aria-labelledby="w-written">
-                    <h3 id="w-written" className="order__sub">
-                      What was written
-                    </h3>
-                    <p className="hint">Each line as written and what it was matched to. Select a line for details.</p>
-                    {order.prescriptions.map((rx) => (
-                      <div key={rx.id} className="order__rx">
-                        <h4 className="order__rxhead">
-                          {doctorName(rx.doctor)}, {longDate(rx.date)}
-                        </h4>
-                        <ul className="matches">
-                          {result.lines
-                            .filter((l) => l.rx_id === rx.id)
-                            .map((l) => (
-                              <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} onUse={(brand) => confirmBrand(l, brand)} alternatives={catalogue?.alternatives(l.resolved)} />
+                <Tabs prefix="order" label="Parts of the review" items={tabs} value={tab} onChange={setTab} />
+                <div className="tabpanel" role="tabpanel" id={panelId('order')} aria-labelledby={tabId('order', tab)} tabIndex={0}>
+                  {tab === 'alerts' && (
+                    <div className="alerts alerts--grouped">
+                      <FlagSummary lines={result.lines} />
+                      {shown.length === 0 && (
+                        <EmptyState title="No alerts from the checks run">
+                          <p>This is not a statement that the order is safe.</p>
+                        </EmptyState>
+                      )}
+                      <AlertGroups
+                        items={shown.map((alert) => ({ alert, key: alert.type + alert.ingredients.join() }))}
+                        interruptNote={<p className="hint alertgroup__note">To release the order with an Interrupt open, choose a reason in the decision bar below. It is logged against each Interrupt.</p>}
+                        render={({ alert: a, key }, nested) => (
+                          <AlertCard
+                            key={key}
+                            alert={a}
+                            headline={shortFinding(a, result)}
+                            extra={<Prescribers alert={a} />}
+                            inputAction={inputAction(a)}
+                            nested={nested.map((n) => (
+                              <NestedAlert key={n.key} alert={n.alert} inputAction={inputAction(n.alert)} />
                             ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </section>
-                </div>
-              </details>
-            </div>
-          </div>
+                          />
+                        )}
+                      />
+                      <HerbalCard report={result.herbal} />
+                    </div>
+                  )}
 
-          <div className="workspace__input order__rail">
-            {!narrow && (
-              <Card id="decision" title="Your decision" icon="log">
-                {decisionForm}
-              </Card>
-            )}
+                  {tab === 'timeline' && (
+                    <>
+                      <Card title="Timeline" icon="chart" description="Every medicine, by doctor and day. Choose a day to see what is taken then. Where bars from different doctors overlap, doses add up.">
+                        <Timeline lines={result.lines} alerts={result.alerts} placed={order.placed} selected={chosenDay} onSelect={pickDay} />
+                      </Card>
+                      <Card title="That day" icon="log">
+                        <DayDetail
+                          lines={result.lines}
+                          windows={result.windows}
+                          selected={chosenDay}
+                          placed={order.placed}
+                          first={first}
+                          last={lastDay}
+                          onSelect={pickDay}
+                          onOpenXray={(i) => {
+                            setWindowIdx(i)
+                            setTab('xray')
+                          }}
+                        />
+                      </Card>
+                    </>
+                  )}
 
-            <QueryDraftCard order={order} result={result} />
+                  {tab === 'xray' && (
+                    <>
+                      <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
+                      <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient for the days chosen, against the limit on file">
+                        <p className="hint">Doses are added up only within a stretch of days that has the same medicines; pick the stretch to see its totals.</p>
+                        <div className="windows" role="group" aria-label="Days to show">
+                          {result.windows.map((win, i) => (
+                            <button key={win.start} className="windows__btn" aria-pressed={i === (windowIdx ?? result.peak)} onClick={() => setWindowIdx(i)}>
+                              {rangeLabel(win.start, win.end)}
+                              {i === result.peak && <span className="windows__peak"> · most serious</span>}
+                            </button>
+                          ))}
+                        </div>
+                        <XrayTable ledger={w.ledger} alerts={w.alerts} />
+                      </Card>
+                    </>
+                  )}
 
-            <details className="card order__tools" open={toolsOpen || undefined} onToggle={(e) => setToolsOpen(e.currentTarget.open)}>
-              <summary>
-                Kidney result, edit and export
-                {hasIncoming && <span className="chip chip--review order__badge">New result waiting</span>}
-              </summary>
-              <div className="order__tools-body">
-                <Kidney order={order} result={result} onAdd={addLab} />
-                {saveFailed && (
-                  <p className="dialog__error" role="alert">
-                    Could not save on this device. Nothing was changed.
-                  </p>
-                )}
-                <a className="order__link" href={`#/history/${encodeURIComponent(order.id)}`}>
-                  Edit prescriptions and labs
-                </a>
-                <div className="actions">
-                  <button
-                    type="button"
-                    className="btn btn--secondary"
-                    onClick={() => downloadText(`${order.id}.fhir.json`, JSON.stringify(orderToFhir(order), null, 2), 'application/json')}
-                  >
-                    Download as FHIR (draft)
-                  </button>
+                  {tab === 'prescriptions' && (
+                    <>
+                      <UnverifiedBrands result={result} onConfirm={confirmBrand} onUndo={undoConfirm} />
+                      {order.prescriptions.map((rx) => (
+                        <Card key={rx.id} title={`${doctorName(rx.doctor)}, ${longDate(rx.date)}`} description="What was written and what each line was matched to. Select a line for details.">
+                          <ul className="matches">
+                            {result.lines
+                              .filter((l) => l.rx_id === rx.id)
+                              .map((l) => (
+                                <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} onUse={(brand) => confirmBrand(l, brand)} alternatives={catalogue?.alternatives(l.resolved)} />
+                              ))}
+                          </ul>
+                        </Card>
+                      ))}
+                    </>
+                  )}
+
+                  {tab === 'leaflet' && <LeafletCard lines={result.lines} />}
                 </div>
               </div>
-            </details>
+            </div>
 
-            <LeafletCard lines={result.lines} inDetails />
-          </div>
-
-          {narrow && (
-            <>
-              <div className="decide-bar">
-                <StatusBadge status={result.status} compact />
-                <button type="button" className="btn btn--primary" onClick={() => setSheetOpen(true)}>
-                  Decide
+            <aside className="workspace__input workspace__input--tall" aria-label="Customer details">
+              <KidneyCard order={order} result={result} onAdd={addLab} />
+              {saveFailed && <p className="dialog__error">Could not save on this device. The result was not added.</p>}
+              <p className="hint">
+                <a href={`#/history/${encodeURIComponent(order.id)}`}>Edit prescriptions and labs</a>
+              </p>
+              <div className="actions">
+                <button
+                  type="button"
+                  className="btn btn--secondary"
+                  onClick={() => downloadText(`${order.id}.fhir.json`, JSON.stringify(orderToFhir(order), null, 2), 'application/json')}
+                >
+                  Download as FHIR (draft)
                 </button>
               </div>
-              <DecisionSheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
-                {sheetOpen && decisionForm}
-              </DecisionSheet>
-            </>
-          )}
-        </div>
-      )}
+            </aside>
+          </div>
 
-      <OverrideDialog alert={overriding} orderId={order.id} onCancel={() => setOverriding(null)} onSave={saveOverride} />
+          <DecisionPanel key={order.id + result.status} order={order} result={result} last={last} progress={progress} onSaved={refreshDecisions} />
+        </>
+      )}
     </>
   )
 }

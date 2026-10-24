@@ -18,3 +18,5 @@ eval/prompts/
 docs/expert-review/
 docs/RED_TEAM_PROMPTS.md
 ~$*
+
+*.pptx

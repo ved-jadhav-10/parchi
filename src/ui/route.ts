@@ -2,15 +2,18 @@ import { useEffect, useState } from 'react'
 
 export type Route = 'home' | 'check' | 'demo' | 'queue' | 'order' | 'history' | 'log' | 'benchmark' | 'data' | 'catalogue'
 
-/** The pages with a pill in the navigation. `order` and `history` are reached from the queue, so they have none. */
-export const routes: { id: Route; label: string }[] = [
-  { id: 'queue', label: 'Review queue' },
-  { id: 'check', label: 'Check' },
-  { id: 'catalogue', label: 'Catalogue' },
-  { id: 'log', label: 'Overrides' },
-  { id: 'data', label: 'Data' },
-  { id: 'benchmark', label: 'Benchmark' },
-  { id: 'demo', label: 'Demo' },
+/**
+ * The pages in the navigation. `main` are the pharmacist's daily tools and sit in the bar; `more` (the walkthrough, the
+ * measured comparison and the data behind the checks) sit under "More". `order` and `history` are reached from the queue.
+ */
+export const routes: { id: Route; label: string; group: 'main' | 'more' }[] = [
+  { id: 'queue', label: 'Review queue', group: 'main' },
+  { id: 'check', label: 'Check', group: 'main' },
+  { id: 'log', label: 'Override log', group: 'main' },
+  { id: 'demo', label: 'Demo', group: 'more' },
+  { id: 'benchmark', label: 'Benchmark', group: 'more' },
+  { id: 'catalogue', label: 'Catalogue', group: 'more' },
+  { id: 'data', label: 'Data & limits', group: 'more' },
 ]
 
 /** `#/order/ORD-1087` -> ['order', 'ORD-1087']. Only `order` and `history` take a second segment. */

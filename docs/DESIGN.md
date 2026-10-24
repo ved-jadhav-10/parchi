@@ -81,7 +81,7 @@ Names are the component names to use in `src/ui/`.
 | `PatientForm` | Age (always), sex | Asks only what the engine needs; see `PatientPrompt`. |
 | `PatientPrompt` | Ask-only-when-needed fields (weight, serum creatinine) | Appears inline with the reason: "Creatinine needed because NSAIDs are present." Skippable; skipping shows "limit not adjusted for renal function". |
 | `ResultSummary` | Top line of results | Counts per tier, e.g. "1 Interrupt · 3 Inform · 4 logged". |
-| `AlertCard` | One alert | Tier icon + label, one-line `reason`, `SourceChip`, "Confidence 95%". Interrupt cards sit first and full width with an "Override with reason" action. A "Draft rule" chip when `approved` is false, one sentence when the alert was lowered by the budget or quieted by the suppression list, and an "Add it now" button on "input needed" that takes the pharmacist to the field. The lead alert of an order sits inside the verdict (`variant="lead"`) instead of being a card. |
+| `AlertCard` | One alert | Tier icon + label, one-line `reason`, `SourceChip`, confidence. Alerts are grouped "Review before dispensing" (Interrupt) and "Worth a note"; the headline carries the conclusion, the engine's full sentence sits under "Full reason", and an `input_needed` alert is folded into the alert it belongs to. Interrupt cards on the Check page carry an "Override with reason" action; on an order, releasing with an Interrupt open takes its reason from the decision bar and logs it against each Interrupt. An "Approved rule" chip only when a pharmacist has signed the rule (everything else is a draft, said once in the footer), one sentence when the alert was lowered by the budget or quieted by the suppression list, and a link to Patient on "input needed". |
 | `SourceChip` | Citation | Tint chip, `--text-xs`: "DDInter #1234", "S.O. 3285(E)", "Beers 2023". |
 | `XrayTable` | Prescription X-ray: brand -> ingredients -> daily total vs limit | One row per ingredient from the ledger, listing its source brands. `LimitBar` in the last column. A row is marked with its strongest shown alert (tier bar plus the tier word); brands an alert names are outlined. Under each bar: the as-needed share, the limit's basis ("Age 65+ cap, unverified", source on open) and Track B's caveats; "left out or assumed in the totals" below the table. |
 | `LimitBar` | total_mg_day vs limit_mg_day | Fill colour: < 80% neutral, 80-100% Inform amber, > 100% Interrupt red with overflow past a 100% marker. No limit on file -> dashed muted outline + "No limit on file" (never invent one). |
@@ -137,6 +137,15 @@ Hindi copy (Finals leaflet) follows the same rules.
 - **Catalogue.** Import a CSV; each row is matched on this device; the rows needing a pharmacist are listed most urgent first, with "Confirm this composition" (never for a banned combination). The catalogue is kept in its own IndexedDB database and feeds "Same composition in your catalogue" prompts.
 
 Data: `src/ui/history/` (types mirror proposed contracts 5 to 7), demo account in `tests/fixtures/demo_orders.json`. Checks are kept by order content and run one order at a time (`src/ui/history/run.ts`).
+
+## Review desk updates (25 Oct 2026, from `docs/UI_REVIEW_PHARMACIST.md`)
+- **Nav:** Review queue, Check and Override log in the bar; Demo, Benchmark and Data & limits under "More". The brand link opens the queue.
+- **Order page:** status line under the title, then the tabs (Alerts, Timeline, X-ray, Prescriptions, Leaflet) with the kidney card beside them (below on a phone). The decision is a bar fixed to the foot of the page: Parchi's suggestion, Hold / Release, with note / Release, Save. After saving it shows "n of m orders decided" and a "Next order" button (the queue's own ranking). The Calendar tab is gone: the Timeline has clickable days and a "That day" panel.
+- **Queue:** filters are one line of chips (Waiting, Needs attention, Note to check, No alerts, Decided) and add up to Waiting; only the first row's Review is filled.
+- **Check:** Patient comes before Prescription; the result has KPI counts and tabs (Alerts, X-ray, Brand matches, Leaflet); filling in a weight or creatinine the engine asked for re-runs the check on its own.
+- **Names:** status = Needs pharmacist attention / Note to check / No alerts from the checks run; decision = Hold the order / Release, with a note / Release.
+- **Brand flags** (banned, failed batch, look-alike, discontinued) show in the Alerts tab as "Check before dispensing".
+- **New order:** paste one block ("Dr Mehta, 19 Oct: ...") to fill the prescription cards; the order date is under "Order date".
 
 ## Not doing
 Dark mode, custom illustration, animation-heavy transitions, any colour outside `tokens.css`.

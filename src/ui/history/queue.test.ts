@@ -6,7 +6,7 @@ import { testResolver } from '../../engine/resolver/testing'
 import { parseAlertRules } from '../../engine/rules'
 import { createHistoryCheck } from './check'
 import { demoOrders } from './demoOrders'
-import { byQueueOrder, leadFinding, shortFinding, suggestionCounts, trimReason, waitedLabel } from './queue'
+import { byQueueOrder, leadFinding, nextWaiting, shortFinding, suggestionCounts, trimReason, waitedLabel } from './queue'
 import type { HistoryAlert, HistoryResult, Order } from './types'
 
 const run = createHistoryCheck({ resolver: testResolver(), ddi: createDdiIndex(JSON.parse(ddiRaw) as DdiJson), rules: parseAlertRules(JSON.parse(rulesRaw)) })
@@ -96,5 +96,21 @@ describe('leadFinding', () => {
       ] as unknown as HistoryResult['alerts'],
     })
     expect(leadFinding(r)).toMatchObject({ full: 'cross', more: 1 })
+  })
+})
+
+describe('nextWaiting', () => {
+  const row = (id: string, placed: string, priority: number) => ({ order: { id, placed } as Order, result: bare({ priority } as Partial<HistoryResult>) as HistoryResult })
+  const rows = [row('a', '2026-10-01', 1), row('b', '2026-10-02', 9), row('c', '2026-10-03', 5)]
+
+  it('opens the first waiting order in queue order after the one just decided', () => {
+    expect(nextWaiting(rows, new Set(), 'b').next?.id).toBe('c')
+    expect(nextWaiting(rows, new Set(['c']), 'b').next?.id).toBe('a')
+  })
+
+  it('counts the current order as done and has no next when every order is decided', () => {
+    const r = nextWaiting(rows, new Set(['a', 'c']), 'b')
+    expect(r).toMatchObject({ next: undefined, done: 3, total: 3 })
+    expect(nextWaiting(rows, new Set(), 'a')).toMatchObject({ done: 1, total: 3 })
   })
 })

@@ -112,3 +112,13 @@ export const waitedLabel = (placed: string, today = todayIso()) => {
   if (!Number.isFinite(days) || days < 0) return `placed ${shortDate(placed)}`
   return days === 0 ? 'placed today' : `waiting ${days} ${days === 1 ? 'day' : 'days'}`
 }
+
+/**
+ * The order to open after `currentId`: the first order still waiting (no decision) in queue order, not counting the one just
+ * decided. `done` and `total` give "2 of 3 decided".
+ */
+export const nextWaiting = (rows: Ranked[], decidedIds: ReadonlySet<string>, currentId: string) => {
+  const waiting = [...rows].sort(byQueueOrder).filter((r) => !decidedIds.has(r.order.id) && r.order.id !== currentId)
+  const done = rows.filter((r) => decidedIds.has(r.order.id) || r.order.id === currentId).length
+  return { next: waiting[0]?.order, done, total: rows.length }
+}
