@@ -1,0 +1,18 @@
+{
+  "_note": "Demo Rx from PS_ANALYSIS.md section 5. Fill in per-stage expected output as each track lands; additive only.",
+  "patient": { "age_years": 68, "weight_kg": 55, "serum_creatinine": 1.6, "sex": "M" },
+  "rx_text": "Dolo 650 1-1-1 x5d; Crocin cold n flu max TDS; Zerodol P BD; Brufan 400 SOS; Ecosprin 75 OD; Pan D OD; Omez 20 OD",
+  "expected": {
+    "resolver": [
+      { "raw": "Dolo 650", "brand": "Dolo 650", "ingredients": [{ "id": "paracetamol", "mg": 650 }] },
+      { "raw": "Crocin cold n flu max", "brand": "Crocin Cold & Flu Max", "ingredients": [{ "id": "paracetamol", "mg": 500 }, { "id": "caffeine", "mg": 32 }, { "id": "phenylephrine", "mg": 10 }] },
+      { "raw": "Zerodol P", "brand": "Zerodol-P", "ingredients": [{ "id": "aceclofenac", "mg": 100 }, { "id": "paracetamol", "mg": 325 }] },
+      { "raw": "Brufan 400", "brand": "Brufen 400", "ingredients": [{ "id": "ibuprofen", "mg": 400 }] },
+      { "raw": "Ecosprin 75", "brand": "Ecosprin 75", "ingredients": [{ "id": "aspirin", "mg": 75 }] },
+      { "raw": "Pan D", "brand": "Pan-D", "ingredients": [{ "id": "pantoprazole", "mg": 40 }, { "id": "domperidone", "mg": 30 }] },
+      { "raw": "Omez 20", "brand": "Omez", "ingredients": [{ "id": "omeprazole", "mg": 20 }] }
+    ],
+    "ledger_paracetamol_mg_day": 4100,
+    "alerts": { "interrupt_count": 2, "inform_min": 3, "inform_max": 4 }
+  }
+}
