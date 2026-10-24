@@ -21,7 +21,7 @@ Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you nee
 |---|---|
 | `data/` (Python, curated CSV -> `public/data/*.json`), `src/engine/resolver/` | A |
 | `src/engine/sig/`, `src/engine/ledger/`, `src/engine/limits/`, `api/` | B |
-| `src/engine/rules/`, `src/engine/alerts/`, `src/engine/pipeline.ts` | C |
+| `src/engine/rules/`, `alerts/`, `history/`, `pipeline.ts`, `wiring.ts` | C |
 | `src/ui/`, PWA config, `eval/`, `docs/` | D |
 | `src/engine/contracts.ts`, `tests/fixtures/` | shared, see Contracts |
 
@@ -92,7 +92,7 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 |---|---|---|---|---|---|
 | A | Palash | `dev/track-a` | Canonical ids (275 curated), 32k-brand index, resolver, banned FDC 156+16, DDInter, NSQ (`nsq`), Jan Aushadhi, liquid per-5-mL inference (flagged), 37 pack-verified brands, `schedule_hint` (weekly/monthly), systemic always set, docs/track-a-data.md | Pharmacist-verified brands; verify 43 top-tier paracetamol/NSAID brands in data/reports/ | |
 | B | Aditya | `dev/track-b` | Sig parser (1-0-1, OD..QID, SOS caps, q8h, weekly, mL/tsp, Hinglish, phased doses), ledger (SOS worst case, mL to mg, topical excluded), limits.json (11 ingredients, all unverified), Cockcroft-Gault CrCl, ask-only-when-needed, `api/parse-sig` LLM fallback, docs/track-b-dose.md; ledger handles Track A drops/assumed volumes and weekly `schedule_hint` | Pharmacist-approved limits and SOS caps (needs D) | Pipeline wiring (C) |
-| C | Ved | `dev/track-c` | Rules (dose, class dup, DDI, renal/geriatric, resolver flags), 3-tier engine (suppression, budget), `pipeline.ts` with sig/ledger injected, `alert_rules.json`, docs/track-c-engine.md | Wire B's `parseSig`/`computeDose`; Phase 2 contracts + history fixture, `checkHistory`, re-check diff, queue rank; Beers + CNS/ACB | Team OK on Phase 2 contracts |
+| C | Ved | `dev/track-c` | Rules (dose, class dup, DDI, renal/geriatric, Beers, ACB/CNS stacking, resolver flags), 3-tier engine, `pipeline.ts` + `wiring.ts` on B's real `parseSig`/`computeDose` (B findings and notes become alerts), Phase 2 `checkHistory` (overlap windows, cross-doctor alerts, kidney re-check diff, unknown-brand proposal, status, queue rank), FHIR import, contracts 5-7 + `demo_history.json`, docs/track-c-engine.md | Pharmacist review of draft policy; AWaRe (Finals) | Contracts 5-7 need team OK before merge to main; UI calls `createRealEngine` (D) |
 | D |  | `dev/track-d` |  |  |  |
 
 ## Not doing

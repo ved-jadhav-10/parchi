@@ -123,6 +123,39 @@
       "reason": "{names} in a patient aged {age}: higher cardiac (QT) risk in older adults. Pharmacist to review.",
       "source": "Draft geriatric rule, to confirm (EMA PRAC 2014 domperidone review)",
       "pharmacist_approved": false
+    },
+    {
+      "id": "beers_sedating_antihistamine",
+      "classes": [
+        "sedating_antihistamine"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: first-generation antihistamines are on the Beers list to avoid in older adults (strong anticholinergic effect, confusion, falls). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_benzodiazepine",
+      "classes": [
+        "benzodiazepine"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: benzodiazepines are on the Beers list to avoid in older adults (falls, delirium, cognitive impairment). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_z_drug",
+      "classes": [
+        "hypnotic"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: Z-drug sleep medicines are on the Beers list to avoid in older adults (falls, delirium). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
     }
   ],
   "suppression": [
@@ -182,5 +215,47 @@
       "cross_doctor_bonus": 15,
       "pharmacist_approved": false
     }
-  }
+  },
+  "burden_scales": [
+    {
+      "id": "anticholinergic_burden",
+      "label": "Anticholinergic burden",
+      "scores": {
+        "amitriptyline": 3,
+        "diphenhydramine": 3,
+        "hydroxyzine": 3,
+        "promethazine": 3,
+        "chlorphenamine": 3,
+        "olanzapine": 3,
+        "paroxetine": 3,
+        "alprazolam": 1
+      },
+      "threshold": 3,
+      "min_ingredients": 2,
+      "age_at_least": 65,
+      "tier": "inform",
+      "source": "Anticholinergic Cognitive Burden scale, 2012 update (Aging Brain Care, Indiana University). Starter subset of the published list; scores to be checked against the original table. A total of 3 or more is the usual cut-off.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "cns_stacking",
+      "label": "Three or more CNS-active medicines",
+      "scores": {},
+      "class_scores": {
+        "benzodiazepine": 1,
+        "hypnotic": 1,
+        "opioid": 1,
+        "tricyclic_antidepressant": 1,
+        "ssri": 1,
+        "antipsychotic": 1,
+        "gabapentinoid": 1
+      },
+      "threshold": 3,
+      "min_ingredients": 3,
+      "age_at_least": 65,
+      "tier": "inform",
+      "source": "AGS Beers Criteria 2023, drug-drug interactions: avoid three or more CNS-active drugs (falls, fractures). One point per ingredient in these classes; list of classes to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    }
+  ]
 }

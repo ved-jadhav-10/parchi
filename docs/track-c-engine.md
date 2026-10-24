@@ -1,56 +1,69 @@
-# Track C: rules, alerts and pipeline (how to use it)
+# Track C: rules, alerts, pipeline and history check (how to use it)
 
-Owner: Track C (`src/engine/rules/`, `src/engine/alerts/`, `src/engine/pipeline.ts`, `public/data/alert_rules.json`).
+Owner: Track C (`src/engine/rules/`, `alerts/`, `history/`, `pipeline.ts`, `wiring.ts`, `public/data/alert_rules.json`).
 
 ## Use it (Track D UI)
 
 ```ts
-import { createPipeline } from './engine/pipeline'
+import { createRealEngine } from './engine/wiring'
 import { loadAlertRules } from './engine/rules'
-const check = createPipeline({ resolver, ddi, rules: await loadAlertRules(), parseSig, buildLedger }) // parseSig/buildLedger: Track B
-const { lines, ledger, alerts } = await check(rxText, patient)   // alerts are sorted: interrupt, inform, silent
+const { check, checkHistory } = createRealEngine({ resolver, ddi, rules: await loadAlertRules() }) // resolver, ddi: Track A
 ```
 
-`neededInputs(ctx)` (from `./engine/rules`) says which patient fields to ask for (`serum_creatinine`, `weight_kg`), only when a drug on the Rx needs them.
+**One prescription:** `const { lines, ledger, alerts, needs, crcl, notes } = await check(rxText, patient)`. Alerts are sorted interrupt, inform, silent. `needs` = patient fields still to ask for (`weight_kg`, `serum_creatinine`, `sex`), only because a drug on the Rx needs them. `notes` = what Track B left out of the totals.
 
-## Track B hand-off (injected, so no import of B's internals)
+**A customer's history (Phase 2):**
 
-- `parseSig(sigText, resolved) -> Sig` (contract 2)
-- `buildLedger(lines, patient) -> Ledger` (contract 3). `limit_mg_day` must be set for this patient where a limit exists; with no limit the dose rule stays silent (unknown is not safe).
+```ts
+const result = await checkHistory(prescriptions, patient, labs, { asOf: '2026-10-08', previous })
+// result.alerts (with .window, .doctors, .rx_ids, .cross_doctor), .windows, .ledger (worst overlap), .lines (rx_id, doctor, start, end)
+// result.status: clear | clear_with_note | hold_contact_doctor      result.priority: higher = review first
+// result.changes: {added, cleared, changed} against `previous` (e.g. after a new creatinine)   result.needs, result.creatinine_used
+import { rankQueue, fhirToHistory } from './engine/history'
+rankQueue(orders.map((o) => ({ id: o.id, date: o.date, priority: o.result.priority, result: o.result })))  // adds .rank
+const { prescriptions, labs, warnings } = fhirToHistory(bundlesOrOneBundle)                                 // ABDM FHIR R4
+```
 
-`src/engine/rules/testing.ts` has throwaway stand-ins for both, used only by tests. **Next:** B has landed `parseSig(text)` and `computeDose(lines, patient, {classesOf})` (see `track-b-dose.md`). Wiring them in also turns B's `findings` (`over_limit`, `renal_avoid`, `renal_caution`) and `notes` (`schedule_mismatch`) into alerts; the draft `nsaid_renal` rule here then gives way to B's source-tagged kidney limits so the same risk is not raised twice.
+`prescriptions` / `labs` are contracts 5 and 6 (`{id, doctor, date, text}`, `{type:'serum_creatinine', value, date}`). Fixtures: `tests/fixtures/demo_history.json` (3 doctors, 3 orders, creatinine arriving later, with expected statuses and queue order) and `fhir_prescriptions.json` (hand-written, not an official NRCeS sample).
+
+How it works:
+- Each line runs from its Rx date for its sig duration (`x10d`); no duration = `history.default_window_days` (30, unverified; the line says `default_window: true`). End is exclusive.
+- The order under review is `asOf` (default: latest Rx). Later prescriptions are ignored; the timeline runs from `asOf` (`from` can start earlier to show past overlaps). It is cut at every start and end; B's `computeDose` and all rules run per window, so doses add up only for medicines taken together. An alert seen in several windows is reported once, from its worst window, with `window` = the whole span it holds.
+- Cross-doctor: reasons name each brand with doctor and date; `cross_doctor`, `doctors`, `rx_ids` are set. A same-ingredient "in 2 brands" alert is dropped where a dose-excess alert already names the brands.
+- Creatinine: the latest `serum_creatinine` lab (by date, even if after `asOf`, so a late result re-checks an open order) overrides the patient's value. Pass the old result as `previous` for the "what changed" diff. Patient rules (e.g. `nsaid_renal`) are keyed by rule, so one NSAID ending does not split the alert.
+- Unknown brand: `unresolved` alert shows the closest candidate composition and its score, `unverified: true`; it is left out of totals. `confirmations: {'rx-3#1': 'Dolo 650'}` re-resolves a line once the pharmacist confirms.
+- Status comes from the worst tier (an Interrupt demoted by the budget still counts as a hold). Priority = tier weight + type bonus + cross-doctor bonus, from `alert_rules.json` (`history.queue`). Ties: oldest order first.
+
+## Track B wiring
+
+`wiring.ts` injects B's `parseSig` and `computeDose`; `pipeline.ts` itself still takes them as deps (`rules/testing.ts` has stand-ins for fast unit tests). B's facts become alerts via `dose_policy` in `alert_rules.json`: `over_limit` = `dose_excess` Interrupt from the ledger limit (SOS-only excess = `dose_excess_sos`, Inform); `renal_avoid` / `renal_caution` for drugs the patient rules do not already cover (so `nsaid_renal` is not raised twice); notes `schedule_mismatch` (weekly drug read as daily, Interrupt), `unquantified_volume` / `unquantified_dose` (Inform, `total_incomplete` risk); `sig_unclear` (sig confidence < 0.7). One CrCl for the engine: B's (adults only; needs weight, creatinine and sex).
 
 ## Alert types
 
-| type | tier | from | source chip |
-|---|---|---|---|
-| `dose_excess` | interrupt | ledger total > `limit_mg_day` | limit table |
-| `duplicate_ingredient` | inform | same ingredient in 2+ brands, under the limit | ledger |
-| `class_duplication` | inform | 2+ ingredients of a class in different brands | class rule |
-| `ddi` | inform (major), silent (moderate) | DDInter, tier from `alert_rules.json` | `DDInter20 / DDInter900` |
-| `nsaid_renal`, `domperidone_elderly` | per rule | `patient_rules` (CrCl via Cockcroft-Gault, age) | rule source |
-| `input_needed` | inform | a renal rule applies but weight/creatinine is missing | rule source |
-| `banned_fdc` | interrupt (inform if `certain: false`) | resolver flag | `S.O. 3385(E) (02.08.2024)` |
-| `nsq` | inform if spurious, else silent | resolver flag | `CDSCO NSQ/spurious list JUL-2026` |
-| `lasa`, `low_confidence`, `unresolved` | inform | resolver | Brand resolver |
-| `discontinued` | silent | resolver flag | Brand dataset |
+| type | tier | from |
+|---|---|---|
+| `dose_excess` / `dose_excess_sos` | interrupt / inform | ledger total > `limit_mg_day` (limit basis and approval come from B) |
+| `duplicate_ingredient`, `class_duplication` | inform | same ingredient or class in 2+ brands (not inside one FDC) |
+| `ddi` | inform (major), silent (moderate) | DDInter, tier from `alert_rules.json` |
+| `nsaid_renal`, `domperidone_elderly`, `beers_*` | per rule | `patient_rules` (CrCl, age, class) |
+| `anticholinergic_burden`, `cns_stacking` | inform | `burden_scales`: summed scores across ingredients, 65+ |
+| `renal_avoid`, `renal_caution`, `schedule_mismatch`, `sig_unclear` | per `dose_policy` | Track B findings and notes |
+| `input_needed` | inform | a kidney rule applies but weight, creatinine or sex is missing (one alert) |
+| `banned_fdc` | interrupt (inform if `certain: false`) | resolver flag, S.O. number as source |
+| `nsq` | inform if spurious, else silent | resolver flag |
+| `lasa`, `low_confidence`, `unresolved` | inform | resolver |
+| `discontinued` | silent | resolver flag |
 
-Rules that do not fire: pairs or classmates that only meet inside one combination brand, non-systemic lines (gels, drops), DDInter `minor`/`unknown`. DDInter has gaps (`ddi.covers(id)`); "no alert" is not "no interaction" for aceclofenac, domperidone and others.
-
-Alert confidence = the weakest brand-match confidence behind it. Optional `Alert` fields: `brands`, `approved` (false = draft rule), `suppressed` (suppression-list id), `budget_demoted`.
+Pairs or classmates that only meet inside one combination brand do not alert. Non-systemic lines (gels, drops) are ignored. DDInter has gaps (`ddi.covers(id)`): "no alert" is not "no interaction". Alert confidence = weakest brand match behind it. Optional `Alert` fields: `brands`, `approved` (false = draft), `suppressed`, `budget_demoted`, `caveats`, `doctors`, `rx_ids`, `cross_doctor`, `window`, `unverified`.
 
 ## Policy lives in `public/data/alert_rules.json`
 
-Alert budget, DDI severity to tier map, duplicate classes, patient rules and the suppression list. Every entry has `source` and `pharmacist_approved`, all `false` today. The suppression list can quiet Inform/Silent noise but never an Interrupt. The budget (`max_interrupts_per_rx`, 2 because the demo Rx needs two) demotes the lowest-priority extra Interrupts to Inform with `budget_demoted: true`.
+Alert budget (2 Interrupts per check), DDI map, duplicate classes, patient rules (incl. Beers 65+: sedating antihistamines, benzodiazepines, Z-drugs), burden scales (ACB subset, CNS stacking), dose policy, history/queue policy, suppression list. Every entry has `source` and `pharmacist_approved: false`. The suppression list quiets Inform/Silent only, never an Interrupt. The ACB scores are a starter subset and the CNS class list is ours: both need the pharmacist's check against the published tables.
 
-## Phase 2 (planned, see PLAN.md contracts 5-7)
+## Not built
 
-- `checkHistory(prescriptions, patient, labs)`: each Rx is `{id, doctor, date, text}`. Lines become date windows (start = Rx date, end = start + `duration_days`; no duration = a default window from `alert_rules.json`, unverified). Doses add up only where windows overlap: the timeline is cut at every start/end and B's ledger runs per window; the worst window is reported.
-- Cross-doctor alerts: duplicate ingredient / class duplication whose lines come from different doctors name the doctors and the overlapping dates.
-- Kidney re-check: the latest `serum_creatinine` lab feeds CrCl; `diffAlerts(before, after)` lists alerts added, cleared and changed tier.
-- Unknown brands: `unresolved` alert shows the resolver's best candidate composition with confidence, marked unverified; excluded from totals until the pharmacist confirms.
-- Order output for buyers: `status` (`clear` / `clear_with_note` / `hold_contact_doctor`) derived from tiers, and `priority` to rank orders in the review queue.
+AWaRe antibiotic checks (Finals), FHIR export (D, Finals), history in `api/check` (B), refill-overlap smoothing (a refill collected a few days early reads as a duplicate), paediatric kidney checks (B has no formula), Beers criteria beyond the three classes and the CNS/ACB stacking, duration words the sig parser misses (default window applies).
 
 ## Open pharmacist questions (PS_ANALYSIS section 4)
 
-CrCl threshold for NSAIDs (draft 60), domperidone age (draft 65), which DDI pairs are Interrupt (Q6), the real suppression list (Q4), Interrupt budget, default active window for a line with no duration (Phase 2).
+CrCl threshold for NSAIDs (draft 60), domperidone age (65), which DDI pairs are Interrupt (Q6), the real suppression list (Q4), Interrupt budget, default window for a line with no duration (30), whether `schedule_mismatch` is an Interrupt, queue weights, ACB scores and CNS class list.
