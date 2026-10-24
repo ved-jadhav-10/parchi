@@ -1,4 +1,5 @@
 import type { Alert } from '../contracts'
+import { awareRule } from './aware'
 import { burdenRule } from './burden'
 import { classDupRule } from './classDup'
 import { ddiRule } from './ddi'
@@ -13,7 +14,7 @@ export { cockcroftGault } from './crcl'
 export { neededInputs, type PatientInput } from './patient'
 export type { DoseFacts, LineOrigin, RuleContext, RuleLine } from './types'
 
-const RULES: Rule[] = [flagRule, doseRule, findingsRule, classDupRule, ddiRule, patientRule, burdenRule]
+const RULES: Rule[] = [flagRule, doseRule, findingsRule, classDupRule, ddiRule, patientRule, burdenRule, awareRule]
 
 /** Raw alerts from every rule, before suppression, budget and ordering (see ../alerts). */
 export function runRules(ctx: RuleContext): Alert[] {

@@ -92,6 +92,20 @@ const ALERT_TYPES: Record<string, string> = {
   low_confidence: 'Unsure match',
   unresolved: 'Not recognised',
   discontinued: 'Discontinued',
+  dose_excess_sos: 'Over the limit if the as-needed dose is used',
+  renal_avoid: 'Avoid at this kidney function',
+  renal_caution: 'Kidney caution',
+  schedule_mismatch: 'Not a daily medicine',
+  sig_unclear: 'Dosing unclear',
+  unquantified_volume: 'Liquid amount unknown',
+  unquantified_dose: 'Dose not quantified',
+  beers_sedating_antihistamine: 'Older patient: sedating antihistamine',
+  beers_benzodiazepine: 'Older patient: benzodiazepine',
+  beers_z_drug: 'Older patient: sleeping tablet',
+  anticholinergic_burden: 'Anticholinergic burden',
+  cns_stacking: 'Sedatives stacking',
+  aware_reserve: 'Reserve antibiotic',
+  aware_watch: 'Watch antibiotic',
 }
 
 /** A readable name for an alert type from Track C; an unknown type falls back to its id in words. */

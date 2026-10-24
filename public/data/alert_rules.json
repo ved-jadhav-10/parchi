@@ -254,5 +254,60 @@
       "source": "AGS Beers Criteria 2023, drug-drug interactions: avoid three or more CNS-active drugs (falls, fractures). One point per ingredient in these classes; list of classes to confirm with the pharmacist.",
       "pharmacist_approved": false
     }
-  ]
+  ],
+  "aware": {
+    "_note": "WHO AWaRe antibiotic groups. Reserve = last-resort, only for infections with few options; Watch = higher resistance potential, a stewardship target; Access = first choice. Only systemic lines. Clavulanic acid, sulbactam and tazobactam are partners, not scored on their own.",
+    "label": "WHO AWaRe classification 2023",
+    "tiers": {
+      "reserve": "inform",
+      "watch": "silent"
+    },
+    "version": "WHO AWaRe classification 2023, transcribed by hand for the antibiotics common in India; drugs I was not sure of are left out, not guessed",
+    "source": "https://www.who.int/publications/i/item/WHO-MHP-HPS-EML-2023.04",
+    "pharmacist_approved": false,
+    "ingredients": {
+      "amoxicillin": "access",
+      "ampicillin": "access",
+      "cloxacillin": "access",
+      "penicillin_v": "access",
+      "cefalexin": "access",
+      "cefadroxil": "access",
+      "clindamycin": "access",
+      "doxycycline": "access",
+      "gentamicin": "access",
+      "amikacin": "access",
+      "metronidazole": "access",
+      "nitrofurantoin": "access",
+      "sulfamethoxazole": "access",
+      "trimethoprim": "access",
+      "chloramphenicol": "access",
+      "azithromycin": "watch",
+      "clarithromycin": "watch",
+      "erythromycin": "watch",
+      "roxithromycin": "watch",
+      "cefuroxime": "watch",
+      "cefixime": "watch",
+      "cefpodoxime": "watch",
+      "cefotaxime": "watch",
+      "ceftriaxone": "watch",
+      "ceftazidime": "watch",
+      "cefoperazone": "watch",
+      "cefepime": "watch",
+      "ciprofloxacin": "watch",
+      "levofloxacin": "watch",
+      "ofloxacin": "watch",
+      "moxifloxacin": "watch",
+      "norfloxacin": "watch",
+      "piperacillin": "watch",
+      "meropenem": "watch",
+      "imipenem": "watch",
+      "ertapenem": "watch",
+      "vancomycin": "watch",
+      "teicoplanin": "watch",
+      "linezolid": "reserve",
+      "colistin": "reserve",
+      "polymyxin_b": "reserve",
+      "tigecycline": "reserve"
+    }
+  }
 }

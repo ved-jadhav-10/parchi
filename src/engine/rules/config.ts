@@ -69,6 +69,17 @@ export interface BurdenScale {
   pharmacist_approved: boolean
 }
 
+/** WHO AWaRe antibiotic groups: which ingredient is Access, Watch or Reserve, and what each group raises. */
+export interface AwareConfig {
+  label: string
+  /** tier per group; a group left out or null raises nothing */
+  tiers: { reserve?: Tier | null; watch?: Tier | null }
+  version: string
+  source: string
+  ingredients: Record<string, 'access' | 'watch' | 'reserve'>
+  pharmacist_approved: boolean
+}
+
 /** Policy for the whole-history check (Phase 2). */
 export interface HistoryPolicy {
   /** order status from the worst tier on the order */
@@ -101,6 +112,7 @@ export interface AlertRules {
   suppression: SuppressionRule[]
   dose_policy: DosePolicy
   burden_scales: BurdenScale[]
+  aware?: AwareConfig
   history: HistoryPolicy
 }
 

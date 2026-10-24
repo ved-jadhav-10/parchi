@@ -51,7 +51,16 @@ export function ruleRows(rules: AlertRules): DataRow[] {
       const when = [p.age_at_least !== undefined ? `Age ${p.age_at_least} and over` : '', p.crcl_below !== undefined ? `CrCl below ${p.crcl_below} mL/min` : ''].filter(Boolean).join(', ')
       return row(titleCase(p.id), when || 'Any patient', tierName(p.tier), p.source, p.pharmacist_approved)
     }),
+    ...awareRows(rules),
   ]
+}
+
+/** WHO AWaRe antibiotic groups: what a Reserve or Watch antibiotic raises, with how many antibiotics are listed in each group. */
+const awareRows = (rules: AlertRules): DataRow[] => {
+  const a = rules.aware
+  if (!a) return []
+  const listed = (g: string) => Object.values(a.ingredients).filter((v) => v === g).length
+  return (['reserve', 'watch'] as const).map((g) => row(`${titleCase(g)} antibiotics (AWaRe)`, `${listed(g)} antibiotics listed`, tierName(a.tiers[g] ?? null), a.label, a.pharmacist_approved))
 }
 
 /** Alerts the pharmacist chose to log without showing. */
