@@ -1,0 +1,199 @@
+{
+  "_note": "For each curated Interrupt pair: the sentence in one drug's FDA label (openFDA, read 25 Oct 2026) that names the other drug or class, or \"not_found\" / \"no_fda_label\" with the reason. Quotes are verbatim, spacing normalised. A \"not_found\" is not proof the pair is safe: the label may be worded differently or the basis may be a guideline list.",
+  "rules": [
+    {
+      "rule": "sacubitril_acei",
+      "status": "confirmed",
+      "label_of": "sacubitril",
+      "looked_for": [
+        "ACE inhibitor",
+        "angioedema"
+      ],
+      "quote": "4 CONTRAINDICATIONS ENTRESTO is contraindicated: in patients with hypersensitivity to any component in patients with a history of angioedema related to previous ACE inhibitor or ARB therapy [see Warnings and Precautions (5.",
+      "basis": "label_contraindication: US/EU labels contraindicate use within 36 hours of an ACE inhibitor"
+    },
+    {
+      "rule": "simvastatin_clarithromycin",
+      "status": "confirmed",
+      "label_of": "simvastatin",
+      "looked_for": [
+        "clarithromycin"
+      ],
+      "quote": ", erythromycin and clarithromycin), select HIV protease inhibitors (e.",
+      "basis": "label_contraindication: simvastatin label contraindicates strong CYP3A4 inhibitors"
+    },
+    {
+      "rule": "pde5_nitrate",
+      "status": "confirmed",
+      "label_of": "sildenafil",
+      "looked_for": [
+        "nitrate"
+      ],
+      "quote": "4 CONTRAINDICATIONS Administration of sildenafil tablets to patients using nitric oxide donors, such as organic nitrates or organic nitrites in any form.",
+      "basis": "label_contraindication: sildenafil/tadalafil labels contraindicate nitrates"
+    },
+    {
+      "rule": "methotrexate_trimethoprim",
+      "status": "not_found",
+      "label_of": "methotrexate",
+      "looked_for": [
+        "trimethoprim",
+        "sulfamethoxazole"
+      ],
+      "reason": "no sentence in the FDA label sections searched names the partner or class; the basis rests on the cited list or EMA text only",
+      "basis": "label_warning: methotrexate labels warn of severe marrow toxicity with trimethoprim/co-trimoxazole; to verify against the ONC high-priority DDI list (Phansalkar 2012)"
+    },
+    {
+      "rule": "linezolid_ssri",
+      "status": "confirmed",
+      "label_of": "linezolid",
+      "looked_for": [
+        "serotonergic",
+        "SSRI",
+        "selective serotonin"
+      ],
+      "quote": "2 ) • Serotonin Syndrome: Monitor patients taking Linezolid concomitantly with serotonergic agents for signs of serotonin syndrome.",
+      "basis": "onc_high_priority: rule 8 (SSRI + MAOI; linezolid is an MAO inhibitor)"
+    },
+    {
+      "rule": "tizanidine_cyp1a2",
+      "status": "confirmed",
+      "label_of": "tizanidine",
+      "looked_for": [
+        "ciprofloxacin"
+      ],
+      "quote": "4 CONTRAINDICATIONS Tizanidine Tablets, USP is contraindicated in patientstaking potent inhibitors of CYP1A2, such as fluvoxamine or ciprofloxacin [ see Drug Interactions (7.",
+      "basis": "label_contraindication: tizanidine label contraindicates ciprofloxacin and fluvoxamine"
+    },
+    {
+      "rule": "colchicine_strong_cyp3a4",
+      "status": "confirmed",
+      "label_of": "colchicine",
+      "looked_for": [
+        "clarithromycin"
+      ],
+      "quote": ", clarithromycin or cyclosporine) have been demonstrated to alter the concentration of colchicine.",
+      "basis": "label_contraindication: colchicine label contraindicates strong CYP3A4 inhibitors in kidney or liver impairment; fatal cases reported"
+    },
+    {
+      "rule": "domperidone_strong_cyp3a4",
+      "status": "no_fda_label",
+      "reason": "domperidone is not approved in the US, so there is no FDA label; the contraindication is from the EMA 2014 domperidone review",
+      "basis": "label_contraindication: EMA 2014 domperidone restrictions"
+    },
+    {
+      "rule": "domperidone_qt",
+      "status": "no_fda_label",
+      "reason": "domperidone is not approved in the US, so there is no FDA label; the contraindication is from the EMA 2014 domperidone review",
+      "basis": "label_contraindication: EMA 2014 domperidone restrictions"
+    },
+    {
+      "rule": "amiodarone_sotalol",
+      "status": "not_found",
+      "label_of": "amiodarone",
+      "looked_for": [
+        "sotalol"
+      ],
+      "reason": "no sentence in the FDA label sections searched names the partner or class; the basis rests on the cited list or EMA text only",
+      "basis": "onc_high_priority: rule 21 (two QT-prolonging antiarrhythmics)"
+    },
+    {
+      "rule": "ivabradine_rate_ccb",
+      "status": "confirmed",
+      "label_of": "ivabradine",
+      "looked_for": [
+        "verapamil",
+        "diltiazem"
+      ],
+      "quote": ", digoxin, diltiazem, verapamil, amiodarone).",
+      "basis": "label_contraindication: EU SmPC contraindicates verapamil and diltiazem"
+    },
+    {
+      "rule": "onc_ssri_maoi",
+      "status": "confirmed",
+      "label_of": "sertraline",
+      "looked_for": [
+        "monoamine oxidase",
+        "MAOI"
+      ],
+      "quote": "CONTRAINDICATIONS All Dosage Forms of Sertraline: The use of MAOIs intended to treat psychiatric disorders with Sertraline hydrochloride or within 14 days of stopping treatment with Sertraline hydrochloride is contraindicated because of an because of an increased risk if serotonin syndrome.",
+      "basis": "onc_high_priority: rule 8"
+    },
+    {
+      "rule": "onc_opioid_maoi",
+      "status": "confirmed",
+      "label_of": "tramadol",
+      "looked_for": [
+        "monoamine oxidase",
+        "MAOI"
+      ],
+      "quote": "2)] Concurrent use of monoamine oxidase inhibitors (MAOIs) or use within the last 14 days [see Drug Interactions (7)] .",
+      "basis": "onc_high_priority: rule 16"
+    },
+    {
+      "rule": "onc_tca_maoi",
+      "status": "confirmed",
+      "label_of": "amitriptyline",
+      "looked_for": [
+        "monoamine oxidase",
+        "MAOI"
+      ],
+      "quote": "It should not be given concomitantly with monoamine oxidase inhibitors.",
+      "basis": "onc_high_priority: rule 20"
+    },
+    {
+      "rule": "onc_stimulant_maoi",
+      "status": "confirmed",
+      "label_of": "methylphenidate",
+      "looked_for": [
+        "monoamine oxidase",
+        "MAOI"
+      ],
+      "quote": "Concomitant treatment with monoamine oxidase inhibitors (MAOIs), or within 14 days following discontinuation of treatment with an MAOI, because of the risk of hypertensive crisis [see Drug Interactions (7) ] .",
+      "basis": "onc_high_priority: rule 3"
+    },
+    {
+      "rule": "onc_triptan_maoi",
+      "status": "confirmed",
+      "label_of": "sumatriptan",
+      "looked_for": [
+        "monoamine oxidase",
+        "MAO-A"
+      ],
+      "quote": "• Concurrent administration of a monoamine oxidase (MAO)-A inhibitor or recent (within 2 weeks) use of an MAO-A inhibitor [see Drug Interactions (7.",
+      "basis": "onc_high_priority: rule 31"
+    },
+    {
+      "rule": "onc_febuxostat_azathioprine",
+      "status": "confirmed",
+      "label_of": "febuxostat",
+      "looked_for": [
+        "azathioprine"
+      ],
+      "quote": "4 CONTRAINDICATIONS Febuxostat tablets are contraindicated in patients being treated with azathioprine or mercaptopurine [see Drug Interactions (7) ] .",
+      "basis": "onc_high_priority: rule 5"
+    },
+    {
+      "rule": "onc_tranylcypromine_procarbazine",
+      "status": "not_found",
+      "label_of": "tranylcypromine",
+      "looked_for": [
+        "procarbazine"
+      ],
+      "reason": "no sentence in the FDA label sections searched names the partner or class; the basis rests on the cited list or EMA text only",
+      "basis": "onc_high_priority: rule 30"
+    },
+    {
+      "rule": "onc_ergot_cyp3a4",
+      "status": "confirmed",
+      "label_of": "ergotamine",
+      "looked_for": [
+        "clarithromycin",
+        "ritonavir",
+        "CYP3A4"
+      ],
+      "quote": "CONTRAINDICATIONS Coadministration of ergotamine with potent CYP 3A4 inhibitors (ritonavir, nelfinavir, indinavir, erythromycin, clarithromycin, and troleandomycin) has been associated with acute ergot toxicity (ergotism) characterized by vasospasm and ischemia of the extremities (see PRECAUTIONS : ",
+      "basis": "onc_high_priority: rule 27"
+    }
+  ]
+}
