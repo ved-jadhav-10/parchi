@@ -1,8 +1,16 @@
 /* Header fit between the mobile menu (< 720px) and full desktop (>= 1060px). Six pills must stay on one line. */
 .pillnav__link { white-space: nowrap; }
 
+/* Below 1060px the pill shrinks instead of going away: a dot online, "Offline" when offline. The full words stay for screen readers. */
+@media (max-width: 1059px) {
+  .conn-pill { padding: var(--space-2); }
+  .conn-pill[data-online='true'] .conn-pill__label, .conn-pill__more {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .conn-pill[data-online='false'] { padding: var(--space-1) var(--space-3); }
+}
+
 @media (min-width: 720px) and (max-width: 1059px) {
-  .conn-pill { display: none; }
   .pillnav__link { display: flex; align-items: center; min-height: var(--tap-min); padding-inline: var(--space-2); }
 }
 

@@ -29,7 +29,8 @@ Flat page ground (`--color-bg`), opaque white cards (1 px `--color-border`, no s
 
 Clickable tiles (e.g. a `BrandMatch` row that opens detail) get the accent left bar; static cards don't. Alert cards use their tier colour for that bar instead, never the accent.
 | `--color-ink-muted` | `#5C6488` | Secondary text, captions, Silent tier |
-| `--color-border` | `#DCDFF0` | Card borders, dividers (non-text) |
+| `--color-border` | `#DCDFF0` | Card borders, dividers (decorative only) |
+| `--color-border-strong` | `#7F86A8` | Borders of inputs, selects, textareas and toggles: 3.4:1 or better on white, page and panel (WCAG 1.4.11) |
 
 ### Clinical status (separate from brand, never use accent for status)
 | Tier / state | Text + icon | Background | Meaning |
@@ -37,7 +38,7 @@ Clickable tiles (e.g. a `BrandMatch` row that opens detail) get the accent left 
 | Interrupt | `#B42318` | `#FEF0EE` | Pharmacist should act before dispensing |
 | Inform | `#9A4A00` | `#FFF4E5` | Worth knowing, no action required |
 | Silent | `#5C6488` | `#F1F2F8` | Logged only, collapsed by default |
-| Within limit | `#1E7A46` | `#EAF6EF` | Limit bar under 80% |
+| Within limit | `#1E7A46` | `#EAF6EF` | Online dot only. The limit bar under 80% is a neutral fill (`--color-ink-muted`), because green would read as "fine to dispense" |
 
 All text pairs above meet WCAG AA (>= 4.5:1, checked). Indigo `#5B65DC` on `#EEEFFD` is only 4.2:1, which is why `--color-accent-strong` exists.
 
@@ -75,7 +76,7 @@ Names are the component names to use in `src/ui/`.
 
 | Component | Purpose | Key rules |
 |---|---|---|
-| `AppHeader` | Title + `ConnectionPill` | Pill: "Offline: all checks still run" (muted) / "Online" (green dot). |
+| `AppHeader` | Title + `ConnectionPill` | Pill at every width: "Offline: all checks still run" (muted) / "Online" (green dot). Below 1060 px it shrinks to a dot online and "Offline" when offline; screen readers get the full words. Nav order: Review queue, Check, Override log, Data & limits, Benchmark, Demo. The installed app opens on the queue. Escape closes the mobile menu. |
 | `RxInput` | Textarea for typed Rx | Placeholder shows the demo format. `Ctrl+Enter` runs the check. Primary button "Check prescription". |
 | `PatientForm` | Age (always), sex | Asks only what the engine needs; see `PatientPrompt`. |
 | `PatientPrompt` | Ask-only-when-needed fields (weight, serum creatinine) | Appears inline with the reason: "Creatinine needed because NSAIDs are present." Skippable; skipping shows "limit not adjusted for renal function". |
@@ -83,7 +84,7 @@ Names are the component names to use in `src/ui/`.
 | `AlertCard` | One alert | Tier icon + label, one-line `reason`, `SourceChip`, confidence. Interrupt cards sit first and full width with an "Override with reason" action. A "Draft rule" chip when `approved` is false, one sentence when the alert was lowered by the budget or quieted by the suppression list, and a link to Patient on "input needed". |
 | `SourceChip` | Citation | Tint chip, `--text-xs`: "DDInter #1234", "S.O. 3285(E)", "Beers 2023". |
 | `XrayTable` | Prescription X-ray: brand -> ingredients -> daily total vs limit | One row per ingredient from the ledger, listing its source brands. `LimitBar` in the last column. A row is marked with its strongest shown alert (tier bar plus the tier word); brands an alert names are outlined. Under each bar: the as-needed share, the limit's basis ("Age 65+ cap, unverified", source on open) and Track B's caveats; "left out or assumed in the totals" below the table. |
-| `LimitBar` | total_mg_day vs limit_mg_day | Fill colour: < 80% within-limit green, 80-100% Inform amber, > 100% Interrupt red with overflow past a 100% marker. No limit on file -> dashed muted outline + "No limit on file" (never invent one). |
+| `LimitBar` | total_mg_day vs limit_mg_day | Fill colour: < 80% neutral, 80-100% Inform amber, > 100% Interrupt red with overflow past a 100% marker. No limit on file -> dashed muted outline + "No limit on file" (never invent one). |
 | `BrandMatch` | Resolved brand per line | Shows `raw -> brand`. "Check match" when Track A's `needs_pharmacist` is set (confidence only as a fallback); a generic name or an unmatched line says so; a spelling-corrected match says "Corrected spelling". Expanded: ingredients (never "0 mg": unknown and non-mg strengths are worded), the incomplete-composition caveat, "Not counted" for non-systemic products, dosing, Track A's notes and alternatives, banned FDC (S.O. chip, date, list), failed NSQ batches (batch chip, month, test, manufacturer) and Jan Aushadhi generics. |
 | `FlagBadge` | `banned_fdc`, `lasa`, `discontinued`, `nsq` | Banned FDC uses Interrupt colours; LASA, discontinued and NSQ use Inform colours. NSQ is batch-specific ("Check batch (NSQ)"), never Interrupt. |
 | `SilentLog` | Silent alerts | Collapsed `<details>`: "4 logged (not shown)". |
@@ -104,8 +105,10 @@ Footer on every result: "Decision support for a pharmacist. Not a substitute for
 Hindi copy (Finals leaflet) follows the same rules.
 
 ## Accessibility checklist
-- Text contrast >= 4.5:1 (tokens already comply). Focus ring: 2 px `--color-accent` + 2 px offset, never removed.
-- Tier = icon + word + colour. Limit bar has a text value next to it (`4,100 / 4,000 mg`).
+- Text contrast >= 4.5:1 (tokens already comply). Control borders >= 3:1 (`--color-border-strong`). Focus ring: 2 px `--color-accent` + 2 px offset, never removed.
+- Tier = icon + word + colour. Limit bar has a text value next to it (`4,100 / 4,000 mg`). On the timeline an Interrupt is a solid outline and an Inform a dashed one, with the tier word in the bar's title and the screen-reader table.
+- Every route sets `document.title` ("Review queue - Parchi") and, after a navigation, scrolls to the top and focuses the page (`main`, or the heading on the landing page). Both pages have a skip link. The landing page has no single `<main>`: its hero sits in a framed block with the navigation, so each section is a labelled region instead.
+- Scrolling regions (timeline, X-ray) are focusable with a label.
 - Full keyboard flow: input -> patient -> check -> alerts -> override.
 - Alerts container is `aria-live="polite"`; an Interrupt uses `role="alert"`.
 - Respect `prefers-reduced-motion`: no animation beyond 150 ms fades.

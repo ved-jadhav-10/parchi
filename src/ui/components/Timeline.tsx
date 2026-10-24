@@ -65,7 +65,7 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
                         data-unverified={l.unverified}
                         data-assumed={l.end_assumed}
                         style={{ gridColumn: `${col(l.start)} / ${col(l.end)}` }}
-                        title={`${l.text}: ${longDate(l.start)} to ${longDate(addDays(l.end, -1))}${l.end_assumed ? ' (no duration written; default window assumed)' : ''}${l.refill_overlap_days ? ` (repeated by the same doctor ${l.refill_overlap_days} days before it ran out; read as a refill)` : ''}`}
+                        title={`${mark ? `${tierLabel[mark]}: ` : ''}${l.text}: ${longDate(l.start)} to ${longDate(addDays(l.end, -1))}${l.end_assumed ? ' (no duration written; default window assumed)' : ''}${l.refill_overlap_days ? ` (repeated by the same doctor ${l.refill_overlap_days} days before it ran out; read as a refill)` : ''}`}
                       >
                         <span>{l.text}</span>
                       </div>
@@ -86,7 +86,10 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
           <i className="tl__swatch" data-assumed="true" /> No duration written: a default window is assumed (unverified)
         </li>
         <li>
-          <i className="tl__swatch" data-tier="interrupt" /> Outlined: named by an alert
+          <i className="tl__swatch" data-tier="interrupt" /> Solid outline: named by an Interrupt
+        </li>
+        <li>
+          <i className="tl__swatch" data-tier="inform" /> Dashed outline: named by an Inform
         </li>
         <li>
           <i className="tl__swatch tl__swatch--placed" /> Order placed

@@ -138,7 +138,7 @@ export const CheckPage = () => {
 
           <Card id="patient" title="Patient" icon="user">
             <div className="fields">
-              <Field label="Age (years)" type="number" inputMode="numeric" min={0} value={patient.age} onChange={set('age')} />
+              <Field label="Age (years)" type="number" inputMode="numeric" min={0} required value={patient.age} onChange={set('age')} />
               <label className="field">
                 <span className="field__label">Sex</span>
                 <select className="field__input" value={patient.sex} onChange={set('sex')}>

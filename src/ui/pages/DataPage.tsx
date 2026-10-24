@@ -8,12 +8,12 @@ import { SOURCES } from '../lib/sources'
 
 const Approval = ({ approved }: { approved: boolean | undefined }) =>
   approved === true ? (
-    <span className="tier-badge" data-tier="silent" style={{ color: 'var(--status-ok)', background: 'var(--status-ok-bg)' }}>
-      Approved
+    <span className="tier-badge" data-tier="silent">
+      Signed off
     </span>
   ) : (
     <span className="tier-badge" data-tier="inform">
-      {approved === false ? 'Not approved' : 'Unknown'}
+      {approved === false ? 'Not signed off' : 'Unknown'}
     </span>
   )
 
@@ -27,7 +27,7 @@ const DataTable = ({ title, description, rows, empty }: { title: string; descrip
     ) : (
       <>
         <p className="hint">
-          {approvedCount(rows)} of {rows.length} approved by a pharmacist. Anything else is shown as not approved and should not be relied on.
+          {approvedCount(rows)} of {rows.length} signed off by a pharmacist. Anything else is shown as not signed off and should not be relied on.
         </p>
         <div className="xray">
           <table>

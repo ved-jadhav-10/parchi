@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { routes, useOnline, type Route } from '../route'
 import { Icon } from './Icons'
 import { LogoMark } from './LogoMark'
@@ -6,9 +6,12 @@ import { LogoMark } from './LogoMark'
 const ConnectionPill = () => {
   const online = useOnline()
   return (
-    <span className="conn-pill" data-online={online}>
+    <span className="conn-pill" data-online={online} role="status">
       <span className="conn-pill__dot" />
-      {online ? 'Online' : 'Offline: all checks still run'}
+      <span className="conn-pill__label">
+        {online ? 'Online' : 'Offline'}
+        {!online && <span className="conn-pill__more">: all checks still run</span>}
+      </span>
     </span>
   )
 }
@@ -34,6 +37,19 @@ const PillNav = ({ route, onNavigate }: { route: Route; onNavigate: () => void }
 
 export const AppHeader = ({ route }: { route: Route }) => {
   const [open, setOpen] = useState(false)
+  const toggle = useRef<HTMLButtonElement>(null)
+
+  // Escape closes the open menu and hands focus back to the button that opened it.
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      setOpen(false)
+      toggle.current?.focus()
+    }
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [open])
   return (
     <header className="app-header">
       <a href="#/check" className="brand">
@@ -50,6 +66,7 @@ export const AppHeader = ({ route }: { route: Route }) => {
       <div className="app-header__end">
         <ConnectionPill />
         <button
+          ref={toggle}
           className="nav-toggle"
           aria-label={open ? 'Close menu' : 'Open menu'}
           aria-expanded={open}

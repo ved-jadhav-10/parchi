@@ -136,6 +136,17 @@ export const HomePage = () => {
 
   return (
     <div className="home">
+      {/* Not href="#main": the hash is the router. The hero heading is the page's start; there is no single <main> around the framed hero and the sections after it. */}
+      <a
+        className="skip-link"
+        href="#/home"
+        onClick={(e) => {
+          e.preventDefault()
+          document.getElementById('home-title')?.focus()
+        }}
+      >
+        Skip to content
+      </a>
       <div className="home-page">
         <div className="home-frame">
           <header className="home-nav">
@@ -195,7 +206,7 @@ export const HomePage = () => {
                 <span className="home-badge__icon"><PillIcon size={16} /></span>
                 Made for the verifying pharmacist
               </p>
-              <h1 id="home-title">A second look at every parchi, before it leaves the counter.</h1>
+              <h1 id="home-title" tabIndex={-1}>A second look at every parchi, before it leaves the counter.</h1>
               <div className="home-hero__rule" aria-hidden="true" />
               <p className="home-hero__text">
                 Give it a prescription the way it arrives: typed, or lines from an order. Parchi splits each brand into its ingredients, adds up the day's dose

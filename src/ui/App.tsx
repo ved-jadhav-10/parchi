@@ -14,7 +14,15 @@ import { HistoryPage } from './pages/HistoryPage'
 import { LogPage } from './pages/LogPage'
 import { OrderPage } from './pages/OrderPage'
 import { QueuePage } from './pages/QueuePage'
-import { useRoute, type Route } from './route'
+import { routes, useRoute, useRouteParam, type Route } from './route'
+
+/** "Review queue - Parchi"; an order or a history edit names its id. The landing page is just the name. */
+const pageTitle = (route: Route, param: string) => {
+  if (route === 'home') return 'Parchi: a second look at every prescription'
+  if (route === 'order') return `${param ? `Order ${param}` : 'Order'} - Parchi`
+  if (route === 'history') return `${param ? `Edit order ${param}` : 'Add an order'} - Parchi`
+  return `${routes.find((r) => r.id === route)?.label ?? 'Check'} - Parchi`
+}
 
 const pages: Record<Exclude<Route, 'home'>, () => React.JSX.Element> = {
   check: CheckPage,
@@ -31,13 +39,22 @@ export default function App() {
   const route = useRoute()
   const main = useRef<HTMLElement>(null)
 
-  // A hash change swaps the page without a load, so move focus to the new page as a load would (screen readers and
-  // keyboard users otherwise stay on the link they pressed, in the old page's place).
+  // A hash change swaps the page without a load, so do what a load would: a title for the new page, the top of it in view,
+  // and focus on it (screen readers and keyboard users otherwise stay on the link they pressed, in the old page's place).
+  // The first render is a load already, so it only sets the title. Running after render also covers arriving from the
+  // landing page, whose <main> did not exist when the hash changed.
+  const param = useRouteParam()
+  const first = useRef(true)
   useEffect(() => {
-    const onHash = () => main.current?.focus()
-    addEventListener('hashchange', onHash)
-    return () => removeEventListener('hashchange', onHash)
-  }, [])
+    document.title = pageTitle(route, param)
+    if (first.current) {
+      first.current = false
+      return
+    }
+    scrollTo(0, 0)
+    if (route === 'home') document.getElementById('home-title')?.focus({ preventScroll: true })
+    else main.current?.focus({ preventScroll: true })
+  }, [route, param])
 
   // The landing page brings its own navigation and footer.
   if (route === 'home') return <HomePage />

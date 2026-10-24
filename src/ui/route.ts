@@ -4,12 +4,12 @@ export type Route = 'home' | 'check' | 'demo' | 'queue' | 'order' | 'history' | 
 
 /** The pages with a pill in the navigation. `order` and `history` are reached from the queue, so they have none. */
 export const routes: { id: Route; label: string }[] = [
-  { id: 'check', label: 'Check' },
-  { id: 'demo', label: 'Demo' },
   { id: 'queue', label: 'Review queue' },
+  { id: 'check', label: 'Check' },
   { id: 'log', label: 'Override log' },
-  { id: 'benchmark', label: 'Benchmark' },
   { id: 'data', label: 'Data & limits' },
+  { id: 'benchmark', label: 'Benchmark' },
+  { id: 'demo', label: 'Demo' },
 ]
 
 /** `#/order/ORD-1087` -> ['order', 'ORD-1087']. Only `order` and `history` take a second segment. */
