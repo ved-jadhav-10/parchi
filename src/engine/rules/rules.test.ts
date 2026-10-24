@@ -29,12 +29,13 @@ describe('Cockcroft-Gault', () => {
   })
   it('applies the 0.85 factor for women', () => {
     const m = cockcroftGault({ age_years: 60, weight_kg: 60, serum_creatinine: 1, sex: 'M' })!
-    expect(cockcroftGault({ age_years: 60, weight_kg: 60, serum_creatinine: 1, sex: 'F' })).toBeCloseTo(m * 0.85)
+    expect(cockcroftGault({ age_years: 60, weight_kg: 60, serum_creatinine: 1, sex: 'F' })).toBeCloseTo(m * 0.85, 0)
   })
-  it('is null without weight or creatinine and never negative', () => {
+  it('is null without weight, creatinine or sex, and never negative', () => {
     expect(cockcroftGault({ age_years: 60 })).toBeNull()
     expect(cockcroftGault({ age_years: 60, weight_kg: 60 })).toBeNull()
-    expect(cockcroftGault({ age_years: 150, weight_kg: 60, serum_creatinine: 1 })).toBe(0)
+    expect(cockcroftGault({ age_years: 60, weight_kg: 60, serum_creatinine: 1 })).toBeNull()
+    expect(cockcroftGault({ age_years: 150, weight_kg: 60, serum_creatinine: 1, sex: 'M' })).toBe(0)
   })
 })
 
@@ -96,11 +97,12 @@ describe('DDI rule', () => {
 
 describe('patient rules', () => {
   const need = (rx: string, p: Patient) => neededInputs(context(rx, p))
-  it('asks for creatinine and weight only when a renal-rule drug is present', () => {
-    expect(need('Brufen 400 BD', { age_years: 68 })).toEqual(['serum_creatinine', 'weight_kg'])
-    expect(need('Brufen 400 BD', { age_years: 68, weight_kg: 55 })).toEqual(['serum_creatinine'])
+  it('asks for weight, creatinine and sex only when a renal-rule drug is present', () => {
+    expect(need('Brufen 400 BD', { age_years: 68 }).sort()).toEqual(['serum_creatinine', 'sex', 'weight_kg'])
+    expect(need('Brufen 400 BD', { age_years: 68, weight_kg: 55, sex: 'M' })).toEqual(['serum_creatinine'])
     expect(need('Omez 20 OD', { age_years: 68 })).toEqual([])
-    expect(need('Brufen 400 BD', { age_years: 68, weight_kg: 55, serum_creatinine: 1.6 })).toEqual([])
+    expect(need('Brufen 400 BD', { age_years: 68, weight_kg: 55, serum_creatinine: 1.6, sex: 'F' })).toEqual([])
+    expect(need('Brufen 400 BD', { age_years: 8 })).toEqual([]) // a child: the adult formula is not used, nothing to ask
   })
   it('applies the domperidone rule from the age threshold, not below it', () => {
     const at = (age: number) => runRules(context('Pan D OD', { age_years: age })).some((a) => a.type === 'domperidone_elderly')

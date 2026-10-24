@@ -43,6 +43,8 @@ export interface LimitsData {
     fallback: SosCap
   }
   ingredients: Record<string, IngredientLimits>
+  /** Phase 2: how long a line with no duration is assumed to run. */
+  windows: { default_duration_days: number } & Provenance
 }
 
 /** Patient detail the engine needs and does not have yet. Ask for it only when an ingredient on the prescription needs it. */

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parchi logo variants</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* PREVIEW ONLY. Marks use currentColor + --accent so one SVG works on every background. */
+:root { --ink:#122056; --accent:#5b65dc; --muted:#5a5f7d; --paper:#f4f0e6; --line:#d8d0bd; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; padding:32px 24px 56px; }
+.wrap { max-width:1180px; margin:0 auto; }
+h1 { margin:0 0 4px; font-size:1.75rem; } .sub { margin:0 0 24px; color:var(--muted); max-width:70ch; }
+.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+@media (max-width:980px){ .grid{grid-template-columns:repeat(2,1fr);} } @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+.card { background:#fbf9f3; border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+.hero { height:190px; display:flex; align-items:center; justify-content:center; color:var(--ink); transition:transform .25s; }
+.card:hover .hero svg { transform:scale(1.06); } .hero svg { transition:transform .25s; }
+.strip { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--line); }
+.strip > div { height:72px; display:flex; align-items:center; justify-content:center; gap:14px; }
+.on-white { background:#fff; color:var(--ink); } .on-navy { background:#122056; color:#fff; --accent:#8d95f0; }
+.meta { padding:14px 16px 16px; border-top:1px solid var(--line); }
+.meta .n { font:500 .7rem 'IBM Plex Mono',monospace; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; }
+.meta h2 { margin:2px 0 6px; font-size:1.05rem; } .meta p { margin:0; font-size:.85rem; color:var(--muted); }
+.lock { display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.15rem; letter-spacing:-.01em; }
+.note { margin-top:24px; padding:14px 16px; border:1px dashed #cfc6b0; border-radius:10px; font-size:.88rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Parchi logo variants</h1>
+<p class="sub">Six directions from the logo-generator skill's pattern families. Each is a single SVG on a 100×100 grid using <code>currentColor</code> plus one indigo accent. None uses a tick mark, because Parchi informs and never approves.</p>
+<div class="grid" id="grid"></div>
+<div class="note">Hover a card to scale the mark. The small tiles show white and navy backgrounds, and the tiny marks show 24 px and 16 px (favicon) legibility.</div>
+</div>
+
+<script>
+const A = 'var(--accent)';
+const V = [
+ { n:'01 · Pure geometric', t:'The torn slip',
+   why:'A single prescription slip with a torn zig-zag edge. Three ruled lines, the last one in indigo: the line picked out for review.',
+   svg:`<path d="M28 16a4 4 0 0 1 4-4h36a4 4 0 0 1 4 4v70l-5.5-6-5.5 6-5.5-6-5.5 6-5.5-6-5.5 6-5.5-6-5.5 6z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+        <path d="M38 33h24M38 46h24" stroke="currentColor" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/>
+        <path d="M38 59h14" stroke="${A}" stroke-width="4.5" stroke-linecap="round"/>` },
+ { n:'02 · Letter / symbol', t:'The Rx stroke',
+   why:'An R whose leg is the Rx slash, drawn as one continuous stroke. The leg is indigo, so the symbol is the logo.',
+   svg:`<path d="M34 78V24h18a13 13 0 0 1 0 26H34" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M51 50l18 28" fill="none" stroke="${A}" stroke-width="4.5" stroke-linecap="round"/>` },
+ { n:'03 · Dot matrix', t:'The dotted P',
+   why:'A P built from rounded dots, like a pharmacy label printed on a dot-matrix machine. One dot is indigo, a flagged ingredient in the grid.',
+   svg:`<g fill="currentColor">
+          <rect x="26.5" y="14.5" width="11" height="11" rx="3.5"/><rect x="44.5" y="14.5" width="11" height="11" rx="3.5"/><rect x="62.5" y="14.5" width="11" height="11" rx="3.5"/>
+          <rect x="26.5" y="29.5" width="11" height="11" rx="3.5"/><rect x="62.5" y="29.5" width="11" height="11" rx="3.5"/>
+          <rect x="26.5" y="44.5" width="11" height="11" rx="3.5"/><rect x="44.5" y="44.5" width="11" height="11" rx="3.5"/>
+          <rect x="26.5" y="59.5" width="11" height="11" rx="3.5"/><rect x="26.5" y="74.5" width="11" height="11" rx="3.5"/></g>
+        <rect x="62.5" y="44.5" width="11" height="11" rx="3.5" fill="${A}"/>` },
+ { n:'04 · Line system', t:'Ruled lines, torn top',
+   why:'Dense ruled lines like a slip, with a dashed tear line above them. The heavy indigo line is the one that matters.',
+   svg:`<path d="M24 20h52" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="3 5"/>
+        <g stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <path d="M28 34h44"/><path d="M28 44h44" stroke-opacity=".5"/><path d="M28 54h30" stroke-opacity=".5"/>
+          <path d="M28 74h38"/><path d="M28 84h22" stroke-opacity=".5"/></g>
+        <path d="M28 64h44" stroke="${A}" stroke-width="4.5" stroke-linecap="round"/>` },
+ { n:'05 · Lines + geometry', t:'Stub and lens',
+   why:'A tear-off stub with a lens over one line: "look closer". It is the most distinctive mark, since it shows what the product does.',
+   svg:`<rect x="14" y="28" width="72" height="44" rx="6" fill="none" stroke="currentColor" stroke-width="3.5"/>
+        <path d="M34 28v44" stroke="currentColor" stroke-width="2.8" stroke-dasharray="3 5"/>
+        <path d="M21 42h6M21 50h6M21 58h4" stroke="currentColor" stroke-opacity=".4" stroke-width="2.8" stroke-linecap="round"/>
+        <circle cx="58" cy="48" r="12" fill="none" stroke="${A}" stroke-width="4"/>
+        <path d="M52 48h12" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        <path d="M67 57l9 9" stroke="${A}" stroke-width="4" stroke-linecap="round"/>` },
+ { n:'06 · Node network', t:'Many brands, one ingredient',
+   why:'Three brand names run into one ingredient. It is the product\'s core idea, the cumulative mg/day ledger, as a single asymmetric form.',
+   svg:`<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+          <path d="M26 28Q54 28 60 44"/><path d="M26 50H58" stroke-opacity=".7"/><path d="M26 72Q54 72 60 56"/></g>
+        <g fill="currentColor"><circle cx="24" cy="28" r="5"/><circle cx="24" cy="50" r="5"/><circle cx="24" cy="72" r="5"/></g>
+        <circle cx="70" cy="50" r="13" fill="${A}"/>` }
+];
+const mark = (v, s) => `<svg viewBox="0 0 100 100" width="${s}" height="${s}" role="img" aria-label="${v.t}" xmlns="http://www.w3.org/2000/svg">${v.svg}</svg>`;
+document.getElementById('grid').innerHTML = V.map(v => `
+  <article class="card">
+    <div class="hero">${mark(v,128)}</div>
+    <div class="strip">
+      <div class="on-white">${mark(v,44)}<span style="display:flex;gap:8px;align-items:center">${mark(v,24)}${mark(v,16)}</span></div>
+      <div class="on-navy">${mark(v,44)}<span class="lock" style="font-size:1rem">Parchi</span></div>
+    </div>
+    <div class="meta"><div class="n">${v.n}</div><h2>${v.t}</h2><p>${v.why}</p></div>
+  </article>`).join('');
+</script>
+</body>
+</html>

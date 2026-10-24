@@ -37,7 +37,7 @@ Visual inspiration only (github.com/MandyTrl/meditec, no licence, so nothing cop
 
 ## Left to do
 - Swap mock for the real engine (needs C's `pipeline.ts`).
-- Swap `src/ui/history/check.ts` for Track C's `checkHistory` once contracts 5 to 7 are agreed (the shapes are in `src/ui/history/types.ts`, the demo account in `tests/fixtures/demo_history.json`). The default window for a line with no written duration is a placeholder in `src/ui/history/defaults.json`, unverified.
+- Swap `src/ui/history/check.ts` for Track C's `checkHistory` once contracts 5 to 7 are agreed (the shapes are in `src/ui/history/types.ts`, the demo account in `tests/fixtures/demo_orders.json`; Track C's `checkHistory` and its fixture `demo_history.json` are on main now). The default window for a line with no written duration is a placeholder in `src/ui/history/defaults.json`, unverified.
 - FHIR import for orders: no track has it yet.
 - Interaction coverage: once C's alerts exist, list the ingredients the interaction data does not cover ("no hit" is not "safe").
 - Run the pharmacist session; put real reasons, limits and suppression rules into the files above.

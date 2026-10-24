@@ -18,6 +18,7 @@ const IGNORE = new Set([
   'tablets', 'cap', 'caps', 'capsule', 'capsules', 'x', 'for', 'next', 'continue', 'then', 'times', 'time', 'baar',
   'bar', 'max', 'maximum', 'upto', 'up', 'not', 'more', 'than', 'no', 'only', 'if', 'when', 'as', 'required', 'needed',
   'need', 'basis', 'hourly', 'hrly', 'hours', 'hour', 'hrs', 'hr', 'every', 'regularly', 'orally', 'oral', 'po',
+  'till', 'until', 'finished', 'finish', 'review', 'ongoing', 'course', 'follow', 'stop', 'reassess', 'long', 'term', 'lifelong', 'indefinitely',
   'breakfast', 'lunch', 'dinner', 'nashta', 'nashte', 'bhojan', 'tea', 'chai',
 ])
 
@@ -44,6 +45,9 @@ function normalise(raw: string): string {
     .replace(/\s+/g, ' ')
     .trim()
 }
+
+/** Longest course the parser will believe (ten years). */
+export const MAX_DURATION_DAYS = 3650
 
 const toNum = (s: string): number => (s in NUMBER_WORDS ? NUMBER_WORDS[s] : parseFloat(s))
 
@@ -123,13 +127,21 @@ function parseDuration(state: { text: string }): number | undefined {
   // "for a week", "for one month", "for a fortnight": a count of one written as a word. Needs "for" so "once a week" is not a duration.
   const word = take(state, /\bfor\s+(?:the\s+next\s+)?(?:a|an|one)\s+(day|week|month|fortnight)\b/)
   if (word) return { day: 1, week: 7, fortnight: 14, month: 30 }[word[1] as 'day' | 'week' | 'fortnight' | 'month']
+  // Shorthand "x 5/7" (days), "2/52" (weeks), "1/12" (months)
+  const frac = take(state, new RegExp(`(?:\\bx|\\bfor)\\s*(\\d{1,3})\\s*/\\s*(7|52|12)\\b|(?<![\\w.-])(\\d{1,3})\\s*/\\s*(52|12)\\b`))
+  if (frac) {
+    const n = Number(frac[1] ?? frac[3])
+    const per = frac[2] ?? frac[4]
+    return per === '7' ? n : per === '52' ? n * 7 : n * 30
+  }
+  // "5 days", "x 3-5 days" (a range uses the upper end, the longer course), "for 2 weeks"
   const m = take(
     state,
-    new RegExp(`(?:(?:\\bx|\\bfor\\s+(?:next\\s+)?|\\bnext\\s+|\\bcontinue\\s+for\\s+)\\s*|(?<![\\w.-]))(${NUM})\\s*(days?|d|din|weeks?|wks?|w|hafta|hafte|haftey|fortnights?|months?|mths?|mahina|mahine)\\b`),
+    new RegExp(`(?:(?:\\bx|\\bfor\\s+(?:next\\s+)?|\\bnext\\s+|\\bcontinue\\s+for\\s+)\\s*|(?<![\\w.-]))(${NUM})(?:\\s*-\\s*(${NUM}))?\\s*(days?|d|din|weeks?|wks?|w|hafta|hafte|haftey|fortnights?|months?|mths?|mahina|mahine)\\b`),
   )
   if (!m) return undefined
-  const n = Number(m[1])
-  const unit = m[2]
+  const n = Math.max(Number(m[1]), m[2] !== undefined ? Number(m[2]) : 0)
+  const unit = m[3]
   if (/^fortnight/.test(unit)) return n * 14
   if (/^(?:w|wks?|weeks?|haft)/.test(unit)) return n * 7
   if (/^(?:m|mth|mahin)/.test(unit)) return n * 30
@@ -139,7 +151,11 @@ function parseDuration(state: { text: string }): number | undefined {
 /** Parse the dosing part of one prescription line. Never throws; unknown text lowers `confidence`. */
 export function parseSig(raw: string): Sig {
   // "2 tab stat then 1 tab TDS", "1-0-1 x5d then 1-0-0": more than one phase. Daily totals use the highest phase.
-  const phases = normalise(raw).split(/\b(?:then|followed by|thereafter|phir)\b/).map((p) => p.trim()).filter(Boolean)
+  // "x 10 days then stop" / "then review" is one phase: the closing word is not a dose.
+  const phases = normalise(raw)
+    .split(/\b(?:then|followed by|thereafter|phir)\b/)
+    .map((p) => p.trim())
+    .filter((p) => p && !/^(?:stop|stopped|review|and review|finish|finished|discontinue|reassess)$/.test(p))
   if (phases.length > 1) {
     const parsed = phases.map(parseSig)
     const worst = parsed.reduce((a, b) => (Math.max(b.doses_per_day, b.max_doses_per_day) > Math.max(a.doses_per_day, a.max_doses_per_day) ? b : a))
@@ -154,7 +170,10 @@ export function parseSig(raw: string): Sig {
   const unparsed: string[] = []
 
   const stat = take(state, /\bstat\b/) !== null
-  const duration_days = parseDuration(state)
+  const durationRaw = parseDuration(state)
+  // A course of 0 days or more than ten years is a typo or noise, not a duration: ignore it and say so.
+  const duration_days = durationRaw !== undefined && durationRaw >= 1 && durationRaw <= MAX_DURATION_DAYS ? durationRaw : undefined
+  if (durationRaw !== undefined && duration_days === undefined) assumptions.push(`Course length "${durationRaw}" days is not plausible and was ignored`)
   const slotMatch = parseSlots(state)
   const sosRe = /\b(?:sos|prn|as needed|as required|as and when required|if needed|if required|when needed|when required|need basis|jab zaroorat ho|zaroorat padne par|zaroorat ho to|zarurat ho to|if (?:fever|pain|vomiting|nausea|cough))\b/
   let sos = false

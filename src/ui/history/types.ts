@@ -1,26 +1,12 @@
-// Phase 2 shapes, mirroring the contracts PLAN.md proposes (5 Prescription, 6 LabResult, 7 history result).
-// They live here until the team agrees them; then they move to src/engine/contracts.ts (additive) and Track C's
-// `checkHistory` replaces src/ui/history/check.ts.
+// Review-desk shapes (Track D). Prescription, LabResult and OrderStatus are the shared contracts (src/engine/contracts.ts).
+// The rest are what the screens need around them: an order, a line with its dates, an alert with the prescribers named.
+// Track C's `checkHistory` now exists on main; src/ui/history/check.ts can be replaced by it, mapping its result to these.
 import type { Alert, Ledger, ResolvedBrand, Sig, Tier } from '../../engine/contracts'
 import type { PatientPrompt } from '../engine'
 
-/** Contract 5. `text` is the digitised prescription, one medicine per line or separated by semicolons. */
-export interface Prescription {
-  id: string
-  doctor: string
-  /** ISO date, YYYY-MM-DD */
-  date: string
-  text: string
-}
-
-/** Contract 6. The latest value feeds the kidney estimate. */
-export interface LabResult {
-  type: 'serum_creatinine'
-  /** mg/dL */
-  value: number
-  /** ISO date */
-  date: string
-}
+// Contracts 5 and 6 and the status of contract 7 now live in src/engine/contracts.ts (Track C landed them).
+export type { LabResult, OrderStatus, Prescription } from '../../engine/contracts'
+import type { LabResult, OrderStatus, Prescription } from '../../engine/contracts'
 
 export interface Customer {
   name: string
@@ -40,9 +26,6 @@ export interface Order {
   /** Results that reached the platform but are not in the check yet; adding one triggers a re-check. */
   incoming_labs?: LabResult[]
 }
-
-/** Contract 7: what Parchi suggests; the pharmacist decides. */
-export type OrderStatus = 'clear' | 'clear_with_note' | 'hold_contact_doctor'
 
 export interface HistoryLine {
   /** Position in `HistoryResult.lines` */

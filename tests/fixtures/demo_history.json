@@ -1,34 +1,28 @@
 {
-  "_note": "Phase 2 demo account shaped like an e-pharmacy review desk (docs/BUSINESS_MODEL.md section 6): three orders, three doctors on the first one, a creatinine result that has reached the platform but is not in the check yet. Names are made up. Dates are ISO. Additive only.",
-  "orders": [
-    {
-      "id": "ORD-1087",
-      "placed": "2026-10-24",
-      "customer": { "name": "Ramesh K.", "age_years": 68, "sex": "M", "weight_kg": 55 },
-      "prescriptions": [
-        { "id": "rx-1087-a", "doctor": "Dr Mehta (general physician)", "date": "2026-10-19", "text": "Dolo 650 1-1-1 x5d; Crocin cold n flu max TDS" },
-        { "id": "rx-1087-b", "doctor": "Dr Rao (orthopaedics)", "date": "2026-10-21", "text": "Zerodol P BD; Brufan 400 SOS" },
-        { "id": "rx-1087-c", "doctor": "Dr Iyer (cardiology)", "date": "2026-10-23", "text": "Ecosprin 75 OD; Pan D OD; Omez 20 OD" }
-      ],
-      "labs": [],
-      "incoming_labs": [{ "type": "serum_creatinine", "value": 1.6, "date": "2026-10-23" }]
+  "_note": "Phase 2 demo: the demo patient (68 y) seen by three doctors in October 2026, ordering from one e-pharmacy. Serum creatinine arrives after the orders. Dates are ISO; durations are in the sig (x10d). Each Rx is an order to review as of its own date. Additive only.",
+  "patient": { "age_years": 68, "weight_kg": 55, "sex": "M" },
+  "prescriptions": [
+    { "id": "rx-1", "doctor": "Dr Rao (GP)", "date": "2026-10-01", "text": "Dolo 650 1-1-1 x10d; Zerodol P BD x10d; Omez 20 OD x10d" },
+    { "id": "rx-2", "doctor": "Dr Mehta (Orthopaedics)", "date": "2026-10-05", "text": "Crocin cold n flu max TDS x5d; Brufan 400 TDS x7d; Pan D OD x7d" },
+    { "id": "rx-3", "doctor": "Dr Iyer (Cardiology)", "date": "2026-10-08", "text": "Ecosprin 75 OD x30d; Tab Foo 250 BD x5d" }
+  ],
+  "labs": [{ "type": "serum_creatinine", "value": 1.6, "date": "2026-10-09" }],
+  "expected": {
+    "paracetamol_overlap": { "order": "rx-2", "start": "2026-10-05", "end": "2026-10-10", "mg_day": 4100, "rx_ids": ["rx-1", "rx-2"], "doctors": ["Dr Rao (GP)", "Dr Mehta (Orthopaedics)"] },
+    "ddi_aspirin_ibuprofen": { "order": "rx-3", "start": "2026-10-08", "end": "2026-10-12" },
+    "unknown_brand": { "order": "rx-3", "raw": "Tab Foo 250", "proposed": "Alfoo 10mg" },
+    "without_lab": {
+      "rx-1": { "status": "clear_with_note", "interrupts": [] },
+      "rx-2": { "status": "hold_contact_doctor", "interrupts": ["dose_excess"] },
+      "rx-3": { "status": "hold_contact_doctor", "interrupts": ["dose_excess"] }
     },
-    {
-      "id": "ORD-1088",
-      "placed": "2026-10-24",
-      "customer": { "name": "Sunita D.", "age_years": 34, "sex": "F", "weight_kg": 62 },
-      "prescriptions": [{ "id": "rx-1088-a", "doctor": "Dr Sharma (general physician)", "date": "2026-10-23", "text": "Dolo 650 TDS x3d; Omez 20 OD x7d" }],
-      "labs": []
+    "with_lab": {
+      "creatinine": { "value": 1.6, "date": "2026-10-09" },
+      "rx-1": { "status": "hold_contact_doctor", "interrupts": ["nsaid_renal"] },
+      "rx-2": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_renal"] },
+      "rx-3": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_renal"] },
+      "queue": ["rx-3", "rx-2", "rx-1"]
     },
-    {
-      "id": "ORD-1089",
-      "placed": "2026-10-24",
-      "customer": { "name": "Anil P.", "age_years": 52, "sex": "M", "weight_kg": 78 },
-      "prescriptions": [
-        { "id": "rx-1089-a", "doctor": "Dr Verma (cardiology)", "date": "2026-10-20", "text": "Ecosprin 75 OD x30d" },
-        { "id": "rx-1089-b", "doctor": "Dr Shah (general physician)", "date": "2026-10-22", "text": "Brufen 400 TDS x5d; Xylocort DX 400 OD x5d" }
-      ],
-      "labs": [{ "type": "serum_creatinine", "value": 0.9, "date": "2026-10-18" }]
-    }
-  ]
+    "recheck_rx-2": { "added": ["nsaid_renal"], "cleared": ["input_needed"] }
+  }
 }

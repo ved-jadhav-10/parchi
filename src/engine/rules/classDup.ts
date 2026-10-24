@@ -1,6 +1,6 @@
 // Therapeutic class duplication: two different ingredients of one class from different brands.
 import type { Alert } from '../contracts'
-import { confidenceOf, joinNames, lineLabel, linesByIngredient, uniqueLines, type Rule } from './types'
+import { confidenceOf, joinNames, lineDesc, lineLabel, linesByIngredient, originFields, uniqueLines, type Rule } from './types'
 
 export const classDupRule: Rule = (ctx) => {
   const byIng = linesByIngredient(ctx)
@@ -15,11 +15,12 @@ export const classDupRule: Rule = (ctx) => {
       tier: rule.tier,
       type: 'class_duplication',
       ingredients: ids,
-      reason: `Two or more ${rule.label}: ${joinNames(ids.map((id) => ctx.info(id).name))} (${joinNames(lines.map(lineLabel))}). Pharmacist to confirm this is intended.`,
+      reason: `Two or more ${rule.label}: ${joinNames(ids.map((id) => ctx.info(id).name))} (${joinNames(lines.map(lineDesc))}). Pharmacist to confirm this is intended.`,
       source: rule.source,
       confidence: confidenceOf(lines),
       brands: lines.map(lineLabel),
       approved: rule.pharmacist_approved,
+      ...originFields(lines),
     })
   }
   return alerts

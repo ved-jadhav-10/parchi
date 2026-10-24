@@ -63,6 +63,22 @@ const cases: [string, number, number, boolean, number | undefined][] = [
   ['twice a week', 2 / 7, 2 / 7, false, undefined],
   ['alternate days', 0.5, 0.5, false, undefined],
   ['once monthly', 1 / 30, 1 / 30, false, undefined],
+  // course lengths written as ranges and as British shorthand (days/weeks/months)
+  ['BD x 3-5 days', 2, 2, false, 5],
+  ['1 tab TDS for 3-5 days', 3, 3, false, 5],
+  ['BD x 5-7d', 2, 2, false, 7],
+  ['OD for 1-2 weeks', 1, 1, false, 14],
+  ['OD x 5/7', 1, 1, false, 5],
+  ['BD x 2/52', 2, 2, false, 14],
+  ['OD x 1/12', 1, 1, false, 30],
+  ['1-0-1 x 3/12', 2, 2, false, 90],
+  ['1-0-1 x 3-5 days', 2, 2, false, 5],
+  ['BD till finished', 2, 2, false, undefined],
+  ['BD course of 7 days', 2, 2, false, 7],
+  ['OD continue till review', 1, 1, false, undefined],
+  ['TDS x 10 days then stop', 3, 3, false, 10],
+  ['BD x 1 week and review', 2, 2, false, 7],
+  ['OD ongoing', 1, 1, false, undefined],
   // "week" as a duration, not a schedule
   ['1 tab BD for a week', 2, 2, false, 7],
   ['TDS for one week', 3, 3, false, 7],
@@ -182,6 +198,16 @@ describe('parseSig', () => {
     const s = parseSig('ut dict')
     expect(s.confidence).toBeLessThan(0.7)
     expect(s.unparsed).toEqual(['ut', 'dict'])
+  })
+
+  it('ignores an implausible course length (0 days, more than ten years) and says so', () => {
+    for (const t of ['BD x 0 days', 'BD x 99999 days', 'BD for 400 months']) {
+      const s = parseSig(t)
+      expect(s.duration_days).toBeUndefined()
+      expect(s.doses_per_day).toBe(2)
+      expect(s.assumptions?.join(' ')).toMatch(/not plausible and was ignored/)
+    }
+    expect(parseSig('BD x 3650 days').duration_days).toBe(3650)
   })
 
   it('never throws on odd input', () => {

@@ -1,8 +1,13 @@
+// One CrCl for the whole engine: Track B's Cockcroft-Gault (adults only, needs weight, creatinine and sex).
 import type { Patient } from '../contracts'
+import { cockcroftGault as cg, type CrclResult } from '../limits/crcl'
 
-/** Cockcroft-Gault creatinine clearance in mL/min, or null when age, weight or creatinine is missing. */
+/** Creatinine clearance in mL/min, or null when it cannot be calculated. */
 export function cockcroftGault(p: Patient): number | null {
-  if (!p.weight_kg || !p.serum_creatinine || p.serum_creatinine <= 0) return null
-  const crcl = ((140 - p.age_years) * p.weight_kg) / (72 * p.serum_creatinine)
-  return Math.max(0, p.sex === 'F' ? crcl * 0.85 : crcl)
+  return cg(p).value
+}
+
+/** Why CrCl could not be calculated: inputs to ask for. Empty for a child (formula not built) or when it is known. */
+export function crclMissing(p: Patient): CrclResult['missing'] {
+  return cg(p).missing
 }
