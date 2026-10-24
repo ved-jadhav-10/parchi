@@ -47,6 +47,26 @@ Clinical numbers are data, not code. **Every value is `pharmacist_approved: fals
 
 `LimitFinding.kind` is a fact, not a tier. Suggested mapping for Track C: `over_limit` (not `sos_dependent`) and `renal_avoid` = Interrupt candidates; `renal_caution` and `sos_dependent` = Inform.
 
+## Phase 2
+
+**Wire me into the pipeline (Track C).** `createDoseDeps(resolver)` returns exactly what `createPipeline` injects, plus `computeDose` for the findings and questions the interface cannot carry:
+
+```ts
+const d = createDoseDeps(resolver)
+const check = createPipeline({ resolver, ddi, rules, parseSig: d.parseSig, buildLedger: d.buildLedger })
+```
+`src/engine/ledger/pipeline.test.ts` runs C's pipeline on this and reproduces the fixture (4,100 mg, 2 Interrupts, 3-4 Informs).
+
+**Dated lines and overlap windows** (`windows.ts`, pure functions, shapes match PLAN contracts 5-6 without needing them frozen):
+- `lineWindow(rxDate, sig)`: start = Rx date, end = start + `duration_days` - 1 (inclusive); no duration = `limits.json` `windows.default_duration_days` (30, unverified) with `duration_assumed: true`.
+- `cutSegments(spans)`: cuts the timeline at every start/end; each segment has one fixed set of active lines.
+- `patientAsOf(patient, labs, date)`: latest `serum_creatinine` on or before the date.
+- `computeDoseByWindow(items, patient, labs)`: runs `computeDose` per window (a lab date inside an overlap starts a new window, so a kidney re-check applies from that day), returns `windows[]` (each with its `dose` and `assumed_duration_ids`), `worst` (most over-limit findings, then highest total/limit) and `skipped` ids (bad date). Windows are also what C needs for "what changed" after a re-check: run it with and without the new lab and diff the findings.
+
+**Kidney bands:** 34 ingredients now have limit data (23 added: 6 more NSAIDs, nitrofurantoin, spironolactone, fluoroquinolones, gabapentin, pregabalin, allopurinol, tramadol, cefixime, sitagliptin, famotidine, metoclopramide, baclofen, colchicine, sulfamethoxazole, digoxin). All `pharmacist_approved: false`; sources say "usual labelled adjustment, not yet checked against the Indian label". More drugs on a prescription now trigger the creatinine/weight/sex question.
+
+**`api/check`** (POST `{ rx_text, patient }`, header `x-api-key`): same engine server-side; returns `alerts`, `lines`, `ledger`, `findings`, `needs`, `crcl_ml_min`, `notes`. Keys in `CHECK_API_KEYS` (comma separated); none set = 503. Validates body size (20 KB), Rx length (2,000 chars, 30 lines) and patient ranges; errors never leak internals. Needs `public/data/**` in the function bundle on Vercel (`vercel.json` `includeFiles`). Not built: rate limiting, usage metering, a history endpoint (waits for C's `checkHistory`).
+
 ## Not built
 
 Paediatric kidney function (Schwartz), ideal-body-weight CrCl, Devanagari sigs, `x5` with no unit, "after meals 1 then 2" style meal-specific doses, drops/puffs to mg, rate limiting on `api/parse-sig`. The LLM fallback was checked live on 14 texts with `gemini-3.5-flash-lite` (correct on the readable ones; it refused "as per doctor's advice" and a prompt-injection text after the schema fix); it has no server-side rate limiting, so protect the deployed endpoint before sharing the URL. Speed: sig + ledger + limits take about 0.09 ms for the 7-line demo prescription (Track A's resolver about 2.5 ms).

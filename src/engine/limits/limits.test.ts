@@ -138,6 +138,49 @@ describe('applyLimits', () => {
   })
 })
 
+describe('kidney bands for more drugs (Phase 2)', () => {
+  const crclTen = { age_years: 70, weight_kg: 60, sex: 'M' as const }
+  const at = (scr: number) => ({ ...crclTen, serum_creatinine: scr })
+  it('lowers gabapentin and pregabalin caps band by band, lowest band wins', () => {
+    // CrCl = (140-70) x 60 / (72 x scr)
+    expect(applyLimits({ gabapentin: entry(1200) }, at(1.2)).ledger.gabapentin.limit_mg_day).toBe(1400) // 48.6
+    const g30 = applyLimits({ gabapentin: entry(1200) }, at(2.5)) // 23.3
+    expect(g30.ledger.gabapentin.limit_mg_day).toBe(700)
+    expect(g30.findings.map((f) => f.kind)).toEqual(['over_limit'])
+    expect(applyLimits({ gabapentin: entry(200) }, at(5)).ledger.gabapentin.limit_mg_day).toBe(300) // 11.7
+    expect(applyLimits({ pregabalin: entry(300) }, at(2.5)).ledger.pregabalin.limit_mg_day).toBe(150)
+    expect(applyLimits({ gabapentin: entry(3600) }, at(0.7)).ledger.gabapentin.limit_mg_day).toBeUndefined() // 83: no kidney cap, no adult limit in data
+  })
+  it('flags avoid and caution drugs, and each NSAID in the list gets the NSAID rule', () => {
+    expect(applyLimits({ nitrofurantoin: entry(200) }, at(2.5)).findings.map((f) => f.kind)).toEqual(['renal_avoid'])
+    expect(applyLimits({ nitrofurantoin: entry(200) }, at(1.2)).findings).toEqual([])
+    expect(applyLimits({ spironolactone: entry(25) }, at(2.5)).findings.map((f) => f.kind)).toEqual(['renal_avoid'])
+    expect(applyLimits({ levofloxacin: entry(500) }, at(1.2)).findings.map((f) => f.kind)).toEqual(['renal_caution'])
+    for (const nsaid of ['naproxen', 'etoricoxib', 'nimesulide', 'piroxicam', 'mefenamic_acid', 'ketorolac']) {
+      expect(applyLimits({ [nsaid]: entry(100) }, at(1.2)).findings.map((f) => f.kind)).toEqual(['renal_caution'])
+      expect(applyLimits({ [nsaid]: entry(100) }, at(2.5)).findings.map((f) => f.kind)).toEqual(['renal_avoid'])
+    }
+  })
+  it('caps tramadol, allopurinol, cefixime and sitagliptin only in their bands', () => {
+    expect(applyLimits({ tramadol: entry(300) }, at(2.5)).ledger.tramadol.limit_mg_day).toBe(200)
+    expect(applyLimits({ tramadol: entry(300) }, at(1.2)).ledger.tramadol.limit_mg_day).toBeUndefined()
+    expect(applyLimits({ sitagliptin: entry(100) }, at(1.8)).ledger.sitagliptin.limit_mg_day).toBe(50) // 32.4
+    expect(applyLimits({ sitagliptin: entry(100) }, at(2.5)).ledger.sitagliptin.limit_mg_day).toBe(25)
+    expect(applyLimits({ allopurinol: entry(300) }, at(5)).ledger.allopurinol.limit_mg_day).toBe(200)
+    expect(applyLimits({ cefixime: entry(400) }, at(5)).ledger.cefixime.limit_mg_day).toBe(200)
+  })
+  it('asks for kidney inputs when one of the new drugs is on the prescription', () => {
+    expect(neededInputs(['gabapentin'], { age_years: 70 }).map((n) => n.field).sort()).toEqual(['serum_creatinine', 'sex', 'weight_kg'])
+    expect(neededInputs(['gabapentin'], at(1.2))).toEqual([])
+  })
+  it('uses ids that exist in the Track A ingredient table', async () => {
+    const { rawData } = await import('../resolver/testing')
+    const known = rawData.ingredients().ingredients
+    const missing = Object.keys(LIMITS.ingredients).filter((id) => !(id in known))
+    expect(missing).toEqual([])
+  })
+})
+
 describe('limits data', () => {
   it('every number carries a source and a pharmacist_approved flag, and none is pre-approved', () => {
     const rules: { source?: string; pharmacist_approved?: boolean }[] = []

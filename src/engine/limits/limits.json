@@ -9,68 +9,508 @@
   "sos": {
     "_note": "Worst-case doses per day assumed for an SOS (as needed) line when the prescription gives no maximum. 'Doses' means tablets/capsules/measures. Example values from PS_ANALYSIS.md section 4 question 3; pharmacist to set.",
     "by_ingredient": {
-      "paracetamol": { "max_doses_per_day": 4, "source": "PS_ANALYSIS.md section 4 q3 example (paracetamol SOS up to 4/day)", "pharmacist_approved": false }
+      "paracetamol": {
+        "max_doses_per_day": 4,
+        "source": "PS_ANALYSIS.md section 4 q3 example (paracetamol SOS up to 4/day)",
+        "pharmacist_approved": false
+      }
     },
     "by_class": {
-      "nsaid": { "max_doses_per_day": 3, "source": "PS_ANALYSIS.md section 4 q3 example (NSAID SOS up to 3/day)", "pharmacist_approved": false }
+      "nsaid": {
+        "max_doses_per_day": 3,
+        "source": "PS_ANALYSIS.md section 4 q3 example (NSAID SOS up to 3/day)",
+        "pharmacist_approved": false
+      }
     },
-    "fallback": { "max_doses_per_day": 3, "source": "Assumed: three doses a day (TDS) is the commonest SOS ceiling. Pharmacist to confirm or replace.", "pharmacist_approved": false }
+    "fallback": {
+      "max_doses_per_day": 3,
+      "source": "Assumed: three doses a day (TDS) is the commonest SOS ceiling. Pharmacist to confirm or replace.",
+      "pharmacist_approved": false
+    }
   },
   "ingredients": {
     "paracetamol": {
-      "adult": { "max_mg_day": 4000, "source": "Standard adult labelled maximum (4 g/day). Confirm against the NFI / approved Indian label.", "pharmacist_approved": false },
-      "elderly": { "max_mg_day": 3000, "source": "Conservative cap commonly applied to frail or elderly patients; not a label maximum. Pharmacist to decide.", "pharmacist_approved": false },
-      "paediatric": { "max_mg_per_kg_day": 60, "source": "Usual paediatric maximum 60 mg/kg/day (15 mg/kg per dose). Confirm against NFI.", "pharmacist_approved": false }
+      "adult": {
+        "max_mg_day": 4000,
+        "source": "Standard adult labelled maximum (4 g/day). Confirm against the NFI / approved Indian label.",
+        "pharmacist_approved": false
+      },
+      "elderly": {
+        "max_mg_day": 3000,
+        "source": "Conservative cap commonly applied to frail or elderly patients; not a label maximum. Pharmacist to decide.",
+        "pharmacist_approved": false
+      },
+      "paediatric": {
+        "max_mg_per_kg_day": 60,
+        "source": "Usual paediatric maximum 60 mg/kg/day (15 mg/kg per dose). Confirm against NFI.",
+        "pharmacist_approved": false
+      }
     },
     "ibuprofen": {
-      "adult": { "max_mg_day": 2400, "source": "Prescription adult maximum 2,400 mg/day (OTC use is lower, 1,200 mg/day). Confirm against NFI.", "pharmacist_approved": false },
-      "paediatric": { "max_mg_per_kg_day": 40, "source": "Usual paediatric maximum 40 mg/kg/day. Confirm against NFI.", "pharmacist_approved": false },
+      "adult": {
+        "max_mg_day": 2400,
+        "source": "Prescription adult maximum 2,400 mg/day (OTC use is lower, 1,200 mg/day). Confirm against NFI.",
+        "pharmacist_approved": false
+      },
+      "paediatric": {
+        "max_mg_per_kg_day": 40,
+        "source": "Usual paediatric maximum 40 mg/kg/day. Confirm against NFI.",
+        "pharmacist_approved": false
+      },
       "renal": [
-        { "crcl_below": 30, "action": "avoid", "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.", "pharmacist_approved": false },
-        { "crcl_below": 60, "action": "caution", "source": "NSAIDs can reduce kidney function; use lowest dose for the shortest time and monitor. Pharmacist to confirm.", "pharmacist_approved": false }
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; use lowest dose for the shortest time and monitor. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
       ]
     },
     "aceclofenac": {
-      "adult": { "max_mg_day": 200, "source": "Usual labelled dose 100 mg twice daily (200 mg/day). Confirm against the Indian label.", "pharmacist_approved": false },
+      "adult": {
+        "max_mg_day": 200,
+        "source": "Usual labelled dose 100 mg twice daily (200 mg/day). Confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
-        { "crcl_below": 30, "action": "avoid", "source": "NSAIDs are generally avoided below CrCl 30 mL/min. Pharmacist to confirm.", "pharmacist_approved": false },
-        { "crcl_below": 60, "action": "caution", "source": "NSAIDs can reduce kidney function; lowest dose, shortest time. Pharmacist to confirm.", "pharmacist_approved": false }
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose, shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
       ]
     },
     "diclofenac": {
-      "adult": { "max_mg_day": 150, "source": "Usual adult maximum 150 mg/day. Confirm against NFI.", "pharmacist_approved": false },
+      "adult": {
+        "max_mg_day": 150,
+        "source": "Usual adult maximum 150 mg/day. Confirm against NFI.",
+        "pharmacist_approved": false
+      },
       "renal": [
-        { "crcl_below": 30, "action": "avoid", "source": "NSAIDs are generally avoided below CrCl 30 mL/min. Pharmacist to confirm.", "pharmacist_approved": false },
-        { "crcl_below": 60, "action": "caution", "source": "NSAIDs can reduce kidney function; lowest dose, shortest time. Pharmacist to confirm.", "pharmacist_approved": false }
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose, shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
       ]
     },
     "cetirizine": {
-      "adult": { "max_mg_day": 10, "source": "Usual adult dose 10 mg once daily. Confirm against the label.", "pharmacist_approved": false },
+      "adult": {
+        "max_mg_day": 10,
+        "source": "Usual adult dose 10 mg once daily. Confirm against the label.",
+        "pharmacist_approved": false
+      },
       "renal": [
-        { "crcl_below": 30, "action": "max_mg_day", "max_mg_day": 5, "source": "Label advises halving the dose in moderate to severe kidney impairment. Pharmacist to confirm the cut-off.", "pharmacist_approved": false }
+        {
+          "crcl_below": 30,
+          "action": "max_mg_day",
+          "max_mg_day": 5,
+          "source": "Label advises halving the dose in moderate to severe kidney impairment. Pharmacist to confirm the cut-off.",
+          "pharmacist_approved": false
+        }
       ]
     },
     "levocetirizine": {
-      "adult": { "max_mg_day": 5, "source": "Usual adult dose 5 mg once daily. Confirm against the label.", "pharmacist_approved": false }
+      "adult": {
+        "max_mg_day": 5,
+        "source": "Usual adult dose 5 mg once daily. Confirm against the label.",
+        "pharmacist_approved": false
+      }
     },
     "chlorphenamine": {
-      "adult": { "max_mg_day": 24, "source": "Usual adult maximum 24 mg/day (4 mg every 4-6 hours). Confirm against NFI.", "pharmacist_approved": false }
+      "adult": {
+        "max_mg_day": 24,
+        "source": "Usual adult maximum 24 mg/day (4 mg every 4-6 hours). Confirm against NFI.",
+        "pharmacist_approved": false
+      }
     },
     "pantoprazole": {
-      "adult": { "max_mg_day": 80, "source": "Upper labelled dose 80 mg/day; most indications use 40 mg/day. Pharmacist to decide which to alert on.", "pharmacist_approved": false }
+      "adult": {
+        "max_mg_day": 80,
+        "source": "Upper labelled dose 80 mg/day; most indications use 40 mg/day. Pharmacist to decide which to alert on.",
+        "pharmacist_approved": false
+      }
     },
     "omeprazole": {
-      "adult": { "max_mg_day": 40, "source": "Usual maximum 40 mg/day for reflux and ulcer; higher doses are specialist use (Zollinger-Ellison). Pharmacist to decide.", "pharmacist_approved": false }
+      "adult": {
+        "max_mg_day": 40,
+        "source": "Usual maximum 40 mg/day for reflux and ulcer; higher doses are specialist use (Zollinger-Ellison). Pharmacist to decide.",
+        "pharmacist_approved": false
+      }
     },
     "domperidone": {
-      "adult": { "max_mg_day": 30, "source": "Usual adult maximum 30 mg/day (10 mg up to three times daily), per European Medicines Agency 2014 restriction. Confirm against the Indian label.", "pharmacist_approved": false }
+      "adult": {
+        "max_mg_day": 30,
+        "source": "Usual adult maximum 30 mg/day (10 mg up to three times daily), per European Medicines Agency 2014 restriction. Confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
     },
     "metformin": {
-      "adult": { "max_mg_day": 2000, "source": "Usual effective maximum 2,000 mg/day (labels allow up to 2,550 mg for some brands). Pharmacist to decide.", "pharmacist_approved": false },
+      "adult": {
+        "max_mg_day": 2000,
+        "source": "Usual effective maximum 2,000 mg/day (labels allow up to 2,550 mg for some brands). Pharmacist to decide.",
+        "pharmacist_approved": false
+      },
       "renal": [
-        { "crcl_below": 30, "action": "avoid", "source": "Metformin is contraindicated below eGFR 30 mL/min (lactic acidosis). Pharmacist to confirm.", "pharmacist_approved": false },
-        { "crcl_below": 45, "action": "max_mg_day", "max_mg_day": 1000, "source": "Dose is commonly halved at eGFR 30-45 mL/min. Pharmacist to confirm.", "pharmacist_approved": false }
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "Metformin is contraindicated below eGFR 30 mL/min (lactic acidosis). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 45,
+          "action": "max_mg_day",
+          "max_mg_day": 1000,
+          "source": "Dose is commonly halved at eGFR 30-45 mL/min. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "naproxen": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "etoricoxib": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "nimesulide": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "piroxicam": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "mefenamic_acid": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "ketorolac": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "NSAIDs are generally avoided below CrCl 30 mL/min (kidney injury). Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "nitrofurantoin": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "AGS Beers Criteria 2023 advises avoiding below CrCl 30 mL/min. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "spironolactone": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "avoid",
+          "source": "Risk of high potassium; AGS Beers Criteria 2023 advises avoiding below CrCl 30 mL/min. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "levofloxacin": {
+      "renal": [
+        {
+          "crcl_below": 50,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "ciprofloxacin": {
+      "renal": [
+        {
+          "crcl_below": 50,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "ofloxacin": {
+      "renal": [
+        {
+          "crcl_below": 50,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "gabapentin": {
+      "renal": [
+        {
+          "crcl_below": 60,
+          "action": "max_mg_day",
+          "max_mg_day": 1400,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 30,
+          "action": "max_mg_day",
+          "max_mg_day": 700,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 15,
+          "action": "max_mg_day",
+          "max_mg_day": 300,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "pregabalin": {
+      "renal": [
+        {
+          "crcl_below": 60,
+          "action": "max_mg_day",
+          "max_mg_day": 300,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 30,
+          "action": "max_mg_day",
+          "max_mg_day": 150,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 15,
+          "action": "max_mg_day",
+          "max_mg_day": 75,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "allopurinol": {
+      "renal": [
+        {
+          "crcl_below": 20,
+          "action": "max_mg_day",
+          "max_mg_day": 200,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 10,
+          "action": "max_mg_day",
+          "max_mg_day": 100,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "tramadol": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "max_mg_day",
+          "max_mg_day": 200,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "cefixime": {
+      "renal": [
+        {
+          "crcl_below": 21,
+          "action": "max_mg_day",
+          "max_mg_day": 200,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "sitagliptin": {
+      "renal": [
+        {
+          "crcl_below": 45,
+          "action": "max_mg_day",
+          "max_mg_day": 50,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 30,
+          "action": "max_mg_day",
+          "max_mg_day": 25,
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "famotidine": {
+      "renal": [
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "metoclopramide": {
+      "renal": [
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "baclofen": {
+      "renal": [
+        {
+          "crcl_below": 60,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "colchicine": {
+      "renal": [
+        {
+          "crcl_below": 30,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "sulfamethoxazole": {
+      "renal": [
+        {
+          "crcl_below": 15,
+          "action": "avoid",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        },
+        {
+          "crcl_below": 30,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
+      ]
+    },
+    "digoxin": {
+      "renal": [
+        {
+          "crcl_below": 50,
+          "action": "caution",
+          "source": "Usual labelled renal dose adjustment; not yet checked against the Indian label. Pharmacist to confirm.",
+          "pharmacist_approved": false
+        }
       ]
     }
+  },
+  "windows": {
+    "default_duration_days": 30,
+    "source": "Assumed: a one-month supply is the commonest course for a line with no duration written. Pharmacist to confirm or set per class.",
+    "pharmacist_approved": false
   }
 }
