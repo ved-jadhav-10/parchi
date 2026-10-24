@@ -487,8 +487,8 @@
         "esomeprazole"
       ],
       "level": "major",
-      "note": "omeprazole and esomeprazole block the enzyme (CYP2C19) that turns clopidogrel into its active form, so it protects the heart less; the label says to avoid the combination (not a contraindication, so not an Interrupt: FIX_PLAN 1.1)",
-      "source": "US FDA label (DailyMed setid 0078fb3d-3595-4ae1-a059-1d5e81c879cf), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "note": "omeprazole and esomeprazole block the enzyme (CYP2C19) that turns clopidogrel into its active form, so it protects the heart less; the label says to avoid the combination",
+      "source": "US FDA label (DailyMed setid 0078fb3d-3595-4ae1-a059-1d5e81c879cf); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -512,7 +512,7 @@
       ],
       "level": "major",
       "note": "ibuprofen can block low-dose aspirin's antiplatelet effect, so aspirin may protect the heart less",
-      "source": "US FDA label (DailyMed setid 0170876a-d8cd-4a2d-8397-db2acdf72ffb), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 0170876a-d8cd-4a2d-8397-db2acdf72ffb); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -546,7 +546,7 @@
       ],
       "level": "moderate",
       "note": "NSAIDs can weaken the blood-pressure lowering of ACE inhibitors",
-      "source": "US FDA label (DailyMed setid 0170876a-d8cd-4a2d-8397-db2acdf72ffb), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 0170876a-d8cd-4a2d-8397-db2acdf72ffb); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -582,7 +582,7 @@
       ],
       "level": "moderate",
       "note": "NSAIDs can weaken the effect of loop and thiazide diuretics",
-      "source": "US FDA label (DailyMed setid 0387bfaa-daca-48ec-b718-0216a848c16a), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 0387bfaa-daca-48ec-b718-0216a848c16a); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -620,7 +620,7 @@
       ],
       "level": "major",
       "note": "calcium, iron, zinc, antacids and sucralfate bind the antibiotic in the gut, so less is absorbed; the label separates the doses",
-      "source": "US FDA label (DailyMed setid 0fac4466-fbe5-49d2-96e3-e3ac2739bd5b), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 0fac4466-fbe5-49d2-96e3-e3ac2739bd5b); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -658,7 +658,7 @@
       ],
       "level": "major",
       "note": "antacids, calcium and iron bind tetracyclines in the gut, so less is absorbed",
-      "source": "US FDA label (DailyMed setid 0106a3d3-db4d-f6ee-e063-6294a90a25e9), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 0106a3d3-db4d-f6ee-e063-6294a90a25e9); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -690,7 +690,7 @@
       ],
       "level": "major",
       "note": "calcium, iron and antacids bind levothyroxine in the gut and can leave the thyroid under-treated; the label separates the doses by 4 hours",
-      "source": "US FDA label (DailyMed setid 008de8fd-150f-4022-8ccb-c8bfa94875c7), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 008de8fd-150f-4022-8ccb-c8bfa94875c7); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -717,7 +717,7 @@
       ],
       "level": "major",
       "note": "rifampicin speeds up the breakdown of hormonal contraceptives, which may then fail",
-      "source": "US FDA label (DailyMed setid 0391f1e1-70d4-4b15-8b58-055bb6a385b8), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 0391f1e1-70d4-4b15-8b58-055bb6a385b8); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -747,7 +747,7 @@
       ],
       "level": "major",
       "note": "carbamazepine lowers the levels of hormonal contraceptives, which may then fail",
-      "source": "US FDA label (DailyMed setid 047bc284-060a-4db9-bf37-75d10f95a0a6), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 047bc284-060a-4db9-bf37-75d10f95a0a6); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -774,7 +774,7 @@
       ],
       "level": "moderate",
       "note": "carbamazepine lowers paracetamol levels, so pain or fever relief may be weaker",
-      "source": "US FDA label (DailyMed setid 047bc284-060a-4db9-bf37-75d10f95a0a6), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 047bc284-060a-4db9-bf37-75d10f95a0a6); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -803,7 +803,7 @@
       ],
       "level": "major",
       "note": "non-selective beta-blockers, including timolol eye drops, block the reliever inhaler and can trigger bronchospasm in asthma",
-      "source": "US FDA label (DailyMed setid 04c8a345-0a0d-5a01-e063-6294a90a40d2, 02d89d37-cbca-4e06-83ef-2a10f988f1ea), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 04c8a345-0a0d-5a01-e063-6294a90a40d2, 02d89d37-cbca-4e06-83ef-2a10f988f1ea); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "reduces_effect",
       "reduces": [
@@ -843,7 +843,7 @@
       ],
       "level": "moderate",
       "note": "timolol eye drops are absorbed into the body and add to an oral beta-blocker (slow pulse, low blood pressure)",
-      "source": "US FDA label (DailyMed setid 02d89d37-cbca-4e06-83ef-2a10f988f1ea), quote checked by data/tests/test_ddi_evidence.py. Added by the developer, not yet checked by a pharmacist",
+      "source": "US FDA label (DailyMed setid 02d89d37-cbca-4e06-83ef-2a10f988f1ea); label quote checked 25 Oct 2026. Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "effect": "adds_effect",
       "mechanism": "same_action",
