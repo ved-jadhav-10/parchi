@@ -1,6 +1,6 @@
 # Benchmark report
 
-Gold set: 54 cases. draft: expected alerts were written by the developer from drug labels and guidelines (the `why` of each case), independent of the engine, and have NOT yet been reviewed by a pharmacist
+Gold set: 54 cases. draft: expected alerts were written by the developer from drug labels and guidelines (the `why` of each case), independent of the engine. The cases were reviewed with a doctor (Dr. Sanjay Dhanushkar, community medicine practitioner), who is not a pharmacist; they have NOT yet been reviewed by a pharmacist
 
 ## Parchi engine
 

@@ -107,7 +107,7 @@ h('H10', 'Creatinine in the labs but the patient is 28 and healthy: an NSAID cou
 const gold = {
   meta: {
     version: 1,
-    label_status: 'draft: expected alerts were written by the developer from drug labels and guidelines (the `why` of each case), independent of the engine, and have NOT yet been reviewed by a pharmacist',
+    label_status: 'draft: expected alerts were written by the developer from drug labels and guidelines (the `why` of each case), independent of the engine. The cases were reviewed with a doctor (Dr. Sanjay Dhanushkar, community medicine practitioner), who is not a pharmacist; they have NOT yet been reviewed by a pharmacist',
     alert_groups: {
       dose_excess: ['dose_excess', 'dose_excess_sos'],
       duplicate_ingredient: ['duplicate_ingredient'],
