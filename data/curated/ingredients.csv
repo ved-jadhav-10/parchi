@@ -1,0 +1,265 @@
+id,name,aliases,atc,classes,source
+paracetamol,Paracetamol,acetaminophen|pcm|apap|paracetamol acetaminophen|paracetamol ip,N02BE01,analgesic_antipyretic,WHO ATC
+ibuprofen,Ibuprofen,,M01AE01,nsaid,WHO ATC
+dexibuprofen,Dexibuprofen,,M01AE14,nsaid,WHO ATC
+aceclofenac,Aceclofenac,,M01AB16,nsaid,WHO ATC
+diclofenac,Diclofenac,diclofenac diethylamine|diclofenac diethyl amine,M01AB05,nsaid,WHO ATC
+nimesulide,Nimesulide,,M01AX17,nsaid,WHO ATC
+mefenamic_acid,Mefenamic Acid,mefenamic,M01AG01,nsaid,WHO ATC
+etoricoxib,Etoricoxib,,M01AH05,nsaid,WHO ATC
+celecoxib,Celecoxib,,M01AH01,nsaid,WHO ATC
+naproxen,Naproxen,,M01AE02,nsaid,WHO ATC
+ketorolac,Ketorolac,,M01AB15,nsaid,WHO ATC
+piroxicam,Piroxicam,,M01AC01,nsaid,WHO ATC
+lornoxicam,Lornoxicam,,M01AC05,nsaid,WHO ATC
+etodolac,Etodolac,,M01AB08,nsaid,WHO ATC
+indometacin,Indomethacin,indomethacin,M01AB01,nsaid,WHO ATC
+ketoprofen,Ketoprofen,,M01AE03,nsaid,WHO ATC
+dexketoprofen,Dexketoprofen,,M01AE17,nsaid,WHO ATC
+flurbiprofen,Flurbiprofen,,M01AE09,nsaid,WHO ATC
+aspirin,Aspirin,acetylsalicylic acid|acetyl salicylic acid|asa,B01AC06|N02BA01,antiplatelet|salicylate,WHO ATC (id kept as aspirin: fixed by demo fixture)
+tramadol,Tramadol,,N02AX02,opioid,WHO ATC
+tapentadol,Tapentadol,,N02AX06,opioid,WHO ATC
+codeine,Codeine,,R05DA04,opioid|antitussive,WHO ATC
+metamizole,Metamizole,dipyrone|analgin|metamizole sodium,N02BB02,analgesic_antipyretic,WHO ATC
+serratiopeptidase,Serratiopeptidase,serrapeptase|serratio peptidase|serratiopeptidase enzyme,,enzyme_antiinflammatory,no ATC code
+thiocolchicoside,Thiocolchicoside,,M03BX05,muscle_relaxant,WHO ATC
+chlorzoxazone,Chlorzoxazone,,M03BB03,muscle_relaxant,WHO ATC
+tizanidine,Tizanidine,,M03BX02,muscle_relaxant,WHO ATC
+methocarbamol,Methocarbamol,,M03BA03,muscle_relaxant,WHO ATC
+drotaverine,Drotaverine,,A03AD02,antispasmodic,WHO ATC
+camylofin,Camylofin,camylofin dihydrochloride,,antispasmodic,no ATC code found
+dicycloverine,Dicyclomine,dicyclomine,A03AA07,antispasmodic|anticholinergic,WHO ATC (INN dicycloverine)
+butylscopolamine,Hyoscine Butylbromide,hyoscine butylbromide|hyoscine butyl bromide|scopolamine butylbromide,A03BB01,antispasmodic|anticholinergic,WHO ATC (INN butylscopolamine)
+clidinium,Clidinium,clidinium bromide,,antispasmodic|anticholinergic,ATC not assigned as single agent
+pregabalin,Pregabalin,,N02BF02,gabapentinoid,WHO ATC
+gabapentin,Gabapentin,,N02BF01,gabapentinoid,WHO ATC
+mecobalamin,Methylcobalamin,methylcobalamin|methylcobalamin mecobalamin|methyl cobalamin,B03BA05,vitamin_b12,WHO ATC (INN mecobalamin)
+cyanocobalamin,Cyanocobalamin,vitamin b12,B03BA01,vitamin_b12,WHO ATC
+pantoprazole,Pantoprazole,,A02BC02,ppi,WHO ATC
+omeprazole,Omeprazole,,A02BC01,ppi,WHO ATC
+esomeprazole,Esomeprazole,,A02BC05,ppi,WHO ATC
+rabeprazole,Rabeprazole,,A02BC04,ppi,WHO ATC
+dexrabeprazole,Dexrabeprazole,,,ppi,no ATC code found
+lansoprazole,Lansoprazole,,A02BC03,ppi,WHO ATC
+dexlansoprazole,Dexlansoprazole,,A02BC06,ppi,WHO ATC
+ranitidine,Ranitidine,,A02BA02,h2_blocker,WHO ATC
+famotidine,Famotidine,,A02BA03,h2_blocker,WHO ATC
+domperidone,Domperidone,,A03FA03,prokinetic|dopamine_antagonist,WHO ATC
+levosulpiride,Levosulpiride,,,prokinetic|dopamine_antagonist,no ATC code found
+itopride,Itopride,,A03FA07,prokinetic,WHO ATC
+metoclopramide,Metoclopramide,,A03FA01,prokinetic|dopamine_antagonist|antiemetic,WHO ATC
+ondansetron,Ondansetron,,A04AA01,antiemetic,WHO ATC
+sucralfate,Sucralfate,,A02BX02,antiulcer,WHO ATC
+simeticone,Simethicone,simethicone|activated dimethicone,A03AX13,antiflatulent,WHO ATC group 'silicones' (INN simeticone)
+magaldrate,Magaldrate,,A02AD02,antacid,WHO ATC
+aluminium_hydroxide,Aluminium Hydroxide,aluminum hydroxide|dried aluminium hydroxide|dried aluminium hydroxide gel|aluminium hydroxide gel,A02AB01,antacid,WHO ATC
+magnesium_hydroxide,Magnesium Hydroxide,milk of magnesia,A02AA04,antacid,WHO ATC
+lactulose,Lactulose,,A06AD11,laxative,WHO ATC
+ursodeoxycholic_acid,Ursodeoxycholic Acid,ursodiol|ursodeoxycholic acid ursodiol|udca,A05AA02,bile_acid,WHO ATC
+racecadotril,Racecadotril,,A07XA04,antidiarrhoeal,WHO ATC
+loperamide,Loperamide,,A07DA03,antidiarrhoeal,WHO ATC
+ornidazole,Ornidazole,,P01AB03,nitroimidazole,WHO ATC
+metronidazole,Metronidazole,,P01AB01,nitroimidazole,WHO ATC
+tinidazole,Tinidazole,,P01AB02,nitroimidazole,WHO ATC
+ofloxacin,Ofloxacin,,J01MA01,fluoroquinolone|antibacterial,WHO ATC
+norfloxacin,Norfloxacin,,J01MA06,fluoroquinolone|antibacterial,WHO ATC
+ciprofloxacin,Ciprofloxacin,,J01MA02,fluoroquinolone|antibacterial,WHO ATC
+levofloxacin,Levofloxacin,,J01MA12,fluoroquinolone|antibacterial,WHO ATC
+moxifloxacin,Moxifloxacin,,J01MA14,fluoroquinolone|antibacterial,WHO ATC
+amoxicillin,Amoxicillin,amoxycillin|amoxycillin trihydrate|amoxicillin trihydrate,J01CA04,penicillin|antibacterial,WHO ATC
+clavulanic_acid,Clavulanic Acid,potassium clavulanate|clavulanate potassium|clavulanate|diluted potassium clavulanate,,beta_lactamase_inhibitor,ATC only as combination
+ampicillin,Ampicillin,,J01CA01,penicillin|antibacterial,WHO ATC
+cloxacillin,Cloxacillin,,J01CF02,penicillin|antibacterial,WHO ATC
+dicloxacillin,Dicloxacillin,,J01CF01,penicillin|antibacterial,WHO ATC
+piperacillin,Piperacillin,,J01CA12,penicillin|antibacterial,WHO ATC
+tazobactam,Tazobactam,tazobactum,J01CG02,beta_lactamase_inhibitor,WHO ATC
+sulbactam,Sulbactam,,J01CG01,beta_lactamase_inhibitor,WHO ATC
+azithromycin,Azithromycin,,J01FA10,macrolide|antibacterial,WHO ATC
+clarithromycin,Clarithromycin,,J01FA09,macrolide|antibacterial,WHO ATC
+erythromycin,Erythromycin,,J01FA01,macrolide|antibacterial,WHO ATC
+roxithromycin,Roxithromycin,,J01FA06,macrolide|antibacterial,WHO ATC
+cefixime,Cefixime,,J01DD08,cephalosporin|antibacterial,WHO ATC
+cefpodoxime,Cefpodoxime,,J01DD13,cephalosporin|antibacterial,WHO ATC
+cefuroxime,Cefuroxime,,J01DC02,cephalosporin|antibacterial,WHO ATC
+cefalexin,Cephalexin,cephalexin,J01DB01,cephalosporin|antibacterial,WHO ATC (INN cefalexin)
+cefadroxil,Cefadroxil,cefadroxyl,J01DB05,cephalosporin|antibacterial,WHO ATC
+cefaclor,Cefaclor,,J01DC04,cephalosporin|antibacterial,WHO ATC
+ceftriaxone,Ceftriaxone,,J01DD04,cephalosporin|antibacterial,WHO ATC
+cefoperazone,Cefoperazone,,J01DD12,cephalosporin|antibacterial,WHO ATC
+ceftazidime,Ceftazidime,,J01DD02,cephalosporin|antibacterial,WHO ATC
+cefdinir,Cefdinir,,J01DD15,cephalosporin|antibacterial,WHO ATC
+doxycycline,Doxycycline,,J01AA02,tetracycline|antibacterial,WHO ATC
+linezolid,Linezolid,,J01XX08,antibacterial,WHO ATC
+nitrofurantoin,Nitrofurantoin,,J01XE01,antibacterial,WHO ATC
+amikacin,Amikacin,,J01GB06,aminoglycoside|antibacterial,WHO ATC
+gentamicin,Gentamicin,,J01GB03,aminoglycoside|antibacterial,WHO ATC
+meropenem,Meropenem,,J01DH02,carbapenem|antibacterial,WHO ATC
+faropenem,Faropenem,,J01DI03,carbapenem|antibacterial,WHO ATC
+clindamycin,Clindamycin,,J01FF01,lincosamide|antibacterial,WHO ATC
+sulfamethoxazole,Sulfamethoxazole,sulphamethoxazole,J01EC01,sulfonamide|antibacterial,WHO ATC
+trimethoprim,Trimethoprim,,J01EA01,antibacterial,WHO ATC
+rifampicin,Rifampicin,rifampin,J04AB02,antitubercular,WHO ATC
+isoniazid,Isoniazid,,J04AC01,antitubercular,WHO ATC
+ethambutol,Ethambutol,,J04AK02,antitubercular,WHO ATC
+pyrazinamide,Pyrazinamide,,J04AK01,antitubercular,WHO ATC
+probenecid,Probenecid,,M04AB01,uricosuric,WHO ATC
+fluconazole,Fluconazole,,J02AC01,azole_antifungal,WHO ATC
+itraconazole,Itraconazole,,J02AC02,azole_antifungal,WHO ATC
+ketoconazole,Ketoconazole,,J02AB02,azole_antifungal,WHO ATC
+voriconazole,Voriconazole,,J02AC03,azole_antifungal,WHO ATC
+terbinafine,Terbinafine,,D01BA02,antifungal,WHO ATC
+clotrimazole,Clotrimazole,,D01AC01,azole_antifungal,WHO ATC
+luliconazole,Luliconazole,,D01AC18,azole_antifungal,WHO ATC
+albendazole,Albendazole,,P02CA03,anthelmintic,WHO ATC
+ivermectin,Ivermectin,,P02CF01,anthelmintic,WHO ATC
+mebendazole,Mebendazole,,P02CA01,anthelmintic,WHO ATC
+artemether,Artemether,,P01BE02,antimalarial,WHO ATC
+chloroquine,Chloroquine,,P01BA01,antimalarial,WHO ATC
+hydroxychloroquine,Hydroxychloroquine,,P01BA02,antimalarial,WHO ATC
+aciclovir,Acyclovir,acyclovir,J05AB01,antiviral,WHO ATC (INN aciclovir)
+valaciclovir,Valacyclovir,valacyclovir,J05AB11,antiviral,WHO ATC (INN valaciclovir)
+cetirizine,Cetirizine,,R06AE07,antihistamine,WHO ATC
+levocetirizine,Levocetirizine,levo cetirizine,R06AE09,antihistamine,WHO ATC
+chlorphenamine,Chlorpheniramine,chlorpheniramine|chlorpheniramine maleate|chlorphenamine maleate|chlorpheniramine meleate|cpm,R06AB04,antihistamine|sedating_antihistamine,WHO ATC (INN chlorphenamine)
+dexchlorphenamine,Dexchlorpheniramine,dexchlorpheniramine,R06AB02,antihistamine|sedating_antihistamine,WHO ATC (INN dexchlorphenamine)
+pheniramine,Pheniramine,,R06AB05,antihistamine|sedating_antihistamine,WHO ATC
+fexofenadine,Fexofenadine,,R06AX26,antihistamine,WHO ATC
+loratadine,Loratadine,,R06AX13,antihistamine,WHO ATC
+desloratadine,Desloratadine,,R06AX27,antihistamine,WHO ATC
+bilastine,Bilastine,,R06AX29,antihistamine,WHO ATC
+ebastine,Ebastine,,R06AX22,antihistamine,WHO ATC
+rupatadine,Rupatadine,,R06AX28,antihistamine,WHO ATC
+hydroxyzine,Hydroxyzine,,N05BB01,antihistamine|sedating_antihistamine,WHO ATC
+cyproheptadine,Cyproheptadine,,R06AX02,antihistamine|sedating_antihistamine,WHO ATC
+promethazine,Promethazine,,R06AD02,antihistamine|sedating_antihistamine,WHO ATC
+diphenhydramine,Diphenhydramine,,R06AA02,antihistamine|sedating_antihistamine,WHO ATC
+doxylamine,Doxylamine,,R06AA09,antihistamine|sedating_antihistamine,WHO ATC
+triprolidine,Triprolidine,,R06AX07,antihistamine|sedating_antihistamine,WHO ATC
+montelukast,Montelukast,,R03DC03,leukotriene_antagonist,WHO ATC
+phenylephrine,Phenylephrine,,R01BA03,decongestant,WHO ATC
+pseudoephedrine,Pseudoephedrine,,R01BA02,decongestant,WHO ATC
+caffeine,Caffeine,caffeine anhydrous,N06BC01,stimulant,WHO ATC
+ambroxol,Ambroxol,,R05CB06,mucolytic,WHO ATC
+bromhexine,Bromhexine,,R05CB02,mucolytic,WHO ATC
+guaifenesin,Guaifenesin,guaiphenesin|guaiphenesin ip,R05CA03,expectorant,WHO ATC
+dextromethorphan,Dextromethorphan,,R05DA09,antitussive,WHO ATC
+salbutamol,Salbutamol,albuterol,R03AC02,beta2_agonist,WHO ATC
+levosalbutamol,Levosalbutamol,levalbuterol,,beta2_agonist,ATC not verified
+terbutaline,Terbutaline,,R03AC03,beta2_agonist,WHO ATC
+formoterol,Formoterol,,R03AC13,beta2_agonist,WHO ATC
+theophylline,Theophylline,,R03DA04,xanthine,WHO ATC
+doxofylline,Doxofylline,,R03DA11,xanthine,WHO ATC
+acebrophylline,Acebrophylline,,,xanthine,ATC not verified
+budesonide,Budesonide,,R03BA02,corticosteroid,WHO ATC
+beclometasone,Beclomethasone,beclomethasone,R03BA01,corticosteroid,WHO ATC
+fluticasone,Fluticasone,,R03BA05,corticosteroid,WHO ATC
+ipratropium,Ipratropium,,R03BB01,anticholinergic,WHO ATC
+tiotropium,Tiotropium,,R03BB04,anticholinergic,WHO ATC
+metformin,Metformin,,A10BA02,biguanide,WHO ATC
+glimepiride,Glimepiride,,A10BB12,sulfonylurea,WHO ATC
+gliclazide,Gliclazide,,A10BB09,sulfonylurea,WHO ATC
+glibenclamide,Glibenclamide,glyburide,A10BB01,sulfonylurea,WHO ATC
+glipizide,Glipizide,,A10BB07,sulfonylurea,WHO ATC
+voglibose,Voglibose,,A10BF03,alpha_glucosidase_inhibitor,WHO ATC
+acarbose,Acarbose,,A10BF01,alpha_glucosidase_inhibitor,WHO ATC
+vildagliptin,Vildagliptin,,A10BH02,dpp4_inhibitor,WHO ATC
+sitagliptin,Sitagliptin,,A10BH01,dpp4_inhibitor,WHO ATC
+teneligliptin,Teneligliptin,,A10BH08,dpp4_inhibitor,WHO ATC
+linagliptin,Linagliptin,,A10BH05,dpp4_inhibitor,WHO ATC
+dapagliflozin,Dapagliflozin,,A10BK01,sglt2_inhibitor,WHO ATC
+empagliflozin,Empagliflozin,,A10BK03,sglt2_inhibitor,WHO ATC
+pioglitazone,Pioglitazone,,A10BG03,thiazolidinedione,WHO ATC
+telmisartan,Telmisartan,,C09CA07,arb,WHO ATC
+olmesartan,Olmesartan,,C09CA08,arb,WHO ATC
+losartan,Losartan,,C09CA01,arb,WHO ATC
+valsartan,Valsartan,,C09CA03,arb,WHO ATC
+azilsartan,Azilsartan,,C09CA09,arb,WHO ATC
+amlodipine,Amlodipine,,C08CA01,ccb,WHO ATC
+levamlodipine,S-Amlodipine,s-amlodipine|s amlodipine,,ccb,ATC not verified
+cilnidipine,Cilnidipine,,C08CA14,ccb,WHO ATC
+nifedipine,Nifedipine,,C08CA05,ccb,WHO ATC
+atenolol,Atenolol,,C07AB03,beta_blocker,WHO ATC
+metoprolol,Metoprolol,,C07AB02,beta_blocker,WHO ATC
+bisoprolol,Bisoprolol,,C07AB07,beta_blocker,WHO ATC
+propranolol,Propranolol,,C07AA05,beta_blocker,WHO ATC
+nebivolol,Nebivolol,,C07AB12,beta_blocker,WHO ATC
+carvedilol,Carvedilol,,C07AG02,beta_blocker,WHO ATC
+ramipril,Ramipril,,C09AA05,ace_inhibitor,WHO ATC
+enalapril,Enalapril,,C09AA02,ace_inhibitor,WHO ATC
+hydrochlorothiazide,Hydrochlorothiazide,hctz,C03AA03,thiazide_diuretic,WHO ATC
+chlortalidone,Chlorthalidone,chlorthalidone,C03BA04,thiazide_diuretic,WHO ATC (INN chlortalidone)
+furosemide,Furosemide,frusemide,C03CA01,loop_diuretic,WHO ATC
+torasemide,Torsemide,torsemide,C03CA04,loop_diuretic,WHO ATC
+spironolactone,Spironolactone,,C03DA01,potassium_sparing_diuretic,WHO ATC
+atorvastatin,Atorvastatin,,C10AA05,statin,WHO ATC
+rosuvastatin,Rosuvastatin,,C10AA07,statin,WHO ATC
+simvastatin,Simvastatin,,C10AA01,statin,WHO ATC
+fenofibrate,Fenofibrate,,C10AB05,fibrate,WHO ATC
+clopidogrel,Clopidogrel,,B01AC04,antiplatelet,WHO ATC
+prasugrel,Prasugrel,,B01AC22,antiplatelet,WHO ATC
+ticagrelor,Ticagrelor,,B01AC24,antiplatelet,WHO ATC
+warfarin,Warfarin,,B01AA03,anticoagulant,WHO ATC
+acenocoumarol,Acenocoumarol,,B01AA07,anticoagulant,WHO ATC
+isosorbide_mononitrate,Isosorbide Mononitrate,,C01DA14,nitrate,WHO ATC
+isosorbide_dinitrate,Isosorbide Dinitrate,,C01DA08,nitrate,WHO ATC
+levothyroxine,Levothyroxine,thyroxine|thyroxine sodium|l-thyroxine,H03AA01,thyroid_hormone,WHO ATC
+tranexamic_acid,Tranexamic Acid,,B02AA02,antifibrinolytic,WHO ATC
+etamsylate,Ethamsylate,ethamsylate,B02BX01,haemostatic,WHO ATC (INN etamsylate)
+alprazolam,Alprazolam,,N05BA12,benzodiazepine,WHO ATC
+clonazepam,Clonazepam,,N03AE01,benzodiazepine,WHO ATC
+lorazepam,Lorazepam,,N05BA06,benzodiazepine,WHO ATC
+diazepam,Diazepam,,N05BA01,benzodiazepine,WHO ATC
+chlordiazepoxide,Chlordiazepoxide,,N05BA02,benzodiazepine,WHO ATC
+etizolam,Etizolam,,,benzodiazepine,ATC not verified
+zolpidem,Zolpidem,,N05CF02,hypnotic,WHO ATC
+escitalopram,Escitalopram,,N06AB10,ssri,WHO ATC
+sertraline,Sertraline,,N06AB06,ssri,WHO ATC
+fluoxetine,Fluoxetine,,N06AB03,ssri,WHO ATC
+paroxetine,Paroxetine,,N06AB05,ssri,WHO ATC
+amitriptyline,Amitriptyline,,N06AA09,tricyclic_antidepressant,WHO ATC
+nortriptyline,Nortriptyline,,N06AA10,tricyclic_antidepressant,WHO ATC
+olanzapine,Olanzapine,,N05AH03,antipsychotic,WHO ATC
+phenobarbital,Phenobarbitone,phenobarbitone|phenobarbital sodium,N03AA02,barbiturate|antiepileptic,WHO ATC (INN phenobarbital)
+phenytoin,Phenytoin,,N03AB02,antiepileptic,WHO ATC
+valproic_acid,Sodium Valproate,sodium valproate|divalproex|divalproex sodium|valproate|valproate sodium,N03AG01,antiepileptic,WHO ATC
+levetiracetam,Levetiracetam,levetiracitam,N03AX14,antiepileptic,WHO ATC
+carbamazepine,Carbamazepine,,N03AF01,antiepileptic,WHO ATC
+oxcarbazepine,Oxcarbazepine,,N03AF02,antiepileptic,WHO ATC
+betahistine,Betahistine,,N07CA01,antivertigo,WHO ATC
+piracetam,Piracetam,,N06BX03,nootropic,WHO ATC
+citicoline,Citicoline,,N06BX06,nootropic,WHO ATC
+prednisolone,Prednisolone,,H02AB06,corticosteroid,WHO ATC
+methylprednisolone,Methylprednisolone,,H02AB04,corticosteroid,WHO ATC
+deflazacort,Deflazacort,,H02AB13,corticosteroid,WHO ATC
+dexamethasone,Dexamethasone,,H02AB02,corticosteroid,WHO ATC
+betamethasone,Betamethasone,,H02AB01,corticosteroid,WHO ATC
+hydrocortisone,Hydrocortisone,,H02AB09,corticosteroid,WHO ATC
+clobetasol,Clobetasol,,D07AD01,corticosteroid,WHO ATC
+mometasone,Mometasone,,D07AC13,corticosteroid,WHO ATC
+pyridoxine,Pyridoxine,vitamin b6|vitamin b6 (pyridoxine)|pyridoxine hydrochloride,A11HA02,vitamin,WHO ATC
+thiamine,Thiamine,vitamin b1|thiamine(vitamin b1)|thiamine mononitrate|thiamine nitrate,A11DA01,vitamin,WHO ATC
+riboflavin,Riboflavin,riboflavine|vitamin b2,A11HA04,vitamin,WHO ATC
+nicotinamide,Nicotinamide,niacinamide|vitamin b3,A11HA01,vitamin,WHO ATC
+folic_acid,Folic Acid,vitamin b9,B03BB01,vitamin,WHO ATC
+ascorbic_acid,Ascorbic Acid,vitamin c,A11GA01,vitamin,WHO ATC
+colecalciferol,Cholecalciferol,cholecalciferol|vitamin d3,A11CC05,vitamin,WHO ATC (INN colecalciferol)
+tocopherol,Vitamin E,vitamin e|tocopheryl acetate|dl-alpha tocopheryl acetate|alphatocopherol acetate|alpha tocopherol acetate|alpha tocopherol|vitamin e acetate|vit e acetate,A11HA03,vitamin,WHO ATC
+retinol,Vitamin A,vitamin a,A11CA01,vitamin,WHO ATC
+phytomenadione,Vitamin K1,vitamin k|vitamin k1|phytonadione,B02BA01,vitamin,WHO ATC
+lidocaine,Lignocaine,lignocaine,N01BB02,local_anaesthetic,WHO ATC (INN lidocaine)
+epinephrine,Adrenaline,adrenaline,C01CA24,sympathomimetic,WHO ATC
+sildenafil,Sildenafil,,G04BE03,pde5_inhibitor,WHO ATC
+tadalafil,Tadalafil,,G04BE08,pde5_inhibitor,WHO ATC
+acetylcysteine,Acetylcysteine,acetyl cysteine|n-acetylcysteine|n-acetyl cysteine|n acetylcysteine,R05CB01,mucolytic,WHO ATC
+diacerein,Diacerein,diacerin|diacerine,M01AX21,antiarthritic,WHO ATC
+glucosamine,Glucosamine,glucosamine sulfate|glucosamine sulfate potassium|glucosamine sulfate potassium chloride|glucosamine hydrochloride,M01AX05,antiarthritic,WHO ATC
+chondroitin_sulfate,Chondroitin Sulfate,chondroitin|chondroitin sodium,M01AX25,antiarthritic,WHO ATC
+methylsulfonylmethane,Methylsulfonylmethane,msm|methyl sulfonyl methane|methylsulfonyl methane|methyl sulfonylmethane|methyl sufonyl methane,,supplement,no ATC code
+phenylpropanolamine,Phenylpropanolamine,phenyl propanolamine,R01BA01,decongestant,WHO ATC
+pentazocine,Pentazocine,pentazocin,N02AD01,opioid,WHO ATC
+aminophylline,Aminophylline,,R03DA05,xanthine,WHO ATC
+lactic_acid_bacillus,Lactic Acid Bacillus,lactobacillus sporogenes|bacillus coagulans|lactic acid bacillus spores|lactobacillus,,probiotic,no ATC code (Indian labels use these names for the same spore-forming probiotic)
+aloe_vera,Aloe Vera,aloe|aloes|aloe extract|aloe vera extract|aloe vera gel,,herbal,no ATC code
+dexpanthenol,Dexpanthenol,d-panthenol|d-penthenol|panthenol,D03AX03,emollient,WHO ATC
+salicylic_acid,Salicylic Acid,salicyclic acid,D01AE12,keratolytic,WHO ATC
