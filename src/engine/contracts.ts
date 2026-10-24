@@ -30,6 +30,18 @@ export interface NsqRef {
   spurious: boolean
 }
 
+/** Track A, optional detail: a Jan Aushadhi (PMBJP) generic with the same ingredients and strengths. */
+export interface JanAushadhiRef {
+  /** PMBJP drug code */
+  code: number
+  /** generic item name as listed */
+  name: string
+  /** pack size as listed, e.g. "10's" */
+  unit: string
+  /** e.g. "gastro-resistant"; the pharmacist confirms the release type matches */
+  release?: string
+}
+
 /** Track A, optional detail: a banned-FDC notification the product matches. */
 export interface BannedFdcRef {
   so: string
@@ -61,6 +73,8 @@ export interface ResolvedBrand {
   banned_fdc?: BannedFdcRef[]
   /** Failed batches of this brand name in the CDSCO lists. Batch-specific: the pharmacist checks the strip. */
   nsq?: NsqRef[]
+  /** Jan Aushadhi generics with the same ingredients and strengths (not a safety flag). Pharmacist confirms equivalence. */
+  jan_aushadhi?: JanAushadhiRef[]
   /** Short reasons for the pharmacist, e.g. "Assumed 650 mg; Dolo is also sold as 500 mg". */
   notes?: string[]
 }
