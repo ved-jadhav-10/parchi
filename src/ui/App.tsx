@@ -33,6 +33,7 @@ const pages: Record<Exclude<Route, 'home'>, ComponentType> = {
   log: page(() => import('./pages/LogPage'), 'LogPage'),
   benchmark: page(() => import('./pages/BenchmarkPage'), 'BenchmarkPage'),
   data: page(() => import('./pages/DataPage'), 'DataPage'),
+  catalogue: page(() => import('./pages/CataloguePage'), 'CataloguePage'),
 }
 
 export default function App() {

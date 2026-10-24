@@ -26,6 +26,7 @@ import { alertTypeLabel, candidateLabel } from '../lib/resolved'
 import { pct } from '../lib/format'
 import { useRouteParam } from '../route'
 import { addOverride, useOverrides } from '../storage/overrides'
+import { useCatalogue } from '../storage/catalogue'
 import { saveOrder, useDecisions, useOrders } from '../storage/orders'
 
 const count = (r: HistoryResult, tier: 'interrupt' | 'inform') => r.alerts.filter((a) => a.tier === tier).length
@@ -208,6 +209,7 @@ export const OrderPage = () => {
   const { orders, ready, refresh } = useOrders()
   const { decisions, refresh: refreshDecisions } = useDecisions()
   const { rows: overrideRows, refresh: refreshOverrides } = useOverrides()
+  const { catalogue } = useCatalogue()
   const order = orders.find((o) => o.id === id)
 
   // A result belongs to the order it was computed for: after a move to another order the old one must not show, not even for a frame.
@@ -479,7 +481,7 @@ export const OrderPage = () => {
                           {result.lines
                             .filter((l) => l.rx_id === rx.id)
                             .map((l) => (
-                              <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} onUse={(brand) => confirmBrand(l, brand)} />
+                              <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} onUse={(brand) => confirmBrand(l, brand)} alternatives={catalogue?.alternatives(l.resolved)} />
                             ))}
                         </ul>
                       </div>

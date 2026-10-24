@@ -17,6 +17,7 @@ import { toFhirBundle } from '../lib/fhir'
 import { needsReview, swapBrand, tidy } from '../lib/resolved'
 import { isRunKey } from '../lib/shortcuts'
 import { demoPatient, demoRxText } from '../demoCase'
+import { useCatalogue } from '../storage/catalogue'
 import { addOverride } from '../storage/overrides'
 
 const blank = { age: '', sex: '', weight: '', creatinine: '' }
@@ -38,6 +39,7 @@ const toPatient = (p: typeof blank): Patient => ({
 export const CheckPage = () => {
   const [rx, setRx] = useState('')
   const [patient, setPatient] = useState(blank)
+  const { catalogue } = useCatalogue()
   const [result, setResult] = useState<CheckResult | null>(null)
   const [failed, setFailed] = useState(false)
   const [overriding, setOverriding] = useState<number | null>(null)
@@ -265,7 +267,7 @@ export const CheckPage = () => {
               <Card title="Brand matches" description="What was typed and what it was matched to. Select a line for details.">
                 <ul className="matches">
                   {result.lines.map((l, i) => (
-                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} onUse={(brand) => pickBrand(l.resolved.raw, brand)} />
+                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} onUse={(brand) => pickBrand(l.resolved.raw, brand)} alternatives={catalogue?.alternatives(l.resolved)} />
                   ))}
                 </ul>
                 {result.lines.some((l) => (l.resolved.jan_aushadhi?.length ?? 0) > 0) && (

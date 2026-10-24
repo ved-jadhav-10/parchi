@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Flag, ResolvedBrand, Sig } from '../../engine/contracts'
+import type { Alternative } from '../../engine/resolver/catalogue'
 import { pct, titleCase } from '../lib/format'
 import { brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, scheduleLabel, sentenceCase, sigLabel, sigNotes, tidy } from '../lib/resolved'
 
@@ -24,7 +25,7 @@ const More = ({ total }: { total: number }) => (total > SHOW ? <li className="ma
 
 /** One resolved line. Click to expand what it matched, what it contains and everything Track A knows about it. */
 /** `onUse` lets the pharmacist pick one of the other possible brands; the page then checks again with that brand. */
-export const BrandMatch = ({ resolved, sig, onUse }: { resolved: ResolvedBrand; sig: Sig; onUse?: (brand: string) => void }) => {
+export const BrandMatch = ({ resolved, sig, onUse, alternatives }: { resolved: ResolvedBrand; sig: Sig; onUse?: (brand: string) => void; alternatives?: Alternative[] }) => {
   const [open, setOpen] = useState(false)
   const r = resolved
   const generic = r.brand === null && r.match === 'generic'
@@ -148,6 +149,25 @@ export const BrandMatch = ({ resolved, sig, onUse }: { resolved: ResolvedBrand; 
                   ))}
                   <More total={nsq.length} />
                 </ul>
+              </dd>
+            </>
+          )}
+          {alternatives && alternatives.length > 0 && (
+            <>
+              <dt>Same composition in your catalogue</dt>
+              <dd>
+                <ul className="match__list">
+                  {alternatives.slice(0, SHOW).map((a) => (
+                    <li key={a.item.row}>
+                      {a.item.name}
+                      {a.item.price !== undefined && `, ₹${a.item.price}`}
+                      {a.price_diff !== undefined && a.price_diff !== 0 && ` (${a.price_diff < 0 ? '₹' + Math.abs(a.price_diff) + ' less' : '₹' + a.price_diff + ' more'})`}
+                      {a.cautions.length > 0 && `. Check: ${a.cautions.join('; ')}`}
+                    </li>
+                  ))}
+                  <More total={alternatives.length} />
+                </ul>
+                <p className="match__lead">A prompt for the pharmacist, not a substitution: check the pack and the prescriber's wording.</p>
               </dd>
             </>
           )}

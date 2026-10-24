@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 
-export type Route = 'home' | 'check' | 'demo' | 'queue' | 'order' | 'history' | 'log' | 'benchmark' | 'data'
+export type Route = 'home' | 'check' | 'demo' | 'queue' | 'order' | 'history' | 'log' | 'benchmark' | 'data' | 'catalogue'
 
 /** The pages with a pill in the navigation. `order` and `history` are reached from the queue, so they have none. */
 export const routes: { id: Route; label: string }[] = [
   { id: 'queue', label: 'Review queue' },
   { id: 'check', label: 'Check' },
-  { id: 'log', label: 'Override log' },
-  { id: 'data', label: 'Data & limits' },
+  { id: 'catalogue', label: 'Catalogue' },
+  { id: 'log', label: 'Overrides' },
+  { id: 'data', label: 'Data' },
   { id: 'benchmark', label: 'Benchmark' },
   { id: 'demo', label: 'Demo' },
 ]

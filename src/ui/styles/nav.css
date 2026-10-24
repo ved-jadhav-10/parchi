@@ -1,4 +1,4 @@
-/* Header fit between the mobile menu (< 720px) and full desktop (>= 1060px). Six pills must stay on one line. */
+/* Header fit between the menu (< 900px) and full desktop (>= 1060px). Seven pills must stay on one line. */
 .pillnav__link { white-space: nowrap; }
 
 /* Below 1060px the pill shrinks instead of going away: a dot online, "Offline" when offline. The full words stay for screen readers. */
@@ -10,11 +10,7 @@
   .conn-pill[data-online='false'] { padding: var(--space-1) var(--space-3); }
 }
 
-@media (min-width: 720px) and (max-width: 1059px) {
+@media (min-width: 900px) and (max-width: 1059px) {
   .pillnav__link { display: flex; align-items: center; min-height: var(--tap-min); padding-inline: var(--space-2); }
 }
 
-/* The narrowest tablet width: six pills need a little less padding to share the row with the logo. */
-@media (min-width: 720px) and (max-width: 799px) {
-  .pillnav__link { padding-inline: 5px; }
-}

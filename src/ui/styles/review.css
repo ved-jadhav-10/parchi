@@ -234,3 +234,16 @@
 .herbal__note { margin: 0; }
 .herbal__finding { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border); border-left: 4px solid var(--t); border-radius: var(--radius-md); }
 .herbal__unrecognised { margin-top: var(--space-4); }
+
+/* Catalogue */
+.catalogue__list { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+.catalogue__item { display: grid; gap: var(--space-2); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.catalogue__item:last-child { padding-bottom: 0; border-bottom: 0; }
+.catalogue__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.catalogue__row { color: var(--color-ink-muted); font-size: var(--text-sm); }
+.catalogue__reasons { display: grid; gap: var(--space-1); margin: 0; padding-left: 1.1em; font-size: var(--text-sm); line-height: var(--leading-sm); }
+.catalogue__item .hint, .catalogue__item .actions { margin: 0; }
+.catalogue__map { display: grid; gap: var(--space-2); margin: 0; }
+.catalogue__map div { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); }
+.catalogue__map dt { min-width: 120px; color: var(--color-ink-muted); font-size: var(--text-sm); }
+.catalogue__map dd { margin: 0; font-weight: 600; }
