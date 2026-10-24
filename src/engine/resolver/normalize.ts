@@ -10,6 +10,7 @@ export function normaliseText(raw: string): string {
   let t = (raw ?? '').toLowerCase().trim()
   t = t.replace(/&/g, ' and ').replace(/’/g, "'")
   t = t.replace(/sulph/g, 'sulf').replace(/aluminum/g, 'aluminium')
+  t = t.replace(/\//g, ' ') // "Paracetamol/Acetaminophen"
   t = t.replace(/\s*-\s*/g, '-')
   t = t.replace(/\s+/g, ' ')
   return t.replace(/^[ .,;]+|[ .,;]+$/g, '')

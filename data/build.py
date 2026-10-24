@@ -35,6 +35,7 @@ PARITY_EXAMPLES = [
     "Rabeprazole Sodium (As enteric coated tablet)", "Levo cetirizine", "Dried Ferrous Sulphate",
     "Erythromycin stearate eq.to Erythromycin", "Beclomethasone Dipropionate", "Metoprolol Succinate",
     "Dexamethasone Sodium Phosphate", "Some New Molecule HCl", "Guaiphenesin", "Methylcobalamin",
+    "Paracetamol/Acetaminophen", "Methylcobalamin/Mecobalamin", "Levo-carnitine", "Ethinyl Estradiol",
 ]
 
 

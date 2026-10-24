@@ -41,6 +41,11 @@ def reg():
         ("Levo cetirizine", "levocetirizine"),
         ("Metoprolol Succinate", "metoprolol"),
         ("Cefpodoxime Proxetil", "cefpodoxime"),
+        ("Paracetamol/Acetaminophen", "paracetamol"),  # slash spelling hid paracetamol in ~270 rows
+        ("Methylcobalamin/Mecobalamin", "mecobalamin"),
+        ("Levo-carnitine", "levocarnitine"),
+        ("Ethinyl Estradiol", "ethinylestradiol"),
+        ("Cyclosporine", "ciclosporin"),
     ],
 )
 def test_canonical_ids(reg, raw, expected):

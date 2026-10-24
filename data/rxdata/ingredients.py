@@ -136,6 +136,7 @@ def normalise_text(raw: str) -> str:
     t = (raw or "").lower().strip()
     t = t.replace("&", " and ").replace("’", "'")
     t = t.replace("sulph", "sulf").replace("aluminum", "aluminium")  # British/US spellings
+    t = t.replace("/", " ")  # "Paracetamol/Acetaminophen" (~270 dataset rows)
     t = re.sub(r"\s*-\s*", "-", t)  # "levo - carnitine" -> "levo-carnitine"
     t = re.sub(r"\s+", " ", t)
     return t.strip(" .,;")

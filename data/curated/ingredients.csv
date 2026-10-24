@@ -263,3 +263,10 @@ lactic_acid_bacillus,Lactic Acid Bacillus,lactobacillus sporogenes|bacillus coag
 aloe_vera,Aloe Vera,aloe|aloes|aloe extract|aloe vera extract|aloe vera gel,,herbal,no ATC code
 dexpanthenol,Dexpanthenol,d-panthenol|d-penthenol|panthenol,D03AX03,emollient,WHO ATC
 salicylic_acid,Salicylic Acid,salicyclic acid,D01AE12,keratolytic,WHO ATC
+ethinylestradiol,Ethinyl Estradiol,ethinyl estradiol|ethinyloestradiol|ethinyl oestradiol,G03CA01,estrogen,WHO ATC
+levocarnitine,Levocarnitine,levo-carnitine|l-carnitine|levo carnitine|l carnitine,A16AA01,supplement,WHO ATC
+clomifene,Clomiphene,clomiphene,G03GB02,ovulation_stimulant,WHO ATC (INN clomifene)
+ciclosporin,Cyclosporine,cyclosporine|cyclosporin,L04AD01,immunosuppressant,WHO ATC (INN ciclosporin)
+thioctic_acid,Alpha Lipoic Acid,alpha lipoic acid|lipoic acid|alpha-lipoic acid|thioctic acid,A16AX01,supplement,WHO ATC (INN thioctic acid)
+glycopyrronium,Glycopyrrolate,glycopyrrolate|glycopyrronium bromide,A03AB02,anticholinergic,WHO ATC (INN glycopyrronium)
+chorionic_gonadotrophin,Human Chorionic Gonadotropin,human chorionic gonadotropin|chorionic gonadotropin (human)|hcg|chorionic gonadotropin,G03GA01,gonadotropin,WHO ATC
