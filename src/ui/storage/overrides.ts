@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { Tier } from '../../engine/contracts'
+import { inStore, openDb } from './idb'
 
 export interface OverrideRecord {
   id?: number
@@ -18,22 +19,8 @@ export interface OverrideRecord {
 const DB = 'parchi'
 const STORE = 'overrides'
 
-const open = () =>
-  new Promise<IDBDatabase>((resolve, reject) => {
-    const req = indexedDB.open(DB, 1)
-    req.onupgradeneeded = () => req.result.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true })
-    req.onsuccess = () => resolve(req.result)
-    req.onerror = () => reject(req.error)
-  })
-
-async function run<T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
-  const db = await open()
-  return new Promise<T>((resolve, reject) => {
-    const req = fn(db.transaction(STORE, mode).objectStore(STORE))
-    req.onsuccess = () => resolve(req.result)
-    req.onerror = () => reject(req.error)
-  }).finally(() => db.close())
-}
+const open = () => openDb(DB, 1, (db) => db.createObjectStore(STORE, { keyPath: 'id', autoIncrement: true }))
+const run = <T>(mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>) => inStore(open, STORE, mode, fn)
 
 export const addOverride = (rec: OverrideRecord) => run('readwrite', (s) => s.add(rec))
 export const listOverrides = () => run('readonly', (s) => s.getAll() as IDBRequest<OverrideRecord[]>)

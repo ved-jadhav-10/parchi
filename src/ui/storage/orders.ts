@@ -2,28 +2,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { demoOrders } from '../history/demoOrders'
 import type { Decision, Order } from '../history/types'
+import { inStore, openDb } from './idb'
 
 const DB = 'parchi-review'
 
 const open = () =>
-  new Promise<IDBDatabase>((resolve, reject) => {
-    const req = indexedDB.open(DB, 1)
-    req.onupgradeneeded = () => {
-      req.result.createObjectStore('orders', { keyPath: 'id' })
-      req.result.createObjectStore('decisions', { keyPath: 'id', autoIncrement: true })
-    }
-    req.onsuccess = () => resolve(req.result)
-    req.onerror = () => reject(req.error)
+  openDb(DB, 1, (db) => {
+    db.createObjectStore('orders', { keyPath: 'id' })
+    db.createObjectStore('decisions', { keyPath: 'id', autoIncrement: true })
   })
 
-async function run<T>(store: 'orders' | 'decisions', mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>): Promise<T> {
-  const db = await open()
-  return new Promise<T>((resolve, reject) => {
-    const req = fn(db.transaction(store, mode).objectStore(store))
-    req.onsuccess = () => resolve(req.result)
-    req.onerror = () => reject(req.error)
-  }).finally(() => db.close())
-}
+const run = <T>(store: 'orders' | 'decisions', mode: IDBTransactionMode, fn: (s: IDBObjectStore) => IDBRequest<T>) => inStore(open, store, mode, fn)
 
 export const saveOrder = (order: Order) => run('orders', 'readwrite', (s) => s.put(order))
 export const listStoredOrders = () => run('orders', 'readonly', (s) => s.getAll() as IDBRequest<Order[]>)
