@@ -1,6 +1,6 @@
 # Data reliability audit (24 Oct 2026)
 
-What was measured against sources outside this repo, what changed, and what is still open. Every number below comes from a test or a query that can be re-run. Nothing here is pharmacist-approved.
+What was measured against sources outside this repo, what changed, and what is still open. Every number below comes from a test or a query that can be re-run. Nothing here was approved when it was written. Afterwards Dr. Sanjay Dhanushkar signed off the adult, elderly and paediatric limits of 19 everyday medicines (`approved_by` in `limits.json`, see `VERIFIED.md`). Paracetamol with alcohol and the less common medicines were not covered.
 
 ## 1. Brands the 2022 index does not have
 **Problem.** The typo tests only misspell brands already in the index. Real input also has newer brands, and the nearest name is then often another medicine.

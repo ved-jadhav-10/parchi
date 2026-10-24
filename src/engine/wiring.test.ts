@@ -21,12 +21,12 @@ describe('demo Rx through the real engine', () => {
     expect(byType(out.alerts, 'nsq')[0].tier).toBe('silent')
   })
 
-  it('takes the paracetamol limit and its basis from the limits data (age alone no longer lowers it), shown as unverified', async () => {
+  it('takes the paracetamol limit and its basis from the limits data (age alone no longer lowers it), shown as signed off', async () => {
     const { alerts, ledger } = await check(demo.rx_text, patient)
     expect(ledger.paracetamol.limit_mg_day).toBe(4000)
     const a = byType(alerts, 'dose_excess')[0]
     expect(a.reason).toContain('4,000 mg/day limit (adult maximum)')
-    expect(a.approved).toBe(false)
+    expect(a.approved).toBe(true)
   })
 
   it('uses Track B CrCl (34.4) and asks for nothing more', async () => {

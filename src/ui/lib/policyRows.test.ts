@@ -7,6 +7,15 @@ import { approvedCount, limitRows, ruleRows, sosRows, suppressionRows, supplemen
 const rules = parseAlertRules(JSON.parse(rulesRaw))
 
 describe('policy rows for the Data page', () => {
+  it('shows signed-off limits with the signer and leaves caps and niche drugs unapproved', () => {
+    const rows = limitRows(LIMITS)
+    const para = rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Adult')
+    expect(para?.approved).toBe(true)
+    expect(para?.approvedBy).toMatch(/Dhanushkar/)
+    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Heavy alcohol use')?.approved).toBe(false)
+    expect(rows.find((r) => r.name === 'Nimesulide' && r.detail === 'Adult')?.approved).toBe(false)
+    expect(approvedCount(rows)).toBe(21)
+  })
   it('lists every limit with its source and approval, in words a pharmacist reads', () => {
     const rows = limitRows(LIMITS)
     expect(rows.length).toBeGreaterThan(Object.keys(LIMITS.ingredients).length)
@@ -63,12 +72,14 @@ describe('curated interaction rows', () => {
 })
 
 describe('label checks on the Data page', () => {
-  it('marks limits whose label quote was verified, dated, and never as approved', () => {
+  it('marks limits whose label quote was verified and dated, apart from who signed them off', () => {
     const rows = limitRows(LIMITS)
     const adult = rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Adult')!
     expect(adult.checked).toMatch(/^Label quote checked \d{1,2} \w{3} 2026$/)
-    expect(adult.approved).toBe(false)
-    expect(rows.filter((r) => r.checked).every((r) => r.approved !== true)).toBe(true)
+    expect(adult.approved).toBe(true)
+    const etoricoxib = rows.find((r) => r.name === 'Etoricoxib' && r.detail === 'Adult')!
+    expect(etoricoxib.checked).toBeDefined()
+    expect(etoricoxib.approved).toBe(false)
   })
 
   it('does not mark a limit that has no label quote', () => {

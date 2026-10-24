@@ -31,11 +31,18 @@ Ibuprofen 2.4 g, metformin 2 g, diclofenac 150 mg match NFI exactly. Nothing to 
 - **Date:** 24 Oct 2026.
 - **Scope:** sections A, B and D of this list (the 3 pairs we show as Inform, the 8 groups that now stop, the doses that match the formulary). Section C (brand compositions) needs a strip in hand and was not part of it.
 - **Outcome as reported by the team:** the reviewer agreed with the tier we show on every row. This is the team's report of the session, not a signed sheet; attach the sheet if one exists.
-- **What this does not cover:** the dose limits, the other alert rules and the 28 stacking and kidney rules were not on this list, so they remain unreviewed.
+- **What this does not cover:** the dose limits, the other alert rules and the 28 stacking and kidney rules were not on this list, so they remain unreviewed (except as below).
+
+## Second review record: test cases and everyday-medicine doses
+- **Reviewer:** Dr. Sanjay Dhanushkar (community medicine practitioner, Wardha).
+- **Date:** to be added by the team.
+- **Scope, as reported by the team:** the test cases (`eval/gold.json`, 54 cases, and `eval/scenarios.json`, 31 scenarios) and the adult, elderly and paediatric daily maximums of 19 everyday medicines, signed off in `src/engine/limits/limits.json` (`pharmacist_approved: true`, `approved_by`).
+- **Not covered:** paracetamol with alcohol or liver disease (no answer was obtained), the low-weight cap, kidney bands, as-needed caps, and the less common medicines. The judgement-call rows in section H are not recorded as settled.
+- **Limits of this record:** it is the team's report, not a signed sheet. The medicines counted as "everyday" were chosen by the team; correct the list in `limits.json` `_meta.signoff` if the reviewer's own list differs.
 
 ---
 
-# Second review: Phase 2 (not yet reviewed)
+# Second review: Phase 2 (not yet reviewed, apart from the record above)
 
 Written 25 Oct 2026. **None of this was in the first review**; the record above does not cover it. Same question per row: stop (S), tell (T) or leave alone (N)?
 

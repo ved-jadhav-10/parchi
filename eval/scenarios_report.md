@@ -1,6 +1,6 @@
 # Realistic scenarios: what the engine raises
 
-Tier T3 (written by the team, not reviewed by anyone). 31 scenarios, 15 Interrupts in total, 2 busy-but-clean cases.
+Tier T3 (written by the team, reviewed with a doctor who is not a pharmacist; no pharmacist has reviewed them). 31 scenarios, 15 Interrupts in total, 2 busy-but-clean cases.
 Rows marked "judgement call" are listed in `reviewer_list.md` section H.
 
 | # | Scenario | Raised above Silent |

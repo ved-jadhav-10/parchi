@@ -13,7 +13,7 @@ A test is only as reliable as the source of its expected answer. We name the tie
 | **T3 Self-written** | We wrote the case and the answer (gold set, scenario tests, fixtures) | "regression test", never "accuracy" |
 | **T4 Human-reviewed** | A named person judged the case on a named date | "reviewed by [name, role] on [date]" |
 
-Today: no T4 exists. Every disagreement between the engine and a T1 source goes on a short **reviewer list** (`eval/reviewer_list.md`), which is what the 10 minutes with the doctor are spent on.
+Today: T4 exists only as doctor reviews (`VERIFIED.md`): the reviewer list, the test cases, and the doses of 19 everyday medicines, which are signed off. Every disagreement between the engine and a T1 source goes on a short **reviewer list** (`eval/reviewer_list.md`), which is what the 10 minutes with the doctor are spent on.
 
 ## 2. Independent sources, what each tests, and status
 

@@ -53,12 +53,12 @@ describe('demo prescription (68 y, 55 kg, creatinine 1.6)', () => {
     expect(dose.needs).toEqual([])
   })
 
-  it('reports the over-limit paracetamol and kidney cautions for both NSAIDs, each with a source and unverified flag', () => {
+  it('reports the over-limit paracetamol and kidney cautions for both NSAIDs, each with a source; only the paracetamol limit is signed off', () => {
     const kinds = dose.findings.map((f) => `${f.kind}:${f.ingredient}`).sort()
     expect(kinds).toEqual(['over_limit:paracetamol', 'renal_caution:aceclofenac', 'renal_caution:ibuprofen'])
     const over = dose.findings.find((f) => f.kind === 'over_limit')!
     expect(over).toMatchObject({ total_mg_day: 4100, limit_mg_day: 4000, basis: 'Adult maximum', sos_dependent: false })
-    expect(dose.findings.every((f) => f.pharmacist_approved === false && f.source.length > 0)).toBe(true)
+    expect(dose.findings.every((f) => f.pharmacist_approved === (f.kind === 'over_limit') && f.source.length > 0)).toBe(true)
   })
 
   it('does not flag ingredients that are within their limits (aceclofenac 200 and domperidone 30 are exactly at it)', () => {
