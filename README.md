@@ -48,7 +48,7 @@ The verifying pharmacist at an e-pharmacy or pharmacy chain. Doctors are never u
 | **Deterministic engine** | Every alert comes from rules and data, so the same input always gives the same answer. No LLM decides an alert. |
 | **Runs offline** | The engine runs in the browser as a PWA. After the first load it works with no connection. |
 | **Optional online extras** | An LLM can read messy dosing text and draft a customer leaflet. It is marked as AI-read and hides itself offline. |
-| **Sourced data** | Every dose limit and rule carries a `source` and a `pharmacist_approved` flag. Unverified numbers are marked, never invented. |
+| **Sourced data** | Every dose limit and rule carries a `source` and a `pharmacist_approved` flag (the flag name is historical; it means "signed off", and `approved_by` says by whom). Signed-off limits also name who signed in `approved_by`. Unverified numbers are marked, never invented. |
 | **Check API** | A JSON endpoint lets a buyer call the same engine from their own system. |
 
 ## Tech stack
@@ -83,7 +83,8 @@ docs/         plan, demo script, what is verified and by whom
 
 ## Honest limits
 
-- Limits and rules are drafts. Nothing is pharmacist-approved yet; one MBBS GP has reviewed the alert tiers.
+- **Reviewed and signed off.** The test cases (the 54-case benchmark and the 31 scenarios) were reviewed with Dr. Sanjay Dhanushkar (community medicine practitioner, Wardha). He signed off the daily-dose limits of 19 everyday medicines (paracetamol, ibuprofen, diclofenac, metformin, amlodipine and similar, listed in `limits.json`); each carries his name in `approved_by`. He is a doctor; no pharmacist has reviewed the data. This is the team's record of the review: no signed sheet is attached and the sign-off date is not recorded yet.
+- **Not covered:** less common medicines (for example nimesulide, tramadol, thiocolchicoside), kidney bands, as-needed (SOS) caps, and paracetamol with alcohol or liver disease. These are still unreviewed drafts and shown as not signed off.
 - Our own benchmark is not evidence of accuracy, and no chatbot has been scored against it.
 - What is verified, and by whom, is listed in [`docs/VERIFIED.md`](docs/VERIFIED.md). The 10-minute walkthrough is in [`docs/DEMO.md`](docs/DEMO.md).
 
