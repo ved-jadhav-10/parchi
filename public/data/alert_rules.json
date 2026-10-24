@@ -16,23 +16,97 @@
     "pharmacist_approved": false
   },
   "class_duplication": [
-    { "class": "nsaid", "label": "NSAIDs", "tier": "inform", "source": "Therapeutic duplication, ATC M01A", "pharmacist_approved": false },
-    { "class": "ppi", "label": "proton pump inhibitors", "tier": "inform", "source": "Therapeutic duplication, ATC A02BC", "pharmacist_approved": false },
-    { "class": "h2_blocker", "label": "H2 blockers", "tier": "inform", "source": "Therapeutic duplication, ATC A02BA", "pharmacist_approved": false },
-    { "class": "antihistamine", "label": "antihistamines", "tier": "inform", "source": "Therapeutic duplication, ATC R06A", "pharmacist_approved": false },
-    { "class": "benzodiazepine", "label": "benzodiazepines", "tier": "inform", "source": "Therapeutic duplication, ATC N05BA/N05CD", "pharmacist_approved": false },
-    { "class": "ssri", "label": "SSRIs", "tier": "inform", "source": "Therapeutic duplication, ATC N06AB", "pharmacist_approved": false },
-    { "class": "statin", "label": "statins", "tier": "inform", "source": "Therapeutic duplication, ATC C10AA", "pharmacist_approved": false },
-    { "class": "ace_inhibitor", "label": "ACE inhibitors", "tier": "inform", "source": "Therapeutic duplication, ATC C09A", "pharmacist_approved": false },
-    { "class": "arb", "label": "ARBs", "tier": "inform", "source": "Therapeutic duplication, ATC C09C", "pharmacist_approved": false },
-    { "class": "fluoroquinolone", "label": "fluoroquinolones", "tier": "inform", "source": "Therapeutic duplication, ATC J01M", "pharmacist_approved": false },
-    { "class": "cephalosporin", "label": "cephalosporins", "tier": "inform", "source": "Therapeutic duplication, ATC J01D", "pharmacist_approved": false },
-    { "class": "macrolide", "label": "macrolides", "tier": "inform", "source": "Therapeutic duplication, ATC J01FA", "pharmacist_approved": false }
+    {
+      "class": "nsaid",
+      "label": "NSAIDs",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC M01A",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "ppi",
+      "label": "proton pump inhibitors",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC A02BC",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "h2_blocker",
+      "label": "H2 blockers",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC A02BA",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "antihistamine",
+      "label": "antihistamines",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC R06A",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "benzodiazepine",
+      "label": "benzodiazepines",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC N05BA/N05CD",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "ssri",
+      "label": "SSRIs",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC N06AB",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "statin",
+      "label": "statins",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC C10AA",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "ace_inhibitor",
+      "label": "ACE inhibitors",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC C09A",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "arb",
+      "label": "ARBs",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC C09C",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "fluoroquinolone",
+      "label": "fluoroquinolones",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC J01M",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "cephalosporin",
+      "label": "cephalosporins",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC J01D",
+      "pharmacist_approved": false
+    },
+    {
+      "class": "macrolide",
+      "label": "macrolides",
+      "tier": "inform",
+      "source": "Therapeutic duplication, ATC J01FA",
+      "pharmacist_approved": false
+    }
   ],
   "patient_rules": [
     {
       "id": "nsaid_renal",
-      "classes": ["nsaid"],
+      "classes": [
+        "nsaid"
+      ],
       "crcl_below": 60,
       "tier": "interrupt",
       "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can reduce kidney function. Pharmacist to review before dispensing.",
@@ -41,11 +115,46 @@
     },
     {
       "id": "domperidone_elderly",
-      "ingredients": ["domperidone"],
+      "ingredients": [
+        "domperidone"
+      ],
       "age_at_least": 65,
       "tier": "inform",
       "reason": "{names} in a patient aged {age}: higher cardiac (QT) risk in older adults. Pharmacist to review.",
       "source": "Draft geriatric rule, to confirm (EMA PRAC 2014 domperidone review)",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_sedating_antihistamine",
+      "classes": [
+        "sedating_antihistamine"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: first-generation antihistamines are on the Beers list to avoid in older adults (strong anticholinergic effect, confusion, falls). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_benzodiazepine",
+      "classes": [
+        "benzodiazepine"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: benzodiazepines are on the Beers list to avoid in older adults (falls, delirium, cognitive impairment). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_z_drug",
+      "classes": [
+        "hypnotic"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: Z-drug sleep medicines are on the Beers list to avoid in older adults (falls, delirium). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
       "pharmacist_approved": false
     }
   ],
@@ -53,9 +162,96 @@
     {
       "id": "vitamin_duplicate",
       "type": "duplicate_ingredient",
-      "all_in_classes": ["vitamin", "vitamin_b12", "supplement", "probiotic"],
+      "all_in_classes": [
+        "vitamin",
+        "vitamin_b12",
+        "supplement",
+        "probiotic"
+      ],
       "reason": "Repeated vitamins/supplements are logged, not shown",
       "source": "Draft suppression, to confirm (Q4)",
+      "pharmacist_approved": false
+    }
+  ],
+  "dose_policy": {
+    "_note": "Tiers for Track B's dose facts. Track B reports facts; the tier is our policy. All draft until the pharmacist session.",
+    "renal_avoid": "interrupt",
+    "renal_caution": "inform",
+    "over_limit_sos_only": "inform",
+    "notes": {
+      "schedule_mismatch": "interrupt",
+      "unquantified_volume": "inform",
+      "unquantified_dose": "inform"
+    },
+    "sig_unclear_below": 0.7,
+    "sig_unclear_tier": "inform",
+    "source": "Dose policy (draft), to confirm with the pharmacist (Q2, Q3)",
+    "pharmacist_approved": false
+  },
+  "history": {
+    "_note": "Phase 2 policy: order status and review-queue ranking. The default length of a line with no written duration is Track B's (limits.json windows.default_duration_days). Draft, pharmacist_approved=false.",
+    "status_by_tier": {
+      "interrupt": "hold_contact_doctor",
+      "inform": "clear_with_note",
+      "silent": "clear"
+    },
+    "queue": {
+      "tier_weight": {
+        "interrupt": 100,
+        "inform": 10,
+        "silent": 0
+      },
+      "type_bonus": {
+        "banned_fdc": 50,
+        "schedule_mismatch": 40,
+        "dose_excess": 30,
+        "renal_avoid": 30,
+        "nsaid_renal": 20,
+        "ddi": 5
+      },
+      "cross_doctor_bonus": 15,
+      "pharmacist_approved": false
+    }
+  },
+  "burden_scales": [
+    {
+      "id": "anticholinergic_burden",
+      "label": "Anticholinergic burden",
+      "scores": {
+        "amitriptyline": 3,
+        "diphenhydramine": 3,
+        "hydroxyzine": 3,
+        "promethazine": 3,
+        "chlorphenamine": 3,
+        "olanzapine": 3,
+        "paroxetine": 3,
+        "alprazolam": 1
+      },
+      "threshold": 3,
+      "min_ingredients": 2,
+      "age_at_least": 65,
+      "tier": "inform",
+      "source": "Anticholinergic Cognitive Burden scale, 2012 update (Aging Brain Care, Indiana University). Starter subset of the published list; scores to be checked against the original table. A total of 3 or more is the usual cut-off.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "cns_stacking",
+      "label": "Three or more CNS-active medicines",
+      "scores": {},
+      "class_scores": {
+        "benzodiazepine": 1,
+        "hypnotic": 1,
+        "opioid": 1,
+        "tricyclic_antidepressant": 1,
+        "ssri": 1,
+        "antipsychotic": 1,
+        "gabapentinoid": 1
+      },
+      "threshold": 3,
+      "min_ingredients": 3,
+      "age_at_least": 65,
+      "tier": "inform",
+      "source": "AGS Beers Criteria 2023, drug-drug interactions: avoid three or more CNS-active drugs (falls, fractures). One point per ingredient in these classes; list of classes to confirm with the pharmacist.",
       "pharmacist_approved": false
     }
   ]

@@ -3,7 +3,9 @@
 import rulesRaw from '../../../public/data/alert_rules.json?raw'
 import ddiRaw from '../../../public/data/ddi.json?raw'
 import type { Ledger, Patient, ResolvedBrand, Sig } from '../contracts'
-import { createPipeline } from '../pipeline'
+import { createHistoryChecker } from '../history'
+import { createEngine, createPipeline } from '../pipeline'
+import { realDeps } from '../wiring'
 import { createDdiIndex, type DdiJson } from '../resolver/ddi'
 import { testResolver } from '../resolver/testing'
 import { parseAlertRules } from './config'
@@ -44,4 +46,15 @@ export function testPipeline() {
     parseSig: (text) => stubSig(text),
     buildLedger: (lines, _patient: Patient) => stubLedger(lines),
   })
+}
+
+/** Same pipeline with Track B's real sig parser, ledger and limits. */
+export function realPipeline() {
+  return createPipeline(realDeps({ resolver: testResolver(), ddi: testDdi(), rules: alertRules() }))
+}
+
+/** The real engine's history check (Track B's parser and dose engine under Track C's rules). */
+export function realHistory() {
+  const engine = createEngine(realDeps({ resolver: testResolver(), ddi: testDdi(), rules: alertRules() }))
+  return createHistoryChecker(engine)
 }

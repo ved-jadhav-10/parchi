@@ -1,17 +1,29 @@
 // Alerts from the resolver's own flags: banned FDC, NSQ batch, look-alike, discontinued, unsure match.
 import type { Alert } from '../contracts'
-import { joinNames, lineLabel, type Rule } from './types'
+import { joinNames, lineLabel, originFields, type Rule } from './types'
 
 export const flagRule: Rule = (ctx) => {
   const alerts: Alert[] = []
   for (const line of ctx.lines) {
     const r = line.resolved
     const label = lineLabel(line)
-    const base = { ingredients: r.ingredients.map((i) => i.id), brands: [label], confidence: r.confidence }
+    const base = { ingredients: r.ingredients.map((i) => i.id), brands: [label], confidence: r.confidence, ...originFields([line]) }
     const push = (a: Omit<Alert, 'ingredients' | 'brands' | 'confidence'>) => alerts.push({ ...base, ...a })
 
     if (r.match === 'none' && r.ingredients.length === 0) {
-      push({ tier: 'inform', type: 'unresolved', reason: `"${r.raw}" was not recognised. Pharmacist to identify the medicine; it is not in the dose or interaction checks.`, source: 'Brand resolver', approved: true })
+      // The resolver's best guess is shown as a proposal only; it never enters the totals until a pharmacist confirms it.
+      const best = r.candidates?.[0]
+      const proposal = best
+        ? ` Closest match: ${best.brand} (${joinNames(best.ingredients.map((i) => `${ctx.info(i.id).name} ${i.mg} mg`))}), ${Math.round(best.score * 100)}% sure, unverified.`
+        : ''
+      push({
+        tier: 'inform',
+        type: 'unresolved',
+        reason: `"${r.raw}" was not recognised.${proposal} Pharmacist to identify the medicine; it is left out of the dose and interaction checks until confirmed.`,
+        source: 'Brand resolver',
+        approved: true,
+        ...(best ? { unverified: true } : {}),
+      })
       continue
     }
     if (r.flags.includes('banned_fdc')) {

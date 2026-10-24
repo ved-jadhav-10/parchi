@@ -107,7 +107,7 @@ describe('pipeline edge cases', () => {
   })
 
   it('does not alert on two ingredients that only meet inside one combination brand', async () => {
-    const { alerts } = await check('Zerodol P BD', { age_years: 30, weight_kg: 70, serum_creatinine: 0.9 })
+    const { alerts } = await check('Zerodol P BD', { age_years: 30, weight_kg: 70, serum_creatinine: 0.9, sex: 'M' })
     expect(alerts.filter((a) => a.tier !== 'silent')).toEqual([])
   })
 

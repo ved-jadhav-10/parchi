@@ -1,6 +1,6 @@
 // Drug-drug interactions from DDInter. The tier comes from alert_rules.json, never from the data source.
 import type { Alert } from '../contracts'
-import { confidenceOf, joinNames, lineLabel, linesByIngredient, uniqueLines, type Rule } from './types'
+import { confidenceOf, joinNames, lineDesc, lineLabel, linesByIngredient, originFields, uniqueLines, type Rule } from './types'
 
 export const ddiRule: Rule = (ctx) => {
   const byIng = linesByIngredient(ctx)
@@ -18,11 +18,12 @@ export const ddiRule: Rule = (ctx) => {
       tier,
       type: 'ddi',
       ingredients: [hit.a, hit.b],
-      reason: `${joinNames([ctx.info(hit.a).name, ctx.info(hit.b).name])}: ${hit.level} interaction (${joinNames(lines.map(lineLabel))}). Pharmacist to review.`,
+      reason: `${joinNames([ctx.info(hit.a).name, ctx.info(hit.b).name])}: ${hit.level} interaction (${joinNames(lines.map(lineDesc))}). Pharmacist to review.`,
       source: hit.source,
       confidence: confidenceOf(lines),
       brands: lines.map(lineLabel),
       approved: tiers.pharmacist_approved,
+      ...originFields(lines),
     })
   }
   return alerts

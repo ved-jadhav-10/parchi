@@ -127,6 +127,7 @@ function load(): Promise<Pick<CheckDeps, 'check' | 'dose'>> {
       rules: parseAlertRules(await read('alert_rules.json')),
       parseSig: doseDeps.parseSig,
       buildLedger: doseDeps.buildLedger,
+      computeDose: doseDeps.computeDose, // lets the pipeline raise B's kidney, schedule and SOS findings as alerts
     })
     return { check, dose: doseDeps.computeDose }
   })()
