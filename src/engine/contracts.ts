@@ -12,6 +12,8 @@ export interface Ingredient {
   other_unit?: { unit: string; amount: number }
   /** Track A, optional: the source gives no usable strength. `mg` is 0 then. */
   strength_unknown?: boolean
+  /** Track A, optional: per_volume_ml was not stated but inferred (per-5-mL syrup convention or a sibling ingredient). */
+  per_volume_assumed?: boolean
 }
 
 /** Track A, optional detail. Only systemic routes count toward the daily mg ledger. */
@@ -75,6 +77,10 @@ export interface ResolvedBrand {
   nsq?: NsqRef[]
   /** Jan Aushadhi generics with the same ingredients and strengths (not a safety flag). Pharmacist confirms equivalence. */
   jan_aushadhi?: JanAushadhiRef[]
+  /** Track A, optional: usual labelled schedule is not daily (methotrexate tablets, alendronate 70 mg: weekly; ibandronate 150 mg: monthly). Track C can warn on a daily sig. Sourced per drug in data/curated/schedule_hints.csv. */
+  schedule_hint?: 'weekly' | 'monthly'
+  /** Source URL for `schedule_hint`. */
+  schedule_source?: string
   /** Short reasons for the pharmacist, e.g. "Assumed 650 mg; Dolo is also sold as 500 mg". */
   notes?: string[]
 }

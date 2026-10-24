@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import csv
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from .forms import FORM_WORDS, detect_form
@@ -31,7 +31,7 @@ class Component:
 
     def signature(self) -> tuple:
         s = self.strength
-        return (self.id, s.mg, s.per_volume_ml, s.other_unit, s.known)
+        return (self.id, s.mg, s.per_volume_ml, s.other_unit, s.known, s.volume_assumed)
 
 
 @dataclass
@@ -108,6 +108,33 @@ def parse_composition(text_parts: list[str], reg: Registry) -> list[Component]:
     return comps
 
 
+# Oral liquids whose stated strengths are per 5 mL in >96% of dataset rows that give a volume
+# (syrup 98.5%, suspension 96.6%, dry syrup 99.8%). Oral drops (68% per mL, 32% per 5 mL) and
+# oral solutions (67% / 30%) are too mixed to assume anything.
+PER_5ML_FORMS = frozenset({"syrup", "suspension", "dry_syrup"})
+
+
+def fill_liquid_volumes(comps: list[Component], form: str) -> list[Component]:
+    """Give liquid ingredients that state mg but no volume a per_volume_ml, flagged as assumed.
+
+    Order of evidence: a sibling ingredient's stated volume in the same product, then the
+    per-5-mL labelling convention for syrups and suspensions. Anything else stays unknown.
+    """
+    if form not in PER_5ML_FORMS | {"oral_drops", "oral_solution"}:
+        return comps
+    stated = {c.strength.per_volume_ml for c in comps if c.strength.per_volume_ml is not None}
+    volume = stated.pop() if len(stated) == 1 else (5.0 if form in PER_5ML_FORMS and not stated else None)
+    if volume is None:
+        return comps
+    out = []
+    for c in comps:
+        s = c.strength
+        if s.known and not s.other_unit and s.per_volume_ml is None and s.mg > 0:
+            s = replace(s, per_volume_ml=volume, volume_assumed=True)
+        out.append(Component(c.id, s))
+    return out
+
+
 def split_salt_composition(text: str) -> list[str]:
     return [p for p in re.split(r"\s+\+\s+", text.strip()) if p.strip()]
 
@@ -136,6 +163,7 @@ def read_dataset(path: Path, reg: Registry) -> list[Brand]:
             if not comps:
                 continue
             form, route = detect_form(name, row.get("pack_size_label", ""))
+            comps = fill_liquid_volumes(comps, form)
             brands.append(
                 Brand(
                     display=display_name(name) or name,
@@ -156,8 +184,8 @@ def read_curated(path: Path, reg: Registry) -> list[Brand]:
         for row in csv.DictReader(f):
             if not row["brand"].strip() or row["brand"].startswith("#"):
                 continue
-            comps = parse_composition(split_salt_composition(row["composition"]), reg)
             form = row["form"].strip()
+            comps = fill_liquid_volumes(parse_composition(split_salt_composition(row["composition"]), reg), form)
             route = detect_form(form)[1]
             out.append(
                 Brand(
@@ -202,11 +230,20 @@ def dedupe(brands: list[Brand]) -> list[Brand]:
 def select(dataset: list[Brand], curated: list[Brand], top_per_letter: int) -> list[Brand]:
     """Keep whole product lines (all strengths/forms) if any variant ranks in its letter's top N.
 
-    Curated brands replace dataset rows with the same display name and form.
+    A curated brand replaces dataset rows with the same display name and form whose ingredients are
+    a subset of the verified ones (truncated copies). A different product that shares the name,
+    e.g. "Sinarest Linctus" next to "Sinarest Syrup", stays.
     """
-    curated_keys = {(b.display.lower(), b.form) for b in curated}
+    curated_ids: dict[tuple[str, str], list[set[str]]] = {}
+    for b in curated:
+        curated_ids.setdefault((b.display.lower(), b.form), []).append({c.id for c in b.components})
     curated_lines = {b.key for b in curated}
-    rows = [b for b in dedupe(dataset) if (b.display.lower(), b.form) not in curated_keys]
+
+    def replaced(b: Brand) -> bool:
+        ids = {c.id for c in b.components}
+        return any(ids <= verified for verified in curated_ids.get((b.display.lower(), b.form), []))
+
+    rows = [b for b in dedupe(dataset) if not replaced(b)]
     hot_lines = {b.key for b in rows if b.rank < top_per_letter} | curated_lines
     kept = [b for b in rows if b.key in hot_lines]
     return curated + sorted(kept, key=lambda b: (b.key, b.rank))

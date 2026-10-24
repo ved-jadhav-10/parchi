@@ -5,6 +5,7 @@ import { doubleMetaphone } from 'double-metaphone'
 import type { Ingredient, ResolvedBrand, Route } from '../contracts'
 import { createBannedIndex } from './banned'
 import { createJanAushadhiIndex } from './janaushadhi'
+import { createScheduleIndex } from './schedule'
 import { createNsqIndex } from './nsq'
 import { fetchResolverData, type BrandRecord, type IngredientInfo, type ResolverData } from './data'
 import { HINT_FORMS, MODIFIERS, canonicalize, normaliseText, parseName, type ParsedName } from './normalize'
@@ -114,6 +115,7 @@ export function createResolver(data: ResolverData): Resolver {
   const banned = createBannedIndex(data.banned)
   const nsq = createNsqIndex(data.nsq)
   const jan = createJanAushadhiIndex(data.janaushadhi)
+  const schedules = createScheduleIndex(data.scheduleHints)
 
   /** "Zerodol-P 100mg/500mg (Aceclofenac 100 mg + Paracetamol 500 mg)" for pharmacist-facing notes. */
   function describe(rec: BrandRecord): string {
@@ -337,6 +339,12 @@ export function createResolver(data: ResolverData): Resolver {
         res.banned_fdc = hits
       }
     }
+    const schedule = schedules.check(res.ingredients, res.form)
+    if (schedule) {
+      res.schedule_hint = schedule.hint
+      res.schedule_source = schedule.source
+      notes.push(`Usually taken ${schedule.hint}, not daily; if the sig reads as daily, confirm with the prescriber.`)
+    }
     const generics = jan.check(res.ingredients, res.form, res.brand, res.composition_complete !== false)
     if (generics.length) res.jan_aushadhi = generics
     if (res.confidence < NEEDS_PHARMACIST_BELOW) res.needs_pharmacist = true
@@ -355,7 +363,8 @@ export function createResolver(data: ResolverData): Resolver {
   function unresolved(raw: string, scored: Scored[]): ResolvedBrand {
     const res: ResolvedBrand = {
       raw, brand: null, confidence: round(scored[0]?.score ?? 0), ingredients: [], form: 'unknown', flags: [],
-      match: 'none', needs_pharmacist: true,
+      // No ingredients, so nothing reaches the ledger either way; set explicitly so no consumer has to guess.
+      route: 'other', systemic: false, match: 'none', needs_pharmacist: true,
     }
     if (scored.length) res.candidates = candidateList(scored)
     res.notes = ['Could not identify this medicine confidently; please confirm the brand.']

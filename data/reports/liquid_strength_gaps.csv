@@ -1,0 +1,567 @@
+popularity_tier,brand,form,ingredient,strength_as_listed,reason,source
+0,Betnesol,oral_drops,betamethasone,0.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+0,Botroclot Topical,oral_solution,hemocoagulase,0.2CU,unit cu,dataset
+0,Cremaffin Plus,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+0,Emty,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+0,Gudlax-Plus Laxative Peppermint Sugar Free,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+0,Junior Cipeg,oral_solution,polyethylene_glycol,8.5gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+0,Sinarest Paediatric,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Sinarest Paediatric,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Sinarest Paediatric,oral_drops,phenylephrine,2.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Solvin Cold,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Solvin Cold,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Solvin Cold,oral_drops,phenylephrine,2.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Uprise-D3,oral_drops,colecalciferol,400IU/0.5ml,strength not given,dataset
+0,Wikoryl,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+0,Wikoryl,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+0,Xylocaine Viscous,oral_solution,lidocaine,20mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Asthakind-P,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Asthakind-P,oral_drops,guaifenesin,12.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Atarax,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Benegut,suspension,bacillus_clausii,NA,strength not given,dataset
+1,Biogermina,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+1,Colimex,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Colimex,oral_drops,simeticone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Cremaffin Plus,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+1,Cremaffin Plus,syrup,magnesium_hydroxide,3.75ml,unit ml,dataset
+1,Evict,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Febrex Plus,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Febrex Plus,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Gemsoline-D3 Nano Shot,oral_solution,colecalciferol,60000IU,unit iu,dataset
+1,Gudcef,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Gutgermina,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+1,HEPA MERZ OA,syrup,l_ornithine_l_aspartate,NA,strength not given,dataset
+1,Hatric 3,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Hatric 3,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Hicope,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Hnu-D3 60K,oral_solution,colecalciferol,60000IU,unit iu,dataset
+1,Hungry,syrup,cyproheptadine,NA,strength not given,dataset
+1,Hydrogen Peroxide,oral_solution,hydrogen_peroxide,NA,strength not given,dataset
+1,Immulina,oral_solution,pidotimod,400mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Joyspas-D,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Joyspas-D,oral_drops,dimethicone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,KLM-D3 Nano,oral_drops,colecalciferol,800IU,unit iu,dataset
+1,Kofarest,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Kold Time,syrup,cetirizine,NA,strength not given,dataset
+1,Laxolite Oral Laxative,oral_solution,polyethylene_glycol,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Looz,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Mom Plus,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+1,Mom Plus,suspension,magnesium_hydroxide,3.75ml,unit ml,dataset
+1,Mucolite,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Novogermina,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+1,Omee Mps,oral_solution,aluminium_hydroxide,200mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Omee Mps,oral_solution,magnesium,200mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Omee Mps,oral_solution,simeticone,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Q Coril,syrup,citric_acid,NA,strength not given,dataset
+1,Q Coril,syrup,diphenhydramine,NA,strength not given,dataset
+1,Quick-D3 Nano Shot,oral_solution,colecalciferol,60000IU,unit iu,dataset
+1,Smuth,suspension,liquid_paraffin,1.25ml/5ml,strength not given,dataset
+1,Taxim-O,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Urofit,oral_solution,potassium_citrate,1100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Urofit,oral_solution,magnesium_citrate,375mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Urofit,oral_solution,pyridoxine,20mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Urosol,syrup,disodium_hydrogen,NA,strength not given,dataset
+1,Viganext,oral_solution,vigabatrin,500mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+1,Xaliderm,oral_solution,coal_tar,4.25% w/w,unit percent_ww,dataset
+1,Xaliderm,oral_solution,salicylic_acid,2% w/w,unit percent_ww,dataset
+1,Y Ral,syrup,paracetamol,NA,strength not given,dataset
+1,Y Ral,syrup,chlorphenamine,NA,strength not given,dataset
+1,Yulose,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Aciloc Only,oral_solution,ranitidine,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Advent 91.4mg,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Advent 91.4mg,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Albutamol,syrup,salbutamol,NA,strength not given,dataset
+2,Albutamol,syrup,etofylline,NA,strength not given,dataset
+2,Aldryl,syrup,citric_acid,NA,strength not given,dataset
+2,Aldryl,syrup,diphenhydramine,NA,strength not given,dataset
+2,Alkaliser,syrup,disodium_hydrogen,NA,strength not given,dataset
+2,Althrocin 100mg,oral_drops,erythromycin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Asthakind-LS,oral_drops,ambroxol,NA,strength not given,dataset
+2,Asthakind-LS,oral_drops,levosalbutamol,NA,strength not given,dataset
+2,Bactoclav,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Bactoclav,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Bifilac Clausi,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+2,Biochemdryl,syrup,menthol,NA,strength not given,dataset
+2,Biochemdryl,syrup,diphenhydramine,NA,strength not given,dataset
+2,Biopolio B1/3 Oral Vaccine,oral_solution,polio_vaccine,NA,strength not given,dataset
+2,Biospas 10 mg/40 mg,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Biospas 10 mg/40 mg,oral_drops,dimethicone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Brevipil,oral_solution,brivaracetam,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Bro Cofdex Plus,syrup,dextromethorphan,NA,strength not given,dataset
+2,Brohex,syrup,bromhexine,NA,strength not given,dataset
+2,Bronk,syrup,chlorphenamine,NA,strength not given,dataset
+2,Bronk,syrup,dextromethorphan,NA,strength not given,dataset
+2,Bronko,syrup,salbutamol,NA,strength not given,dataset
+2,Bronko,syrup,bromhexine,NA,strength not given,dataset
+2,CO Mupimet Collagen Particles,oral_solution,mupirocin,2% w/w,unit percent_ww,dataset
+2,CO Mupimet Collagen Particles,oral_solution,metronidazole,1% w/w,unit percent_ww,dataset
+2,CYP-L,oral_drops,cyproheptadine,1.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,CYP-L,oral_drops,tricholine,55mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Capnea,oral_solution,caffeine,20mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Cefolac,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Cetzine,oral_drops,cetirizine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Cheston Cold DS,syrup,cetirizine,NA,strength not given,dataset
+2,Cheston Cold DS,syrup,paracetamol,NA,strength not given,dataset
+2,Codeine Phosphate,syrup,codeine,NA,strength not given,dataset
+2,Colax PM,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Colax PM,syrup,magnesium_hydroxide,3.75ml,unit ml,dataset
+2,Cremazen Plus,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+2,Cyclopam,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Cyclopam,oral_drops,simeticone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Cymbi,oral_drops,simeticone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Cypon,oral_drops,cyproheptadine,1.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Cypon,oral_drops,tricholine,55mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,D-Shine Shot,oral_solution,colecalciferol,60000IU,unit iu,dataset
+2,D3 Sure Nano Shot,oral_solution,colecalciferol,60000IU,unit iu,dataset
+2,DMR,syrup,dextromethorphan,NA,strength not given,dataset
+2,Decolic,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Decolic,oral_drops,simeticone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Dentogel,oral_solution,choline_salicylate,8.7% w/w,unit percent_ww,dataset
+2,Dentogel,oral_solution,lidocaine,2% w/w,unit percent_ww,dataset
+2,DexLuz,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Deys Milk OF Magnesia,oral_solution,magnesium_hydroxide,8% w/w,unit percent_ww,dataset
+2,Distaclor,oral_drops,cefaclor,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Domways 10mg,oral_drops,domperidone,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Duphalac Bulk,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Eliv,syrup,silymarin,NA,strength not given,dataset
+2,Elzin LS,syrup,levocetirizine,NA,strength not given,dataset
+2,Enteroclausi FFS,suspension,bacillus_clausii,2Million spores,unit million_spores,dataset
+2,Enterogem,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+2,Entromax F,suspension,furazolidone,NA,strength not given,dataset
+2,Entromax F,suspension,metronidazole,NA,strength not given,dataset
+2,Evafos,oral_solution,fosfomycin,5.631gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Exiplon,syrup,chlorphenamine,NA,strength not given,dataset
+2,Exiplon,syrup,codeine,NA,strength not given,dataset
+2,Febrinil M,syrup,mefenamic_acid,NA,strength not given,dataset
+2,Febrinil M,syrup,paracetamol,NA,strength not given,dataset
+2,Freelac,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Freelax,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Freelex,syrup,magnesium_hydroxide,11.25ml,unit ml,dataset
+2,Freelex,syrup,liquid_paraffin,3.75ml,unit ml,dataset
+2,Gitzer,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+2,Gudcef DS 50mg,oral_drops,cefpodoxime,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Gutgain,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+2,Havlax Laxative Sugar Free,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Havmor,syrup,cyproheptadine,NA,strength not given,dataset
+2,Hemolok,oral_solution,feracrylum,1%,unit percent_ww,dataset
+2,Hepaford,syrup,l_ornithine_l_aspartate,NA,strength not given,dataset
+2,Hepakind,syrup,ursodeoxycholic_acid,NA,strength not given,dataset
+2,Heparid,syrup,silymarin,NA,strength not given,dataset
+2,Hibone-D,oral_drops,colecalciferol,800IU,unit iu,dataset
+2,Hiliv,syrup,cyproheptadine,NA,strength not given,dataset
+2,Histaover LM,syrup,levocetirizine,NA,strength not given,dataset
+2,Histaover LM,syrup,montelukast,NA,strength not given,dataset
+2,Hizet,oral_solution,hydroxyzine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Hunger,oral_drops,cyproheptadine,1.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Hunger,oral_drops,tricholine,55mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Hy-Kul,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+2,Hydrahair CS,oral_solution,coal_tar,4.25% w/w,unit percent_ww,dataset
+2,Hydrahair CS,oral_solution,salicylic_acid,2% w/w,unit percent_ww,dataset
+2,Hynorax 6mg,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,IT Mac 10mg,oral_solution,itraconazole,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Intalka,syrup,disodium_hydrogen,NA,strength not given,dataset
+2,Intazin Cold,suspension,cetirizine,NA,strength not given,dataset
+2,Iodine,oral_solution,povidone_iodine,NA,strength not given,dataset
+2,Jacof,syrup,terbutaline,NA,strength not given,dataset
+2,Jacof,syrup,ambroxol,NA,strength not given,dataset
+2,Jolvig,oral_solution,vigabatrin,500mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Jucitron,syrup,disodium_hydrogen,NA,strength not given,dataset
+2,K2,oral_solution,ketoconazole,NA,strength not given,dataset
+2,KB6,oral_solution,potassium_citrate,1100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,KB6,oral_solution,magnesium_citrate,375mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,KOLQ,oral_drops,cetirizine,2.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,KOLQ,oral_drops,phenylephrine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kalzin Nano,oral_solution,colecalciferol,60000IU,unit iu,dataset
+2,Kep-X,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kep-X,oral_drops,guaifenesin,12.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Khasigo,syrup,citric_acid,NA,strength not given,dataset
+2,Khasigo,syrup,chlorphenamine,NA,strength not given,dataset
+2,Kidspas,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kidspas,oral_drops,dimethicone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kidylinctus D,syrup,phenylephrine,NA,strength not given,dataset
+2,Kidylinctus D,syrup,chlorphenamine,NA,strength not given,dataset
+2,Kinlax,suspension,magnesium_hydroxide,11.25ml,unit ml,dataset
+2,Kinlax,suspension,liquid_paraffin,3.75ml,unit ml,dataset
+2,Kinlax Plus,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Kofcare AM,syrup,ambroxol,NA,strength not given,dataset
+2,Kofcare AM,syrup,guaifenesin,NA,strength not given,dataset
+2,Kofcure,syrup,guaifenesin,NA,strength not given,dataset
+2,Kofcure,syrup,chlorphenamine,NA,strength not given,dataset
+2,Kofdex,syrup,phenylpropanolamine,NA,strength not given,dataset
+2,Kofdex,syrup,chlorphenamine,NA,strength not given,dataset
+2,Kofnil,syrup,bromhexine,NA,strength not given,dataset
+2,Kofnil,syrup,salbutamol,NA,strength not given,dataset
+2,Kofover,oral_drops,ambroxol,15mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kofover,oral_drops,levosalbutamol,0.25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kofrid Plus,syrup,cetirizine,NA,strength not given,dataset
+2,Kofrid Plus,syrup,ambroxol,NA,strength not given,dataset
+2,Kuf Relief,syrup,citric_acid,NA,strength not given,dataset
+2,Kuf Relief,syrup,chlorphenamine,NA,strength not given,dataset
+2,Kufrex,syrup,guaifenesin,NA,strength not given,dataset
+2,Kufrex,syrup,terbutaline,NA,strength not given,dataset
+2,Kufril 15 mg/50 mg/1 mg,oral_drops,ambroxol,15mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kufril 15 mg/50 mg/1 mg,oral_drops,guaifenesin,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kufril A,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Kufril D Junior,syrup,phenylephrine,NA,strength not given,dataset
+2,Kufril D Junior,syrup,chlorphenamine,NA,strength not given,dataset
+2,Lactolook,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Laxil,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Laxit Plus,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Laxit Plus,syrup,magnesium_hydroxide,3.75ml,unit ml,dataset
+2,Laxitas,oral_solution,sodium_picosulfate,3.33mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Laxitas,oral_solution,liquid_paraffin,1.25ml,unit ml,dataset
+2,Laxitas,oral_solution,magnesium_hydroxide,3.75ml,unit ml,dataset
+2,Laxivent Plus,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+2,Laxiwal,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Laxobig,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Laxobig,syrup,magnesium_hydroxide,3.75ml,unit ml,dataset
+2,Leekuf,syrup,bromhexine,NA,strength not given,dataset
+2,Leekuf,syrup,dextromethorphan,NA,strength not given,dataset
+2,Levomac,oral_solution,levofloxacin,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Linctus DX,syrup,phenylpropanolamine,NA,strength not given,dataset
+2,Linctus DX,syrup,chlorphenamine,NA,strength not given,dataset
+2,Liofen,oral_solution,baclofen,5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Liquid Parafin,oral_solution,liquid_paraffin,NA,strength not given,dataset
+2,Livoluk,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Livoluk Kid,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Looz Peg,oral_solution,polyethylene_glycol,13.125gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Macbery,oral_drops,levosalbutamol,0.25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Macbery,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Macbery Dr,syrup,ambroxol,NA,strength not given,dataset
+2,Macbery Dr,syrup,levosalbutamol,NA,strength not given,dataset
+2,Macpod,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Mariliv,oral_drops,silymarin,35mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Mariliv,oral_drops,tricholine,90mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Maxtra P,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Maxtra P,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Meftal-Spas,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Meftal-Spas,oral_drops,simeticone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Mega-CV,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Mega-CV,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Melboost 5mg,oral_solution,deca_peptide,5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Microwin Povishield 5% Microbicidal,oral_solution,povidone_iodine,NA,strength not given,dataset
+2,Monocef O 25mg,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Monurol,oral_solution,fosfomycin,3gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Morr 10%,oral_solution,minoxidil,10%,unit percent_ww,dataset
+2,Morr 2%,oral_solution,minoxidil,2%,unit percent_ww,dataset
+2,Morr 3%,oral_solution,minoxidil,30mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Morr 7.5%,oral_solution,minoxidil,75mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Motinorm,oral_drops,domperidone,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Mox,oral_drops,amoxicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Moxclav Paediatric,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Moxclav Paediatric,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Moxikind-CV,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Moxikind-CV,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Noblok,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Noblok,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Nocold,oral_drops,phenylpropanolamine,NA,strength not given,dataset
+2,Nocold,oral_drops,dexchlorphenamine,NA,strength not given,dataset
+2,Novamox 100 Rediuse,oral_drops,amoxicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Novamox CV,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Novamox CV,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Novamox Paediatric,oral_drops,amoxicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Onecal Laxative,suspension,sodium_picosulfate,1.25ml/5ml,strength not given,dataset
+2,Opox 25mg,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Opv Vaccine,oral_solution,polio_vaccine,NA,strength not given,dataset
+2,Oraxin,oral_drops,cyproheptadine,1.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Oraxin,oral_drops,tricholine,55mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Oxipod 25mg,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,P 125,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Pedicalm,oral_solution,triclofos,NA,strength not given,dataset
+2,Pedirest,syrup,triclofos,NA,strength not given,dataset
+2,Perinorm 5mg,oral_drops,metoclopramide,5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Phlebotroy QPS Topical,oral_solution,heparin,1000IU/ml,unit iu/ml,dataset
+2,Piclin Plus,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+2,Picolex,oral_solution,sodium_picosulfate,5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Picsul Plus,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Picsul Plus,syrup,magnesium_hydroxide,3.75ml,unit ml,dataset
+2,Progermina Bottle Oral Suspension(5ml Each),suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+2,Q Coril Dmr,syrup,chlorphenamine,NA,strength not given,dataset
+2,Q Coril Dmr,syrup,dextromethorphan,NA,strength not given,dataset
+2,Q Nine,syrup,quinine,NA,strength not given,dataset
+2,Quinonir,syrup,quinine,NA,strength not given,dataset
+2,Quit,syrup,citric_acid,NA,strength not given,dataset
+2,Quit,syrup,diphenhydramine,NA,strength not given,dataset
+2,Qukcef-LB Dry,dry_syrup,lactic_acid_bacillus,60Million spores,unit million_spores,dataset
+2,Racigyl SB,oral_solution,racecadotril,15mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Racigyl SB,oral_solution,saccharomyces_boulardii,2.5Billion cells,unit billion_cells,dataset
+2,Recofast,oral_drops,chlorphenamine,5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Recofast,oral_drops,phenylephrine,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Recofast Plus,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Recofast Plus,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Regaine 5%,oral_solution,minoxidil,5% w/w,unit percent_ww,dataset
+2,Relax,syrup,diclofenac,NA,strength not given,dataset
+2,RotaTeq Oral Vaccine,oral_drops,rotavirus_vaccine,NA,strength not given,dataset
+2,Rotasiil-Liquid Oral Vaccine,oral_solution,rotavirus_vaccine,100000FFU,unit ffu,dataset
+2,Rotasure Oral Vaccine,oral_solution,rotavirus_vaccine,100000FFU,unit ffu,dataset
+2,Rotavac Oral Vaccine,oral_solution,rotavirus_vaccine,100000IU,unit iu,dataset
+2,Roxid 50mg,oral_solution,roxithromycin,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Sacctik Plus,suspension,bacillus_clausii,2Billion Spores,unit billion_spores,dataset
+2,Sepgard,oral_solution,feracrylum,1%,unit percent_ww,dataset
+2,Seritol,oral_drops,cyproheptadine,NA,strength not given,dataset
+2,Softek Plus,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Softools,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Softools,syrup,magnesium_hydroxide,3.75ml,unit ml,dataset
+2,Sorliv,oral_solution,tricholine,0.55gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Sorliv,oral_solution,sorbitol,7.15gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Spasmindon Paediatric,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Spasmindon Paediatric,oral_drops,dimethicone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Spasmonil,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Spasmonil,oral_drops,dimethicone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Sporidex 100mg Paediatric,oral_drops,cefalexin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Sporidex Redimix,oral_drops,cefalexin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Ston 1,oral_solution,magnesium_citrate,375ml/5ml,strength not given,dataset
+2,Sumo Cold,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Sumo Cold,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Swich,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Thrombotroy QPS,oral_solution,heparin,1000IU/ml,unit iu/ml,dataset
+2,Tinaderm,oral_solution,tolnaftate,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Tumsup,oral_drops,dill_oil,0.005ml,unit ml,dataset
+2,Tumsup,oral_drops,fennel_oil,0.0007ml,unit ml,dataset
+2,Unicitral,syrup,disodium_hydrogen,NA,strength not given,dataset
+2,Unicyp,syrup,cyproheptadine,NA,strength not given,dataset
+2,Unidine,oral_solution,povidone_iodine,NA,strength not given,dataset
+2,Unilight-D3,oral_drops,colecalciferol,800IU,unit iu,dataset
+2,Uri Flow,syrup,disodium_hydrogen,NA,strength not given,dataset
+2,Uriboost,oral_solution,citric_acid,334mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Uriboost,oral_solution,potassium_citrate,1100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Uriflame,syrup,disodium_hydrogen,NA,strength not given,dataset
+2,Uzupas 10gm,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Valkem 500mg,oral_solution,valproic_acid,500mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Viby,oral_solution,vigabatrin,500mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Viminic,oral_drops,chlorphenamine,5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Viminic,oral_drops,phenylephrine,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Vitamin A 100000IU,syrup,retinol,100000IU,unit iu,dataset
+2,Wegazyme,syrup,pepsin,NA,strength not given,dataset
+2,Wegazyme,syrup,simeticone,NA,strength not given,dataset
+2,Wegazyme,syrup,diastase,NA,strength not given,dataset
+2,Wilecod,syrup,ambroxol,NA,strength not given,dataset
+2,Wilecod,syrup,guaifenesin,NA,strength not given,dataset
+2,Win Orange,syrup,albendazole,NA,strength not given,dataset
+2,Wincet P,syrup,levocetirizine,NA,strength not given,dataset
+2,Winkof-LS,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Winkof-LS,oral_drops,levosalbutamol,0.25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Wokadine 5%,oral_solution,povidone_iodine,5%,unit percent_ww,dataset
+2,Wudlac Laxative,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+2,Wudlac Laxative,suspension,magnesium_hydroxide,3.75ml,unit ml,dataset
+2,X Cold,syrup,phenylpropanolamine,NA,strength not given,dataset
+2,X Cold,syrup,dexchlorphenamine,NA,strength not given,dataset
+2,X Cold Plus,syrup,chlorphenamine,NA,strength not given,dataset
+2,X Cold Plus,syrup,paracetamol,NA,strength not given,dataset
+2,X Plus,syrup,ambroxol,NA,strength not given,dataset
+2,X Plus,syrup,guaifenesin,NA,strength not given,dataset
+2,Xitimin 6mg,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Xorfin Plus,syrup,liquid_paraffin,1.25ml,unit ml,dataset
+2,Xputum Paed,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Xtrex,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Xylovis Oral Topical,oral_solution,lidocaine,21.3mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Xym 100mg Dry,dry_syrup,lactic_acid_bacillus,60Million spores,unit million_spores,dataset
+2,Yanicold,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Yanicold,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Yoromol 100mg,oral_drops,paracetamol,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Zendryl,syrup,diphenhydramine,NA,strength not given,dataset
+2,Zerocold P,syrup,chlorphenamine,NA,strength not given,dataset
+2,Zerocold P,syrup,paracetamol,NA,strength not given,dataset
+2,Zincold,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Zincold,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Zioral,oral_drops,zinc_gluconate,20mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Zukamin Plus,oral_drops,chlorphenamine,NA,strength not given,dataset
+2,Zukamin Plus,oral_drops,paracetamol,NA,strength not given,dataset
+3,A-Ret,oral_solution,tretinoin,0.05% w/w,unit percent_ww,dataset
+3,Abixim,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ace Plus,oral_drops,chlorphenamine,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ace Plus,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Acolate,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Acolate,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Alerfri,oral_drops,chlorphenamine,2.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Alerfri,oral_drops,paracetamol,500mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Alerid-D,syrup,phenylpropanolamine,NA,strength not given,dataset
+3,Alerid-D,syrup,cetirizine,NA,strength not given,dataset
+3,Almox 100mg,oral_drops,amoxicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Amitone,syrup,amitriptyline,NA,strength not given,dataset
+3,Andial,oral_solution,loperamide,NA,strength not given,dataset
+3,Aptimust,oral_drops,cyproheptadine,1.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Aptimust,oral_drops,tricholine,55mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Arpimune ME,oral_solution,ciclosporin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Asthakind,oral_drops,guaifenesin,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Asthakind,oral_drops,terbutaline,15mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Aziford,syrup,azithromycin,NA,strength not given,dataset
+3,Bactogard 25mg,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Barozyme,oral_solution,pancreatin,NA,strength not given,dataset
+3,Barozyme,oral_solution,dimethicone,NA,strength not given,dataset
+3,Benicort,oral_drops,betamethasone,NA,strength not given,dataset
+3,Benicort 0.5mg,oral_drops,betamethasone,0.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Biopron,oral_drops,cyproheptadine,1.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Biopron,oral_drops,tricholine,55mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Bisolvon,syrup,bromhexine,NA,strength not given,dataset
+3,Brivanext,oral_solution,brivaracetam,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Brivatab,oral_solution,brivaracetam,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Brivepsy 10mg,oral_solution,brivaracetam,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Brivgard,oral_solution,brivaracetam,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Broadicilin 100mg,oral_drops,ampicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Brom,syrup,bromocriptine,NA,strength not given,dataset
+3,Bronkolyte PD,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Bronkolyte PD,oral_drops,guaifenesin,12.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Broxine,syrup,bromhexine,NA,strength not given,dataset
+3,C Tax-O 25mg,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Cedon 50mg,oral_drops,cefpodoxime,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Cefadur 100mg,oral_drops,cefadroxil,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ceff 100mg,oral_drops,cefalexin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Cepodem,oral_drops,cefpodoxime,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Cepodem,oral_drops,cefpodoxime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Cetriz,syrup,cetirizine,NA,strength not given,dataset
+3,Clamp 80mg/11.4mg,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Clamp 80mg/11.4mg,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Clomin,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Clomin,oral_drops,simeticone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Coldmine,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Coldmine,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Coldsol,oral_drops,cetirizine,1.25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Coldsol,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Cuflift-LS,oral_drops,levosalbutamol,0.25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Cuflift-LS,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,D.F.O. 4X,oral_solution,alcohol,10% v/v,strength not given,dataset
+3,Dec,oral_solution,guaifenesin,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Dec,oral_solution,diethylcarbamazine,NA,strength not given,dataset
+3,Disogel,suspension,aluminium_hydroxide,NA,strength not given,dataset
+3,Disogel,suspension,magnesium,NA,strength not given,dataset
+3,Distaclor 50mg,oral_drops,cefaclor,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Dresin,oral_solution,povidone_iodine,NA,strength not given,dataset
+3,Eldoper,suspension,loperamide,NA,strength not given,dataset
+3,Elmox 100mg,oral_drops,amoxicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Emitino 4mg,oral_drops,ondansetron,4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Emlevo 100mg,oral_solution,levetiracetam,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Enzocort,suspension,deflazacort,NA,strength not given,dataset
+3,F,oral_solution,ofloxacin,NA,strength not given,dataset
+3,Febrex 150mg,oral_drops,paracetamol,150mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Fenixa,syrup,fexofenadine,NA,strength not given,dataset
+3,Fine 150mg,oral_drops,paracetamol,150mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Fluimucil 100,oral_solution,acetylcysteine,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Flumol 100mg,oral_drops,paracetamol,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Fritolev 100mg,oral_solution,levetiracetam,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,HISTOLATE 4MG/10MG,oral_drops,chlorphenamine,4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,HISTOLATE 4MG/10MG,oral_drops,codeine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Haxime 50mg,syrup,lactic_acid_bacillus,20Million spores,unit million_spores,dataset
+3,Heal Fast,oral_solution,povidone_iodine,10% w/w,unit percent_ww,dataset
+3,Heal Fast 10%,oral_solution,povidone_iodine,10%,unit percent_ww,dataset
+3,Hifen 25mg,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Hipen P 125mg,oral_drops,amoxicillin,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Histanil,syrup,chlorphenamine,NA,strength not given,dataset
+3,Histasafe 6mg,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Hydrox 6mg,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Hylerg,oral_solution,hydroxyzine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ibufen,syrup,ibuprofen,NA,strength not given,dataset
+3,Ibufen,syrup,paracetamol,NA,strength not given,dataset
+3,Ibumin,syrup,ibuprofen,NA,strength not given,dataset
+3,Instaryl LS,oral_drops,phenylephrine,NA,strength not given,dataset
+3,Instaryl LS,oral_drops,salbutamol,NA,strength not given,dataset
+3,Joset,syrup,ondansetron,NA,strength not given,dataset
+3,K Par,suspension,paracetamol,NA,strength not given,dataset
+3,Koxma,syrup,pseudoephedrine,NA,strength not given,dataset
+3,Koxma,syrup,chlorphenamine,NA,strength not given,dataset
+3,Kyomol,oral_drops,paracetamol,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Labmox 100mg,oral_drops,amoxicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Labocof,syrup,citric_acid,NA,strength not given,dataset
+3,Labocof,syrup,diphenhydramine,NA,strength not given,dataset
+3,Lac,syrup,lactic_acid_bacillus,40Million spores,unit million_spores,dataset
+3,Lax 3,suspension,liquid_paraffin,1.25ml,unit ml,dataset
+3,Laxolite 10gm Oral Laxative,oral_solution,polyethylene_glycol,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Leemol,oral_drops,paracetamol,NA,strength not given,dataset
+3,Lemolate,syrup,menthol,NA,strength not given,dataset
+3,Lemolate,syrup,diphenhydramine,NA,strength not given,dataset
+3,Lemolate,oral_drops,phenylephrine,NA,strength not given,dataset
+3,Levenue,oral_solution,levetiracetam,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Levilex,oral_solution,levetiracetam,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Limarin,suspension,silymarin,NA,strength not given,dataset
+3,Mahacef,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Medler,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Medler,oral_drops,pseudoephedrine,15mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Megapen,oral_drops,ampicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Megapen,oral_drops,cloxacillin,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Megaspas,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Megaspas,oral_drops,simeticone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Melboost 2mg,oral_solution,deca_peptide,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Mox CV 91.4mg,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Mox CV 91.4mg,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Moxclav BD,oral_drops,amoxicillin,200mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Moxclav BD,oral_drops,clavulanic_acid,28.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Mucaryl LS,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Mucaryl LS,oral_drops,guaifenesin,12.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Nam Cold,oral_drops,cetirizine,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Nam Cold,oral_drops,paracetamol,15mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Nuforce,oral_solution,fluconazole,NA,strength not given,dataset
+3,Ocona 2%,oral_solution,ketoconazole,2%,unit percent_ww,dataset
+3,Odicef O 50mg,oral_drops,cefixime,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Oflacin 0.30%,oral_drops,ofloxacin,0.30%,unit percent_ww,dataset
+3,Okacet-L,syrup,levocetirizine,NA,strength not given,dataset
+3,Onden 2mg,oral_drops,ondansetron,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ondiron 2mg,oral_drops,ondansetron,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ondoc 4mg,oral_drops,ondansetron,4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ospamox 100mg,oral_drops,amoxicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,PUC 125mg,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Panimun Bioral,oral_solution,ciclosporin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Paracin,oral_drops,paracetamol,150mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Paracip,oral_drops,paracetamol,150mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Parasafe 125mg/12.5mg,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Parasafe 125mg/12.5mg,oral_drops,racemethionine,12.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Peritol 1.5mg,oral_drops,cyproheptadine,1.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Piperazine Citrate,syrup,piperazine,NA,strength not given,dataset
+3,Polyclav 91.4mg,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Polyclav 91.4mg,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Pru 6mg,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Psorid 100mg,oral_solution,ciclosporin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Quin O Quin,suspension,quinine,NA,strength not given,dataset
+3,Qutomal,syrup,quinine,NA,strength not given,dataset
+3,Qutroy,suspension,quinine,NA,strength not given,dataset
+3,R-Cinex,suspension,rifampicin,NA,strength not given,dataset
+3,R-Cinex,suspension,isoniazid,NA,strength not given,dataset
+3,Refzil O 50mg,oral_drops,cefprozil,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Resway,oral_drops,chlorphenamine,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Resway,oral_drops,phenylephrine,5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Roscillin 100mg,oral_drops,ampicillin,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Roxid 25mg,oral_drops,roxithromycin,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Serenace 2mg,oral_solution,haloperidol,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Sino Plus 125mg/12.5mg/1mg,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Sino Plus 125mg/12.5mg/1mg,oral_drops,phenylpropanolamine,12.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Slep 100mg,oral_drops,triclofos,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Spasmol 20mg,oral_drops,dimethicone,20mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Spastone,oral_drops,dicycloverine,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Spastone,oral_drops,dimethicone,40mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Sreyas,syrup,paracetamol,NA,strength not given,dataset
+3,Sreyas,syrup,pseudoephedrine,NA,strength not given,dataset
+3,Stemin 0.5mg,oral_drops,betamethasone,0.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Step-UP,oral_drops,cyproheptadine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Sumo Cold Pcf,oral_drops,chlorphenamine,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Sumo Cold Pcf,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Taxone O 25mg,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Tocef,oral_drops,cefpodoxime,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Topcef 25mg,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Traxol O 25mg,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Tricold Plus,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Tricold Plus,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Trigan D,suspension,dicycloverine,NA,strength not given,dataset
+3,Trigan D,suspension,paracetamol,NA,strength not given,dataset
+3,Ucocil CV,oral_drops,amoxicillin,80mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Ucocil CV,oral_drops,clavulanic_acid,11.4mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Unicet,syrup,cetirizine,NA,strength not given,dataset
+3,Uniheal,oral_solution,feracrylum,1%,unit percent_ww,dataset
+3,VOZET,syrup,levocetirizine,NA,strength not given,dataset
+3,Valkem 250mg,oral_solution,valproic_acid,250mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Vepan 100mg,oral_drops,cefadroxil,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Vepan 125mg,oral_solution,cefadroxil,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Vepan 250mg,oral_solution,cefadroxil,250mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Vomiover,syrup,ondansetron,NA,strength not given,dataset
+3,Webflu,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Webflu,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Wincold 125 mg/12.5 mg/1 mg,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Wincold 125 mg/12.5 mg/1 mg,oral_drops,phenylpropanolamine,12.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Xputum,oral_drops,ambroxol,7.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Xycotic 6mg,oral_drops,hydroxyzine,6mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,ZADRO 100MG,oral_drops,cefadroxil,100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Zandril,oral_drops,chlorphenamine,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Zandril,oral_drops,paracetamol,500mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Zap,suspension,nimesulide,NA,strength not given,dataset
+3,Zipro 500mg,oral_drops,ciprofloxacin,500mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+3,Zithrokem,suspension,azithromycin,NA,strength not given,dataset
+3,Zovi 10%,oral_solution,povidone_iodine,10%,unit percent_ww,dataset
+3,Zyset 2mg,oral_drops,ondansetron,2mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset

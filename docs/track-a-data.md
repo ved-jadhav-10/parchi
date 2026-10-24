@@ -45,6 +45,14 @@ Rules worth knowing:
 - **Class duplication:** `ingredients.json` has `classes` (e.g. `nsaid`, `ppi`, `antihistamine`, `sedating_antihistamine`) and WHO `atc` codes for 271 curated ingredients. Aspirin is `antiplatelet|salicylate`, not `nsaid`.
 - **DDI gaps:** DDInter bulk files cover ATC groups A, B, D, H, L, P, R, V only, so some cardiovascular-only pairs (spironolactone + ramipril) are missing, and Indian-only drugs (aceclofenac, nimesulide, domperidone, etoricoxib, ambroxol) are not in DDInter. Use `ddi.covers(id)` before saying "no interaction".
 
+## Liquids, schedules and systemic (for Track B/C)
+
+- **Liquid strengths:** `per_volume_ml` is set for ~87% of liquid brands. Syrups, suspensions and dry syrups that state mg without a volume get 5 mL (98.5% of rows that state one use 5 mL) and `per_volume_assumed: true`; a sibling ingredient's stated volume is used first. Oral drops and oral solutions are never guessed (about a third of stated drops are per 5 mL, the rest per mL), so a drop line such as Sinarest Paediatric has no `per_volume_ml` and the ledger should skip it and say so. Stated per-mL drops (Calpol Paediatric drops: paracetamol 100 mg/1 mL) are stored with `per_volume_ml: 1`. Remaining gaps by popularity: `data/reports/liquid_strength_gaps.csv` (566 ingredient rows in 416 brands: 302 drops/solutions without a volume, 176 'NA' strengths, 88 in units that are not mg such as IU, % w/w, spores).
+- **Dose volume in the sig text:** `splitBrandAndSig` treats a small mL amount (up to 20 mL: `5ml`, `10 ml`, `0.6 ml`) as the dose, but keeps pack sizes and concentrations in the brand (`Syrup 100ml`, `120mg/5ml`, `Calpol drops 15ml 0.6 ml TDS`: 15 mL is the pack, 0.6 mL the dose). Rule: an mL amount is the dose unless another dose quantity follows it.
+- **`schedule_hint`** (`'weekly' | 'monthly'`, plus `schedule_source`): methotrexate tablets, alendronate 70 mg (weekly; the 10 mg tablet is daily and gets no hint), ibandronate 150 mg (monthly). Every rule in `data/curated/schedule_hints.csv` has a source URL and `pharmacist_approved: false`. Not sourced, so deliberately absent: risedronate 35 mg (weekly), vitamin D3 60,000 IU sachets/capsules (weekly), chloroquine/mefloquine prophylaxis. Track C should warn when `schedule_hint` is set and the parsed sig is daily.
+- **`systemic`/`route` are always set** on every `ResolvedBrand`: brands and generics from the product form; fuzzy matches inherit the matched product; unresolved lines get `route: 'other', systemic: false` (they have no ingredients, so nothing reaches the ledger either way).
+- **Completeness:** 37 brands are verified against their pack pages (`python data/verify_brands.py` re-checks them all; the 2 non-pack sources are skipped). 1,499 brands that contain paracetamol or an NSAID still have a possibly truncated listing (43 in the top tier): `data/reports/incomplete_paracetamol_nsaid_brands.csv`, most popular first. Until verified they carry `composition_complete: false` and the ledger shows a caveat.
+
 ## Data files (`public/data`, built by `python data/build.py`)
 
 | File | Content | Size |
@@ -78,6 +86,7 @@ pip install -r requirements.txt
 python data/fetch_raw.py         # raw sources -> data/raw/ (gitignored)
 python data/build.py             # -> public/data/*.json + data/reports/
 python data/verify_atc.py        # after editing ingredients.csv
+python data/verify_brands.py     # after editing brands.csv (checks each row against its source page)
 python -m pytest data/tests && npm test
 ```
 

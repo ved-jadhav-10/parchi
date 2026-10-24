@@ -77,7 +77,7 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 ## Status (update only your own row)
 | Track | Dev | Branch | Done | Next | Blocked |
 |---|---|---|---|---|---|
-| A | Palash | `dev/track-a` | Canonical ids (271 curated), 32k-brand index, resolver (fuzzy/phonetic/strength, LASA, generic), banned FDC 156+16, DDInter export, NSQ/spurious export + `nsq` flag, Jan Aushadhi generics (`jan_aushadhi`), docs/track-a-data.md | Pharmacist-verified brands (needs D's pharmacist session) | |
+| A | Palash | `dev/track-a` | Canonical ids (275 curated), 32k-brand index, resolver, banned FDC 156+16, DDInter, NSQ (`nsq`), Jan Aushadhi, liquid per-5-mL inference (flagged), 37 pack-verified brands, `schedule_hint` (weekly/monthly), systemic always set, docs/track-a-data.md | Pharmacist-verified brands; verify 43 top-tier paracetamol/NSAID brands in data/reports/ | |
 | B | Aditya | `dev/track-b` | Sig parser (1-0-1, OD..QID, SOS caps, q8h, weekly, mL/tsp, Hinglish, phased doses), ledger (SOS worst case, mL to mg, topical excluded), limits.json (11 ingredients, all unverified), Cockcroft-Gault CrCl, ask-only-when-needed, `api/parse-sig` LLM fallback, docs/track-b-dose.md | Pharmacist-approved limits and SOS caps (needs D) | Pipeline wiring (C) |
 | C |  | `dev/track-c` |  |  |  |
 | D |  | `dev/track-d` |  |  |  |
