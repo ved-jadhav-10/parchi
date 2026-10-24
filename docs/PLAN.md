@@ -80,7 +80,7 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 | A | Palash | `dev/track-a` | Canonical ids (271 curated), 32k-brand index, resolver (fuzzy/phonetic/strength, LASA, generic), banned FDC 156+16, DDInter export, NSQ/spurious export + `nsq` flag, Jan Aushadhi generics (`jan_aushadhi`), docs/track-a-data.md | Pharmacist-verified brands (needs D's pharmacist session) | |
 | B |  | `dev/track-b` |  |  |  |
 | C |  | `dev/track-c` |  |  |  |
-| D | Jayesh | `dev/track-d` | Start screen, 5 pages incl. guided demo, override log, icons (`UI_PLAN.md`); Check and demo run on mock engine | Wire real engine, pharmacist session, benchmark data |  |
+| D | Jayesh | `dev/track-d` | Landing page, 5 pages incl. guided demo, override log, icons (`UI_PLAN.md`); brand matches show Track A's real data (flags, NSQ batches, banned FDC, Jan Aushadhi, notes), Data page lists sources and licences; totals and alerts are mock | Wire real engine, pharmacist session, benchmark data |  |
 
 ## Not doing
 OCR, WhatsApp/voice, generic DDI-only checker, NPPA price flag.

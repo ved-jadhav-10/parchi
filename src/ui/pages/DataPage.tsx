@@ -1,6 +1,7 @@
 import { Card } from '../components/Card'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { normalizeRows, useJson, type DataRow } from '../lib/dataFiles'
+import { SOURCES } from '../lib/sources'
 
 const Approval = ({ approved }: { approved: boolean | undefined }) =>
   approved === true ? (
@@ -80,6 +81,30 @@ export const DataPage = () => (
         meanwhile="Until then, no alert is logged silently by choice."
         description="Alerts the pharmacist chose to log silently instead of showing"
       />
+      <Card title="Sources and licences" icon="shield" description="Where the brand, ban, batch and interaction data comes from, and on what terms">
+        <div className="xray">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Used for</th>
+                <th scope="col">As of</th>
+                <th scope="col">Terms</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SOURCES.map((s) => (
+                <tr key={s.name}>
+                  <th scope="row">{s.name}</th>
+                  <td>{s.usedFor}</td>
+                  <td>{s.asOf}</td>
+                  <td>{s.terms}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </div>
   </>
 )

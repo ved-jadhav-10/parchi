@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Alert, Patient } from '../../engine/contracts'
 import { AlertCard } from '../components/AlertCard'
-import { BrandMatch, REVIEW_BELOW } from '../components/BrandMatch'
+import { BrandMatch } from '../components/BrandMatch'
 import { Card, KpiCard } from '../components/Card'
 import { Icon } from '../components/Icons'
 import { OverrideDialog } from '../components/OverrideDialog'
@@ -10,6 +10,7 @@ import { XrayTable } from '../components/XrayTable'
 import { runCheck, isMock, type CheckResult } from '../engine'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
+import { needsReview } from '../lib/resolved'
 import { demoPatient, demoRxText } from '../demoCase'
 import { addOverride } from '../storage/overrides'
 
@@ -69,7 +70,7 @@ export const CheckPage = () => {
   const silent = alerts.filter((x) => x.alert.tier === 'silent')
   const count = (t: Alert['tier']) => alerts.filter((x) => x.alert.tier === t).length
   const prompts = result?.prompts ?? []
-  const toCheck = result?.lines.filter((l) => l.resolved.brand === null || l.resolved.confidence < REVIEW_BELOW).length ?? 0
+  const toCheck = result?.lines.filter((l) => needsReview(l.resolved)).length ?? 0
 
   const saveOverride = async (reason: string, note: string) => {
     if (overriding === null || !result) return
@@ -188,46 +189,76 @@ export const CheckPage = () => {
             </EmptyState>
           ) : (
             <div aria-live="polite" className="result">
-              {isMock && <p className="mock-note">Demo data until the engine is connected</p>}
+              {(result.partial || isMock) && (
+                <p className="mock-note">
+                  {result.partial
+                    ? 'Brand matches are real. Daily totals and alerts need the dose engine, which is not connected yet.'
+                    : 'Dosing, totals and alerts are demo data until the engine is connected.'}
+                </p>
+              )}
               {prompts.length > 0 && (
                 <p className="result-note">
                   Some limits are not adjusted yet. <a href="#patient">Add what is asked under Patient</a>, then check again.
                 </p>
               )}
 
-              <div className="kpis">
-                <KpiCard label="Interrupt" value={count('interrupt')} hint="Target: 1 or fewer per Rx" tier="interrupt" />
-                <KpiCard label="Inform" value={count('inform')} tier="inform" />
-                <KpiCard label="Logged" value={count('silent')} hint="Silent, not shown" tier="silent" />
-                <KpiCard label="Brands to check" value={toCheck} hint="Low-confidence match" />
-              </div>
-
-              {shown.length === 0 && (
-                <EmptyState title="No alerts from the checks run">
-                  <p>This is not a statement that the prescription is safe.</p>
+              {result.partial ? (
+                <EmptyState title="Daily totals and alerts are not available yet">
+                  <p>
+                    Each line below is matched to a brand and its ingredients. Adding up the day's dose and checking limits, interactions and duplicate classes needs
+                    the dose engine, which is not connected yet. Nothing on this screen says the prescription is safe.
+                  </p>
                 </EmptyState>
+              ) : (
+                <>
+                  <div className="kpis">
+                    <KpiCard label="Interrupt" value={count('interrupt')} hint="Target: 1 or fewer per Rx" tier="interrupt" />
+                    <KpiCard label="Inform" value={count('inform')} tier="inform" />
+                    <KpiCard label="Logged" value={count('silent')} hint="Silent, not shown" tier="silent" />
+                    <KpiCard label="Brands to check" value={toCheck} hint="Low-confidence match" />
+                  </div>
+
+                  {shown.length === 0 && (
+                    <EmptyState title="No alerts from the checks run">
+                      <p>This is not a statement that the prescription is safe.</p>
+                    </EmptyState>
+                  )}
+                  <div className="alerts">
+                    {shown.map(({ alert, i }) => (
+                      <AlertCard
+                        key={i}
+                        alert={alert}
+                        overriddenReason={overridden[i]}
+                        onOverride={alert.tier === 'interrupt' ? () => setOverriding(i) : undefined}
+                      />
+                    ))}
+                  </div>
+
+                  <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
+                    <XrayTable ledger={result.ledger} />
+                  </Card>
+                </>
               )}
-              <div className="alerts">
-                {shown.map(({ alert, i }) => (
-                  <AlertCard
-                    key={i}
-                    alert={alert}
-                    overriddenReason={overridden[i]}
-                    onOverride={alert.tier === 'interrupt' ? () => setOverriding(i) : undefined}
-                  />
-                ))}
-              </div>
 
-              <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
-                <XrayTable ledger={result.ledger} />
-              </Card>
-
-              <Card title="Brand matches" description="What was typed and what it was matched to. Select a line for details.">
+              <Card
+                title="Brand matches"
+                description={
+                  result.partial
+                    ? `${toCheck} of ${result.lines.length} lines need a check. Select a line for details.`
+                    : 'What was typed and what it was matched to. Select a line for details.'
+                }
+              >
                 <ul className="matches">
-                  {result.lines.map((l) => (
-                    <BrandMatch key={l.resolved.raw} resolved={l.resolved} sig={l.sig} />
+                  {result.lines.map((l, i) => (
+                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} sigText={l.sig_text} />
                   ))}
                 </ul>
+                {result.lines.some((l) => (l.resolved.jan_aushadhi?.length ?? 0) > 0) && (
+                  <p className="hint">
+                    Jan Aushadhi generics have the same ingredients and strengths. They are not a safety flag: the pharmacist confirms they are equivalent. The
+                    list has no prices.
+                  </p>
+                )}
               </Card>
 
               {silent.length > 0 && (
@@ -239,14 +270,16 @@ export const CheckPage = () => {
                 </details>
               )}
 
-              <div className="actions">
-                <button
-                  className="btn btn--secondary"
-                  onClick={() => downloadText('prescription.fhir.json', JSON.stringify(toFhirBundle(result.lines, toPatient(patient)), null, 2), 'application/json')}
-                >
-                  <Icon name="download" size={16} /> Export FHIR (draft)
-                </button>
-              </div>
+              {!result.partial && (
+                <div className="actions">
+                  <button
+                    className="btn btn--secondary"
+                    onClick={() => downloadText('prescription.fhir.json', JSON.stringify(toFhirBundle(result.lines, toPatient(patient)), null, 2), 'application/json')}
+                  >
+                    <Icon name="download" size={16} /> Export FHIR (draft)
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

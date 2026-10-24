@@ -84,8 +84,8 @@ Names are the component names to use in `src/ui/`.
 | `SourceChip` | Citation | Tint chip, `--text-xs`: "DDInter #1234", "S.O. 3285(E)", "Beers 2023". |
 | `XrayTable` | Prescription X-ray: brand -> ingredients -> daily total vs limit | One row per ingredient from the ledger, listing its source brands. `LimitBar` in the last column. |
 | `LimitBar` | total_mg_day vs limit_mg_day | Fill colour: < 80% within-limit green, 80-100% Inform amber, > 100% Interrupt red with overflow past a 100% marker. No limit on file -> dashed muted outline + "No limit on file" (never invent one). |
-| `BrandMatch` | Resolved brand per line | Shows `raw -> brand`. Confidence < threshold -> "Check match" badge + "needs pharmacist" route. |
-| `FlagBadge` | `banned_fdc`, `lasa`, `discontinued` | Banned FDC uses Interrupt colours; LASA and discontinued use Inform colours. |
+| `BrandMatch` | Resolved brand per line | Shows `raw -> brand`. "Check match" when Track A's `needs_pharmacist` is set (confidence only as a fallback); a generic name or an unmatched line says so; a spelling-corrected match says "Corrected spelling". Expanded: ingredients (never "0 mg": unknown and non-mg strengths are worded), the incomplete-composition caveat, "Not counted" for non-systemic products, dosing, Track A's notes and alternatives, banned FDC (S.O. chip, date, list), failed NSQ batches (batch chip, month, test, manufacturer) and Jan Aushadhi generics. |
+| `FlagBadge` | `banned_fdc`, `lasa`, `discontinued`, `nsq` | Banned FDC uses Interrupt colours; LASA, discontinued and NSQ use Inform colours. NSQ is batch-specific ("Check batch (NSQ)"), never Interrupt. |
 | `SilentLog` | Silent alerts | Collapsed `<details>`: "4 logged (not shown)". |
 | `OverrideDialog` | Override with reason | Reason required (preset list; "Other" also needs a note). Saved to IndexedDB with timestamp, listed on `#/log`. |
 

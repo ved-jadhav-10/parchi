@@ -235,6 +235,15 @@ code { padding: 1px var(--space-1); border-radius: var(--radius-sm); background:
 .match__detail { display: grid; grid-template-columns: max-content 1fr; gap: var(--space-1) var(--space-4); margin: 0; padding: 0 var(--space-3) var(--space-3); font-size: var(--text-sm); line-height: var(--leading-sm); }
 .match__detail dt { color: var(--color-ink-muted); font-weight: 600; }
 .match__detail dd { margin: 0; }
+.match__list { display: grid; gap: var(--space-1); margin: 0; padding-left: 1.1em; }
+.match__more { margin-left: -1.1em; list-style: none; color: var(--color-ink-muted); }
+.match__lead { margin: 0 0 var(--space-1); color: var(--color-ink-muted); }
+.match__list + .match__lead { margin: var(--space-2) 0 0; }
+.match__kind { color: var(--color-ink-muted); font-weight: 400; }
+@media (max-width: 559px) {
+  .match__detail { grid-template-columns: 1fr; gap: 0; }
+  .match__detail dd { margin-bottom: var(--space-2); }
+}
 
 /* Patient prompts */
 .prompt__item { display: grid; gap: var(--space-2); }
