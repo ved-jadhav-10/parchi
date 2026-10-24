@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { Flag, ResolvedBrand, Sig } from '../../engine/contracts'
 import type { Alternative } from '../../engine/resolver/catalogue'
 import { pct, titleCase } from '../lib/format'
+import { readByAi } from '../lib/smartSig'
 import { brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, scheduleLabel, sentenceCase, sigLabel, sigNotes, tidy } from '../lib/resolved'
 
 const flagText: Record<Flag, { label: string; tier: 'interrupt' | 'inform' }> = {
@@ -45,6 +46,11 @@ export const BrandMatch = ({ resolved, sig, onUse, alternatives }: { resolved: R
         {!unmatched && <span className="num matches__conf">{pct(r.confidence)}</span>}
         {needsReview(r) && <span className="chip chip--review">Check match</span>}
         {r.match === 'fuzzy' && !needsReview(r) && <span className="chip">Corrected spelling</span>}
+        {readByAi(sig) && (
+          <span className="chip chip--review" title="The rules could not read the dosing text, so a model read it online. Please confirm it.">
+            Dosing read by AI
+          </span>
+        )}
         {r.flags.map((f) => (
           <FlagBadge key={f} flag={f} />
         ))}

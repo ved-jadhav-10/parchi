@@ -6,9 +6,9 @@ import { createPipeline } from '../engine/pipeline'
 import { loadResolver, type Resolver } from '../engine/resolver'
 import { loadDdi, type DdiIndex } from '../engine/resolver/ddi'
 import { loadAlertRules, type AlertRules } from '../engine/rules'
-import { parseSig } from '../engine/sig'
 import { ddiGapNames, limitGapNames } from './lib/coverage'
 import { herbalDepsFor } from './lib/herbal'
+import { parseSigWithReadings, readUnclearSigs } from './lib/smartSig'
 
 /** Ask-only-when-needed: a patient field the engine wants before it can apply a limit, with the reason to show. */
 export interface PatientPrompt {
@@ -54,12 +54,14 @@ export function createCheck(deps: EngineDeps) {
   const { resolver, ddi, rules } = deps
   // computeDose (not just a ledger) lets the pipeline raise Track B's findings as alerts: weekly drugs written daily,
   // kidney warnings, unclear sigs, liquids with no known volume. Without it those are silently dropped.
-  const check = createPipeline({ resolver, ddi, rules, parseSig: (text) => parseSig(text), computeDose })
+  const check = createPipeline({ resolver, ddi, rules, parseSig: (text) => parseSigWithReadings(text), computeDose })
   const herbalDeps = herbalDepsFor(resolver)
   return async (rxText: string, patient: Patient): Promise<CheckResult> => {
     // Herbal lines come out first so the ordinary resolver never guesses a drug for them.
     const split = splitSingle(rxText, herbalDeps)
     const rest = split.restText.trim()
+    // Online only: dosing text the rules cannot read is read by the server first (no change offline or when the rules are sure).
+    if (rest) await readUnclearSigs(resolver, [split.restText], patient.age_years)
     const { lines, ledger, alerts, needs, crcl, notes } = rest ? await check(split.restText, patient) : { lines: [], ledger: {}, alerts: [], needs: [], crcl: null, notes: [] }
     const herbal = herbalSingle(split.herbal, lines, herbalDeps)
     if (lines.length === 0 && !herbal) throw new Error('No medicines found in the text')

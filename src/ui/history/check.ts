@@ -4,9 +4,12 @@
 import type { Alert, HistoryResult as EngineResult, Patient, Tier } from '../../engine/contracts'
 import { herbalHistory, splitHistory } from '../../engine/herbal/orchestrate'
 import { cockcroftGault } from '../../engine/limits/crcl'
-import { createRealEngine } from '../../engine/wiring'
+import { createHistoryChecker } from '../../engine/history'
+import { createEngine } from '../../engine/pipeline'
+import { realDeps } from '../../engine/wiring'
 import { ddiGapNames, limitGapNames } from '../lib/coverage'
 import { herbalDepsFor } from '../lib/herbal'
+import { parseSigWithReadings, readUnclearSigs } from '../lib/smartSig'
 import type { EngineDeps, PatientPrompt } from '../engine'
 import type { AlertChange, HistoryAlert, HistoryLine, HistoryResult, HistoryWindow, LabResult, Order, Prescribed } from './types'
 
@@ -42,7 +45,8 @@ function appliesIn(a: Alert, w: { start: string; end: string; ledger: HistoryWin
 }
 
 export function createHistoryCheck(deps: EngineDeps) {
-  const { checkHistory } = createRealEngine(deps)
+  // The real engine, with one change: dosing text the rules cannot read may have been read online first (see lib/smartSig.ts).
+  const checkHistory = createHistoryChecker(createEngine({ ...realDeps(deps), parseSig: (text) => parseSigWithReadings(text) }))
   const herbalDeps = herbalDepsFor(deps.resolver)
   return async (order: Order, previous?: HistoryResult): Promise<HistoryResult> => {
     const { resolver } = deps
@@ -50,6 +54,7 @@ export function createHistoryCheck(deps: EngineDeps) {
     // `from` = the first prescription date, so overlaps that have already ended still show on the timeline.
     // Herbal lines come out first so the ordinary resolver never guesses a drug for them; a prescription with nothing left is dropped.
     const split = splitHistory(order.prescriptions, herbalDeps)
+    await readUnclearSigs(resolver, split.engine.map((p) => p.text), order.customer.age_years)
     const r: EngineResult = await checkHistory(split.engine, patientFor(order), order.labs, {
       ...(earliest && { from: earliest }),
       ...(previous && { previous: previous.engine }),
