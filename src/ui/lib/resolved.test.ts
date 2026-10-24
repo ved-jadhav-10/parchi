@@ -3,7 +3,7 @@ import type { Alert, ResolvedBrand } from '../../engine/contracts'
 import { testResolver } from '../../engine/resolver/testing'
 import { parseSig } from '../../engine/sig'
 import { demoPatient, demoRxText } from '../demoCase'
-import { alertTypeLabel, brandLabel, movedBecause, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, scheduleLabel, sentenceCase, sigLabel, sigNotes, strengthLabel, tidy } from './resolved'
+import { alertTypeLabel, brandLabel, movedBecause, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, scheduleLabel, sentenceCase, sigLabel, sigNotes, strengthLabel, swapBrand, tidy } from './resolved'
 
 const resolver = testResolver()
 const demo = resolver.resolveText(demoRxText, { age_years: demoPatient.age_years }).map((l) => l.resolved)
@@ -148,5 +148,16 @@ describe('assumed volumes and usual schedules', () => {
     const base: ResolvedBrand = { raw: 'x', brand: 'X', confidence: 1, ingredients: [], form: 'tablet', flags: [] }
     expect(scheduleLabel({ ...base, schedule_hint: 'weekly' })).toBe('Usually taken weekly, not daily.')
     expect(scheduleLabel(base)).toBeNull()
+  })
+})
+
+describe('swapBrand', () => {
+  it('puts the chosen brand where the typed one was and keeps the dosing', () => {
+    expect(swapBrand('Dolo 650 1-1-1 x5d; Zerodol P BD', 'Zerodol P', 'Zerodol-P')).toBe('Dolo 650 1-1-1 x5d; Zerodol-P BD')
+    expect(swapBrand('brufan 400 SOS', 'Brufan 400', 'Brufen 400')).toBe('Brufen 400 SOS')
+  })
+  it('changes nothing when the typed text is not found', () => {
+    expect(swapBrand('Dolo 650 TDS', 'Crocin', 'Dolo 650')).toBeNull()
+    expect(swapBrand('Dolo 650 TDS', '  ', 'x')).toBeNull()
   })
 })
