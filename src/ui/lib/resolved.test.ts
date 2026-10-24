@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { ResolvedBrand } from '../../engine/contracts'
 import { testResolver } from '../../engine/resolver/testing'
+import { parseSig } from '../../engine/sig'
 import { demoPatient, demoRxText } from '../demoCase'
-import { brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, sentenceCase, strengthLabel, tidy } from './resolved'
+import { alertTypeLabel, brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, sentenceCase, sigLabel, sigNotes, strengthLabel, tidy } from './resolved'
 
 const resolver = testResolver()
 const demo = resolver.resolveText(demoRxText, { age_years: demoPatient.age_years }).map((l) => l.resolved)
@@ -78,10 +79,12 @@ describe('notes and sentence ends', () => {
     const pan = byRaw('Pan D')
     expect(pan.notes?.some((n) => /^CDSCO lists/.test(n))).toBe(true)
     expect(notesFor(pan)).toEqual([])
-    const wik = resolver.resolve('Wikoryl')
-    expect(wik.composition_complete).toBe(false)
-    expect(notesFor(wik).some((n) => /^Source lists at most two/.test(n))).toBe(false)
-    expect(notesFor(wik).length).toBeGreaterThan(0)
+    const incomplete: ResolvedBrand = {
+      raw: 'x', brand: 'X', confidence: 1, ingredients: [], form: 'tablet', flags: [], composition_complete: false,
+      notes: ['Source lists at most two ingredients for this product; check the strip for more.', 'Also sold as X 325; confirm the strength.'],
+    }
+    expect(notesFor(incomplete)).toEqual(['Also sold as X 325; confirm the strength.'])
+    expect(notesFor({ ...incomplete, composition_complete: true })).toHaveLength(2)
   })
   it('keeps notes that carry something new', () => {
     expect(notesFor(byRaw('Brufan 400')).join(' ')).toMatch(/Brufen 400/)
@@ -99,5 +102,31 @@ describe('date and text formatting', () => {
     expect(nsqMonth('APR-2026')).toBe('Apr 2026')
     expect(nsqMonth('2026')).toBe('2026')
     expect(sentenceCase('  FAILED ASSAY ')).toBe('Failed assay')
+  })
+})
+
+describe('sig wording from Track B', () => {
+  it('says what a scheduled sig means in doses a day', () => {
+    expect(sigLabel(parseSig('1-1-1 x5d'))).toBe('3 a day for 5 days')
+    expect(sigLabel(parseSig('BD'))).toBe('2 a day')
+  })
+  it('words as-needed lines with their cap, or the assumption when none is written', () => {
+    expect(sigLabel(parseSig('SOS max 3'))).toBe('As needed, up to 3 a day')
+    expect(sigLabel(parseSig('SOS'))).toMatch(/As needed/)
+  })
+  it('words a weekly sig as days apart, not a fraction', () => {
+    expect(sigLabel(parseSig('once weekly'))).toBe('about once every 7 days')
+  })
+  it('passes Track B assumptions on to the pharmacist', () => {
+    expect(sigNotes(parseSig('')).join(' ')).toMatch(/once daily/i)
+    expect(sigNotes(parseSig('1-0-1'))).toEqual([])
+  })
+})
+
+describe('alert type names', () => {
+  it('names the types Track C raises and falls back for unknown ones', () => {
+    expect(alertTypeLabel('ddi')).toBe('Interaction')
+    expect(alertTypeLabel('nsaid_renal')).toBe('Kidney function')
+    expect(alertTypeLabel('some_new_rule')).toBe('Some new rule')
   })
 })

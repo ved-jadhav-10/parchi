@@ -19,7 +19,7 @@ Check page: desktop left column 400 px sticky (Prescription, Patient), result on
 ## Hooks for other tracks
 | What | Who | Detail |
 |---|---|---|
-| Real engine | C | Brand matching is already real (Track A's resolver, loaded in `src/ui/engine.ts`). Dosing, totals and alerts are mock for the demo case only; any other prescription shows its brand matches and "totals and alerts not available yet". In `src/ui/engine.ts`, replace the body of `runCheck` with `checkPrescription(rxText, patient)`; delete `src/ui/mock/` and set `isMock = false`. The demo case itself (`src/ui/demoCase.ts`) stays. |
+| Real engine | A, B, C | Done: `src/ui/engine.ts` calls `createPipeline` with Track A's resolver, B's `parseSig` and `computeDose`, C's rules and `alert_rules.json`. B's `needs` become the patient prompts, and its CrCl and notes ride along on the result. `createCheck(deps)` takes its data as arguments so tests run it without a network. When C wires B into the pipeline itself, swap the body for `checkPrescription`. |
 | `prompts` | C | Proposed additive field on the check result: `{field: 'weight_kg' \| 'serum_creatinine', reason: string}[]`. The UI never decides when to ask. |
 | `public/data/limits.json` | B | Array (or object wrapping one) of `{ingredient, population?, max_mg_day, source, pharmacist_approved}`. Reader is tolerant of field names (`src/ui/lib/dataFiles.ts`). |
 | `public/data/suppression.json` | C | Array of `{ingredients \| rule, reason?, source, pharmacist_approved}`. |

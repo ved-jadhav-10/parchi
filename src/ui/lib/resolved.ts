@@ -1,5 +1,5 @@
 // Display helpers for Track A's ResolvedBrand (docs/track-a-data.md). Pure functions, no React.
-import type { Ingredient, ResolvedBrand } from '../../engine/contracts'
+import type { Ingredient, ResolvedBrand, Sig } from '../../engine/contracts'
 import { mg, titleCase } from './format'
 
 /** Used only when a result carries no `needs_pharmacist` (the mock): below this a line is checked. */
@@ -65,3 +65,34 @@ export const notesFor = (r: ResolvedBrand): string[] =>
   (r.notes ?? []).filter(
     (n) => !((r.nsq?.length ?? 0) > 0 && /^CDSCO lists \d+ failed batch/i.test(n)) && !(r.composition_complete === false && /^Source lists at most two ingredients/i.test(n)),
   )
+
+/** The parsed sig in words: "3 a day for 5 days", "about once every 7 days", "As needed, up to 3 a day". */
+export const sigLabel = (s: Sig): string => {
+  const each = s.volume_ml_per_dose ? ` (${s.volume_ml_per_dose} mL each)` : ''
+  if (s.sos) return s.sos_cap_unspecified ? 'As needed; no maximum written, so a worst case is assumed' : `As needed, up to ${s.max_doses_per_day} a day${each}`
+  const d = s.doses_per_day
+  const rate = d > 0 && d < 1 ? `about once every ${Math.round(1 / d)} days` : `${d} a day`
+  return `${rate}${each}${s.duration_days ? ` for ${s.duration_days} days` : ''}`
+}
+
+/** What Track B assumed or did not understand in the sig, for the pharmacist. */
+export const sigNotes = (s: Sig): string[] => [...(s.assumptions ?? []), ...(s.unparsed?.length ? [`Not understood in the dosing: ${s.unparsed.join(' ')}`] : [])]
+
+const ALERT_TYPES: Record<string, string> = {
+  dose_excess: 'Over the daily limit',
+  duplicate_ingredient: 'Same ingredient in several brands',
+  class_duplication: 'Same class twice',
+  ddi: 'Interaction',
+  nsaid_renal: 'Kidney function',
+  domperidone_elderly: 'Older patient',
+  input_needed: 'Input needed',
+  banned_fdc: 'Banned combination',
+  nsq: 'Failed batch (NSQ)',
+  lasa: 'Look-alike name',
+  low_confidence: 'Unsure match',
+  unresolved: 'Not recognised',
+  discontinued: 'Discontinued',
+}
+
+/** A readable name for an alert type from Track C; an unknown type falls back to its id in words. */
+export const alertTypeLabel = (type: string) => ALERT_TYPES[type] ?? titleCase(type)

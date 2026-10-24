@@ -6,7 +6,7 @@ import { EmptyState, PageIntro } from '../components/PageIntro'
 import { LimitBar } from '../components/LimitBar'
 import { XrayTable } from '../components/XrayTable'
 import { demoPatient, demoRxText } from '../demoCase'
-import { isMock, runCheck, type CheckResult } from '../engine'
+import { runCheck, type CheckResult } from '../engine'
 import { mg, titleCase } from '../lib/format'
 import { pickHiddenIngredient, splitRx } from '../lib/demo'
 
@@ -175,7 +175,7 @@ export const DemoPage = () => {
         </nav>
 
         <section className="card demo" aria-live="polite">
-          {isMock && <p className="mock-note">Demo data until the engine is connected</p>}
+          <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off.</p>
           <p className="demo__eyebrow">
             Step {step + 1} of {titles.length}
           </p>

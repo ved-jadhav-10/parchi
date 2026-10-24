@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Flag, ResolvedBrand, Sig } from '../../engine/contracts'
 import { pct, titleCase } from '../lib/format'
-import { brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, sentenceCase, tidy } from '../lib/resolved'
+import { brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, sentenceCase, sigLabel, sigNotes, tidy } from '../lib/resolved'
 
 const flagText: Record<Flag, { label: string; tier: 'interrupt' | 'inform' }> = {
   banned_fdc: { label: 'Banned FDC', tier: 'interrupt' },
@@ -17,16 +17,13 @@ export const FlagBadge = ({ flag }: { flag: Flag }) => (
   </span>
 )
 
-const sigText = (s: Sig) =>
-  s.sos ? `As needed, up to ${s.max_doses_per_day}/day assumed` : `${s.doses_per_day}/day${s.duration_days ? ` for ${s.duration_days} days` : ''}`
-
 /** Most rows of a long list that are shown; the rest are counted. */
 const SHOW = 3
 
 const More = ({ total }: { total: number }) => (total > SHOW ? <li className="match__more">and {total - SHOW} more</li> : null)
 
 /** One resolved line. Click to expand what it matched, what it contains and everything Track A knows about it. */
-export const BrandMatch = ({ resolved, sig, sigText: written }: { resolved: ResolvedBrand; sig: Sig | null; sigText: string }) => {
+export const BrandMatch = ({ resolved, sig }: { resolved: ResolvedBrand; sig: Sig }) => {
   const [open, setOpen] = useState(false)
   const r = resolved
   const generic = r.brand === null && r.match === 'generic'
@@ -35,7 +32,7 @@ export const BrandMatch = ({ resolved, sig, sigText: written }: { resolved: Reso
   const banned = r.banned_fdc ?? []
   const jan = r.jan_aushadhi ?? []
   const candidates = (r.candidates ?? []).slice(0, SHOW)
-  const notes = notesFor(r)
+  const notes = [...sigNotes(sig), ...notesFor(r)]
   return (
     <li className="match" data-open={open}>
       <button className="match__row" aria-expanded={open} onClick={() => setOpen(!open)}>
@@ -69,7 +66,7 @@ export const BrandMatch = ({ resolved, sig, sigText: written }: { resolved: Reso
             </>
           )}
           <dt>Taken</dt>
-          <dd>{sig ? sigText(sig) : written ? `As written: ${written}` : 'No dosing written'}</dd>
+          <dd>{sigLabel(sig)}</dd>
 
           {notes.length > 0 && (
             <>

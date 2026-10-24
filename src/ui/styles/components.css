@@ -103,7 +103,7 @@
 .alerts { display: grid; gap: var(--space-3); }
 .alert { display: grid; gap: var(--space-3); border-left: 4px solid var(--t); }
 .alert__head { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; }
-.alert__type { color: var(--color-ink-muted); font-size: var(--text-sm); text-transform: capitalize; }
+.alert__type { color: var(--color-ink-muted); font-size: var(--text-sm); }
 .alert__conf { margin-left: auto; color: var(--color-ink-muted); font-size: var(--text-sm); }
 .alert__reason { margin: 0; }
 .alert[data-tier='interrupt'] .alert__reason { font-weight: 600; }
