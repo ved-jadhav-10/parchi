@@ -2,11 +2,11 @@ import type { ReactNode } from 'react'
 import type { Tier } from '../../engine/contracts'
 import { Icon, type IconName } from './Icons'
 
-type CardProps = { title?: string; icon?: IconName; description?: string; children: ReactNode }
+type CardProps = { id?: string; title?: string; icon?: IconName; description?: string; children: ReactNode }
 
-/** Frosted card: the base container for every block of content. */
-export const Card = ({ title, icon, description, children }: CardProps) => (
-  <section className="card">
+/** Card: the base container for every block of content. */
+export const Card = ({ id, title, icon, description, children }: CardProps) => (
+  <section className="card" id={id}>
     {title && (
       <header className="card__head">
         <h2 className="card__title">

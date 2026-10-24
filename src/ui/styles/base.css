@@ -14,7 +14,7 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-bg) var(--bg-gradient) fixed;
+  background: var(--color-bg);
   min-height: 100vh;
   color: var(--color-ink);
   font-family: var(--font-sans);

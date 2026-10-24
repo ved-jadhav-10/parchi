@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Alert, Patient } from '../../engine/contracts'
 import { AlertCard } from '../components/AlertCard'
 import { BrandMatch, REVIEW_BELOW } from '../components/BrandMatch'
@@ -36,9 +36,19 @@ export const CheckPage = () => {
   const [failed, setFailed] = useState(false)
   const [overriding, setOverriding] = useState<number | null>(null)
   const [overridden, setOverridden] = useState<Record<number, string>>({})
+  const resultRef = useRef<HTMLDivElement>(null)
 
   const ageOk = Number(patient.age) > 0
   const canCheck = rx.trim() !== '' && ageOk
+  const needs = rx.trim() === '' ? (ageOk ? 'Add the prescription to check.' : "Add the prescription and the patient's age to check.") : 'Age is needed before checking.'
+
+  // One column below 960px puts the result under the form: bring it into view after a check.
+  useEffect(() => {
+    if (!result && !failed) return
+    if (!window.matchMedia('(max-width: 959px)').matches) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    resultRef.current?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+  }, [result, failed])
 
   const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setPatient({ ...patient, [k]: e.target.value })
@@ -80,11 +90,11 @@ export const CheckPage = () => {
 
   return (
     <>
-      <PageIntro eyebrow="Pharmacist workspace," title="Prescription check" />
+      <PageIntro title="Prescription check" note="A second look for the pharmacist, run entirely on this device." />
 
       <div className="workspace">
         <div className="workspace__input">
-          <Card title="Prescription" icon="flask" description="Type it as written, one line per medicine or separated by ;">
+          <Card title="Prescription" icon="flask" description="Type it as written: one medicine per line, or separated by semicolons.">
             <textarea
               className="rx-input"
               rows={6}
@@ -94,7 +104,7 @@ export const CheckPage = () => {
               onKeyDown={(e) => e.ctrlKey && e.key === 'Enter' && check()}
             />
             <div className="actions">
-              <button className="btn btn--primary" onClick={check} disabled={!canCheck}>
+              <button className="btn btn--primary" onClick={check} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
                 {result ? 'Check again' : 'Check prescription'}
               </button>
               <button
@@ -112,10 +122,10 @@ export const CheckPage = () => {
                 Load demo
               </button>
             </div>
-            {rx.trim() !== '' && !ageOk && <p className="hint">Age is needed before checking.</p>}
+            {!canCheck && <p className="hint" id="check-needs">{needs}</p>}
           </Card>
 
-          <Card title="Patient" icon="user">
+          <Card id="patient" title="Patient" icon="user">
             <div className="fields">
               <Field label="Age (years)" type="number" inputMode="numeric" min={0} value={patient.age} onChange={set('age')} />
               <label className="field">
@@ -145,18 +155,45 @@ export const CheckPage = () => {
           </Card>
         </div>
 
-        <div className="workspace__result">
+        <div className="workspace__result" ref={resultRef}>
           {failed ? (
             <EmptyState title="Could not check this prescription">
               <p>Nothing was saved. Review the text and try again.</p>
             </EmptyState>
           ) : !result ? (
             <EmptyState title="No prescription checked yet">
-              <p>Enter a prescription and the patient's age, then select Check prescription. Everything runs on this device.</p>
+              <p>Enter a prescription and the patient's age, then select Check prescription. Each line is checked for:</p>
+              <ul className="checks">
+                <li>
+                  <strong>Daily totals</strong>
+                  <span>Each ingredient added up across every brand on the slip, against the limit on file.</span>
+                </li>
+                <li>
+                  <strong>Age and kidney function</strong>
+                  <span>Weight or creatinine is asked for only when a medicine needs it.</span>
+                </li>
+                <li>
+                  <strong>Interactions</strong>
+                  <span>With a severity and the source it comes from.</span>
+                </li>
+                <li>
+                  <strong>Duplicate classes</strong>
+                  <span>Two NSAIDs, two PPIs, or any other pair from one class.</span>
+                </li>
+                <li>
+                  <strong>Banned combinations</strong>
+                  <span>Fixed-dose combinations on the banned list.</span>
+                </li>
+              </ul>
             </EmptyState>
           ) : (
             <div aria-live="polite" className="result">
               {isMock && <p className="mock-note">Demo data until the engine is connected</p>}
+              {prompts.length > 0 && (
+                <p className="result-note">
+                  Some limits are not adjusted yet. <a href="#patient">Add what is asked under Patient</a>, then check again.
+                </p>
+              )}
 
               <div className="kpis">
                 <KpiCard label="Interrupt" value={count('interrupt')} hint="Target: 1 or fewer per Rx" tier="interrupt" />

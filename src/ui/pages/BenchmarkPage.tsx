@@ -19,16 +19,37 @@ export const BenchmarkPage = () => {
   const { status, data } = useJson('/data/benchmark.json')
   const bench = status === 'ok' ? normalizeBenchmark(data) : null
 
-  if (status === 'loading') return <PageIntro eyebrow="Measured, not claimed," title="Engine vs chatbots" />
+  if (status === 'loading') return <PageIntro note="Measured, not claimed." title="Engine vs chatbots" />
 
   if (!bench) {
     return (
       <>
-        <PageIntro eyebrow="Measured, not claimed," title="Engine vs chatbots" />
+        <PageIntro note="Measured, not claimed." title="Engine vs chatbots" />
         <EmptyState title="No benchmark results yet">
           <p>
-            Run the benchmark in <code>eval/</code> to write <code>public/data/benchmark.json</code>. The page shows the engine and each chatbot on the same
-            pharmacist-labelled prescriptions, so nothing here is estimated.
+            Results appear here once the benchmark has run: the engine and each chatbot on the same pharmacist-labelled prescriptions, so nothing shown is
+            estimated.
+          </p>
+          <ul className="checks">
+            <li>
+              <strong>Alerts per prescription</strong>
+              <span>How many alerts each system raises on the same prescriptions.</span>
+            </li>
+            <li>
+              <strong>Interrupts per prescription</strong>
+              <span>The target is 1 or fewer.</span>
+            </li>
+            <li>
+              <strong>False alarms on clean prescriptions</strong>
+              <span>Alerts raised where the pharmacist found nothing to flag.</span>
+            </li>
+            <li>
+              <strong>Precision and recall, by alert type</strong>
+              <span>Scored against the pharmacist-labelled set.</span>
+            </li>
+          </ul>
+          <p className="hint">
+            To produce them, run the benchmark in <code>eval/</code>; it writes <code>public/data/benchmark.json</code>.
           </p>
         </EmptyState>
       </>
@@ -41,7 +62,7 @@ export const BenchmarkPage = () => {
 
   return (
     <>
-      <PageIntro eyebrow="Measured, not claimed," title="Engine vs chatbots" />
+      <PageIntro note="Measured, not claimed." title="Engine vs chatbots" />
       <div className="workspace workspace--single">
         <div className="kpis">
           <KpiCard label="Prescriptions" value={bench.n_rx ?? '—'} hint="Pharmacist-labelled gold set" />

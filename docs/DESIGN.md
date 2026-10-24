@@ -5,7 +5,7 @@ The single reference for how the app looks, reads and behaves. Tokens live in `s
 Palette reference: `docs/design/palette-reference.jpg`. Pages and build order: `UI_PLAN.md`.
 
 ## Visual language
-Soft indigo gradient page, frosted white cards (`--glass`, `--ring`, `--shadow-card`) on a translucent panel (`--glass-panel`), pill-shaped nav and buttons (`--radius-pill`), an inset "pressed" state for the active nav item (`--shadow-inset`), and big-number KPI tiles. Tier colour appears only as a 4 px left bar plus icon and label.
+Flat page ground (`--color-bg`), opaque white cards (`--ring`, `--shadow-card`) on one flat panel tone (`--color-panel`), pill-shaped nav and buttons (`--radius-pill`), a tinted pill with an accent border for the active nav item, and big-number KPI tiles. No gradients, no blur, no shadow on buttons or nav. Tier colour appears only as a 4 px left bar plus icon and label.
 
 ## Principles
 1. **Informs, never decides.** The pharmacist decides. Every screen and string says "review", "check", "consider", never "stop", "unsafe" or "approved".
@@ -25,6 +25,7 @@ Soft indigo gradient page, frosted white cards (`--glass`, `--ring`, `--shadow-c
 | `--color-tint` | `#EEEFFD` | Secondary buttons, ordered/list rows, chips |
 | `--color-bg` | `#FAFAFD` | Page background |
 | `--color-surface` | `#FFFFFF` | Header/menu bar, cards, tiles |
+| `--color-panel` | `#F3F4FD` | Workspace panel behind the cards, one tone step from the page |
 
 Clickable tiles (e.g. a `BrandMatch` row that opens detail) get the accent left bar; static cards don't. Alert cards use their tier colour for that bar instead, never the accent.
 | `--color-ink-muted` | `#5C6488` | Secondary text, captions, Silent tier |

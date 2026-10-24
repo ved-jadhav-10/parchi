@@ -13,7 +13,7 @@ const Approval = ({ approved }: { approved: boolean | undefined }) =>
     </span>
   )
 
-const DataSection = ({ title, file, owner, description }: { title: string; file: string; owner: string; description: string }) => {
+const DataSection = ({ title, file, meanwhile, description }: { title: string; file: string; meanwhile: string; description: string }) => {
   const { status, data } = useJson(`/data/${file}`)
   const rows: DataRow[] = status === 'ok' ? normalizeRows(data) : []
   const approved = rows.filter((r) => r.approved === true).length
@@ -21,9 +21,9 @@ const DataSection = ({ title, file, owner, description }: { title: string; file:
   return (
     <Card title={title} icon="shield" description={description}>
       {status === 'loading' ? null : rows.length === 0 ? (
-        <EmptyState title="Nothing to show yet">
+        <EmptyState title="Nothing loaded on this device yet">
           <p>
-            <code>public/data/{file}</code> is missing or empty. It comes from {owner}.
+            {meanwhile} Expected at <code>public/data/{file}</code>.
           </p>
         </EmptyState>
       ) : (
@@ -65,11 +65,21 @@ const DataSection = ({ title, file, owner, description }: { title: string; file:
 
 export const DataPage = () => (
   <>
-    <PageIntro eyebrow="What the checks rely on," title="Data and limits" />
+    <PageIntro note="What the checks rely on." title="Data and limits" />
     <div className="workspace workspace--single">
       <p className="hint">Every number here needs a source and a pharmacist sign-off. Anything without one is marked.</p>
-      <DataSection title="Dose limits" file="limits.json" owner="Track B" description="Maximum mg/day and SOS caps used by the X-ray and overdose alerts" />
-      <DataSection title="Suppression list" file="suppression.json" owner="Track C" description="Alerts the pharmacist chose to log silently instead of showing" />
+      <DataSection
+        title="Dose limits"
+        file="limits.json"
+        meanwhile="Until limits are added, the X-ray shows “No limit on file” for every ingredient."
+        description="Maximum mg/day and SOS caps used by the X-ray and overdose alerts"
+      />
+      <DataSection
+        title="Suppression list"
+        file="suppression.json"
+        meanwhile="Until then, no alert is logged silently by choice."
+        description="Alerts the pharmacist chose to log silently instead of showing"
+      />
     </div>
   </>
 )

@@ -1,7 +1,8 @@
-export const PageIntro = ({ eyebrow, title }: { eyebrow: string; title: string }) => (
+/** Screen title first, then one grey sentence about what the screen holds. */
+export const PageIntro = ({ title, note }: { title: string; note: string }) => (
   <div className="intro">
-    <p className="intro__eyebrow">{eyebrow}</p>
     <h1>{title}</h1>
+    <p className="intro__note">{note}</p>
   </div>
 )
 

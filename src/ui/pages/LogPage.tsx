@@ -18,7 +18,7 @@ export const LogPage = () => {
 
   return (
     <>
-      <PageIntro eyebrow="Audit trail," title="Override log" />
+      <PageIntro note="Every override, with the reason given." title="Override log" />
 
       {error && (
         <EmptyState title="This browser cannot store the log">

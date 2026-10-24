@@ -43,14 +43,14 @@ export const DemoPage = () => {
   if (failed) {
     return (
       <>
-        <PageIntro eyebrow="Guided walkthrough," title="Demo case" />
+        <PageIntro note="Guided walkthrough." title="Demo case" />
         <EmptyState title="Could not run the demo case">
           <p>Nothing was saved. Try again, or use the Check page.</p>
         </EmptyState>
       </>
     )
   }
-  if (!result) return <PageIntro eyebrow="Guided walkthrough," title="Demo case" />
+  if (!result) return <PageIntro note="Guided walkthrough." title="Demo case" />
 
   const lines = splitRx(demoRxText)
   const hidden = pickHiddenIngredient(result.ledger)
@@ -162,7 +162,7 @@ export const DemoPage = () => {
 
   return (
     <>
-      <PageIntro eyebrow="Guided walkthrough," title="Demo case" />
+      <PageIntro note="Guided walkthrough." title="Demo case" />
       <div className="workspace workspace--single">
         <nav aria-label="Demo steps">
           <ol className="stepper">
