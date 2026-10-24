@@ -78,3 +78,56 @@ export function suppressionRows(rules: AlertRules): DataRow[] {
 }
 
 export const approvedCount = (rows: DataRow[]) => rows.filter((r) => r.approved === true).length
+
+const pctText = (n: number) => `${Math.round(n * 100)}%`
+
+/** Policy that decides tiers beyond single rules: stacked burden scales, how dose facts become tiers, order status, queue weights, refill grace. */
+export function policyRows(rules: AlertRules, defaultWindowDays?: number): DataRow[] {
+  const dp = rules.dose_policy
+  const h = rules.history
+  const q = h.queue
+  const weights = Object.entries(q.tier_weight).map(([t, w]) => `${titleCase(t)} ${w}`).join(', ')
+  const bonuses = Object.entries(q.type_bonus).map(([t, w]) => `${titleCase(t)} +${w}`).join(', ')
+  return [
+    ...rules.burden_scales.map((b) =>
+      row(
+        b.label,
+        `${b.min_ingredients} or more listed medicines${b.age_at_least !== undefined ? `, age ${b.age_at_least} and over` : ''}`,
+        `Total ${b.threshold} or more: ${tierName(b.tier)}`,
+        b.source,
+        b.pharmacist_approved,
+      ),
+    ),
+    row('Kidney findings', 'A drug to avoid, or to use with caution, at this kidney function', `${tierName(dp.renal_avoid)} and ${tierName(dp.renal_caution)}`, dp.source, dp.pharmacist_approved),
+    row('Over the limit only if every as-needed dose is taken', 'As-needed lines', tierName(dp.over_limit_sos_only), dp.source, dp.pharmacist_approved),
+    row('Dosing text the rules cannot read', `Read with less than ${pctText(dp.sig_unclear_below)} confidence`, tierName(dp.sig_unclear_tier), dp.source, dp.pharmacist_approved),
+    row('Order status from the tiers', 'The suggestion on each order', `Interrupt: ${titleCase(h.status_by_tier.interrupt)}; Inform: ${titleCase(h.status_by_tier.inform)}; none: ${titleCase(h.status_by_tier.silent)}`.replace(/_/g, ' '), 'Phase 2 policy (draft)', q.pharmacist_approved),
+    row('Review queue ranking', 'Weight per finding, then oldest first', `${weights}. ${bonuses}. Different doctors +${q.cross_doctor_bonus}`, 'Phase 2 policy (draft)', q.pharmacist_approved),
+    ...(h.refill ? [row('Refill grace', 'A repeat by the same doctor is read as a refill, not a double', `${h.refill.grace_days} days`, h.refill.source, h.refill.pharmacist_approved)] : []),
+    ...(defaultWindowDays !== undefined ? [row('Course length when none is written', 'Prescription lines with no duration', `${defaultWindowDays} days (shown as an unverified default)`, 'Dose limits file', false)] : []),
+  ]
+}
+
+interface HerbalRuleLike {
+  id: string
+  herbs: string[]
+  with: { ingredients?: string[]; classes?: string[] }
+  effect: string
+  evidence: string
+  tier: string
+  sources: { label: string }[]
+  pharmacist_approved?: boolean
+}
+
+/** The starter set of herbal and Ayurvedic rules: what each pairs with, how well supported it is, and where it comes from. */
+export function herbalRows(rules: HerbalRuleLike[]): DataRow[] {
+  return rules.map((r) =>
+    row(
+      titleCase(r.id),
+      `${r.herbs.map(titleCase).join(', ')} with ${[...(r.with.ingredients ?? []), ...(r.with.classes ?? [])].map((x) => x.replace(/_/g, ' ')).join(', ')}`,
+      `${titleCase(r.tier)}, ${r.evidence} evidence`,
+      r.sources.map((s) => s.label).join('; '),
+      r.pharmacist_approved,
+    ),
+  )
+}

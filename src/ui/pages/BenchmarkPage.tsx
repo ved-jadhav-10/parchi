@@ -1,20 +1,12 @@
+import { Fragment } from 'react'
 import { Card, KpiCard } from '../components/Card'
 import { ScrollRegion } from '../components/ScrollRegion'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { normalizeBenchmark, useJson, type SystemResult } from '../lib/dataFiles'
-import { pct, titleCase } from '../lib/format'
+import { pct } from '../lib/format'
+import { alertTypeLabel } from '../lib/resolved'
 
 const num = (n?: number) => (n == null ? '—' : n.toFixed(1))
-
-const MetricBar = ({ label, value }: { label: string; value?: number }) => (
-  <div className="metric">
-    <span className="metric__label">{label}</span>
-    <div className="limit__track" aria-hidden="true">
-      {value != null && <div className="limit__fill metric__fill" style={{ width: `${Math.min(value, 1) * 100}%` }} />}
-    </div>
-    <span className="num metric__value">{pct(value)}</span>
-  </div>
-)
 
 export const BenchmarkPage = () => {
   const { status, data } = useJson('/data/benchmark.json')
@@ -111,19 +103,45 @@ export const BenchmarkPage = () => {
           </ScrollRegion>
         </Card>
 
-        {types.map((t) => (
-          <Card key={t} title={titleCase(t)} description="Precision and recall against the gold set">
-            <div className="metrics">
-              {bench.systems.map((s) => (
-                <div key={s.name} className="metrics__system">
-                  <p className="metrics__name">{s.name}</p>
-                  <MetricBar label="Precision" value={cell(s, t, 'precision')} />
-                  <MetricBar label="Recall" value={cell(s, t, 'recall')} />
-                </div>
-              ))}
-            </div>
-          </Card>
-        ))}
+        <Card title="Precision and recall by alert type" description="Scored against the gold set. Precision: of the alerts raised, how many were expected. Recall: of the alerts expected, how many were raised.">
+          <ScrollRegion className="xray" label="Precision and recall by alert type, scrolls sideways">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col" rowSpan={2}>
+                    Alert type
+                  </th>
+                  {bench.systems.map((s) => (
+                    <th key={s.name} scope="colgroup" colSpan={2}>
+                      {s.name}
+                    </th>
+                  ))}
+                </tr>
+                <tr>
+                  {bench.systems.map((s) => (
+                    <Fragment key={s.name}>
+                      <th scope="col">Precision</th>
+                      <th scope="col">Recall</th>
+                    </Fragment>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {types.map((t) => (
+                  <tr key={t}>
+                    <th scope="row">{alertTypeLabel(t)}</th>
+                    {bench.systems.map((s) => (
+                      <Fragment key={s.name}>
+                        <td className="num">{pct(cell(s, t, 'precision'))}</td>
+                        <td className="num">{pct(cell(s, t, 'recall'))}</td>
+                      </Fragment>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ScrollRegion>
+        </Card>
       </div>
     </>
   )

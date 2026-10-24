@@ -9,7 +9,7 @@
   --color-bg: #fafafd;
   --color-surface: #ffffff;
   --color-border: #dcdff0;
-  --color-border-strong: #7f86a8; /* form controls and toggles: 3.4:1 or better on white, page and panel (WCAG 1.4.11) */
+  --color-border-strong: #7f86a8; /* form controls and toggles: 3.6:1 on white, 3.4 on the page, 3.3 on the panel, 3.1 on a tint (WCAG 1.4.11) */
   --color-on-accent: #ffffff;
 
   /* Clinical status: never reuse brand accent for these */
