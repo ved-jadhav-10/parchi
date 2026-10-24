@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Parchi: paper slip landing, reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<!--
+  REFERENCE ONLY. A static example of the "paper slip" direction for the Parchi landing page, kept for the team to look at.
+  It is not part of the app: not a route, not linked from anywhere, not in public/ or dist/, never built or cached.
+  Nothing on it is a claim about real customers: the sample prescription is the demo case, and the evidence is described as it is (draft labels).
+  Tier colours, wording rules (informs, never decides) and the palette come from docs/DESIGN.md; the surfaces come from parchi-paper-preview.html.
+-->
+<style>
+  :root {
+    --ink: #122056;
+    --ink-muted: #565b79;
+    --accent: #5b65dc;
+    --accent-strong: #4a53c7;
+    --on-accent: #ffffff;
+    --pen: #2f3fb0;
+
+    --bone: #f4f0e6;
+    --slip: #fbf9f3;
+    --rule: #d8d0bd;
+    --rule-strong: #8c8570;
+    --tint: #ebe9f7;
+
+    --interrupt: #b42318;
+    --interrupt-bg: #fbeae4;
+    --inform: #9a4a00;
+    --inform-bg: #fbf0dc;
+    --silent: #565b79;
+    --silent-bg: #ece9df;
+
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-label: 'IBM Plex Mono', ui-monospace, monospace;
+    --font-pen: 'Caveat', cursive;
+
+    --gutter: clamp(16px, 4vw, 48px);
+    --measure: 62ch;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bone); color: var(--ink); font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.6;
+    background-image: radial-gradient(circle at 15% -10%, #faf7ee 0%, transparent 55%), radial-gradient(circle at 100% 100%, #ebe5d3 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+  a { color: inherit; }
+  h1, h2, h3 { margin: 0; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; }
+  p { margin: 0; text-wrap: pretty; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .label { font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); font-weight: 500; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* top bar */
+  .bar { display: flex; align-items: center; gap: 24px; padding: 18px 0; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 1.25rem; letter-spacing: -0.01em; }
+  .brand svg { display: block; }
+  .bar nav { display: flex; gap: 4px; margin-left: auto; }
+  .bar nav a { padding: 10px 14px; text-decoration: none; font-family: var(--font-label); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; min-height: 44px; display: inline-flex; align-items: center; border-bottom: 2px solid transparent; }
+  .bar nav a:hover { border-bottom-color: var(--ink); }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border: 1.5px solid var(--ink); border-radius: 4px;
+    background: var(--ink); color: var(--on-accent); font: 600 1rem var(--font-body); text-decoration: none; cursor: pointer;
+  }
+  .btn:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  .btn--plain { background: transparent; color: var(--ink); }
+  .btn--plain:hover { background: var(--tint); border-color: var(--ink); }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: clamp(32px, 6vw, 88px); align-items: center; padding: clamp(32px, 6vw, 72px) 0 clamp(48px, 8vw, 104px); }
+  .hero h1 { font-size: clamp(2.25rem, 4.4vw, 3.5rem); font-weight: 700; }
+  .hero .lede { margin-top: 24px; max-width: var(--measure); font-size: 1.2rem; color: var(--ink-muted); }
+  .hero .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .hero .assure { margin-top: 24px; max-width: var(--measure); font-size: 0.95rem; color: var(--ink-muted); }
+
+  /* the slip: cream stock, ruled lines, a perforated bottom edge */
+  .slip {
+    position: relative; background: var(--slip); border: 1px solid var(--rule); padding: 28px 28px 44px; transform: rotate(-1.2deg);
+    box-shadow: 0 1px 0 var(--rule), 0 18px 40px -22px rgb(18 32 86 / 0.35);
+    animation: settle 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    --tooth: 14px;
+    -webkit-mask: radial-gradient(circle var(--tooth) at 50% 100%, transparent 98%, #000) 0 0 / calc(var(--tooth) * 2.2) 100% repeat-x;
+    mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / 20px 100%;
+    mask-size: 20px 100%;
+    padding-bottom: 52px;
+  }
+  @supports not (mask: conic-gradient(red, blue)) { .slip { -webkit-mask: none; mask: none; } }
+  @keyframes settle { from { transform: rotate(0.6deg) translateY(10px); opacity: 0; } to { transform: rotate(-1.2deg) translateY(0); opacity: 1; } }
+  .slip__head { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 12px; border-bottom: 1.5px solid var(--ink); }
+  .slip__who { font-weight: 600; }
+  .slip__rows { margin: 0; padding: 0; list-style: none; }
+  .slip__rows li { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-variant-numeric: tabular-nums; }
+  .slip__rows li span:last-child { color: var(--ink-muted); font-family: var(--font-label); font-size: 0.85rem; }
+  .slip__rows .by { display: block; margin-top: 2px; color: var(--ink-muted); font-size: 0.8rem; font-family: var(--font-label); letter-spacing: 0.04em; }
+
+  .margin-note {
+    position: relative; margin: 20px 0 0 -12px; padding: 14px 16px 14px 18px; background: var(--interrupt-bg); border-left: 4px solid var(--interrupt);
+    font-size: 0.95rem; line-height: 1.5;
+  }
+  .margin-note .tier { display: inline-flex; align-items: center; gap: 6px; color: var(--interrupt); font-family: var(--font-label); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+  .margin-note .tier svg { flex: none; }
+  .margin-note p { margin-top: 6px; }
+  .margin-note .src { margin-top: 8px; font-family: var(--font-label); font-size: 0.72rem; letter-spacing: 0.04em; color: var(--ink-muted); }
+  .bar-total { margin: 12px 0 0; height: 8px; background: var(--silent-bg); border: 1px solid var(--rule); position: relative; }
+  .bar-total i { position: absolute; inset: 0 auto 0 0; width: 100%; background: var(--interrupt); }
+  .bar-total b { position: absolute; top: -4px; bottom: -4px; left: 80%; width: 2px; background: var(--ink); }
+  .bar-text { display: flex; justify-content: space-between; margin-top: 6px; font-family: var(--font-label); font-size: 0.72rem; color: var(--ink-muted); }
+
+  .pen { font-family: var(--font-pen); color: var(--pen); font-weight: 600; font-size: 1.6rem; line-height: 1.1; transform: rotate(-3deg); margin-top: 18px; display: block; }
+
+  /* sections */
+  section { padding: clamp(48px, 8vw, 96px) 0; }
+  .section-head { max-width: var(--measure); }
+  .section-head h2 { font-size: clamp(1.9rem, 3.6vw, 2.9rem); }
+  .section-head p { margin-top: 16px; color: var(--ink-muted); font-size: 1.1rem; }
+  .ruled { border-top: 1.5px solid var(--ink); }
+
+  /* the process as a strip of stubs */
+  .stubs { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px; margin: 40px 0 0; padding: 0; list-style: none; }
+  .stub { position: relative; background: var(--slip); border: 1px solid var(--rule); padding: 24px 22px 28px; }
+  .stub::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 6px; background: radial-gradient(circle at 6px 0, var(--bone) 3.5px, transparent 4px) 0 0 / 12px 6px repeat-x; }
+  .stub h3 { font-size: 1.25rem; }
+  .stub p { margin-top: 10px; color: var(--ink-muted); font-size: 0.98rem; }
+
+  /* buyers */
+  .buyers { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 80px); }
+  .ledger { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule); }
+  .ledger li { display: grid; grid-template-columns: 180px 1fr; gap: 8px 24px; padding: 20px 0; border-bottom: 1px solid var(--rule); }
+  .ledger h3 { font-size: 1.1rem; letter-spacing: -0.01em; }
+  .ledger p { color: var(--ink-muted); }
+
+  /* principle band */
+  .band { background: var(--ink); color: #f3f1ea; }
+  .band .section-head p { color: #cfd2ea; }
+  .band .label { color: #a9aed3; }
+  .tiers { display: grid; gap: 14px; margin: 36px 0 0; padding: 0; list-style: none; max-width: 640px; }
+  .tiers li { display: grid; grid-template-columns: 150px 1fr; gap: 16px; align-items: center; padding: 14px 0; border-top: 1px solid rgb(255 255 255 / 0.2); }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; width: fit-content; }
+  .chip--interrupt { background: var(--interrupt-bg); color: var(--interrupt); }
+  .chip--inform { background: var(--inform-bg); color: var(--inform); }
+  .chip--silent { background: var(--silent-bg); color: var(--silent); }
+
+  /* evidence */
+  .evidence { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 6vw, 80px); }
+  .evidence ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; border-top: 1px solid var(--rule); }
+  .evidence li { padding: 20px 0; border-bottom: 1px solid var(--rule); }
+  .evidence h3 { font-size: 1.1rem; letter-spacing: -0.01em; }
+  .evidence p { margin-top: 6px; color: var(--ink-muted); }
+
+  /* closing */
+  .closing { text-align: left; }
+  .closing .slip { transform: rotate(0.6deg); animation: none; max-width: 760px; padding: clamp(28px, 5vw, 56px) clamp(24px, 5vw, 56px) 64px; }
+  .closing h2 { font-size: clamp(2rem, 4.2vw, 3.2rem); }
+  .closing p { margin-top: 16px; max-width: var(--measure); color: var(--ink-muted); }
+  .closing .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .placeholder { margin-top: 14px !important; font-family: var(--font-label); font-size: 0.74rem; letter-spacing: 0.04em; }
+
+  footer { padding: 32px 0 56px; border-top: 1px solid var(--rule); color: var(--ink-muted); font-size: 0.92rem; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; }
+
+  @media (max-width: 900px) {
+    .hero, .buyers, .evidence { grid-template-columns: 1fr; }
+    .bar nav { display: none; }
+    .bar .btn { margin-left: auto; }
+    .ledger li { grid-template-columns: 1fr; }
+    .tiers li { grid-template-columns: 1fr; gap: 8px; }
+    .slip { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .slip { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="brand" href="#top" aria-label="Parchi home">
+      <svg width="30" height="38" viewBox="0 0 30 38" fill="none" aria-hidden="true">
+        <path d="M3 1.5h24v32l-3-2.2-3 2.2-3-2.2-3 2.2-3-2.2-3 2.2-3-2.2-3 2.2z" stroke="#122056" stroke-width="2" stroke-linejoin="round" fill="#fbf9f3"/>
+        <path d="M8 9h14M8 15h14M8 21h9" stroke="#4a53c7" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Parchi
+    </a>
+    <nav aria-label="Sections">
+      <a href="#how">How it works</a>
+      <a href="#buyers">For buyers</a>
+      <a href="#principle">What it decides</a>
+      <a href="#evidence">Evidence</a>
+    </nav>
+    <a class="btn" href="#closing">Open the checker</a>
+  </header>
+</div>
+
+<main id="top">
+  <div class="wrap">
+    <section class="hero" aria-labelledby="hero-title" style="padding-top: clamp(16px, 4vw, 48px)">
+      <div>
+        <h1 id="hero-title">A second look at every parchi, before it leaves the counter.</h1>
+        <p class="lede">Give it a prescription the way it arrives. Parchi splits each brand into its ingredients, adds up the day's dose across every brand and every doctor, and puts the orders that need a pharmacist's closer look first.</p>
+        <div class="actions">
+          <a class="btn" href="#closing">Check a prescription</a>
+          <a class="btn btn--plain" href="#buyers">Open the review desk</a>
+        </div>
+        <p class="assure">It works offline after the first load. It informs the verifying pharmacist; it never decides, and it never says a prescription is safe.</p>
+      </div>
+
+      <div class="slip" role="img" aria-label="Sample prescription, the demo case. Paracetamol totals 4,100 milligrams a day across three brands, above the 4,000 milligram limit. Interrupt, from two doctors. Reviewed in pen: hold, contact the doctor.">
+        <div class="slip__head">
+          <span class="label">Sample, the demo case</span>
+          <span class="slip__who">68 y · male · 55 kg</span>
+        </div>
+        <ul class="slip__rows">
+          <li><span>Dolo 650 <span class="by">Dr Mehta · 19 Oct</span></span><span>1-1-1 × 5 d</span></li>
+          <li><span>Crocin Cold &amp; Flu Max <span class="by">Dr Mehta · 19 Oct</span></span><span>TDS</span></li>
+          <li><span>Zerodol-P <span class="by">Dr Rao · 21 Oct</span></span><span>BD</span></li>
+        </ul>
+        <div class="margin-note">
+          <span class="tier">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.5 13 12H1z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7 5.5v3M7 10v.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Interrupt · over the daily limit
+          </span>
+          <p>Paracetamol totals 4,100 mg/day across 3 brands and 2 doctors, above the 4,000 mg/day limit. Review.</p>
+          <div class="bar-total" aria-hidden="true"><i></i><b></b></div>
+          <div class="bar-text"><span>4,100 / 4,000 mg</span><span>limit on file</span></div>
+          <p class="src">Source: dose limit table, paracetamol · draft rule until signed off</p>
+        </div>
+        <span class="pen" aria-hidden="true">Hold: contact the doctor. R.S., 14:32</span>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap ruled">
+    <section id="how" aria-labelledby="how-title">
+      <div class="section-head">
+        <h2 id="how-title">A drug hidden inside a cold tablet still counts.</h2>
+        <p>Every ingredient is totalled per day across all the brands on the slip, then held against the limit on file.</p>
+      </div>
+      <ul class="stubs">
+        <li class="stub"><h3>Read the slip</h3><p>Brand names and doses are matched the way they are written, misspellings included, and each medicine is split into its ingredients.</p></li>
+        <li class="stub"><h3>Add it up</h3><p>Each ingredient is totalled across brands, so a drug inside a cold tablet is counted with the one on the next line.</p></li>
+        <li class="stub"><h3>Compare</h3><p>Totals are held against limits and rules that come from data files, each with a source and whether a pharmacist has signed it off.</p></li>
+        <li class="stub"><h3>Alert sparingly</h3><p>Three tiers. Interrupts are kept rare, and overriding one needs a reason that is logged.</p></li>
+      </ul>
+    </section>
+  </div>
+
+  <div class="wrap ruled">
+    <section id="buyers" aria-labelledby="buyers-title">
+      <div class="buyers">
+        <div class="section-head">
+          <h2 id="buyers-title">For e-pharmacies and pharmacy chains.</h2>
+          <p>Your pharmacists already review every order before it ships. Parchi works on the data you already hold, so that review is faster and written down.</p>
+        </div>
+        <ul class="ledger">
+          <li><h3>The whole history, not one slip</h3><p>Prescriptions from several doctors go on one timeline. Doses add up only where the dates overlap, and an alert names the doctors and the days.</p></li>
+          <li><h3>A new kidney result re-checks the order</h3><p>When a creatinine arrives, the order is checked again and a short list shows which alerts were added, cleared or moved.</p></li>
+          <li><h3>The riskiest order first</h3><p>Orders are ranked, each with a suggested status: clear, clear with a note, or hold and contact the doctor. The pharmacist decides, and every decision is logged.</p></li>
+          <li><h3>Fits what you already run</h3><p>Catalogue import from CSV, FHIR R4 prescription records in and out, and a JSON check API. Nothing is tied to one vendor, and it runs offline at a store counter.</p></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="band" id="principle">
+    <div class="wrap">
+      <section aria-labelledby="principle-title">
+        <div class="section-head">
+          <h2 id="principle-title">It informs. The pharmacist decides.</h2>
+          <p>Parchi never approves or blocks a prescription. It shows what is worth a second look, and why, with the source beside it.</p>
+        </div>
+        <ul class="tiers">
+          <li><span class="chip chip--interrupt">Interrupt</span><span>Act before dispensing. Kept rare on purpose.</span></li>
+          <li><span class="chip chip--inform">Inform</span><span>Worth knowing. No action required.</span></li>
+          <li><span class="chip chip--silent">Silent</span><span>Logged only, collapsed by default.</span></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="evidence" aria-labelledby="evidence-title">
+      <div class="evidence">
+        <div class="section-head">
+          <h2 id="evidence-title">Measured, not claimed.</h2>
+          <p>Parchi is scored on a set of labelled prescriptions, and against the chatbots a counter might reach for instead. The labels are a draft until a pharmacist has reviewed them, and the benchmark page says so.</p>
+        </div>
+        <ul>
+          <li><h3>The same prescriptions, every system</h3><p>The engine and each chatbot are given the same slips and scored the same way.</p></li>
+          <li><h3>Alert load counts</h3><p>Alerts per prescription and false alarms on clean ones are measured, because too many alerts get ignored.</p></li>
+          <li><h3>Every limit has a source</h3><p>Dose limits and rules are shown with where they come from, and whether a pharmacist has signed them off. Today they are drafts.</p></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap closing" id="closing">
+    <section aria-labelledby="closing-title">
+      <div class="slip">
+        <h2 id="closing-title">Put it on the counter.</h2>
+        <p>Install Parchi on a phone or the counter PC, or open the review desk for orders that carry prescriptions from several doctors. After the first load it works without a connection.</p>
+        <div class="actions">
+          <a class="btn" href="#top">Check a prescription</a>
+          <a class="btn btn--plain" href="#top">See a worked example</a>
+        </div>
+        <p class="label placeholder">[Pilot contact link to be set by the team. No customers or usage numbers are claimed on this page.]</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Decision support for a pharmacist. Not a substitute for professional judgement.</span>
+    <span class="label">Parchi · paper slip reference</span>
+  </div>
+</footer>
+</body>
+</html>
