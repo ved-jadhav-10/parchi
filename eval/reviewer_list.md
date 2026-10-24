@@ -25,3 +25,10 @@ Question for 4-8: **is stopping the pharmacist right, or would you just inform?*
 
 ## D. Doses where we match the Indian formulary
 Ibuprofen 2.4 g, metformin 2 g, diclofenac 150 mg match NFI exactly. Nothing to decide; listed so the reviewer sees what was checked.
+
+## Review record
+- **Reviewer:** an MBBS general practitioner, 45 years of practice (not a pharmacist). Name to be added here.
+- **Date:** 24 Oct 2026.
+- **Scope:** sections A, B and D of this list (the 3 pairs we show as Inform, the 8 groups that now stop, the doses that match the formulary). Section C (brand compositions) needs a strip in hand and was not part of it.
+- **Outcome as reported by the team:** the reviewer agreed with the tier we show on every row. This is the team's report of the session, not a signed sheet; attach the sheet if one exists.
+- **What this does not cover:** the dose limits, the other alert rules and the 28 stacking and kidney rules were not on this list, so they remain unreviewed.
