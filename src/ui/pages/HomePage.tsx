@@ -223,21 +223,29 @@ export const HomePage = () => {
           </section>
         </div>
 
-        <section className="home-section home-section--white" id="how" aria-labelledby="how-title">
-          <div>
+        <section className="home-section home-section--white home-how" id="how" aria-labelledby="how-title">
+          <div className="home-how__head">
             <h2 id="how-title" tabIndex={-1}>How a prescription is checked</h2>
             <p className="home-lead">A drug hidden inside a cold tablet still counts. Every ingredient is totalled per day, across all the brands on the slip.</p>
-            <div className="home-xray" role="img" aria-label="Example: paracetamol across three brands totals 4,100 milligrams a day against a 4,000 milligram limit">
-              <div className="home-xray__label">Paracetamol, from three brands (sample)</div>
-              <div className="home-chips"><span>Dolo 650</span><span>Crocin Cold &amp; Flu Max</span><span>Zerodol-P</span></div>
-              <Limit withLabel />
-            </div>
           </div>
-          <ol className="home-steps">
-            {STEPS.map((s) => (
-              <li key={s.title}><h3>{s.title}</h3><p>{s.text}</p></li>
+          <ol className="home-how__grid">
+            {STEPS.map((s, i) => (
+              <li key={s.title}>
+                <span className="home-how__tile" aria-hidden="true">{i + 1}</span>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.text}</p>
+                </div>
+              </li>
             ))}
           </ol>
+          <div className="home-how__foot" role="img" aria-label="Example: paracetamol across three brands totals 4,100 milligrams a day against a 4,000 milligram limit">
+            <div>
+              <div className="home-xray__label">Paracetamol, from three brands (sample)</div>
+              <div className="home-chips"><span>Dolo 650</span><span>Crocin Cold &amp; Flu Max</span><span>Zerodol-P</span></div>
+            </div>
+            <Limit withLabel />
+          </div>
         </section>
 
         <section className="home-section home-section--ink" id="checks" aria-labelledby="checks-title">
