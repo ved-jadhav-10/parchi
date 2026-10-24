@@ -12,7 +12,9 @@ describe('policy rows for the Data page', () => {
     expect(rows.length).toBeGreaterThan(Object.keys(LIMITS.ingredients).length)
     const adult = rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Adult')
     expect(adult?.value).toBe('4,000 mg/day')
-    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail.startsWith('Age 65'))?.value).toBe('3,000 mg/day')
+    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Adult')?.value).toBe('4,000 mg/day')
+    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Liver disease')?.value).toBe('3,000 mg/day')
+    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Weight under 50 kg')?.value).toBe('60 mg/kg/day')
     expect(rows.every((r) => r.source.length > 0 && typeof r.approved === 'boolean')).toBe(true)
   })
 
