@@ -17,7 +17,7 @@ describe('demo Rx through the real engine', () => {
     const n = (t: string) => out.alerts.filter((a) => a.tier === t).length
     expect(n('interrupt')).toBe(demo.expected.alerts.interrupt_count)
     expect(n('inform')).toBe(4)
-    expect(out.alerts.filter((a) => a.tier === 'interrupt').map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_renal'])
+    expect(out.alerts.filter((a) => a.tier === 'interrupt').map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_double_high_risk'])
     expect(byType(out.alerts, 'nsq')[0].tier).toBe('silent')
   })
 

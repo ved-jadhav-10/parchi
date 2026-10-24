@@ -17,6 +17,8 @@ export interface PatientRule {
   age_at_least?: number
   /** needs Cockcroft-Gault CrCl; the rule asks for missing inputs instead of silently skipping */
   crcl_below?: number
+  /** lower edge of the CrCl band (inclusive), so a "caution" band does not repeat the "avoid" band below it */
+  crcl_at_least?: number
   tier: Tier
   /** placeholders: {names} {crcl} {age} */
   reason: string
@@ -69,6 +71,34 @@ export interface BurdenScale {
   pharmacist_approved: boolean
 }
 
+/** One group of a stacking rule: the Rx ingredients in these classes or ids, minus `exclude`. */
+export interface StackGroup {
+  label: string
+  classes?: string[]
+  ingredients?: string[]
+  exclude?: string[]
+  /** distinct ingredients needed for the group to count (default 1) */
+  min?: number
+}
+
+/** Harm from a combination of three or more drug types that no pairwise interaction lookup sees (e.g. the "triple whammy"). */
+export interface StackRule {
+  id: string
+  label: string
+  groups: StackGroup[]
+  /** how many groups must be present (default: all of them) */
+  min_groups?: number
+  tier: Tier
+  /** raise the tier when any of these holds */
+  escalate?: { tier: Tier; age_at_least?: number; crcl_below?: number; classes?: string[]; min_ingredients?: number }
+  /** alert types this one replaces when it covers the same ingredients (e.g. a plain class duplication) */
+  supersedes?: string[]
+  /** placeholders: {names} {age} {crcl} */
+  reason: string
+  source: string
+  pharmacist_approved: boolean
+}
+
 /** WHO AWaRe antibiotic groups: which ingredient is Access, Watch or Reserve, and what each group raises. */
 export interface AwareConfig {
   label: string
@@ -98,7 +128,8 @@ export interface HistoryPolicy {
 
 export interface AlertRules {
   schema: number
-  alert_budget: { max_interrupts_per_rx: number; pharmacist_approved: boolean }
+  /** `never_demote`: alert types the budget may never move to Inform (a contraindication is never "one too many") */
+  alert_budget: { max_interrupts_per_rx: number; never_demote?: string[]; pharmacist_approved: boolean }
   ddi_tiers: {
     major: Tier | null
     moderate: Tier | null
@@ -114,6 +145,7 @@ export interface AlertRules {
   suppression: SuppressionRule[]
   dose_policy: DosePolicy
   burden_scales: BurdenScale[]
+  stack_rules: StackRule[]
   aware?: AwareConfig
   history: HistoryPolicy
 }
@@ -142,6 +174,7 @@ export function parseAlertRules(json: unknown): AlertRules {
     ...r,
     dose_policy: { ...DEFAULT_DOSE_POLICY, ...r.dose_policy },
     burden_scales: r.burden_scales ?? [],
+    stack_rules: r.stack_rules ?? [],
     history: { ...DEFAULT_HISTORY, ...r.history, queue: { ...DEFAULT_HISTORY.queue, ...r.history?.queue } },
   }
 }

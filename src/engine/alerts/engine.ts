@@ -33,12 +33,27 @@ export function finalizeAlerts(raw: Alert[], ctx: FinalizeContext): Alert[] {
     return true
   })
 
+  // A stacking alert speaks for the plain alert it contains (two NSAIDs in a high-risk patient vs "two NSAIDs").
+  const supersede = (ctx.config.stack_rules ?? []).filter((r) => r.supersedes?.length)
+  alerts = alerts.filter(
+    (a) =>
+      !alerts.some((s) => {
+        const rule = supersede.find((r) => r.id === s.type)
+        return rule !== undefined && rule.supersedes!.includes(a.type) && a.ingredients.every((id) => s.ingredients.includes(id))
+      }),
+  )
+
   alerts = alerts.map((a) => {
     const id = suppressionFor(a, ctx)
     return id ? { ...a, tier: 'silent' as Tier, suppressed: id } : a
   })
 
-  const interrupts = alerts.filter((a) => a.tier === 'interrupt').sort((a, b) => priority(a) - priority(b) || b.confidence - a.confidence)
+  // The budget trims routine Interrupts only: types in never_demote (a contraindication, a kidney "avoid") are never
+  // demoted and do not use up the budget, so a contraindication cannot push a routine overdose alert down either.
+  const protectedTypes = new Set(ctx.config.alert_budget.never_demote ?? [])
+  const interrupts = alerts
+    .filter((a) => a.tier === 'interrupt' && !protectedTypes.has(a.type))
+    .sort((a, b) => priority(a) - priority(b) || b.confidence - a.confidence)
   const demote = new Set(interrupts.slice(ctx.config.alert_budget.max_interrupts_per_rx))
   alerts = alerts.map((a) => (demote.has(a) ? { ...a, tier: 'inform' as Tier, budget_demoted: true } : a))
 
