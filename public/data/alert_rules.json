@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "_note": "Track C alert policy. Draft values: every entry has pharmacist_approved=false until the pharmacist session (PS_ANALYSIS section 4, Q4/Q6/Q9). Do not present as clinical limits.",
+  "alert_budget": {
+    "max_interrupts_per_rx": 2,
+    "note": "Extra interrupts are shown as 'inform' (budget_demoted). The demo Rx needs 2; the average-per-Rx target of <=1 is measured by eval/.",
+    "pharmacist_approved": false
+  },
+  "ddi_tiers": {
+    "major": "inform",
+    "moderate": "silent",
+    "minor": null,
+    "unknown": null,
+    "interrupt_pairs": [],
+    "source": "DDInter 2.0 severity mapped to our tiers; no pair is interrupt until the pharmacist names it (Q6)",
+    "pharmacist_approved": false
+  },
+  "class_duplication": [
+    { "class": "nsaid", "label": "NSAIDs", "tier": "inform", "source": "Therapeutic duplication, ATC M01A", "pharmacist_approved": false },
+    { "class": "ppi", "label": "proton pump inhibitors", "tier": "inform", "source": "Therapeutic duplication, ATC A02BC", "pharmacist_approved": false },
+    { "class": "h2_blocker", "label": "H2 blockers", "tier": "inform", "source": "Therapeutic duplication, ATC A02BA", "pharmacist_approved": false },
+    { "class": "antihistamine", "label": "antihistamines", "tier": "inform", "source": "Therapeutic duplication, ATC R06A", "pharmacist_approved": false },
+    { "class": "benzodiazepine", "label": "benzodiazepines", "tier": "inform", "source": "Therapeutic duplication, ATC N05BA/N05CD", "pharmacist_approved": false },
+    { "class": "ssri", "label": "SSRIs", "tier": "inform", "source": "Therapeutic duplication, ATC N06AB", "pharmacist_approved": false },
+    { "class": "statin", "label": "statins", "tier": "inform", "source": "Therapeutic duplication, ATC C10AA", "pharmacist_approved": false },
+    { "class": "ace_inhibitor", "label": "ACE inhibitors", "tier": "inform", "source": "Therapeutic duplication, ATC C09A", "pharmacist_approved": false },
+    { "class": "arb", "label": "ARBs", "tier": "inform", "source": "Therapeutic duplication, ATC C09C", "pharmacist_approved": false },
+    { "class": "fluoroquinolone", "label": "fluoroquinolones", "tier": "inform", "source": "Therapeutic duplication, ATC J01M", "pharmacist_approved": false },
+    { "class": "cephalosporin", "label": "cephalosporins", "tier": "inform", "source": "Therapeutic duplication, ATC J01D", "pharmacist_approved": false },
+    { "class": "macrolide", "label": "macrolides", "tier": "inform", "source": "Therapeutic duplication, ATC J01FA", "pharmacist_approved": false }
+  ],
+  "patient_rules": [
+    {
+      "id": "nsaid_renal",
+      "classes": ["nsaid"],
+      "crcl_below": 60,
+      "tier": "interrupt",
+      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can reduce kidney function. Pharmacist to review before dispensing.",
+      "source": "Draft renal rule, threshold unverified",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "domperidone_elderly",
+      "ingredients": ["domperidone"],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: higher cardiac (QT) risk in older adults. Pharmacist to review.",
+      "source": "Draft geriatric rule, to confirm (EMA PRAC 2014 domperidone review)",
+      "pharmacist_approved": false
+    }
+  ],
+  "suppression": [
+    {
+      "id": "vitamin_duplicate",
+      "type": "duplicate_ingredient",
+      "all_in_classes": ["vitamin", "vitamin_b12", "supplement", "probiotic"],
+      "reason": "Repeated vitamins/supplements are logged, not shown",
+      "source": "Draft suppression, to confirm (Q4)",
+      "pharmacist_approved": false
+    }
+  ]
+}
