@@ -151,6 +151,19 @@ export interface Alert {
   suppressed?: string
   /** true = was 'interrupt' but the alert budget moved it to 'inform'. */
   budget_demoted?: boolean
+  /** Why the numbers behind this alert may be off (assumed measure, SOS cap assumed, ...), from the ledger. */
+  caveats?: string[]
+  // Optional Track C detail, history check only (Phase 2).
+  /** Doctors whose prescriptions the alert is about. */
+  doctors?: string[]
+  /** Prescriptions (contract 5 ids) the alert is about. */
+  rx_ids?: string[]
+  /** true = the lines behind the alert come from two or more doctors. */
+  cross_doctor?: boolean
+  /** Dates the alert applies to; the worst overlap window. `end` is exclusive. */
+  window?: { start: string; end: string }
+  /** true = rests on a brand composition the resolver only proposed (not confirmed by a pharmacist). */
+  unverified?: boolean
 }
 
 export interface Patient {
@@ -166,3 +179,67 @@ export type CheckPrescription = (rxText: string, patient: Patient) => Promise<{
   ledger: Ledger
   alerts: Alert[]
 }>
+
+// ---- Phase 2: a customer's history (contracts 5-7, additive; see PLAN.md) ----
+
+/** Contract 5: one prescription. `date` is the ISO date it was written; `text` is the usual structured lines. */
+export interface Prescription {
+  id: string
+  doctor: string
+  date: string
+  text: string
+}
+
+/** Contract 6: a lab value. The latest `serum_creatinine` feeds CrCl. */
+export interface LabResult {
+  type: 'serum_creatinine'
+  value: number
+  date: string
+}
+
+export type OrderStatus = 'clear' | 'clear_with_note' | 'hold_contact_doctor'
+
+/** Contract 7: a check line plus where and when it came from. `end` is exclusive (start + duration). */
+export interface HistoryLine {
+  resolved: ResolvedBrand
+  sig: Sig
+  rx_id: string
+  doctor: string
+  start: string
+  end?: string
+  /** true = the brand is not recognised; only a proposed composition exists and it is left out of the totals. */
+  unverified?: boolean
+  /** true = no duration was written, so the window uses the default length from alert_rules.json. */
+  default_window?: boolean
+}
+
+/** Alerts added, cleared or moved to another tier between two checks of the same customer. */
+export interface AlertChanges {
+  added: Alert[]
+  cleared: Alert[]
+  changed: { before: Alert; after: Alert }[]
+}
+
+/** A stretch of days with the same set of medicines active; doses are added up inside it. */
+export interface HistoryWindow {
+  start: string
+  end: string
+  rx_ids: string[]
+  ledger: Ledger
+}
+
+export interface HistoryResult {
+  lines: HistoryLine[]
+  /** Per ingredient, the highest total over any window (the worst overlap). */
+  ledger: Ledger
+  alerts: Alert[]
+  windows: HistoryWindow[]
+  /** Suggested order status derived from the tiers; the pharmacist decides. */
+  status: OrderStatus
+  /** Review-queue rank: higher means look first. */
+  priority: number
+  /** Set when the check was given a previous result (e.g. after a new creatinine arrived). */
+  changes?: AlertChanges
+  /** Serum creatinine actually used for CrCl, with its date. */
+  creatinine_used?: { value: number; date: string }
+}
