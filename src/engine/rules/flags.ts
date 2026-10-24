@@ -11,7 +11,19 @@ export const flagRule: Rule = (ctx) => {
     const push = (a: Omit<Alert, 'ingredients' | 'brands' | 'confidence'>) => alerts.push({ ...base, ...a })
 
     if (r.match === 'none' && r.ingredients.length === 0) {
-      push({ tier: 'inform', type: 'unresolved', reason: `"${r.raw}" was not recognised. Pharmacist to identify the medicine; it is not in the dose or interaction checks.`, source: 'Brand resolver', approved: true })
+      // The resolver's best guess is shown as a proposal only; it never enters the totals until a pharmacist confirms it.
+      const best = r.candidates?.[0]
+      const proposal = best
+        ? ` Closest match: ${best.brand} (${joinNames(best.ingredients.map((i) => `${ctx.info(i.id).name} ${i.mg} mg`))}), ${Math.round(best.score * 100)}% sure, unverified.`
+        : ''
+      push({
+        tier: 'inform',
+        type: 'unresolved',
+        reason: `"${r.raw}" was not recognised.${proposal} Pharmacist to identify the medicine; it is left out of the dose and interaction checks until confirmed.`,
+        source: 'Brand resolver',
+        approved: true,
+        ...(best ? { unverified: true } : {}),
+      })
       continue
     }
     if (r.flags.includes('banned_fdc')) {

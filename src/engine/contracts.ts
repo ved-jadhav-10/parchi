@@ -242,4 +242,8 @@ export interface HistoryResult {
   changes?: AlertChanges
   /** Serum creatinine actually used for CrCl, with its date. */
   creatinine_used?: { value: number; date: string }
+  /** Patient details still missing, asked only because a drug in the history needs them. */
+  needs?: { field: 'weight_kg' | 'serum_creatinine' | 'sex'; reason: string; ingredients: string[] }[]
+  /** The date the check was made as of (the order under review). */
+  as_of?: string
 }
