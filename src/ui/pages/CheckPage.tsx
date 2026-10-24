@@ -12,6 +12,7 @@ import { CoverageNote } from '../components/CoverageNote'
 import { HerbalCard } from '../components/HerbalCard'
 import { LeafletCard } from '../components/LeafletCard'
 import { SilentLog } from '../components/SilentLog'
+import { TierKey } from '../components/TierKey'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
 import { needsReview, swapBrand, tidy } from '../lib/resolved'
@@ -237,6 +238,8 @@ export const CheckPage = () => {
                 <KpiCard label="Logged" value={count('silent')} hint="Listed below, not raised" tier="silent" />
                 <KpiCard label="Brands to check" value={toCheck} hint="Low-confidence match" />
               </div>
+
+              <TierKey />
 
               {shown.length === 0 && (
                 <EmptyState title="No alerts from the checks run">

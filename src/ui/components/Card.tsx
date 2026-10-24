@@ -20,38 +20,13 @@ export const Card = ({ id, title, icon, description, children }: CardProps) => (
   </section>
 )
 
-type KpiProps = { label: string; value: string | number; hint?: string; tier?: Tier; short?: string; pressed?: boolean; onSelect?: () => void }
+type KpiProps = { label: string; value: string | number; hint?: string; tier?: Tier }
 
-/**
- * Big-number tile. `tier` tints the number and adds the tier left bar. `short` is a one-word label a tight layout may show
- * instead; screen readers still get `label`. With `onSelect` the tile is a toggle button (a filter) and `pressed` its state.
- */
-export const KpiCard = ({ label, value, hint, tier, short, pressed, onSelect }: KpiProps) => {
-  const body = (
-    <>
-      <span className="kpi__label">
-        {short ? (
-          <>
-            <span className="kpi__long">{label}</span>
-            <span className="kpi__short" aria-hidden="true">
-              {short}
-            </span>
-          </>
-        ) : (
-          label
-        )}
-      </span>
-      <span className="kpi__value num">{value}</span>
-      {hint && <span className="kpi__hint">{hint}</span>}
-    </>
-  )
-  return onSelect ? (
-    <button type="button" className="card kpi kpi--toggle" data-tier={tier} aria-pressed={!!pressed} onClick={onSelect}>
-      {body}
-    </button>
-  ) : (
-    <div className="card kpi" data-tier={tier}>
-      {body}
-    </div>
-  )
-}
+/** Big-number tile. `tier` tints the number and adds the tier left bar. */
+export const KpiCard = ({ label, value, hint, tier }: KpiProps) => (
+  <div className="card kpi" data-tier={tier}>
+    <span className="kpi__label">{label}</span>
+    <span className="kpi__value num">{value}</span>
+    {hint && <span className="kpi__hint">{hint}</span>}
+  </div>
+)

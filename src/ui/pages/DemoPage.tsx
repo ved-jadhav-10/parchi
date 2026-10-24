@@ -169,6 +169,9 @@ export const DemoPage = () => {
             {titles.map((t, i) => (
               <li key={t}>
                 <button className="stepper__dot" aria-label={`Step ${i + 1}: ${t}`} aria-current={i === step ? 'step' : undefined} data-done={i < step} onClick={() => setStep(i)} />
+                <span className="stepper__label" aria-hidden="true" data-current={i === step}>
+                  {t}
+                </span>
               </li>
             ))}
           </ol>

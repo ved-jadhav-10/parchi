@@ -117,15 +117,15 @@ export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaitin
       </fieldset>
 
       {differs && (
-        <label className="field">
-          <span className="field__label">Why differ from the suggestion? (required)</span>
-          <select className="field__input" value={reason} onChange={(e) => setReason(e.target.value)}>
-            <option value="">Choose a reason</option>
-            {DECISION_REASONS.map((r) => (
-              <option key={r}>{r}</option>
-            ))}
-          </select>
-        </label>
+        <fieldset className="reasons decision__why">
+          <legend className="field__label">Why differ from the suggestion? (required)</legend>
+          {DECISION_REASONS.map((r) => (
+            <label key={r} className="reasons__option">
+              <input type="radio" name="decision-reason" value={r} checked={reason === r} onChange={() => setReason(r)} />
+              {r}
+            </label>
+          ))}
+        </fieldset>
       )}
       <label className="field">
         <span className="field__label">Note{needsNote ? ' (required)' : ' (optional)'}</span>

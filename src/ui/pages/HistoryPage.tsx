@@ -129,35 +129,6 @@ export const HistoryPage = () => {
       </p>
       <PageIntro title={existing ? 'Edit history' : 'New order'} note="One prescription for each doctor and date, as the buyer holds them. Parchi checks them together." />
       <form className="workspace workspace--single" onSubmit={submit}>
-        <Card title="Import from FHIR" icon="flask" description="Optional. A FHIR R4 Bundle (for example an ABDM prescription record) fills in the form below; check it before saving.">
-          <label className="field">
-            <span className="field__label">FHIR file (.json)</span>
-            <input className="field__input" type="file" accept=".json,application/json,application/fhir+json" onChange={(e) => importFile(e.target.files?.[0])} />
-          </label>
-          <div aria-live="polite">
-            {imported && 'error' in imported && (
-              <p className="dialog__error" role="alert">
-                {imported.error}
-              </p>
-            )}
-            {imported && !('error' in imported) && (
-              <>
-                <p className="hint">
-                  Read {imported.prescriptions} {imported.prescriptions === 1 ? 'prescription' : 'prescriptions'} and {imported.labs} lab {imported.labs === 1 ? 'result' : 'results'}. Anything
-                  already in the form below was replaced.
-                </p>
-                {imported.warnings.length > 0 && (
-                  <ul className="changes">
-                    {imported.warnings.map((w) => (
-                      <li key={w}>{w}</li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
-          </div>
-        </Card>
-
         <Card title="Customer" icon="user">
           <div className="fields fields--4">
             <label className="field">
@@ -244,6 +215,35 @@ export const HistoryPage = () => {
             <button type="button" className="btn btn--secondary" onClick={() => set('labs', [...draft.labs, { value: '', date: todayIso() }])}>
               Add a result
             </button>
+          </div>
+        </Card>
+
+        <Card title="Or import from FHIR" icon="flask" description="Instead of typing: a FHIR R4 Bundle (for example an ABDM prescription record) fills in the form above; check it before saving.">
+          <label className="field">
+            <span className="field__label">FHIR file (.json)</span>
+            <input className="field__input" type="file" accept=".json,application/json,application/fhir+json" onChange={(e) => importFile(e.target.files?.[0])} />
+          </label>
+          <div aria-live="polite">
+            {imported && 'error' in imported && (
+              <p className="dialog__error" role="alert">
+                {imported.error}
+              </p>
+            )}
+            {imported && !('error' in imported) && (
+              <>
+                <p className="hint">
+                  Read {imported.prescriptions} {imported.prescriptions === 1 ? 'prescription' : 'prescriptions'} and {imported.labs} lab {imported.labs === 1 ? 'result' : 'results'}. Anything
+                  already in the form above was replaced.
+                </p>
+                {imported.warnings.length > 0 && (
+                  <ul className="changes">
+                    {imported.warnings.map((w) => (
+                      <li key={w}>{w}</li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
           </div>
         </Card>
 

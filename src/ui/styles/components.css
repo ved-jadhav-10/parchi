@@ -107,22 +107,6 @@
 .kpi__label { margin: 0; color: var(--color-ink-muted); font-size: var(--text-sm); font-weight: 600; }
 .kpi__value { margin: 0; font-size: 2.25rem; line-height: 1.1; font-weight: 600; color: var(--t, var(--color-ink)); }
 .kpi__hint { margin: 0; color: var(--color-ink-muted); font-size: var(--text-xs); line-height: var(--leading-xs); }
-.kpi__short { display: none; }
-/* A tile that filters: a toggle button that keeps the tile's look. Pressed = the accent border, like a selected pill. */
-.kpi--toggle { width: 100%; margin: 0; font: inherit; text-align: left; color: inherit; cursor: pointer; border-color: var(--color-border-strong); }
-.kpi--toggle:hover { background: var(--color-tint); }
-.kpi--toggle[aria-pressed='true'] { border-color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
-.kpis--queue .kpi__value { font-size: var(--text-lg); line-height: var(--leading-lg); }
-/* Queue: on a phone the four counts become one short strip with one-word labels, so the first order stays on the first screen. */
-@media (max-width: 719px) {
-  .kpis--queue { grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
-  .kpis--queue .kpi { gap: 0; padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3); }
-  .kpis--queue .kpi__label { font-size: var(--text-xs); line-height: var(--leading-xs); }
-  .kpis--queue .kpi__long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  .kpis--queue .kpi__short { display: inline; }
-  .kpis--queue .kpi__value { font-size: var(--text-lg); line-height: var(--leading-lg); }
-  .kpis--queue .kpi__hint { display: none; }
-}
 
 /* Alerts */
 .alerts { display: grid; gap: var(--space-3); }
@@ -139,18 +123,20 @@
   font-size: var(--text-sm); font-weight: 600;
 }
 
-.silent-log { border-radius: var(--radius-md); }
-.silent-log summary {
-  min-height: var(--tap-min); display: flex; align-items: center; gap: var(--space-2); cursor: pointer;
-  list-style: none; color: var(--color-ink-muted); font-weight: 600;
+/* One fold: a summary with a chevron, used by every collapsible block (silent log, tiers, workings, order tools). */
+.fold > summary, .silent-log > summary, .tierkey > summary, .workings > summary, .order__tools > summary {
+  min-height: var(--tap-min); display: flex; align-items: center; gap: var(--space-2); cursor: pointer; list-style: none; font-weight: 600;
 }
-.silent-log summary::-webkit-details-marker { display: none; }
-.silent-log summary::before {
-  content: ''; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
+.fold > summary::-webkit-details-marker, .silent-log > summary::-webkit-details-marker, .tierkey > summary::-webkit-details-marker,
+.workings > summary::-webkit-details-marker, .order__tools > summary::-webkit-details-marker { display: none; }
+.fold > summary::before, .silent-log > summary::before, .tierkey > summary::before, .workings > summary::before, .order__tools > summary::before {
+  content: ''; flex: none; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor;
   transform: rotate(-45deg); transition: transform 150ms;
 }
-.silent-log[open] summary::before { transform: rotate(45deg); }
-@media (prefers-reduced-motion: reduce) { .silent-log summary::before { transition: none; } }
+.fold[open] > summary::before, .silent-log[open] > summary::before, .tierkey[open] > summary::before, .workings[open] > summary::before, .order__tools[open] > summary::before { transform: rotate(45deg); }
+@media (prefers-reduced-motion: reduce) { .fold > summary::before, .silent-log > summary::before, .tierkey > summary::before, .workings > summary::before, .order__tools > summary::before { transition: none; } }
+.silent-log { border-radius: var(--radius-md); }
+.silent-log > summary { color: var(--color-ink-muted); }
 .silent-log[open] { display: grid; gap: var(--space-3); }
 
 /* Chips */

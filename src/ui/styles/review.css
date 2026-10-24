@@ -40,8 +40,15 @@
 .queue__add { margin: var(--space-4) 0 0; }
 .queue__clear { min-height: var(--tap-min); font-weight: 600; white-space: nowrap; }
 
-.queue__toolbar { flex-wrap: nowrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
-.queue__views { display: inline-flex; min-width: 0; border-radius: var(--radius-pill); background: var(--color-tint); }
+.queue__toolbar { flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); }
+.queue__views { display: inline-flex; flex-wrap: wrap; min-width: 0; border-radius: 22px; background: var(--color-tint); }
+.queue__search { min-width: 220px; flex: 1 1 220px; }
+.queue__progress { display: grid; gap: var(--space-2); padding: var(--space-1) var(--space-1) 0; color: var(--color-ink-muted); font-size: var(--text-sm); }
+.queue__progress p { margin: 0; }
+.queue__progress strong { color: var(--color-ink); }
+.queue__meter { height: 6px; border-radius: var(--radius-pill); background: var(--color-surface); box-shadow: var(--ring); overflow: hidden; }
+.queue__meter span { display: block; height: 100%; background: var(--color-ink-muted); }
+.queue__keys { margin-top: var(--space-2); }
 .queue__view {
   min-height: var(--tap-min); padding: 0 var(--space-3); border: 1px solid transparent; border-radius: var(--radius-pill); background: transparent;
   color: var(--color-ink-muted); font: inherit; font-weight: 600; white-space: nowrap; cursor: pointer;
@@ -98,7 +105,6 @@
 .verdict__note { margin: var(--space-1) 0 0; }
 .order__sub { margin: 0 0 var(--space-2); font-size: var(--text-md); line-height: var(--leading-md); }
 .order__rx + .order__rx { margin-top: var(--space-4); }
-.order__tools summary { display: flex; align-items: center; min-height: var(--tap-min); cursor: pointer; font-weight: 600; }
 .order__tools-body { display: grid; gap: var(--space-3); padding-top: var(--space-3); }
 .order__link { display: inline-flex; align-items: center; min-height: var(--tap-min); color: var(--color-accent-strong); font-weight: 600; }
 .order__tools .actions { margin-top: 0; }
@@ -209,7 +215,7 @@
 .order__badge { margin-left: var(--space-2); }
 .order__rxhead { margin: 0 0 var(--space-2); font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); font-weight: 600; }
 .order__rx + .order__rx { margin-top: var(--space-4); }
-.workings summary { display: flex; align-items: center; min-height: var(--tap-min); cursor: pointer; font-size: var(--text-lg); font-weight: 600; }
+.workings > summary { font-size: var(--text-lg); }
 .workings__body { display: grid; gap: var(--space-5); padding-top: var(--space-3); }
 .workings__body > section { min-width: 0; }
 .workings__body .hint { margin: 0 0 var(--space-3); }
@@ -247,3 +253,14 @@
 .catalogue__map div { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); }
 .catalogue__map dt { min-width: 120px; color: var(--color-ink-muted); font-size: var(--text-sm); }
 .catalogue__map dd { margin: 0; font-weight: 600; }
+
+/* Decision sheet (phone): a modal dialog from the bottom edge, as tall as its form needs up to nearly the whole screen. */
+.dialog.sheet { width: 100%; max-width: none; max-height: 92dvh; margin: auto 0 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; overflow-y: auto; }
+.sheet__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+
+/* Tier key */
+.tierkey { font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); }
+.tierkey__list { display: grid; gap: var(--space-2); margin: 0; padding-bottom: var(--space-2); }
+.tierkey__list > div { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); }
+.tierkey__list dt { min-width: 110px; }
+.tierkey__list dd { margin: 0; }

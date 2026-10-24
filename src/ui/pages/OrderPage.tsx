@@ -6,11 +6,13 @@ import { CoverageNote } from '../components/CoverageNote'
 import { HerbalCard } from '../components/HerbalCard'
 import { LeafletCard } from '../components/LeafletCard'
 import { DecisionPanel } from '../components/DecisionPanel'
+import { DecisionSheet } from '../components/DecisionSheet'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { QueryDraftCard } from '../components/QueryDraftCard'
 import { SilentLog } from '../components/SilentLog'
 import { StatusBadge } from '../components/StatusBadge'
+import { TierKey } from '../components/TierKey'
 import { Timeline } from '../components/Timeline'
 import { TierBadge } from '../components/Icons'
 import { XrayTable } from '../components/XrayTable'
@@ -24,6 +26,7 @@ import { downloadText } from '../lib/csv'
 import { orderToFhir } from '../lib/fhirOrder'
 import { alertTypeLabel, candidateLabel } from '../lib/resolved'
 import { pct } from '../lib/format'
+import { useMedia } from '../lib/useMedia'
 import { useRouteParam } from '../route'
 import { addOverride, useOverrides } from '../storage/overrides'
 import { useCatalogue } from '../storage/catalogue'
@@ -199,6 +202,7 @@ const Verdict = ({ result, children }: { result: HistoryResult; children?: React
       </header>
       {children ?? <p className="verdict__lead">No alerts from the checks run. This is not a statement that the order is safe.</p>}
       <p className="hint verdict__note">Parchi suggests; the pharmacist decides. Limits and alert rules are drafts until a pharmacist signs them off.</p>
+      <TierKey />
     </section>
   )
 }
@@ -268,24 +272,11 @@ export const OrderPage = () => {
     return out
   }, [overrideRows, id])
 
-  // On a phone the decision sits below the evidence; a bar at the bottom of the screen reaches it until it is in view.
-  const [decisionInView, setDecisionInView] = useState(false)
-  const hasResult = result !== null
-  useEffect(() => {
-    const el = document.getElementById('decision')
-    if (!el || typeof IntersectionObserver === 'undefined') return
-    const io = new IntersectionObserver(([entry]) => setDecisionInView(entry.isIntersecting))
-    io.observe(el)
-    return () => io.disconnect()
-  }, [hasResult])
-
-  const goDecide = () => {
-    const el = document.getElementById('decision')
-    if (!el) return
-    el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
-    const radio = el.querySelector<HTMLInputElement>('input[type=radio]:checked') ?? el.querySelector<HTMLInputElement>('input[type=radio]')
-    radio?.focus({ preventScroll: true })
-  }
+  // On a wide screen the decision sits beside the evidence. On a phone it is a sheet that a bar at the bottom of the screen opens,
+  // so it is never a thousand pixels of scrolling away. Only one copy of the form exists at a time.
+  const narrow = useMedia('(max-width: 959px)')
+  const [sheetOpen, setSheetOpen] = useState(false)
+  useEffect(() => setSheetOpen(false), [id, narrow])
 
   /** Save a changed order (a lab, a confirmed brand) and let the page check it again, with the diff against what it showed. */
   const saveAndRecheck = async (next: Order) => {
@@ -371,6 +362,22 @@ export const OrderPage = () => {
   const informs = rest.filter((a) => a.tier === 'inform')
   const interruptAlerts = shownAlerts.filter((a) => a.tier === 'interrupt')
   const acknowledged = interruptAlerts.filter((a) => overridden[alertKey(a)] !== undefined).length
+
+  const decisionForm = result && (
+    <DecisionPanel
+      key={order.id}
+      order={order}
+      result={result}
+      last={last}
+      onSaved={() => {
+        void refreshDecisions()
+        setSheetOpen(false)
+      }}
+      next={nextWaiting.next}
+      othersWaiting={nextWaiting.othersWaiting}
+      interrupts={{ total: interruptAlerts.length, acknowledged }}
+    />
+  )
 
   const renderAlert = (a: HistoryAlert, variant: 'card' | 'lead' = 'card') => (
     <AlertCard
@@ -493,18 +500,11 @@ export const OrderPage = () => {
           </div>
 
           <div className="workspace__input order__rail">
-            <Card id="decision" title="Your decision" icon="log">
-              <DecisionPanel
-                key={order.id}
-                order={order}
-                result={result}
-                last={last}
-                onSaved={refreshDecisions}
-                next={nextWaiting.next}
-                othersWaiting={nextWaiting.othersWaiting}
-                interrupts={{ total: interruptAlerts.length, acknowledged }}
-              />
-            </Card>
+            {!narrow && (
+              <Card id="decision" title="Your decision" icon="log">
+                {decisionForm}
+              </Card>
+            )}
 
             <QueryDraftCard order={order} result={result} />
 
@@ -538,13 +538,18 @@ export const OrderPage = () => {
             <LeafletCard lines={result.lines} inDetails />
           </div>
 
-          {!decisionInView && (
-            <div className="decide-bar">
-              <StatusBadge status={result.status} compact />
-              <button type="button" className="btn btn--primary" onClick={goDecide}>
-                Decide
-              </button>
-            </div>
+          {narrow && (
+            <>
+              <div className="decide-bar">
+                <StatusBadge status={result.status} compact />
+                <button type="button" className="btn btn--primary" onClick={() => setSheetOpen(true)}>
+                  Decide
+                </button>
+              </div>
+              <DecisionSheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
+                {sheetOpen && decisionForm}
+              </DecisionSheet>
+            </>
           )}
         </div>
       )}

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Card, KpiCard } from '../components/Card'
+import { Card } from '../components/Card'
 import { StatusBadge } from '../components/StatusBadge'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { decisionLabel, doctorName, shortDate } from '../history/labels'
@@ -13,6 +13,11 @@ type Result = HistoryResult | 'failed' | undefined
 type Row = { order: Order; result: Result }
 type View = 'waiting' | 'decided'
 type Filter = 'all' | OrderStatus
+/** One choice at a time: every waiting order, only those with a suggestion, or the decided ones. */
+type Tab = 'waiting' | OrderStatus | 'decided'
+
+/** A search box appears once the queue is long enough to need one. */
+const SEARCH_FROM = 12
 
 const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`
 
@@ -43,8 +48,10 @@ export const QueuePage = () => {
   const { orders, ready, error, refresh: refreshOrders } = useOrders()
   const { decisions, error: decisionsError, refresh: refreshDecisions } = useDecisions()
   const [results, setResults] = useState<Record<string, HistoryResult | 'failed'>>({})
-  const [view, setView] = useState<View>('waiting')
-  const [filter, setFilter] = useState<Filter>('all')
+  const [tab, setTab] = useState<Tab>('waiting')
+  const [q, setQ] = useState('')
+  const view: View = tab === 'decided' ? 'decided' : 'waiting'
+  const filter: Filter = tab === 'waiting' || tab === 'decided' ? 'all' : tab
   const [singleKeys, setSingleKeys] = useSingleKeys()
   useRowKeys(singleKeys)
 
@@ -67,47 +74,57 @@ export const QueuePage = () => {
   const waiting = rows.filter((r) => !decided.has(r.order.id))
   const done = rows.filter((r) => decided.has(r.order.id)).sort((a, b) => decided.get(b.order.id)!.at.localeCompare(decided.get(a.order.id)!.at))
   const { counts, running, failed } = suggestionCounts(waiting.map((r) => r.result))
-  const shown =
-    view === 'decided' ? done : filter === 'all' ? waiting : waiting.filter((r) => typeof r.result === 'object' && r.result.status === filter)
+  const byTab = view === 'decided' ? done : filter === 'all' ? waiting : waiting.filter((r) => typeof r.result === 'object' && r.result.status === filter)
+  const needle = q.trim().toLowerCase()
+  const shown = needle === '' ? byTab : byTab.filter((r) => [r.order.customer.name, r.order.id, ...r.order.prescriptions.map((p) => p.doctor)].join(' ').toLowerCase().includes(needle))
   const storageError = error || decisionsError
   const retry = () => {
     refreshOrders()
     refreshDecisions()
-  }
-  const pick = (f: Filter) => {
-    setView('waiting')
-    setFilter((now) => (now === f && f !== 'all' ? 'all' : f))
   }
   const firstOpen = shown.findIndex((r) => !decided.has(r.order.id))
   const announce = !ready
     ? 'Loading orders'
     : `${plural(shown.length, view === 'decided' ? 'decided order' : 'waiting order')} shown${running > 0 ? `, ${running} still being checked` : ''}${failed > 0 ? `, ${failed} could not be checked` : ''}`
   const waitingHint = [running > 0 && `${running} still being checked`, failed > 0 && `${failed} not checked`].filter(Boolean).join(', ')
+  const tabs: { id: Tab; label: string; count: number }[] = [
+    { id: 'waiting', label: 'Waiting', count: waiting.length },
+    { id: 'hold_contact_doctor', label: 'Hold', count: counts.hold_contact_doctor },
+    { id: 'clear_with_note', label: 'With note', count: counts.clear_with_note },
+    { id: 'clear', label: 'No alerts', count: counts.clear },
+    { id: 'decided', label: 'Decided', count: done.length },
+  ]
+  const decidedShare = orders.length === 0 ? 0 : Math.round((done.length / orders.length) * 100)
 
   return (
     <>
       <PageIntro title="Review queue" note="Ranked by findings, interrupts first; the oldest order goes first on a tie." />
       <div className="workspace workspace--single">
-        <div className="kpis kpis--queue" role="group" aria-label="Filter waiting orders by suggestion">
-          <KpiCard label="Waiting" value={ready ? waiting.length : '–'} hint={waitingHint || undefined} short="Waiting" pressed={view === 'waiting' && filter === 'all'} onSelect={() => pick('all')} />
-          <KpiCard label="Suggested hold" value={ready ? counts.hold_contact_doctor : '–'} tier="interrupt" short="Hold" pressed={view === 'waiting' && filter === 'hold_contact_doctor'} onSelect={() => pick('hold_contact_doctor')} />
-          <KpiCard label="Clear, with a note" value={ready ? counts.clear_with_note : '–'} tier="inform" short="With note" pressed={view === 'waiting' && filter === 'clear_with_note'} onSelect={() => pick('clear_with_note')} />
-          <KpiCard label="No alerts" value={ready ? counts.clear : '–'} tier="silent" short="No alerts" pressed={view === 'waiting' && filter === 'clear'} onSelect={() => pick('clear')} />
-        </div>
+        {ready && orders.length > 0 && (
+          <div className="queue__progress">
+            <p>
+              <strong className="num">{done.length}</strong> of <span className="num">{orders.length}</span> orders decided{waitingHint && ` · ${waitingHint}`}
+            </p>
+            <div className="queue__meter" role="img" aria-label={`${done.length} of ${orders.length} orders decided`}>
+              <span style={{ width: `${decidedShare}%` }} />
+            </div>
+          </div>
+        )}
 
         <Card title="Orders" icon="log" description="The sample account plus any order added on this device. None are real orders.">
           <div className="toolbar queue__toolbar">
             <div className="queue__views" role="group" aria-label="Show orders">
-              {(['waiting', 'decided'] as const).map((v) => (
-                <button key={v} type="button" className="queue__view" aria-pressed={view === v} onClick={() => setView(v)}>
-                  {v === 'waiting' ? 'Waiting' : 'Decided'} <span className="num">{ready ? (v === 'waiting' ? waiting.length : done.length) : '–'}</span>
+              {tabs.map((t) => (
+                <button key={t.id} type="button" className="queue__view" aria-pressed={tab === t.id} onClick={() => setTab(t.id)}>
+                  {t.label} <span className="num">{ready ? t.count : '–'}</span>
                 </button>
               ))}
             </div>
-            {view === 'waiting' && filter !== 'all' && (
-              <button type="button" className="btn--link queue__clear" onClick={() => setFilter('all')}>
-                Show all waiting
-              </button>
+            {orders.length > SEARCH_FROM && (
+              <label className="field queue__search">
+                <span className="sr-only">Find an order by customer, order number or doctor</span>
+                <input className="field__input" type="search" value={q} placeholder="Find a customer, order or doctor" onChange={(e) => setQ(e.target.value)} />
+              </label>
             )}
           </div>
           <p className="sr-only" role="status">
