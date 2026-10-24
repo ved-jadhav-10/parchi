@@ -98,13 +98,13 @@ const BellOffIcon = () => (
 )
 
 /** The paracetamol limit bar from the demo case: 4,100 of 4,000 mg, the tick at the limit. */
-const Limit = ({ withLabel }: { withLabel?: boolean }) => (
+const Limit = ({ withLabel, bare }: { withLabel?: boolean; bare?: boolean }) => (
   <div className="home-limit">
     <div className="home-limit__track">
       <div className="home-limit__fill" />
       <div className="home-limit__mark" />
     </div>
-    <div className="home-limit__text">{withLabel ? <><strong>4,100 / 4,000 mg</strong> a day</> : '4,100 / 4,000 mg'}</div>
+    {!bare && <div className="home-limit__text">{withLabel ? <><strong>4,100 / 4,000 mg</strong> a day</> : '4,100 / 4,000 mg'}</div>}
   </div>
 )
 
@@ -215,7 +215,7 @@ export const HomePage = () => {
                 <div className="home-alert">
                   <span className="home-tier"><AlertIcon size={15} />Interrupt · Overdose</span>
                   <p>Paracetamol totals 4,100 mg/day across 3 brands, above the 4,000 mg/day limit. Review.</p>
-                  <Limit />
+                  <Limit bare />
                 </div>
                 <p className="home-slip__foot">Decision support for a pharmacist.</p>
               </div>
