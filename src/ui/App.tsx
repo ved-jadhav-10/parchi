@@ -5,6 +5,8 @@ import './styles/home.css'
 import './styles/review.css'
 import { lazy, Suspense, useEffect, useRef, type ComponentType } from 'react'
 import { AppHeader } from './components/AppHeader'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { UpdateToast } from './components/UpdateToast'
 import { HomePage } from './pages/HomePage'
 import { routes, useRoute, useRouteParam, type Route } from './route'
 
@@ -18,7 +20,9 @@ const pageTitle = (route: Route, param: string) => {
 
 // The working pages load on demand: the landing page (and a first visit) does not pay for the engine, the history form or the data tables.
 // Every chunk is in the service worker's precache, so a page still opens offline.
-const page = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) => lazy(() => load().then((m) => ({ default: m[name] })))
+// A failed load is tried once more before the error boundary takes over (a dropped connection often recovers within a second).
+const page = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
+  lazy(() => load().catch(() => new Promise((r) => setTimeout(r, 800)).then(load)).then((m) => ({ default: m[name] })))
 
 const pages: Record<Exclude<Route, 'home'>, ComponentType> = {
   check: page(() => import('./pages/CheckPage'), 'CheckPage'),
@@ -60,7 +64,14 @@ export default function App() {
   }, [route])
 
   // The landing page brings its own navigation and footer.
-  if (route === 'home') return <HomePage />
+  if (route === 'home') {
+    return (
+      <>
+        <HomePage />
+        <UpdateToast />
+      </>
+    )
+  }
   const Page = pages[route]
   return (
     <>
@@ -77,14 +88,17 @@ export default function App() {
       </a>
       <AppHeader route={route} />
       <main className="page" id="main" ref={main} tabIndex={-1}>
-        <Suspense fallback={<p className="hint" role="status">Loading…</p>}>
-          <Page />
-        </Suspense>
+        <ErrorBoundary key={route}>
+          <Suspense fallback={<p className="hint" role="status">Loading…</p>}>
+            <Page />
+          </Suspense>
+        </ErrorBoundary>
       </main>
       <footer className="disclaimer">
         <span>Decision support for a pharmacist. Not a substitute for professional judgement.</span>
         <a href="#/home">About Parchi</a>
       </footer>
+      <UpdateToast />
     </>
   )
 }

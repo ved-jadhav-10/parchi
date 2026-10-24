@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import Lenis from 'lenis'
-import 'lenis/dist/lenis.css'
+import type Lenis from 'lenis'
 
 /**
  * Smooth scrolling (Lenis, https://github.com/darkroomengineering/lenis). It is switched on for the landing page only:
  * the working screens have sticky columns, a modal dialog and scrollable tables, where inertia scrolling only gets in
- * the way. It is off under `prefers-reduced-motion`, and touch devices keep their native scrolling.
+ * the way. It is off under `prefers-reduced-motion`, and touch devices keep their native scrolling. The library is loaded
+ * on demand, so the installed app never downloads it.
  */
 let active: Lenis | null = null
 
@@ -14,10 +14,18 @@ const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matc
 export function useSmoothScroll(enabled = true) {
   useEffect(() => {
     if (!enabled || reduced()) return
-    const lenis = new Lenis({ autoRaf: true })
-    active = lenis
+    let lenis: Lenis | undefined
+    let cancelled = false
+    Promise.all([import('lenis'), import('lenis/dist/lenis.css')])
+      .then(([m]) => {
+        if (cancelled) return
+        lenis = new m.default({ autoRaf: true })
+        active = lenis
+      })
+      .catch(() => undefined) // without it the page simply scrolls natively
     return () => {
-      lenis.destroy()
+      cancelled = true
+      lenis?.destroy()
       active = null
     }
   }, [enabled])

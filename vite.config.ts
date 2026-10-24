@@ -8,6 +8,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // main UI registers the worker itself (UpdateToast), so it can say when offline is ready and when an update is waiting.
+      injectRegister: false,
       // brands.json is over 1 MB; Workbox skips anything above 2 MiB by default, which would silently break offline checks as the data grows.
       workbox: { globPatterns: ['**/*.{js,css,html,json,svg,png,woff2}'], maximumFileSizeToCacheInBytes: 8 * 1024 * 1024 },
       manifest: {
