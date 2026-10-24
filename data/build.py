@@ -19,6 +19,7 @@ sys.path.insert(0, str(HERE))
 from rxdata.banned_fdc import EXCIPIENT_LIKE, load_all as load_banned  # noqa: E402
 from rxdata.brands import DEFAULT_SOURCE, read_curated, read_dataset, select  # noqa: E402
 from rxdata.ddinter import load_pairs as load_ddi  # noqa: E402
+from rxdata.schedule import load_hints as load_schedule_hints  # noqa: E402
 from rxdata.export import banned_matches, popularity_tier, write_banned, write_brands, write_ddi, write_ingredients, write_janaushadhi, write_nsq  # noqa: E402
 from rxdata.ingredients import Registry  # noqa: E402
 from rxdata.janaushadhi import SOURCE_URL as JAN_URL, load_items as load_jan  # noqa: E402
@@ -91,6 +92,26 @@ def liquid_report(brands, path: Path) -> None:
           f"still missing {stats['missing']} (data/reports/{path.name})")
 
 
+def completeness_report(brands, reg, path: Path) -> None:
+    """Brands whose listed composition may be truncated AND that contain paracetamol or an NSAID.
+
+    These are the ones that can hide paracetamol/NSAID load from the ledger. Verify the most
+    popular first (tier 0 = top 50 of its letter) and add them to data/curated/brands.csv.
+    """
+    def risky(b) -> bool:
+        return any(c.id == "paracetamol" or "nsaid" in reg.meta.get(c.id, {}).get("classes", []) for c in b.components)
+
+    rows = [b for b in brands if not b.complete and not b.discontinued and b.route in ("oral", "parenteral") and risky(b)]
+    rows.sort(key=lambda b: (popularity_tier(b.rank), b.display))
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f, lineterminator="\n")
+        w.writerow(["popularity_tier", "brand", "form", "listed_ingredients"])
+        for b in rows:
+            w.writerow([popularity_tier(b.rank), b.display, b.form, " + ".join(c.id for c in b.components)])
+    by_tier = Counter(popularity_tier(b.rank) for b in rows)
+    print(f"incomplete brands containing paracetamol/NSAID: {len(rows)} (tier 0: {by_tier[0]}, tier 1: {by_tier[1]}) -> data/reports/{path.name}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", type=Path, default=DEFAULT_SOURCE)
@@ -128,7 +149,8 @@ def main() -> int:
         return 1
     jan_items, jan_unparsed = load_jan(jan_pdf, reg)
 
-    meta = {"sources": SOURCES, "top_per_letter": args.top_per_letter}
+    schedule_hints = load_schedule_hints(HERE / "curated" / "schedule_hints.csv", reg)
+    meta = {"sources": SOURCES, "top_per_letter": args.top_per_letter, "schedule_hints": schedule_hints}
     b_stats = write_brands(args.out / "brands.json", brands, meta)
     used = {c.id for b in brands for c in b.components} | {i for e in banned for i in e.ingredients}
     examples = [(raw, reg.canonical(raw)) for raw in PARITY_EXAMPLES]
@@ -168,6 +190,7 @@ def main() -> int:
                                 popularity_tier(b.rank), (b.display, b.form, b.signature) in in_index])
 
     liquid_report(brands, HERE / "reports" / "liquid_strength_gaps.csv")
+    completeness_report(brands, reg, HERE / "reports" / "incomplete_paracetamol_nsaid_brands.csv")
 
     sizes = {p.name: p.stat().st_size for p in sorted(args.out.glob("*.json"))}
     print("brands:", b_stats)

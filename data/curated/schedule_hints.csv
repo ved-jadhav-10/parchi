@@ -1,0 +1,4 @@
+ingredient,mg,forms,hint,source,pharmacist_approved,note
+methotrexate,,tablet|capsule,weekly,https://www.nhs.uk/medicines/methotrexate/how-and-when-to-take-methotrexate/,false,"NHS: tablets taken once a week on the same day; 1mg generic page: 'Take it once a week, on the same day every week'. Injection vials (oncology strengths) are not hinted"
+alendronic_acid,70,tablet,weekly,https://www.nhs.uk/medicines/alendronic-acid/how-and-when-to-take-alendronic-acid/,false,"NHS: 70 mg taken once a week; the 10 mg tablet is daily so only 70 mg is hinted"
+ibandronic_acid,150,tablet|kit,monthly,https://clinicaltrials.gov/study/NCT00545051,false,"ClinicalTrials.gov record NCT00545051: ibandronate 150 mg tablet orally once a month (trial registry, not a label; pharmacist to confirm)"

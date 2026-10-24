@@ -13,6 +13,19 @@ export interface BrandsJson {
   compositions: CompEntry[][]
   brands: [string, number, number, number, number][]
   curated: Record<string, CuratedMeta>
+  /** drugs whose usual schedule is not daily; absent in data built before this field existed */
+  schedule_hints?: ScheduleRule[]
+}
+
+export interface ScheduleRule {
+  ingredient: string
+  hint: 'weekly' | 'monthly'
+  /** exact per-unit strength in mg; absent = any strength */
+  mg?: number
+  /** dosage forms the rule covers (empty = all) */
+  forms: string[]
+  source: string
+  pharmacist_approved: boolean
 }
 
 export interface CuratedMeta {
@@ -92,6 +105,7 @@ export interface ResolverData {
   /** optional: online-refreshed list; absent when it could not be loaded */
   nsq?: NsqJson
   janaushadhi?: JanAushadhiJson
+  scheduleHints: ScheduleRule[]
   systemicRoutes: Set<string>
 }
 
@@ -129,7 +143,7 @@ export function decodeData(brandsJson: BrandsJson, ingredientsJson: IngredientsJ
   })
   if (nsqJson && nsqJson.schema !== 1) nsqJson = undefined
   if (janJson && janJson.schema !== 1) janJson = undefined
-  return { brands, ingredients: ingredientsJson, banned: bannedJson, nsq: nsqJson, janaushadhi: janJson, systemicRoutes: new Set(brandsJson.systemic_routes) }
+  return { brands, ingredients: ingredientsJson, banned: bannedJson, nsq: nsqJson, janaushadhi: janJson, scheduleHints: brandsJson.schedule_hints ?? [], systemicRoutes: new Set(brandsJson.systemic_routes) }
 }
 
 /** Browser loader: the files are precached by the service worker, so this works offline. NSQ and Jan Aushadhi are optional. */

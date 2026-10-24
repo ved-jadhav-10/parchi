@@ -270,3 +270,7 @@ ciclosporin,Cyclosporine,cyclosporine|cyclosporin,L04AD01,immunosuppressant,WHO 
 thioctic_acid,Alpha Lipoic Acid,alpha lipoic acid|lipoic acid|alpha-lipoic acid|thioctic acid,A16AX01,supplement,WHO ATC (INN thioctic acid)
 glycopyrronium,Glycopyrrolate,glycopyrrolate|glycopyrronium bromide,A03AB02,anticholinergic,WHO ATC (INN glycopyrronium)
 chorionic_gonadotrophin,Human Chorionic Gonadotropin,human chorionic gonadotropin|chorionic gonadotropin (human)|hcg|chorionic gonadotropin,G03GA01,gonadotropin,WHO ATC
+methotrexate,Methotrexate,,L01BA01|L04AX03,antimetabolite|dmard,WHO ATC
+alendronic_acid,Alendronic Acid,alendronate|alendronate sodium|alendronic acid,M05BA04,bisphosphonate,WHO ATC
+ibandronic_acid,Ibandronic Acid,ibandronate|ibandronate sodium,M05BA06,bisphosphonate,WHO ATC
+risedronate,Risedronic Acid,risedronic acid|risedronate sodium,M05BA07,bisphosphonate,WHO ATC
