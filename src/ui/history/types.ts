@@ -38,6 +38,8 @@ export interface HistoryLine {
   end: string
   /** true when the prescription wrote no duration and the default window was used (unverified) */
   end_assumed: boolean
+  /** Days cut off because the same doctor repeated this medicine early (read as a refill, not a double) */
+  refill_overlap_days?: number
   /** The line as the engine reads it: brand text plus dosing text */
   text: string
   resolved: ResolvedBrand

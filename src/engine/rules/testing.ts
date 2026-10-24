@@ -8,7 +8,7 @@ import { createEngine, createPipeline } from '../pipeline'
 import { realDeps } from '../wiring'
 import { createDdiIndex, type DdiJson } from '../resolver/ddi'
 import { testResolver } from '../resolver/testing'
-import { parseAlertRules } from './config'
+import { parseAlertRules, type AlertRules } from './config'
 
 export const alertRules = () => parseAlertRules(JSON.parse(rulesRaw))
 export const testDdi = () => createDdiIndex(JSON.parse(ddiRaw) as DdiJson)
@@ -54,7 +54,7 @@ export function realPipeline() {
 }
 
 /** The real engine's history check (Track B's parser and dose engine under Track C's rules). */
-export function realHistory() {
-  const engine = createEngine(realDeps({ resolver: testResolver(), ddi: testDdi(), rules: alertRules() }))
+export function realHistory(rules: AlertRules = alertRules()) {
+  const engine = createEngine(realDeps({ resolver: testResolver(), ddi: testDdi(), rules }))
   return createHistoryChecker(engine)
 }

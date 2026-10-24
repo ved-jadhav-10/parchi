@@ -273,3 +273,39 @@ describe('diffAlerts', () => {
     expect(d.changed.map((c) => c.after.type)).toEqual(['p'])
   })
 })
+
+describe('refill smoothing', () => {
+  const adult: Patient = { age_years: 40, weight_kg: 70, serum_creatinine: 0.9, sex: 'M' }
+  const refill = (doctorB: string, secondDate: string): Prescription[] => [
+    { id: 'a', doctor: 'Dr Rao', date: '2026-10-01', text: 'Dolo 650 TDS x10d' },
+    { id: 'b', doctor: doctorB, date: secondDate, text: 'Dolo 650 TDS x10d' },
+  ]
+  const dups = (r: { alerts: Alert[] }) => r.alerts.filter((a) => a.type === 'duplicate_ingredient')
+
+  it('reads a same-doctor repeat a few days early as a continuation, not a double', async () => {
+    const r = await check(refill('Dr Rao', '2026-10-08'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toEqual([])
+    const first = r.lines.find((l) => l.rx_id === 'a')!
+    expect(first.end).toBe('2026-10-08')
+    expect(first.refill_overlap_days).toBe(3)
+    expect(r.lines.find((l) => l.rx_id === 'b')!.refill_overlap_days).toBeUndefined()
+  })
+
+  it('still flags a different doctor repeating it: that is the cross-doctor case', async () => {
+    const r = await check(refill('Dr Mehta', '2026-10-08'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toHaveLength(1)
+    expect(r.lines.find((l) => l.rx_id === 'a')!.refill_overlap_days).toBeUndefined()
+  })
+
+  it('still flags a repeat that starts well before the supply ends', async () => {
+    const r = await check(refill('Dr Rao', '2026-10-02'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toHaveLength(1)
+  })
+
+  it('is off when the policy has no refill setting', async () => {
+    const rules = alertRules()
+    const off = realHistory({ ...rules, history: { ...rules.history, refill: undefined } })
+    const r = await off(refill('Dr Rao', '2026-10-08'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toHaveLength(1)
+  })
+})

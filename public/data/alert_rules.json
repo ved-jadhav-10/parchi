@@ -211,6 +211,11 @@
       },
       "cross_doctor_bonus": 15,
       "pharmacist_approved": false
+    },
+    "refill": {
+      "grace_days": 7,
+      "source": "Team setting: a repeat of the same medicine by the same doctor within a week of the supply ending is read as a refill. Pharmacist to set the real number.",
+      "pharmacist_approved": false
     }
   },
   "burden_scales": [

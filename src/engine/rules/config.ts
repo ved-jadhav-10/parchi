@@ -82,6 +82,8 @@ export interface AwareConfig {
 
 /** Policy for the whole-history check (Phase 2). */
 export interface HistoryPolicy {
+  /** A repeat of the same composition by the same doctor, collected up to this many days early, continues the earlier course instead of overlapping it. Absent or 0 = off. */
+  refill?: { grace_days: number; source: string; pharmacist_approved: boolean }
   /** order status from the worst tier on the order */
   status_by_tier: Record<Tier, OrderStatus>
   /** review-queue ranking: higher = look first */

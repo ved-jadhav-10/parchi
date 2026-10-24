@@ -81,6 +81,7 @@ export function createHistoryCheck(deps: EngineDeps) {
         start,
         end: l.end ?? start,
         end_assumed: l.default_window === true,
+        ...(l.refill_overlap_days && { refill_overlap_days: l.refill_overlap_days }),
         text: `${l.resolved.raw} ${sigTexts.get(l.rx_id)?.[n] ?? ''}`.trim(),
         resolved: l.resolved,
         sig: l.sig,
