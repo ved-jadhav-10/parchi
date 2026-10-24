@@ -77,7 +77,7 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 ## Status (update only your own row)
 | Track | Dev | Branch | Done | Next | Blocked |
 |---|---|---|---|---|---|
-| A | Palash | `dev/track-a` | Canonical ids (271 curated, ATC verified), 32k-brand index, resolver (fuzzy/phonetic/strength, LASA, generic), banned FDC 156+16, DDInter export, docs/track-a-data.md | NSQ export + resolver match, Jan Aushadhi, pharmacist-verified brands | checkpoint PR needs `gh auth login` |
+| A | Palash | `dev/track-a` | Canonical ids (271 curated), 32k-brand index, resolver (fuzzy/phonetic/strength, LASA, generic), banned FDC 156+16, DDInter export, NSQ/spurious export + `nsq` flag, Jan Aushadhi generics (`jan_aushadhi`), docs/track-a-data.md | Pharmacist-verified brands (needs D's pharmacist session) | |
 | B |  | `dev/track-b` |  |  |  |
 | C |  | `dev/track-c` |  |  |  |
 | D |  | `dev/track-d` |  |  |  |

@@ -21,7 +21,8 @@ describe('resolver on the demo prescription', () => {
       expect(got.brand).toBe(exp.brand)
       expect(strip(got.ingredients)).toEqual(strip(exp.ingredients))
       expect(got.confidence).toBeGreaterThanOrEqual(0.75)
-      expect(got.flags).toEqual([])
+      // nsq is real-world batch data (Pan-D has a failed batch in the Jul 2026 CDSCO list); covered in nsq.test.ts
+      expect(got.flags.filter((f) => f !== 'nsq')).toEqual([])
       expect(got.systemic).toBe(true)
     })
   })
