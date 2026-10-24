@@ -1,0 +1,9 @@
+alias,id,note
+acelofenac,aceclofenac,misspelt in CDSCO 156-FDC list
+ursodeoxycholicacid,ursodeoxycholic_acid,missing space in CDSCO 156-FDC list
+vit d3,colecalciferol,abbreviation in CDSCO 156-FDC list
+vit. d3,colecalciferol,abbreviation
+vitamin d3 (cholecalciferol),colecalciferol,dataset spelling
+cholecalciferol (vitamin d3),colecalciferol,dataset spelling
+beclomethasone dipropionate,beclometasone,salt form
+chlorpheniramine maleate ip,chlorphenamine,pharmacopoeia suffix
