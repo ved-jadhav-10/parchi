@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Flag, ResolvedBrand, Sig } from '../../engine/contracts'
 import { pct, titleCase } from '../lib/format'
-import { brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, sentenceCase, sigLabel, sigNotes, tidy } from '../lib/resolved'
+import { brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, scheduleLabel, sentenceCase, sigLabel, sigNotes, tidy } from '../lib/resolved'
 
 const flagText: Record<Flag, { label: string; tier: 'interrupt' | 'inform' }> = {
   banned_fdc: { label: 'Banned FDC', tier: 'interrupt' },
@@ -67,6 +67,22 @@ export const BrandMatch = ({ resolved, sig }: { resolved: ResolvedBrand; sig: Si
           )}
           <dt>Taken</dt>
           <dd>{sigLabel(sig)}</dd>
+          {scheduleLabel(r) && (
+            <>
+              <dt>Usual schedule</dt>
+              <dd>
+                {scheduleLabel(r)}
+                {r.schedule_source && (
+                  <>
+                    {' '}
+                    <a href={r.schedule_source} target="_blank" rel="noreferrer">
+                      Source
+                    </a>
+                  </>
+                )}
+              </dd>
+            </>
+          )}
 
           {notes.length > 0 && (
             <>

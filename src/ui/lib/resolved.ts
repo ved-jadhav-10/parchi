@@ -1,5 +1,5 @@
 // Display helpers for Track A's ResolvedBrand (docs/track-a-data.md). Pure functions, no React.
-import type { Ingredient, ResolvedBrand, Sig } from '../../engine/contracts'
+import type { Alert, Ingredient, ResolvedBrand, Sig } from '../../engine/contracts'
 import { mg, titleCase } from './format'
 
 /** Used only when a result carries no `needs_pharmacist` (the mock): below this a line is checked. */
@@ -16,7 +16,7 @@ export const strengthLabel = (i: Ingredient): string => {
   if (i.strength_unknown) return 'strength not listed'
   if (i.other_unit) return `${i.other_unit.amount.toLocaleString('en-IN')} ${unitLabel(i.other_unit.unit)}`
   const s = `${mg(i.mg)} mg`
-  return i.per_volume_ml ? `${s} per ${mg(i.per_volume_ml)} mL` : s
+  return i.per_volume_ml ? `${s} per ${mg(i.per_volume_ml)} mL${i.per_volume_assumed ? ' (volume assumed)' : ''}` : s
 }
 
 export const ingredientLabel = (i: Ingredient) => `${titleCase(i.id)} ${strengthLabel(i)}`
@@ -96,3 +96,14 @@ const ALERT_TYPES: Record<string, string> = {
 
 /** A readable name for an alert type from Track C; an unknown type falls back to its id in words. */
 export const alertTypeLabel = (type: string) => ALERT_TYPES[type] ?? titleCase(type)
+
+/** A drug whose usual schedule is not daily (Track A): methotrexate and alendronate 70 mg weekly, ibandronate 150 mg monthly. */
+export const scheduleLabel = (r: ResolvedBrand) => (r.schedule_hint ? `Usually taken ${r.schedule_hint}, not daily.` : null)
+
+/** Why an alert is not at the tier its rule would give, in one sentence; null when nothing moved it. */
+export const movedBecause = (a: Alert): string | null =>
+  a.budget_demoted
+    ? 'Would be an Interrupt, but the alert budget lowers the extras to Inform so the first ones stay rare.'
+    : a.suppressed
+      ? `Quieted by the suppression list (${a.suppressed.replace(/_/g, ' ')}).`
+      : null

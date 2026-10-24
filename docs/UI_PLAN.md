@@ -21,8 +21,8 @@ Check page: desktop left column 400 px sticky (Prescription, Patient), result on
 |---|---|---|
 | Real engine | A, B, C | Done: `src/ui/engine.ts` calls `createPipeline` with Track A's resolver, B's `parseSig` and `computeDose`, C's rules and `alert_rules.json`. B's `needs` become the patient prompts, and its CrCl and notes ride along on the result. `createCheck(deps)` takes its data as arguments so tests run it without a network. When C wires B into the pipeline itself, swap the body for `checkPrescription`. |
 | `prompts` | C | Proposed additive field on the check result: `{field: 'weight_kg' \| 'serum_creatinine', reason: string}[]`. The UI never decides when to ask. |
-| `public/data/limits.json` | B | Array (or object wrapping one) of `{ingredient, population?, max_mg_day, source, pharmacist_approved}`. Reader is tolerant of field names (`src/ui/lib/dataFiles.ts`). |
-| `public/data/suppression.json` | C | Array of `{ingredients \| rule, reason?, source, pharmacist_approved}`. |
+| Dose limits and SOS caps | B | `src/engine/limits/limits.json` (imported, not fetched): `{_meta, sos, ingredients}`, each value with `source` and `pharmacist_approved`. The Data page lists them via `src/ui/lib/policyRows.ts`; the X-ray shows the applied limit's basis and source from the ledger entry. |
+| Alert rules and suppression list | C | `public/data/alert_rules.json`: budget, interaction tiers, duplicate classes, patient rules, suppression list. The Data page reads it; an unreadable file is said so and never shown as empty rules. |
 | `public/data/benchmark.json` | D (`eval/`) | `{n_rx, kappa, systems: [{name, alerts_per_rx, interrupts_per_rx, clean_fp_rate, by_type: {<alert type>: {precision, recall}}}]}`. First system named engine/parchi is the headline. |
 | Needs pharmacist | A | The "Check match" badge follows A's `needs_pharmacist`; confidence below 0.9 is only a fallback when the field is absent (`src/ui/lib/resolved.ts`). A spelling-corrected match shows "Corrected spelling" unless A flags it. |
 | Override reasons | pharmacist | Starter list in `OverrideDialog.tsx`; replace after the session. |
@@ -34,7 +34,7 @@ Visual inspiration only (github.com/MandyTrl/meditec, no licence, so nothing cop
 
 ## Left to do
 - Swap mock for the real engine (needs C's `pipeline.ts`).
-- Show B's sig `assumptions` and `confidence`, ledger `caveats` and `needs` once `dev/track-b` is on main.
+- Phase 2 screens (review console, history input, e-pharmacy demo data) once contracts 5 to 7 are agreed; until then on mock history.
 - Interaction coverage: once C's alerts exist, list the ingredients the interaction data does not cover ("no hit" is not "safe").
 - Run the pharmacist session; put real reasons, limits and suppression rules into the files above.
 - Produce `benchmark.json` from `eval/` (needs the gold set).

@@ -6,7 +6,7 @@ import { Card, KpiCard } from '../components/Card'
 import { Icon } from '../components/Icons'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
-import { XrayTable } from '../components/XrayTable'
+import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
@@ -220,7 +220,8 @@ export const CheckPage = () => {
               </div>
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
-                <XrayTable ledger={result.ledger} />
+                <XrayTable ledger={result.ledger} alerts={result.alerts} />
+                <TotalsNotes notes={result.notes} ledger={result.ledger} />
               </Card>
 
               <Card title="Brand matches" description="What was typed and what it was matched to. Select a line for details.">

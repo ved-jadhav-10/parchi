@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import type { ResolvedBrand } from '../../engine/contracts'
+import type { Alert, ResolvedBrand } from '../../engine/contracts'
 import { testResolver } from '../../engine/resolver/testing'
 import { parseSig } from '../../engine/sig'
 import { demoPatient, demoRxText } from '../demoCase'
-import { alertTypeLabel, brandLabel, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, sentenceCase, sigLabel, sigNotes, strengthLabel, tidy } from './resolved'
+import { alertTypeLabel, brandLabel, movedBecause, candidateLabel, countsTowardTotal, ingredientLabel, isoDate, needsReview, notesFor, nsqMonth, scheduleLabel, sentenceCase, sigLabel, sigNotes, strengthLabel, tidy } from './resolved'
 
 const resolver = testResolver()
 const demo = resolver.resolveText(demoRxText, { age_years: demoPatient.age_years }).map((l) => l.resolved)
@@ -128,5 +128,25 @@ describe('alert type names', () => {
     expect(alertTypeLabel('ddi')).toBe('Interaction')
     expect(alertTypeLabel('nsaid_renal')).toBe('Kidney function')
     expect(alertTypeLabel('some_new_rule')).toBe('Some new rule')
+  })
+})
+
+describe('why an alert moved tier', () => {
+  const a: Alert = { tier: 'inform', type: 'dose_excess', ingredients: ['x'], reason: 'r', source: 's', confidence: 1 }
+  it('explains a budget demotion and a suppression, and says nothing otherwise', () => {
+    expect(movedBecause({ ...a, budget_demoted: true })).toMatch(/alert budget lowers the extras/)
+    expect(movedBecause({ ...a, tier: 'silent', suppressed: 'vitamin_duplicate' })).toBe('Quieted by the suppression list (vitamin duplicate).')
+    expect(movedBecause(a)).toBeNull()
+  })
+})
+
+describe('assumed volumes and usual schedules', () => {
+  it('says when a per-volume strength was inferred', () => {
+    expect(ingredientLabel({ id: 'x', mg: 100, per_volume_ml: 5, per_volume_assumed: true })).toBe('X 100 mg per 5 mL (volume assumed)')
+  })
+  it('says a drug is not taken daily', () => {
+    const base: ResolvedBrand = { raw: 'x', brand: 'X', confidence: 1, ingredients: [], form: 'tablet', flags: [] }
+    expect(scheduleLabel({ ...base, schedule_hint: 'weekly' })).toBe('Usually taken weekly, not daily.')
+    expect(scheduleLabel(base)).toBeNull()
   })
 })
