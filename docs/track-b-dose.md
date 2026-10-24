@@ -67,6 +67,10 @@ const check = createPipeline({ resolver, ddi, rules, parseSig: d.parseSig, build
 
 **`api/check`** (POST `{ rx_text, patient }`, header `x-api-key`): same engine server-side; returns `alerts`, `lines`, `ledger`, `findings`, `needs`, `crcl_ml_min`, `notes`. Keys in `CHECK_API_KEYS` (comma separated); none set = 503. Validates body size (20 KB), Rx length (2,000 chars, 30 lines) and patient ranges; errors never leak internals. Needs `public/data/**` in the function bundle on Vercel (`vercel.json` `includeFiles`). Not built: rate limiting, usage metering, a history endpoint (waits for C's `checkHistory`).
 
+## How it is tested (`npm test`)
+
+Track B files: 100% line and 96% branch coverage. Beyond unit tests: 20,000 random sigs plus unicode noise and regex-blow-up inputs (`sig/fuzz.test.ts`); property tests against a day-by-day reference (order independence, additivity, TDS = BD + OD, "over-limit iff total > limit", a frailer patient never gets a looser limit, window cutting) in `ledger/properties.test.ts`; a sweep of ~96,000 dose calculations over 4,569 real brands where nothing may throw, go NaN or vanish without a note (`ledger/sweep.test.ts`); Track C's pipeline on B's real functions (`ledger/pipeline.test.ts`); `api/check` and `api/parse-sig` over a real HTTP server and the live Gemini API (run by hand, not in CI). Mutation checks: breaking the CrCl factor, SOS maths, window edges, summing, or limit choice makes tests fail.
+
 ## Not built
 
 Paediatric kidney function (Schwartz), ideal-body-weight CrCl, Devanagari sigs, `x5` with no unit, "after meals 1 then 2" style meal-specific doses, drops/puffs to mg, rate limiting on `api/parse-sig`. The LLM fallback was checked live on 14 texts with `gemini-3.5-flash-lite` (correct on the readable ones; it refused "as per doctor's advice" and a prompt-injection text after the schema fix); it has no server-side rate limiting, so protect the deployed endpoint before sharing the URL. Speed: sig + ledger + limits take about 0.09 ms for the 7-line demo prescription (Track A's resolver about 2.5 ms).
