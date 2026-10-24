@@ -1,0 +1,308 @@
+{
+  "_note": "Hand-written ABDM/NRCeS PrescriptionRecord-shaped bundles (document Bundle: Composition + Practitioner + MedicationRequest), same prescriptions as demo_history rx-1 and rx-2. Not an official NRCeS sample. The second bundle uses Medication references, HumanName parts, a structured frequency and one nameless request on purpose.",
+  "bundles": [
+    {
+      "resourceType": "Bundle",
+      "type": "document",
+      "entry": [
+        {
+          "fullUrl": "urn:uuid:comp-1",
+          "resource": {
+            "resourceType": "Composition",
+            "identifier": {
+              "system": "https://ndhm.in/phr",
+              "value": "rx-1"
+            },
+            "status": "final",
+            "type": {
+              "text": "Prescription record"
+            },
+            "date": "2026-10-01T10:15:00+05:30",
+            "author": [
+              {
+                "reference": "urn:uuid:doc-rao"
+              }
+            ],
+            "title": "Prescription record"
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:pt",
+          "resource": {
+            "resourceType": "Patient",
+            "name": [
+              {
+                "text": "Demo Patient"
+              }
+            ],
+            "gender": "male",
+            "birthDate": "1958-03-02"
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:doc-rao",
+          "resource": {
+            "resourceType": "Practitioner",
+            "name": [
+              {
+                "text": "Dr Rao (GP)"
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:m1",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "status": "active",
+            "intent": "order",
+            "subject": {
+              "reference": "urn:uuid:pt"
+            },
+            "authoredOn": "2026-10-01",
+            "requester": {
+              "reference": "urn:uuid:doc-rao"
+            },
+            "medicationCodeableConcept": {
+              "text": "Dolo 650"
+            },
+            "dosageInstruction": [
+              {
+                "text": "1-1-1",
+                "timing": {
+                  "repeat": {
+                    "boundsDuration": {
+                      "value": 10,
+                      "unit": "d"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:m2",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "status": "active",
+            "intent": "order",
+            "subject": {
+              "reference": "urn:uuid:pt"
+            },
+            "authoredOn": "2026-10-01",
+            "requester": {
+              "reference": "urn:uuid:doc-rao"
+            },
+            "medicationCodeableConcept": {
+              "text": "Zerodol P"
+            },
+            "dosageInstruction": [
+              {
+                "text": "BD",
+                "timing": {
+                  "repeat": {
+                    "boundsDuration": {
+                      "value": 10,
+                      "unit": "d"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:m3",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "status": "active",
+            "intent": "order",
+            "subject": {
+              "reference": "urn:uuid:pt"
+            },
+            "authoredOn": "2026-10-01",
+            "requester": {
+              "reference": "urn:uuid:doc-rao"
+            },
+            "medicationCodeableConcept": {
+              "text": "Omez 20"
+            },
+            "dosageInstruction": [
+              {
+                "text": "once daily",
+                "timing": {
+                  "repeat": {
+                    "boundsDuration": {
+                      "value": 10,
+                      "unit": "d"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:obs1",
+          "resource": {
+            "resourceType": "Observation",
+            "status": "final",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "2160-0",
+                  "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 1.6,
+              "unit": "mg/dL"
+            },
+            "effectiveDateTime": "2026-10-09T08:00:00+05:30"
+          }
+        }
+      ]
+    },
+    {
+      "resourceType": "Bundle",
+      "type": "document",
+      "entry": [
+        {
+          "fullUrl": "urn:uuid:comp-2",
+          "resource": {
+            "resourceType": "Composition",
+            "identifier": {
+              "value": "rx-2"
+            },
+            "status": "final",
+            "date": "2026-10-05",
+            "author": [
+              {
+                "reference": "Practitioner/mehta"
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:p2",
+          "resource": {
+            "resourceType": "Practitioner",
+            "id": "mehta",
+            "name": [
+              {
+                "prefix": [
+                  "Dr"
+                ],
+                "given": [
+                  "Anil"
+                ],
+                "family": "Mehta"
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:med-a",
+          "resource": {
+            "resourceType": "Medication",
+            "id": "a",
+            "code": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "display": "Crocin Cold & Flu Max"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:mr-a",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "status": "active",
+            "intent": "order",
+            "authoredOn": "2026-10-05",
+            "medicationReference": {
+              "reference": "urn:uuid:med-a"
+            },
+            "dosageInstruction": [
+              {
+                "timing": {
+                  "repeat": {
+                    "frequency": 3,
+                    "period": 1,
+                    "periodUnit": "d",
+                    "boundsDuration": {
+                      "value": 5,
+                      "unit": "d"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:mr-b",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "status": "active",
+            "intent": "order",
+            "authoredOn": "2026-10-05",
+            "medicationCodeableConcept": {
+              "text": "Brufan 400"
+            },
+            "dosageInstruction": [
+              {
+                "text": "TDS for 1 week"
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:mr-c",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "status": "active",
+            "intent": "order",
+            "authoredOn": "2026-10-05",
+            "medicationCodeableConcept": {
+              "text": "Pan D"
+            },
+            "dosageInstruction": [
+              {
+                "text": "OD",
+                "timing": {
+                  "repeat": {
+                    "boundsDuration": {
+                      "value": 7,
+                      "unit": "d"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "fullUrl": "urn:uuid:mr-d",
+          "resource": {
+            "resourceType": "MedicationRequest",
+            "status": "active",
+            "intent": "order",
+            "authoredOn": "2026-10-05",
+            "dosageInstruction": [
+              {
+                "text": "OD"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
