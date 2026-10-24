@@ -1,17 +1,15 @@
 import { describe, it, expect, vi } from 'vitest'
 import { POST, handle, parsePatient, type CheckDeps } from '../../../api/check'
 import demo from '../../../tests/fixtures/demo_rx.json'
-import { createPipeline } from '../pipeline'
+import { createRealEngine } from '../wiring'
 import { testResolver } from '../resolver/testing'
 import { alertRules, testDdi } from '../rules/testing'
 import { createDoseDeps } from './index'
 
 const resolver = testResolver()
 const d = createDoseDeps(resolver)
-const real: Pick<CheckDeps, 'check' | 'dose'> = {
-  check: createPipeline({ resolver, ddi: testDdi(), rules: alertRules(), parseSig: d.parseSig, buildLedger: d.buildLedger }),
-  dose: d.computeDose,
-}
+const engine = createRealEngine({ resolver, ddi: testDdi(), rules: alertRules() })
+const real: Pick<CheckDeps, 'check' | 'history' | 'dose'> = { check: engine.check, history: engine.checkHistory, dose: d.computeDose }
 const deps: CheckDeps = { ...real, apiKeys: ['good-key', 'second-key'] }
 const post = (body: unknown, key: string | null = 'good-key', raw?: string) =>
   new Request('http://x/api/check', { method: 'POST', headers: key ? { 'x-api-key': key } : {}, body: raw ?? JSON.stringify(body) })
@@ -64,7 +62,9 @@ describe('api/check', () => {
       expect(await status({ rx_text: 5, patient: { age_years: 40 } })).toBe(400)
       expect(await status({ rx_text: 'x'.repeat(2001), patient: { age_years: 40 } })).toBe(400)
       expect(await status({ rx_text: Array(31).fill('Dolo 650 TDS').join('\n'), patient: { age_years: 40 } })).toBe(400)
-      expect(await status(null, 'x'.repeat(20_001))).toBe(413)
+      expect(await status(null, 'x'.repeat(200_001))).toBe(413)
+      expect(await status(null, '[1,2]')).toBe(400) // a JSON array is not a request
+      expect(await status(null, 'null')).toBe(400)
     })
     it('rejects implausible patients', () => {
       for (const p of [undefined, null, 'x', {}, { age_years: -1 }, { age_years: 121 }, { age_years: 'forty' }, { age_years: 40, weight_kg: 0 }, { age_years: 40, serum_creatinine: 50 }, { age_years: 40, sex: 'X' }, { age_years: NaN }]) {

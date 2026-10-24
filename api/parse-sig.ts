@@ -3,6 +3,7 @@
 // only returns a few numbers, which src/engine/sig/llm.ts validates before use. It never decides an alert.
 // Provider: Gemini when GEMINI_API_KEY is set (model from GEMINI_MODEL), else Anthropic when ANTHROPIC_API_KEY is set.
 import { validateLlmFields } from '../src/engine/sig/llm'
+import { clientKey, createLimiter, intFrom, tooMany } from './_rateLimit'
 
 declare const process: { env: Record<string, string | undefined> }
 
@@ -81,7 +82,16 @@ export async function handle(request: Request, deps: Deps): Promise<Response> {
   }
 }
 
-export function POST(request: Request): Promise<Response> {
+// Quota protection: this endpoint has no login (browsers call it), so each caller and the whole instance are capped.
+// Limits per instance: SIG_RATE_PER_MIN per client (default 10) and SIG_RATE_PER_HOUR in total (default 300).
+const perClient = createLimiter({ max: intFrom(process.env.SIG_RATE_PER_MIN, 10), windowMs: 60_000 })
+const overall = createLimiter({ max: intFrom(process.env.SIG_RATE_PER_HOUR, 300), windowMs: 3_600_000 })
+
+export async function POST(request: Request): Promise<Response> {
+  const mine = perClient(clientKey(request))
+  if (!mine.allowed) return tooMany(mine.retryAfterSec)
+  const all = overall('all')
+  if (!all.allowed) return tooMany(all.retryAfterSec)
   return handle(request, {
     fetchImpl: fetch,
     geminiKey: process.env.GEMINI_API_KEY,

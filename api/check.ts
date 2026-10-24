@@ -1,24 +1,32 @@
-// Vercel function: JSON check API for buyers (e-pharmacies, chains). POST { rx_text, patient } -> alerts, ledger, dose findings.
-// The same deterministic engine as the browser app, run server-side. It informs a pharmacist; it never decides.
+// Vercel function: JSON check API for buyers (e-pharmacies, chains). The same deterministic engine as the browser app,
+// run server-side. It informs a pharmacist; it never decides.
+//   One prescription:  POST { rx_text, patient }
+//   A customer's history (several doctors, dated):  POST { prescriptions: [{id, doctor, date, text}], patient, labs?, as_of?, from?, confirmations? }
+//   ...or an ABDM FHIR R4 bundle:  POST { fhir: <Bundle | Bundle[]>, patient, labs?, as_of? }
 // Auth: every request needs an `x-api-key` that is listed in CHECK_API_KEYS (comma separated). With no keys set the
 // endpoint answers 503, so it can never be left open by accident. Deploy note: include public/data/** in the function
 // bundle (vercel.json "functions": { "api/check.ts": { "includeFiles": "public/data/**" } }).
-import type { CheckPrescription, Patient } from '../src/engine/contracts'
+import type { CheckPrescription, HistoryResult, Patient } from '../src/engine/contracts'
+import type { CheckHistory } from '../src/engine/history'
 import { createDoseDeps, type DoseResult, type LedgerLine } from '../src/engine/ledger'
-import { createPipeline } from '../src/engine/pipeline'
+import { checkRxText, parseHistoryRequest, parsePatient } from '../src/engine/ledger/requests'
 import { createResolver } from '../src/engine/resolver'
 import { createDdiIndex, type DdiJson } from '../src/engine/resolver/ddi'
 import { decodeData, type BannedJson, type BrandsJson, type IngredientsJson, type JanAushadhiJson, type NsqJson } from '../src/engine/resolver/data'
 import { parseAlertRules } from '../src/engine/rules'
+import { createRealEngine } from '../src/engine/wiring'
+import { createLimiter, intFrom, tooMany } from './_rateLimit'
+
+export { parsePatient }
 
 declare const process: { env: Record<string, string | undefined>; cwd(): string }
 
-const MAX_BODY_CHARS = 20_000
-const MAX_RX_CHARS = 2_000
-const MAX_LINES = 30
+const MAX_BODY_CHARS = 200_000
+const DISCLAIMER = 'Decision support for a pharmacist. It informs; it does not decide. Limits marked pharmacist_approved=false are unverified.'
 
 export interface CheckDeps {
   check: CheckPrescription
+  history: CheckHistory
   dose: (lines: LedgerLine[], patient: Patient) => DoseResult
   apiKeys: string[]
 }
@@ -31,29 +39,6 @@ function sameKey(a: string, b: string): boolean {
   return diff === 0
 }
 
-const inRange = (v: unknown, min: number, max: number): v is number => typeof v === 'number' && Number.isFinite(v) && v >= min && v <= max
-
-/** Strict patient check. Returns the patient or a plain-language problem. */
-export function parsePatient(x: unknown): { patient: Patient } | { error: string } {
-  if (typeof x !== 'object' || x === null) return { error: 'patient is required' }
-  const o = x as Record<string, unknown>
-  if (!inRange(o.age_years, 0, 120)) return { error: 'patient.age_years must be a number from 0 to 120' }
-  const patient: Patient = { age_years: o.age_years }
-  if (o.weight_kg !== undefined) {
-    if (!inRange(o.weight_kg, 0.5, 400)) return { error: 'patient.weight_kg must be a number from 0.5 to 400' }
-    patient.weight_kg = o.weight_kg
-  }
-  if (o.serum_creatinine !== undefined) {
-    if (!inRange(o.serum_creatinine, 0.1, 20)) return { error: 'patient.serum_creatinine must be a number from 0.1 to 20 (mg/dL)' }
-    patient.serum_creatinine = o.serum_creatinine
-  }
-  if (o.sex !== undefined) {
-    if (o.sex !== 'M' && o.sex !== 'F') return { error: 'patient.sex must be "M" or "F"' }
-    patient.sex = o.sex
-  }
-  return { patient }
-}
-
 export async function handle(request: Request, deps: CheckDeps): Promise<Response> {
   const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } })
   if (request.method !== 'POST') return json({ error: 'POST only' }, 405)
@@ -61,27 +46,40 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
   const key = request.headers.get('x-api-key') ?? ''
   if (!deps.apiKeys.some((k) => sameKey(k, key))) return json({ error: 'Invalid or missing x-api-key' }, 401)
 
-  let body: { rx_text?: unknown; patient?: unknown }
+  let body: Record<string, unknown>
   try {
     const raw = await request.text()
     if (raw.length > MAX_BODY_CHARS) return json({ error: 'Body too large' }, 413)
-    body = JSON.parse(raw)
+    const parsed: unknown = JSON.parse(raw)
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return json({ error: 'Body must be a JSON object' }, 400)
+    body = parsed as Record<string, unknown>
   } catch {
     return json({ error: 'Body must be JSON' }, 400)
   }
-  if (typeof body.rx_text !== 'string' || body.rx_text.trim() === '' || body.rx_text.length > MAX_RX_CHARS) {
-    return json({ error: `rx_text must be 1-${MAX_RX_CHARS} characters` }, 400)
-  }
-  if (body.rx_text.split(/\r?\n|;/).filter((l) => l.trim()).length > MAX_LINES) return json({ error: `rx_text has more than ${MAX_LINES} lines` }, 400)
   const p = parsePatient(body.patient)
   if ('error' in p) return json({ error: p.error }, 400)
 
+  if (body.prescriptions !== undefined || body.fhir !== undefined) {
+    if (body.rx_text !== undefined) return json({ error: 'send rx_text for one prescription, or prescriptions/fhir for a history, not both' }, 400)
+    const h = parseHistoryRequest(body)
+    if ('error' in h) return json({ error: h.error }, 400)
+    try {
+      const result: HistoryResult = await deps.history(h.request.prescriptions, p.patient, h.request.labs, h.request.options)
+      return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, ...result, ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
+    } catch {
+      return json({ error: 'Check failed' }, 500)
+    }
+  }
+
+  const bad = checkRxText(body.rx_text)
+  if (bad) return json({ error: bad }, 400)
   try {
-    const result = await deps.check(body.rx_text, p.patient)
+    const result = await deps.check(body.rx_text as string, p.patient)
     const dose = deps.dose(result.lines, p.patient)
     return json({
       schema: 1,
-      disclaimer: 'Decision support for a pharmacist. It informs; it does not decide. Limits marked pharmacist_approved=false are unverified.',
+      mode: 'single',
+      disclaimer: DISCLAIMER,
       alerts: result.alerts,
       lines: result.lines,
       ledger: dose.ledger,
@@ -95,10 +93,10 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
   }
 }
 
-let cached: Promise<Pick<CheckDeps, 'check' | 'dose'>> | undefined
+let cached: Promise<Pick<CheckDeps, 'check' | 'history' | 'dose'>> | undefined
 
 /** Read the committed JSON data from disk once per server instance. */
-function load(): Promise<Pick<CheckDeps, 'check' | 'dose'>> {
+function load(): Promise<Pick<CheckDeps, 'check' | 'history' | 'dose'>> {
   cached ??= (async () => {
     const mod = 'node:fs/promises' // variable specifier: this file is typechecked without Node typings
     const fs = (await import(mod)) as { readFile(path: string, encoding: string): Promise<string> }
@@ -120,24 +118,28 @@ function load(): Promise<Pick<CheckDeps, 'check' | 'dose'>> {
         await read<JanAushadhiJson>('janaushadhi.json', true),
       ),
     )
-    const doseDeps = createDoseDeps(resolver)
-    const check = createPipeline({
+    const engine = createRealEngine({
       resolver,
       ddi: createDdiIndex((await read<DdiJson>('ddi.json'))!),
       rules: parseAlertRules(await read('alert_rules.json')),
-      parseSig: doseDeps.parseSig,
-      buildLedger: doseDeps.buildLedger,
-      computeDose: doseDeps.computeDose, // lets the pipeline raise B's kidney, schedule and SOS findings as alerts
     })
-    return { check, dose: doseDeps.computeDose }
+    return { check: engine.check, history: engine.checkHistory, dose: createDoseDeps(resolver).computeDose }
   })()
   cached.catch(() => (cached = undefined)) // a failed load is retried on the next request
   return cached
 }
 
+// Per API key, per instance: CHECK_RATE_PER_MIN requests a minute (default 120).
+const perKey = createLimiter({ max: intFrom(process.env.CHECK_RATE_PER_MIN, 120), windowMs: 60_000 })
+
 export async function POST(request: Request): Promise<Response> {
   const keys = (process.env.CHECK_API_KEYS ?? '').split(',').map((k) => k.trim()).filter(Boolean)
-  if (keys.length === 0) return handle(request, { check: async () => ({ lines: [], ledger: {}, alerts: [] }), dose: () => { throw new Error('unused') }, apiKeys: [] })
+  if (keys.length === 0) return handle(request, { check: async () => ({ lines: [], ledger: {}, alerts: [] }), history: async () => { throw new Error('unused') }, dose: () => { throw new Error('unused') }, apiKeys: [] })
+  const sent = request.headers.get('x-api-key') ?? ''
+  if (keys.some((k) => sameKey(k, sent))) {
+    const d = perKey(sent) // counted only for valid keys, so wrong guesses cannot lock a real customer out
+    if (!d.allowed) return tooMany(d.retryAfterSec)
+  }
   const data = await load().catch(() => undefined)
   if (!data) return new Response(JSON.stringify({ error: 'Data not available' }), { status: 503, headers: { 'content-type': 'application/json' } })
   return handle(request, { ...data, apiKeys: keys })
