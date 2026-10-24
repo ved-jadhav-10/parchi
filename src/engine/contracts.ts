@@ -176,8 +176,18 @@ export interface Alert {
   suppressed?: string
   /** true = was 'interrupt' but the alert budget moved it to 'inform'. */
   budget_demoted?: boolean
+  /** true = was 'interrupt' but rests on a brand match the resolver could not confirm, so it is an 'inform'. */
+  uncertain_match?: boolean
   /** Why the numbers behind this alert may be off (assumed measure, SOS cap assumed, ...), from the ledger. */
   caveats?: string[]
+  /** Interactions from a curated rule: one drug weakens another, or both add to the same effect. */
+  interaction_effect?: 'reduces_effect' | 'adds_effect'
+  /** Ingredient ids that may lose effect (with interaction_effect 'reduces_effect'). */
+  reduces?: string[]
+  /** How: 'activation_blocked' | 'opposing_action' | 'absorption_blocked' | 'faster_breakdown' | 'same_action'. */
+  mechanism?: string
+  /** Label behind the direction and mechanism, when `source` is DDInter's id. */
+  label_source?: string
   // Optional Track C detail, history check only (Phase 2).
   /** Doctors whose prescriptions the alert is about. */
   doctors?: string[]

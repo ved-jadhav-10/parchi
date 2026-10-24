@@ -6,6 +6,7 @@ import { createPipeline } from '../engine/pipeline'
 import { loadResolver, type Resolver } from '../engine/resolver'
 import { loadDdi, type DdiIndex } from '../engine/resolver/ddi'
 import { loadAlertRules, type AlertRules } from '../engine/rules'
+import { parseSig, parseSigSmart } from '../engine/sig'
 import { ddiGapNames, limitGapNames } from './lib/coverage'
 import { herbalDepsFor } from './lib/herbal'
 import { parseSigWithReadings, readUnclearSigs } from './lib/smartSig'
@@ -54,7 +55,15 @@ export function createCheck(deps: EngineDeps) {
   const { resolver, ddi, rules } = deps
   // computeDose (not just a ledger) lets the pipeline raise Track B's findings as alerts: weekly drugs written daily,
   // kidney warnings, unclear sigs, liquids with no known volume. Without it those are silently dropped.
-  const check = createPipeline({ resolver, ddi, rules, parseSig: (text) => parseSigWithReadings(text), computeDose })
+  // Online only: lines the rules could not read go to /api/parse-sig (sig text only); offline the rules result stands.
+  const check = createPipeline({
+    resolver,
+    ddi,
+    rules,
+    parseSig: (text) => parseSigWithReadings(text),
+    computeDose,
+    refineSig: (text) => parseSigSmart(text),
+  })
   const herbalDeps = herbalDepsFor(resolver)
   return async (rxText: string, patient: Patient): Promise<CheckResult> => {
     // Herbal lines come out first so the ordinary resolver never guesses a drug for them.

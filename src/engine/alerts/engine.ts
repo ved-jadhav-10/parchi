@@ -1,5 +1,6 @@
 // 3-tier alert engine: pharmacist suppression list, alert budget and ordering over the raw rule output.
 import type { Alert, Tier } from '../contracts'
+import { NEEDS_PHARMACIST_BELOW } from '../resolver/index'
 import type { AlertRules } from '../rules/config'
 
 const TIER_ORDER: Record<Tier, number> = { interrupt: 0, inform: 1, silent: 2 }
@@ -47,6 +48,14 @@ export function finalizeAlerts(raw: Alert[], ctx: FinalizeContext): Alert[] {
     const id = suppressionFor(a, ctx)
     return id ? { ...a, tier: 'silent' as Tier, suppressed: id } : a
   })
+
+  // A guess never stops the pharmacist: an Interrupt that rests on a brand match the resolver routed to the
+  // pharmacist ("xyzzol" read as Xyzal) is shown as an Inform until the brand is confirmed.
+  alerts = alerts.map((a) =>
+    a.tier === 'interrupt' && a.confidence < NEEDS_PHARMACIST_BELOW
+      ? { ...a, tier: 'inform' as Tier, uncertain_match: true, caveats: [...(a.caveats ?? []), 'Rests on an uncertain brand match; confirm the brand first'] }
+      : a,
+  )
 
   // The budget trims routine Interrupts only: types in never_demote (a contraindication, a kidney "avoid") are never
   // demoted and do not use up the budget, so a contraindication cannot push a routine overdose alert down either.

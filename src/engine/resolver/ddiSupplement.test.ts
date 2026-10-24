@@ -32,8 +32,10 @@ describe('curated interaction supplement', () => {
   })
 
   it('never softens a pair DDInter already lists', () => {
-    const before = plain.lookup('clopidogrel', 'omeprazole')
-    expect(ddi.lookup('clopidogrel', 'omeprazole')).toEqual(before)
+    // A pair no curated rule names comes back exactly as DDInter has it.
+    const before = plain.lookup('ibuprofen', 'diclofenac')
+    expect(before).not.toBeNull()
+    expect(ddi.lookup('ibuprofen', 'diclofenac')).toEqual(before)
     for (const r of supplement.rules) {
       for (const a of r.a) {
         for (const b of r.b) {

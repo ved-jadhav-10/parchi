@@ -47,7 +47,7 @@ Image: diagram, Dolo 650 1,950 mg + Crocin Cold&Flu 1,500 mg + Zerodol-P 650 mg 
 **Core technologies** (languages; hardware; APIs, cloud, tools)
 - TypeScript, React and Vite, packaged as an installable web app (PWA). One build runs on any phone, tablet or PC with a browser.
 - Python cleans the public drug data once. Two libraries do the heavy lifting: fuse.js for fuzzy matching and Workbox to cache the app.
-- A small Vercel API lets an e-pharmacy plug Parchi into its own system. An AI model (Gemini or Claude) only reads messy dosing text and drafts customer leaflets. It never decides an alert.
+- A small Vercel API lets an e-pharmacy plug Parchi into its own system. An AI model (Gemini or Claude) only reads dosing text the rules could not, when online, and drafts customer leaflets. It never decides an alert: its answer is checked, sees only the dosing text, and the line is always marked for the pharmacist to confirm. The history check uses the rules only.
 
 **Unique points** (what is different; what is hard to copy)
 - Same slip, same answer. Rules decide, so a pharmacist can always ask why.

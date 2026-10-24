@@ -203,6 +203,8 @@ def read_curated(path: Path, reg: Registry) -> list[Brand]:
                         "pharmacist_approved": row["pharmacist_approved"].strip().lower() == "true",
                         "aliases": [a.strip() for a in row["aliases"].split("|") if a.strip()],
                         "notes": row["notes"].strip(),
+                        # Ingredient ids of a dataset row this brand corrects (same name and form): that row is dropped.
+                        "replaces": [i.strip() for i in (row.get("replaces") or "").split("|") if i.strip()],
                     },
                 )
             )
@@ -231,17 +233,22 @@ def select(dataset: list[Brand], curated: list[Brand], top_per_letter: int) -> l
     """Keep whole product lines (all strengths/forms) if any variant ranks in its letter's top N.
 
     A curated brand replaces dataset rows with the same display name and form whose ingredients are
-    a subset of the verified ones (truncated copies). A different product that shares the name,
-    e.g. "Sinarest Linctus" next to "Sinarest Syrup", stays.
+    a subset of the verified ones (truncated copies), or that contain an ingredient the curated row lists
+    under `replaces` (a wrong ingredient, e.g. salbutamol for levosalbutamol). A different product that shares
+    the name, e.g. "Sinarest Linctus" next to "Sinarest Syrup", stays.
     """
     curated_ids: dict[tuple[str, str], list[set[str]]] = {}
     for b in curated:
         curated_ids.setdefault((b.display.lower(), b.form), []).append({c.id for c in b.components})
     curated_lines = {b.key for b in curated}
+    corrected: dict[tuple[str, str], set[str]] = {}
+    for b in curated:
+        corrected.setdefault((b.display.lower(), b.form), set()).update(b.curated.get("replaces", []))
 
     def replaced(b: Brand) -> bool:
         ids = {c.id for c in b.components}
-        return any(ids <= verified for verified in curated_ids.get((b.display.lower(), b.form), []))
+        k = (b.display.lower(), b.form)
+        return any(ids <= verified for verified in curated_ids.get(k, [])) or bool(ids & corrected.get(k, set()))
 
     rows = [b for b in dedupe(dataset) if not replaced(b)]
     hot_lines = {b.key for b in rows if b.rank < top_per_letter} | curated_lines
