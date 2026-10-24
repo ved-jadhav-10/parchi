@@ -1,6 +1,6 @@
 # HM-02 Winning Playbook: Indian Brand-Name Prescription Safety Checker (HYPNEXIS '26)
 
-> Research reference only. The stack (offline PWA, TypeScript engine in the browser), track split and timeline are in `PLAN.md`, which wins where the two differ.
+> Research reference only. The stack (offline PWA, TypeScript engine in the browser), track split and timeline are in `PLAN.md`, which wins where the two differ. Phase 2 requirements and the B2B focus are in §11 and `BUSINESS_MODEL.md`.
 
 **Bottom line: rival teams can generate a DDI checker in an hour, but they can't quickly build three things: (1) a per-ingredient daily-dose ledger across Indian brands that respects patient limits, (2) a pharmacist-curated alert budget that keeps Interrupt alerts to about one per prescription, and (3) a pharmacist-labelled Indian test set that shows raw chatbots failing. Lead with those three. Treat the DDI lookup as a must-have that won't win on its own.**
 
@@ -235,6 +235,8 @@ The output should show 2 Interrupts, 3–4 Informs and the rest silent-logged. T
 - Customers: chemist shops (~1M outlets per Ken Research's model), Jan Aushadhi Kendras (20,149), e-pharmacies (prescription verification at scale), EMRs (HealthPlix/Eka as API buyers), hospital pharmacies.\[70\]\[74\]
 
 ### 9. Business viability
+> Superseded where they differ by `BUSINESS_MODEL.md` (24 Oct 2026, §11): e-pharmacies and chains are the design target, not only the buyers.
+
 Judges will not read the engine. This section covers who uses it, who pays, who resists, and how to pitch it.
 
 **Core insight: the chemist counter is the only place where every prescription meets.** Two doctors' prescriptions plus OTC purchases come together only at the pharmacy. A doctor's EMR (HealthPlix, Eka, Practo) sees only its own prescription, so it cannot notice that the orthopaedist prescribed Zerodol-P while the GP prescribed Dolo and Crocin Cold & Flu Max. This is why the product belongs at the pharmacy, not in the EMR.
@@ -358,6 +360,30 @@ Checked against primary or reputable secondary sources for the final deck (`PPT.
 - Paracetamol acute-liver-failure figures (e.g. 42% of US cases) are US data (Larson 2005). In India, anti-TB drugs dominate drug-induced liver injury (Devarbhavi 2010). Do not present paracetamol liver-failure numbers as Indian.\[96\]\[97\]
 - Market size: cite only Ken Research, USD 30.1B (2025) → 52.8B (2031), labelled as an estimate (as in §9.3).
 
+### 11. Phase 2 requirements and B2B focus (24 Oct 2026)
+Where this section conflicts with an earlier one, this section wins. The business model is now `BUSINESS_MODEL.md`, which replaces §9 where they differ.
+
+**Phase 2 adds to HM-02 ("check a patient's whole history across several doctors, not one prescription"):**
+1. Merge prescriptions from three doctors into one timeline; flag overlaps and cross-doctor duplicates.
+2. Re-check doses when a new kidney-function value arrives.
+3. Mark unknown brands as unverified, or propose a likely composition with confidence.
+4. Rank alerts by severity so the most urgent appear first.
+
+**Decision:** build for the buyer's verifying pharmacist at e-pharmacies and pharmacy chains, not for doctors or independent chemists. These buyers already hold the customer's multi-doctor order history, so Phase 2's timeline needs no data from doctors. Doctors are never users (as §9.2 already said).
+
+**What the research found (24 Oct 2026)**
+| Item | Finding | Source |
+|---|---|---|
+| E-pharmacy verification | Tata 1mg: a pharmacist team validates each Rx (registered practitioner, validity by visit date and treatment duration) before routing to a partner pharmacy | \[98\] |
+| E-pharmacy law | No e-pharmacy-specific statute; governed by the Drugs and Cosmetics Act 1940 and Pharmacy Act 1948; rules do not specify how pharmacists authenticate prescriptions | \[100\] |
+| Wellness Forever | 350+ stores, 3rd largest chain; Blue Yonder for category management. ERP/POS vendor not public | \[99\] |
+| Chain sizes | Apollo ~7,000 stores (Nov 2025); MedPlus 5,200-5,500+ (sources differ) | \[101\]\[102\] |
+| Pharmacy ERP | Marg ERP claims >50% share (pharma >70%, 2019): self-reported, desktop-first. GoFrugal suits chains. No public APIs found for either | \[103\]\[104\]\[105\] |
+| ABDM prescriptions | NRCeS FHIR R4 `PrescriptionRecord` (Composition referencing MedicationRequest, Patient, Practitioner). Pharmacies may integrate with ABDM; no confirmed pharmacy dispense flow found. Headline ABHA counts are questioned (duplicate creations) | \[106\]\[107\]\[109\] |
+| Rx images | No commercial Indian Rx-digitisation API found; Google's handwriting reader is a research prototype | \[108\] |
+
+**Effect on scope:** structured input (cart lines or the buyer's digitised Rx) stays the input, so OCR remains out. FHIR import/export moves from Finals to core. Jan Aushadhi suggestions become "same composition in the buyer's own catalogue" for private buyers. The full mapping of Phase 2 to tracks is in `PLAN.md`.
+
 ## Recommendations
 1. **Next 2 hours:** freeze the data model (brand → ingredients[mg, unit, per_volume] → ATC class) on the 1mg 2025 or A-Z dataset, filtered to the ~2,000 top OPD brands. Hand-curate the ~40 brands used in the demo and test set with the pharmacist.
 2. **By midnight:** finish the resolver, sig parser, ledger, limits table (pharmacist-signed, ~25 ingredients), class duplication, banned-FDC table and 3-tier output with the X-ray visual. Use DDInter only for pairs among resolved ingredients.
@@ -472,3 +498,15 @@ Checked against primary or reputable secondary sources for the final deck (`PPT.
 95. [The Federal, AIOCD general secretary on chemist membership (self-reported)](https://thefederal.com/category/business/cctv-chemist-shops-rajiv-singhal-aiocd-256909)
 96. [Larson et al., Acetaminophen-induced acute liver failure: US multicenter prospective study, Hepatology 2005 (PubMed 16317692)](https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=16317692&rettype=abstract&retmode=text)
 97. [Devarbhavi et al., drug-induced liver injury in India, Am J Gastroenterol 2010 (PubMed 20648003)](https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=20648003&rettype=abstract&retmode=text)
+98. [Tata 1mg FAQ (prescription validation by pharmacist team)](https://1mg.com/faq)
+99. [BusinessWire, Wellness Forever digitally transforms category management with Blue Yonder (6 Mar 2023)](https://www.businesswire.com/news/home/20230306005890/en/Wellness-Forever-Digitally-Transforms-Category-Management-Capabilities-with-Blue-Yonder)
+100. [Jurist, Analysing the contemporary Indian e-pharmacy scenario (2021)](https://www.jurist.org/commentary/2021/01/devarshi-singh-epharmacy-india/)
+101. [Indian Pharma Post, Apollo Pharmacy becomes 7,000-store strong](https://www.indianpharmapost.com/healthcare/apollo-pharmacy-becomes-7000-store-strong-18387)
+102. [Wikipedia, MedPlus](https://en.wikipedia.org/wiki/MedPlus)
+103. [Marg ERP, About (self-reported market share)](https://margerp.medium.com/about)
+104. [BioSpectrum India, Marg ERP interview (2019, self-reported)](https://www.biospectrumindia.com/public/article/pdf/14876)
+105. [Accountune, Best billing software for medical stores in India 2026 (affiliate-style comparison)](https://accountune.com/best-billing-software-medical-store-india)
+106. [NRCeS, FHIR Implementation Guide for ABDM: PrescriptionRecord](https://www.nrces.in/ndhm/fhir/r4/StructureDefinition-PrescriptionRecord.html)
+107. [ManipalCigna, Does ABHA link with telemedicine and online prescription services?](https://www.manipalcigna.com/blog/does-abha-link-with-telemedicine-and-online-prescription-services)
+108. [How-To Geek, Google is getting better at reading bad handwriting](https://www.howtogeek.com/855966/google-is-getting-better-at-reading-bad-handwriting/)
+109. [HMPI, From infrastructure to impact: operationalizing India's Ayushman Bharat Digital Mission (9 Jul 2026)](https://hmpi.org/2026/07/09/from-infrastructure-to-impact-operationalizing-indias-ayushman-bharat-digital-mission/)

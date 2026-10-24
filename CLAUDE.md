@@ -1,8 +1,9 @@
 # CLAUDE.md (read this first, every session)
 
 Project: **Parchi**, the HM-02 Indian brand-name prescription safety checker (HYPNEXIS '26). Offline-capable PWA. 4 developers, 4 tracks, working in parallel.
+Built for the verifying pharmacist at e-pharmacies and pharmacy chains (`docs/BUSINESS_MODEL.md`). Phase 2: a customer's multi-doctor history, kidney re-check, unverified brands, ranked alerts (`docs/PS_ANALYSIS.md` §11).
 
-**Read order:** this file -> `docs/PLAN.md` (stack, your track, contracts). Open `docs/PS_ANALYSIS.md` only for the specific section you need; it is large.
+**Read order:** this file -> `docs/PLAN.md` (stack, your track, contracts). Open `docs/PS_ANALYSIS.md` only for the specific section you need; it is large. Track usage notes: `docs/track-a-data.md`, `docs/track-b-dose.md`, `docs/track-c-engine.md`.
 
 ## Start of every session
 1. `git status`, confirm you are on your own branch `dev/track-<x>` (never `main`). Branches are `dev/track-a` .. `dev/track-d`; ask the user which track they are if unknown.
@@ -35,7 +36,8 @@ Project: **Parchi**, the HM-02 Indian brand-name prescription safety checker (HY
 - Use canonical ingredient IDs from Track A everywhere.
 - Every engine module has a Vitest test against `tests/fixtures/demo_rx.json`.
 - Clinical numbers (max mg/day, SOS caps, suppression list) live in data files, not code, each with `source` and `pharmacist_approved`. Never invent limits; mark unverified ones `false`.
-- Output informs a pharmacist; it never decides. Word UI text that way.
+- Output informs a pharmacist; it never decides. Word UI text that way. Doctors are never users.
+- Input is structured lines from the buyer (cart or digitised Rx); no OCR. Stay CSV/FHIR-compatible, never tied to one vendor's API.
 - API keys only in `.env` / Vercel env, read only by `api/`. Never in `src/`.
 
 ## Keep docs cheap

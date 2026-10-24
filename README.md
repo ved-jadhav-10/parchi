@@ -1,6 +1,6 @@
 # Parchi
 
-Indian brand-name prescription safety checker (HYPNEXIS HM-02). Offline-capable PWA.
+Indian brand-name prescription safety checker (HYPNEXIS HM-02) for the verifying pharmacist at e-pharmacies and pharmacy chains. Offline-capable PWA plus a check API.
 
 Read `CLAUDE.md` then `docs/PLAN.md`.
 

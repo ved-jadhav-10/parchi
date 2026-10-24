@@ -1,15 +1,18 @@
 # Parchi (HM-02) Plan: Indian Prescription Safety Checker
 
-Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you need). This file is the work split.
+Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you need; Phase 2 is §11). Who we build for: `BUSINESS_MODEL.md`. This file is the work split.
 
 **Goal:** typed Rx (Indian brands) -> ingredient ledger -> mg/day vs patient limits -> duplicates/DDI -> 3-tier alerts (Interrupt / Inform / Silent), plus a measured "beat the chatbot" benchmark.
+**Phase 2 goal:** a customer's whole history (Rx from several doctors, dated) -> one timeline -> overlaps and cross-doctor duplicates -> re-check on a new kidney value -> severity-ranked alerts and a ranked review queue.
+**User and buyer:** the verifying pharmacist at e-pharmacies and pharmacy chains. Doctors are never users; input is the buyer's structured order/Rx data, not OCR.
 
 ## Stack (agreed)
 - **App:** PWA, React + Vite + TypeScript, `vite-plugin-pwa` (Workbox). Works fully offline after first load.
 - **Engine:** TypeScript, runs in the browser. Deterministic, no server needed.
 - **Data:** compact JSON in `public/data/`, cached for offline use. Online-only lists (NSQ) refresh when connected.
 - **Fuzzy:** `fuse.js` / `fastest-levenshtein` + `double-metaphone`.
-- **Online extras:** serverless `api/` functions (Vercel) for LLM calls. API key stays on the server. Offline, these features hide themselves.
+- **Online extras:** serverless `api/` functions (Vercel): LLM sig fallback, and (Phase 2) a JSON check API for buyers. API key stays on the server. Offline, these features hide themselves.
+- **Interop (Phase 2):** CSV catalogue import, ABDM FHIR R4 `PrescriptionRecord` import/export (NRCeS profile).
 - **Python 3.11:** only for data cleaning (`data/`) and the benchmark (`eval/`). Exports JSON for the app.
 - **Tests:** Vitest (`npm test`), pytest for Python scripts.
 
@@ -31,6 +34,7 @@ Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you nee
 - Banned FDC table (156 of 2024 + 16 of Jun 2026) and detector.
 - LASA detector (ambiguous match across different ingredients), discontinued-brand flag.
 - R2: NSQ/spurious batch data, Jan Aushadhi substitution data.
+- Phase 2: catalogue import (buyer CSV -> canonical ids, review list for low confidence); "proposed composition" for unknown brands (best candidate + confidence, marked unverified); same-composition alternatives from the buyer's own catalogue.
 
 ### Track B: Sig Parsing and Dose Engine
 - Indian sig parser: OD/BD/TDS/QID/HS/SOS/STAT, 1-0-1, 1/2-0-1/2, "x5d", Hinglish (rules first; LLM fallback via `api/` only when online).
@@ -38,6 +42,7 @@ Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you nee
 - Ingredient ledger: cumulative mg/day per ingredient across all brands.
 - Patient limits: age/weight/CrCl (Cockcroft-Gault) tables, ask-only-when-needed prompts.
 - R2: paediatric syrup mL -> mg and mg/kg.
+- Phase 2: start date + duration on every line (Rx date + `duration_days`; default window for no duration, in data, unverified); kidney-band limits for more drugs; `api/check` JSON endpoint wrapping the pipeline.
 
 ### Track C: Rules, Alerting and Pipeline
 - `pipeline.ts`: text + patient -> resolver -> sig -> ledger -> rules -> alerts. The single entry point the UI calls.
@@ -46,6 +51,7 @@ Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you nee
 - 3-tier alert engine, pharmacist suppression list, alert budget (Interrupts per Rx <= 1).
 - One-line reason + source chip (DDInter ID, S.O. number, Beers rule).
 - R2: Beers subset, CNS/ACB stacking. Finals: AWaRe antibiotic checks.
+- Phase 2: `checkHistory` entry point (several dated Rx + lab values); timeline merge and overlap windows; dose totals per overlapping window (calls B per window); cross-doctor duplicate alerts naming doctors and dates; re-check on a new creatinine with a "what changed" diff; unknown-brand alert with proposed composition; suggested order status (clear / clear with note / hold, contact doctor); review-queue ranking across orders; FHIR `PrescriptionRecord` -> history mapping.
 
 ### Track D: PWA, Evaluation and Pitch
 - PWA shell (installable, offline, online/offline indicator), input form, patient prompts.
@@ -53,15 +59,21 @@ Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you nee
 - Pharmacist session owner (questions in `PS_ANALYSIS.md` section 4). Book the slot in hour 0-1; limits and suppression data go to B/C.
 - Gold set (30 by 3 AM, 50-60 later) + Python benchmark: engine vs ChatGPT/Claude/Gemini, precision/recall per alert type, alerts per Rx.
 - Demo script (68 y patient case), deck, medThinks comparison slide. Finals: Hindi leaflet, FHIR export stub.
+- Phase 2: pharmacist review console (queue -> order -> timeline -> alerts -> decision + override log); history input (doctor + date per Rx, add lab value); demo data shaped like an e-pharmacy account (3 doctors, 3 orders, a lab result); gold-set cases for multi-doctor and kidney re-check; deck rewritten for e-pharmacy and chain buyers.
 
 ## Contracts (freeze in `src/engine/contracts.ts` in hour 0)
 Tracks talk only through these shapes. Ingredient `id` = canonical lowercase INN slug from A.
-1. **Resolver (A):** `{raw, brand, confidence, ingredients:[{id, mg, per_volume_ml?}], form, flags:("banned_fdc"|"lasa"|"discontinued")[]}`
+1. **Resolver (A):** `{raw, brand, confidence, ingredients:[{id, mg, per_volume_ml?}], form, flags:("banned_fdc"|"lasa"|"discontinued"|"nsq")[]}`
 2. **Sig (B):** `{doses_per_day, max_doses_per_day, sos, duration_days?}`
 3. **Ledger (B):** `{[id]: {total_mg_day, sources:string[], limit_mg_day?}}`
 4. **Alert (C):** `{tier, type, ingredients:string[], reason, source, confidence}`
 
-`tests/fixtures/demo_rx.json` holds the demo Rx from `PS_ANALYSIS.md` section 5 with the expected output for every stage. Each track codes against it from hour 0 without waiting on the others.
+**Phase 2 (proposed, additive only; agree in the team before coding):**
+5. **Prescription:** `{id, doctor, date (ISO), text}`; history = `Prescription[]`.
+6. **LabResult:** `{type: "serum_creatinine", value, date}`; the latest value feeds CrCl.
+7. **History result (C):** each line adds `rx_id`, `doctor`, `start`, `end?`, `unverified?`; result adds `status`, `priority` (queue rank), `changes?` (alerts added/cleared after a re-check).
+
+`tests/fixtures/demo_rx.json` holds the demo Rx from `PS_ANALYSIS.md` section 5 with the expected output for every stage. Each track codes against it from hour 0 without waiting on the others. Phase 2 adds `tests/fixtures/demo_history.json` (same patient, 3 doctors, dated Rx, a creatinine arriving later).
 
 ## Timeline
 | When | Goal |
@@ -70,7 +82,8 @@ Tracks talk only through these shapes. Ingredient `id` = canonical lowercase INN
 | By midnight | Resolver, sig, ledger, limits, class dup, banned FDC, 3-tier output, X-ray, offline PWA shell |
 | By 3 AM (R1) | End-to-end on demo Rx, offline works, 20-30 Rx gold set, chatbot comparison on 10 |
 | R2 (11:30 AM) | LASA, NSQ, paediatric, citations, Beers, Jan Aushadhi, 50-60 Rx benchmark |
-| Finals (3 PM) | AWaRe, FHIR stub, leaflet, pharmacist quote, deck |
+| Phase 2 | Contracts 5-7 + history fixture, timeline/overlap, kidney re-check, unverified brands, ranked queue, review console, FHIR import |
+| Finals (3 PM) | AWaRe, FHIR export, leaflet, pharmacist quote, deck |
 
 Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row updated.
 
@@ -79,8 +92,8 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 |---|---|---|---|---|---|
 | A | Palash | `dev/track-a` | Canonical ids (275 curated), 32k-brand index, resolver, banned FDC 156+16, DDInter, NSQ (`nsq`), Jan Aushadhi, liquid per-5-mL inference (flagged), 37 pack-verified brands, `schedule_hint` (weekly/monthly), systemic always set, docs/track-a-data.md | Pharmacist-verified brands; verify 43 top-tier paracetamol/NSAID brands in data/reports/ | |
 | B | Aditya | `dev/track-b` | Sig parser (1-0-1, OD..QID, SOS caps, q8h, weekly, mL/tsp, Hinglish, phased doses), ledger (SOS worst case, mL to mg, topical excluded), limits.json (11 ingredients, all unverified), Cockcroft-Gault CrCl, ask-only-when-needed, `api/parse-sig` LLM fallback, docs/track-b-dose.md; ledger handles Track A drops/assumed volumes and weekly `schedule_hint` | Pharmacist-approved limits and SOS caps (needs D) | Pipeline wiring (C) |
-| C |  | `dev/track-c` |  |  |  |
+| C | Ved | `dev/track-c` | Rules (dose, class dup, DDI, renal/geriatric, resolver flags), 3-tier engine (suppression, budget), `pipeline.ts` with sig/ledger injected, `alert_rules.json`, docs/track-c-engine.md | Wire B's `parseSig`/`computeDose`; Phase 2 contracts + history fixture, `checkHistory`, re-check diff, queue rank; Beers + CNS/ACB | Team OK on Phase 2 contracts |
 | D |  | `dev/track-d` |  |  |  |
 
 ## Not doing
-OCR, WhatsApp/voice, generic DDI-only checker, NPPA price flag.
+OCR (buyers already digitise Rx; we take structured lines), WhatsApp/voice, generic DDI-only checker, NPPA price flag, doctor-facing features.
