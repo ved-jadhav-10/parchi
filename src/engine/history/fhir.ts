@@ -5,9 +5,20 @@ import type { LabResult, Prescription } from '../contracts'
 
 type Json = Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 
+/** What the Patient resource and a weight Observation say about the customer; the screens turn birth_date into an age on the order date. */
+export interface FhirPatient {
+  name?: string
+  sex?: 'M' | 'F'
+  /** ISO date */
+  birth_date?: string
+  weight_kg?: number
+}
+
 export interface FhirImport {
   prescriptions: Prescription[]
   labs: LabResult[]
+  /** From the first bundle that has a Patient; absent when none does. */
+  patient?: FhirPatient
   /** What was skipped or assumed, for the pharmacist (a medication with no name, a missing date, ...). */
   warnings: string[]
 }
@@ -18,6 +29,8 @@ const DURATION_UNIT_DAYS: Record<string, number> = { d: 1, day: 1, days: 1, wk: 
 const HAS_DURATION = /\bx\s*\d+\s*d\b|\bfor\s+\d+\s+(day|days|week|weeks)\b/i
 /** LOINC 2160-0: creatinine [mass/volume] in serum or plasma. */
 const CREATININE_LOINC = '2160-0'
+/** LOINC 29463-7: body weight. */
+const WEIGHT_LOINC = '29463-7'
 
 function humanName(name: unknown): string | undefined {
   const n = Array.isArray(name) ? name[0] : name
@@ -60,6 +73,13 @@ function importBundle(bundle: Json, b: number, out: FhirImport): void {
   const ofType = (t: string) => resources.map((r) => r.res).filter((r) => r.resourceType === t)
 
   const doctorOf = (ref: Json | undefined): string | undefined => humanName(resolve(ref)?.name) ?? (ref?.display as string | undefined)
+
+  const pt = ofType('Patient')[0]
+  if (pt && !out.patient) {
+    const sex = pt.gender === 'male' ? 'M' : pt.gender === 'female' ? 'F' : undefined
+    const birth = typeof pt.birthDate === 'string' && /^\d{4}-\d{2}-\d{2}/.test(pt.birthDate) ? pt.birthDate.slice(0, 10) : undefined
+    out.patient = { ...(humanName(pt.name) && { name: humanName(pt.name) }), ...(sex && { sex }), ...(birth && { birth_date: birth }) }
+  }
 
   const requests = ofType('MedicationRequest')
   const composition = ofType('Composition')[0]
@@ -106,6 +126,11 @@ function importBundle(bundle: Json, b: number, out: FhirImport): void {
 
   for (const obs of ofType('Observation')) {
     const codes = ((obs.code?.coding as Json[] | undefined) ?? []).map((c) => c.code as string)
+    const wq = obs.valueQuantity as Json | undefined
+    if ((codes.includes(WEIGHT_LOINC) || /body weight/i.test(conceptText(obs.code) ?? '')) && typeof wq?.value === 'number' && /^kg|kilogram/i.test(String(wq.unit ?? wq.code ?? 'kg'))) {
+      out.patient = { ...out.patient, weight_kg: wq.value }
+      continue
+    }
     const isCreatinine = codes.includes(CREATININE_LOINC) || /creatinine/i.test(conceptText(obs.code) ?? '')
     if (!isCreatinine) continue
     const q = obs.valueQuantity as Json | undefined

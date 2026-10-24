@@ -13,6 +13,8 @@ import { latestLab } from '../history/check'
 import { doctorName, longDate, rangeLabel, shortDate, todayIso } from '../history/labels'
 import { runHistory } from '../history/run'
 import type { AlertChange, HistoryAlert, HistoryResult, LabResult, Order } from '../history/types'
+import { downloadText } from '../lib/csv'
+import { orderToFhir } from '../lib/fhirOrder'
 import { alertTypeLabel, candidateLabel } from '../lib/resolved'
 import { pct } from '../lib/format'
 import { useRouteParam } from '../route'
@@ -229,6 +231,15 @@ export const OrderPage = () => {
             <p className="hint">
               <a href={`#/history/${encodeURIComponent(order.id)}`}>Edit prescriptions and labs</a>
             </p>
+            <div className="actions">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={() => downloadText(`${order.id}.fhir.json`, JSON.stringify(orderToFhir(order), null, 2), 'application/json')}
+              >
+                Download as FHIR (draft)
+              </button>
+            </div>
           </div>
 
           <div className="workspace__result">
