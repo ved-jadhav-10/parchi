@@ -125,7 +125,7 @@
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false,
       "interrupt": true,
-      "basis": "label_warning: methotrexate labels warn of severe marrow toxicity with trimethoprim/co-trimoxazole; to verify against the ONC high-priority DDI list (Phansalkar 2012)"
+      "basis": "clinical_consensus: widely taught as a serious interaction (additive bone-marrow suppression); a search of the FDA label sections did not find the sentence, and it is not on the ONC list. Kept as an Interrupt for the reviewer to confirm (eval/reviewer_list.md section H)"
     },
     {
       "id": "linezolid_ssri",

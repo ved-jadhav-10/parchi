@@ -10,7 +10,9 @@ import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
 import { CoverageNote } from '../components/CoverageNote'
 import { LeafletCard } from '../components/LeafletCard'
+import { askTheCustomer } from '../lib/askCustomer'
 import { downloadText } from '../lib/csv'
+import { CLINICAL_DATA_VERSION } from '../../engine/rules'
 import { toFhirBundle } from '../lib/fhir'
 import { needsReview, swapBrand, tidy } from '../lib/resolved'
 import { demoPatient, demoRxText } from '../demoCase'
@@ -229,7 +231,7 @@ export const CheckPage = () => {
             </EmptyState>
           ) : (
             <div aria-live="polite" className="result">
-              <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off.</p>
+              <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off (clinical data version {CLINICAL_DATA_VERSION}).</p>
               {prompts.length > 0 && (
                 <p className="result-note">
                   Some limits are not adjusted yet. <a href="#patient">Add what is asked under Patient</a>, then check again.
@@ -260,6 +262,16 @@ export const CheckPage = () => {
               </div>
 
               <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
+
+              {askTheCustomer(result.lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id))).length > 0 && (
+                <Card title="Ask the customer" description="Parchi only sees this order. These are commonly bought without a prescription.">
+                  <ul className="ask">
+                    {askTheCustomer(result.lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id))).map((q) => (
+                      <li key={q}>{q}</li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
                 <XrayTable ledger={result.ledger} alerts={result.alerts} />

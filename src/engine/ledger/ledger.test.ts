@@ -140,7 +140,11 @@ describe('computeLedger', () => {
     })
     it('is quiet when the sig is weekly, and flags a missing sig', () => {
       expect(computeLedger([line(mtx(), 'once weekly')]).notes).toEqual([])
-      expect(computeLedger([line(mtx(), '')]).notes.map((n) => n.kind)).toEqual(['schedule_mismatch'])
+      // No dosing at all: not guessed as daily, but the note still says the drug is normally weekly.
+      const missing = computeLedger([line(mtx(), '')]).notes
+      expect(missing.map((n) => n.kind)).toEqual(['dosing_not_entered'])
+      expect(missing[0].message).toContain('once a week')
+      expect(computeLedger([line(mtx(), 'OD')]).notes[0].kind).toBe('schedule_mismatch')
     })
     it('handles monthly drugs', () => {
       const ibn = brand('Ibandronate 150', [{ id: 'ibandronic-acid', mg: 150 }], { schedule_hint: 'monthly' })
@@ -157,11 +161,16 @@ describe('computeLedger', () => {
       const incomplete = brand('Cold FDC', para(500), { composition_complete: false })
       const uncertain = brand('Brufen 400', [{ id: 'ibuprofen', mg: 400 }], { confidence: 0.7, needs_pharmacist: true })
       const noSig = brand('Crocin', para(500))
-      const { ledger } = computeLedger([line(incomplete, 'BD'), line(uncertain, 'BD'), line(noSig, '')])
+      const { ledger } = computeLedger([line(incomplete, 'BD'), line(uncertain, 'BD'), line(noSig, 'qqq')])
       const c = ledger.paracetamol.caveats!.join(' | ')
       expect(c).toMatch(/Cold FDC: the source may list only some/)
-      expect(c).toMatch(/Crocin: dosing was assumed \(No dosing written; assumed once daily\)/)
+      expect(c).toMatch(/Crocin: dosing was assumed \(Could not find how often to take it; assumed once daily\)/)
       expect(ledger.ibuprofen.caveats![0]).toMatch(/brand match is uncertain \(70%\)/)
+    })
+    it('leaves a line with no dosing out of the totals instead of assuming a frequency', () => {
+      const r = computeLedger([line(brand('Crocin', para(500)), ''), line(brand('Dolo 650', para(650)), 'TDS')])
+      expect(r.ledger.paracetamol.total_mg_day).toBe(1950)
+      expect(r.notes.map((n) => `${n.kind}:${n.brand}`)).toEqual(['dosing_not_entered:Crocin'])
     })
     it('has no caveats key when there is nothing to warn about', () => {
       expect(computeLedger([line(brand('Dolo 650', para(650)), 'TDS')]).ledger.paracetamol.caveats).toBeUndefined()

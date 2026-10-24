@@ -20,6 +20,7 @@ export interface LedgerNote {
     | 'assumed_measure'
     | 'volume_on_solid'
     | 'schedule_mismatch'
+    | 'dosing_not_entered'
   line: number
   brand: string
   ingredient?: string
@@ -63,6 +64,11 @@ export function computeLedger(lines: LedgerLine[], opts: LedgerOptions = {}): { 
     }
     if (!countsSystemically(r)) {
       notes.push({ kind: 'not_systemic', line: i, brand: name, message: `${name} is applied locally (${r.route ?? 'topical'}), so it is left out of the daily totals` })
+      return
+    }
+
+    if (sig.dosing_missing) {
+      notes.push({ kind: 'dosing_not_entered', line: i, brand: name, message: `${name}: dosing not entered, so its daily total was not computed${r.schedule_hint ? `; it is normally taken ${r.schedule_hint === 'weekly' ? 'once a week' : 'once a month'}, so confirm how it is taken` : ''}` })
       return
     }
 

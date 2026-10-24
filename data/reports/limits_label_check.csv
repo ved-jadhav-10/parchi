@@ -1,0 +1,34 @@
+ingredient,our_adult_max_mg_day,result,matched_text
+paracetamol,4000,label text contains our number,"4,000 mg"
+ibuprofen,2400,label text contains our number,2400 mg
+aceclofenac,200,"not approved in the US, so no FDA label (EMA/UK or Indian label needed)",
+diclofenac,150,"our number not found in label text (may be worded differently, or differ)",
+cetirizine,10,label text contains our number,10 mg
+levocetirizine,5,label text contains our number,5 mg
+chlorphenamine,24,"our number not found in label text (may be worded differently, or differ)",
+pantoprazole,80,label text contains our number,80 mg
+omeprazole,40,"our number not found in label text (may be worded differently, or differ)",
+domperidone,30,"not approved in the US, so no FDA label (EMA/UK or Indian label needed)",
+metformin,2000,label text contains our number,2000 mg
+naproxen,1500,label text contains our number,1500 mg
+etoricoxib,120,"not approved in the US, so no FDA label (EMA/UK or Indian label needed)",
+nimesulide,200,"not approved in the US, so no FDA label (EMA/UK or Indian label needed)",
+mefenamic_acid,1500,"our number not found in label text (may be worded differently, or differ)",
+gabapentin,3600,label text contains our number,3600 mg
+pregabalin,600,label text contains our number,600 mg
+tramadol,400,label text contains our number,400 mg
+sitagliptin,100,label text contains our number,100 mg
+thiocolchicoside,16,"not approved in the US, so no FDA label (EMA/UK or Indian label needed)",
+glimepiride,8,label text contains our number,8 mg
+montelukast,10,label text contains our number,10 mg
+fexofenadine,180,label text contains our number,180 mg
+telmisartan,80,label text contains our number,80 mg
+amlodipine,10,label text contains our number,10 mg
+atorvastatin,80,label text contains our number,80 mg
+rosuvastatin,40,label text contains our number,40 mg
+empagliflozin,25,label text contains our number,25 mg
+chlorzoxazone,3000,"our number not found in label text (may be worded differently, or differ)",
+phenylephrine,60,"our number not found in label text (may be worded differently, or differ)",
+dextromethorphan,120,"our number not found in label text (may be worded differently, or differ)",
+diphenhydramine,300,label text contains our number,300 mg
+guaifenesin,2400,"our number not found in label text (may be worded differently, or differ)",

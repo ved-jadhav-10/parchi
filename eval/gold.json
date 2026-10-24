@@ -12,6 +12,7 @@
    ],
    "class_duplication": [
     "class_duplication",
+    "possible_switch",
     "nsaid_double_high_risk"
    ],
    "ddi": [

@@ -11,7 +11,7 @@ import { patientRule } from './patient'
 import { stackRule } from './stack'
 import type { Rule, RuleContext } from './types'
 
-export { loadAlertRules, parseAlertRules, type AlertRules } from './config'
+export { CLINICAL_DATA_VERSION, loadAlertRules, parseAlertRules, type AlertRules } from './config'
 export { cockcroftGault } from './crcl'
 export { neededInputs, type PatientInput } from './patient'
 export type { DoseFacts, LineOrigin, RuleContext, RuleLine } from './types'

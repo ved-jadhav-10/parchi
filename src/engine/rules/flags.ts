@@ -39,6 +39,18 @@ export const flagRule: Rule = (ctx) => {
     }
     if (r.flags.includes('nsq') && r.nsq?.length) {
       const n = r.nsq[0]
+      const norm = (s: string) => s.toUpperCase().replace(/[^A-Z0-9]/g, '')
+      const exact = r.batch ? r.nsq.find((x) => norm(x.batch) === norm(r.batch!)) : undefined
+      if (exact) {
+        // The order names the very batch CDSCO listed: that is a finding, not background.
+        push({
+          tier: 'inform',
+          type: 'nsq_batch_match',
+          reason: `Batch ${exact.batch} of ${label} is the batch CDSCO listed (${exact.month}) as ${exact.spurious ? 'spurious' : 'not of standard quality'}: ${exact.result.toLowerCase()}. Pharmacist to review before dispensing.`,
+          source: `CDSCO NSQ/spurious list ${exact.month}`,
+          approved: true,
+        })
+      }
       push({
         tier: r.nsq.some((x) => x.spurious) ? 'inform' : 'silent',
         type: 'nsq',

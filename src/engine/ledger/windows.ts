@@ -53,6 +53,34 @@ export function lineWindow(startIso: IsoDate, sig: { duration_days?: number }, d
   return { start: startIso, end: fromDay(start + days - 1), days, duration_assumed: assumed }
 }
 
+export type DurationSource = 'written' | 'quantity' | 'class_default' | 'default'
+
+/**
+ * How long a line runs, and where that number came from. In order of trust: the course written on the prescription; the
+ * ordered quantity divided by the units taken a day (10 tablets BD = 5 days); an assumed length for a class whose courses
+ * are always short (antibiotics); the general default. Only the last two are "assumed" and shown as such.
+ */
+export function inferWindow(
+  startIso: IsoDate,
+  sig: { duration_days?: number; doses_per_day?: number; sos?: boolean; dosing_missing?: boolean },
+  opts: { quantity?: number; classes?: string[] } = {},
+  data: LimitsData = LIMITS,
+): (LineWindow & { source: DurationSource }) | null {
+  const start = toDay(startIso)
+  if (start === null) return null
+  const written = lineWindow(startIso, sig, data)!
+  if (!written.duration_assumed) return { ...written, source: 'written' }
+  const perDay = sig.doses_per_day ?? 0
+  if (opts.quantity && opts.quantity > 0 && perDay > 0 && !sig.sos && !sig.dosing_missing) {
+    const days = Math.min(3650, Math.max(1, Math.ceil(opts.quantity / perDay)))
+    return { start: startIso, end: fromDay(start + days - 1), days, duration_assumed: false, source: 'quantity' }
+  }
+  const byClass = data.windows.by_class ?? {}
+  const shortest = Math.min(...(opts.classes ?? []).map((c) => byClass[c]).filter((n): n is number => typeof n === 'number'))
+  if (Number.isFinite(shortest)) return { start: startIso, end: fromDay(start + shortest - 1), days: shortest, duration_assumed: true, source: 'class_default' }
+  return { ...written, source: 'default' }
+}
+
 export interface Span {
   id: string
   start: IsoDate

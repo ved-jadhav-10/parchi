@@ -41,7 +41,7 @@ export const stackRule: Rule = (ctx) => {
       reason: rule.reason
         .replace('{names}', names)
         .replace('{age}', String(ctx.patient.age_years))
-        .replace('{crcl}', crcl === null ? 'n/a' : String(Math.round(crcl))),
+        .replace(crcl === null ? /,? CrCl \{crcl\} mL\/min/ : '{crcl}', crcl === null ? '' : String(Math.round(crcl))),
       source: rule.source,
       confidence: confidenceOf(lines),
       brands: lines.map(lineLabel),

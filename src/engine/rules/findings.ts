@@ -56,7 +56,28 @@ export const findingsRule: Rule = (ctx) => {
   }
 
   const sysLines = systemicLines(ctx)
+  // Lines with no dosing at all: one alert naming every one of them (they share ingredients, so separate alerts would be merged).
+  const noDosing = ctx.dose.notes.filter((n) => n.kind === 'dosing_not_entered')
+  const noDosingTier = policy.notes.dosing_not_entered
+  if (noDosing.length && noDosingTier) {
+    const lines = noDosing.map((n) => sysLines.find((l) => l.index === n.line)).filter((l): l is NonNullable<typeof l> => l !== undefined)
+    if (lines.length) {
+      const weekly = lines.filter((l) => l.resolved.schedule_hint).map((l) => `${lineLabel(l)} is normally taken ${l.resolved.schedule_hint === 'weekly' ? 'once a week' : 'once a month'}`)
+      alerts.push({
+        tier: noDosingTier,
+        type: 'dosing_not_entered',
+        ingredients: [...new Set(lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id)))].sort(),
+        reason: `${joinNames(lines.map(lineLabel))}: dosing not entered, so ${lines.length > 1 ? 'their daily totals were' : 'its daily total was'} not computed (duplicates and interactions are still checked).${weekly.length ? ` ${weekly.join('; ')}, so confirm how ${weekly.length > 1 ? 'they are' : 'it is'} taken.` : ''} Add how each is taken to include ${lines.length > 1 ? 'them' : 'it'}.`,
+        source: policy.source,
+        confidence: confidenceOf(lines),
+        brands: lines.map(lineLabel),
+        approved: policy.pharmacist_approved,
+        ...originFields(lines),
+      })
+    }
+  }
   for (const note of ctx.dose.notes) {
+    if (note.kind === 'dosing_not_entered') continue
     const tier = policy.notes[note.kind]
     if (!tier) continue
     const line = sysLines.find((l) => l.index === note.line)
@@ -76,6 +97,7 @@ export const findingsRule: Rule = (ctx) => {
 
   for (const line of sysLines) {
     const c = line.sig.confidence ?? 1
+    if (line.sig.dosing_missing) continue // already raised as dosing_not_entered from the ledger note
     if (c >= policy.sig_unclear_below && !line.sig.unparsed?.length) continue
     const why = [...(line.sig.assumptions ?? []), ...(line.sig.unparsed?.length ? [`not understood: ${line.sig.unparsed.join(', ')}`] : [])]
     alerts.push({

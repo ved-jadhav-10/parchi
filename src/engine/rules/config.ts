@@ -1,6 +1,9 @@
 // Track C alert policy (data: public/data/alert_rules.json). Numbers and lists live in the data file, not in code.
 import type { OrderStatus, Tier } from '../contracts'
 
+/** Version of the clinical drafts (limits, alert rules, curated pairs); shown on results so a screenshot says which numbers it used. */
+export const CLINICAL_DATA_VERSION = '2026-10-25'
+
 export interface ClassDupRule {
   class: string
   label: string

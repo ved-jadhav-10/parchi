@@ -1,8 +1,8 @@
 # Parchi: final deck content (HYPNEXIS '26, HM-02)
 
-Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, branch `v1`: Tracks A to D are built and in the app. 814 automated tests (Vitest, re-run 24 Oct late) and 102 Python tests pass; the app builds and runs offline. The engine, the Phase 2 review desk (history timeline, kidney re-check, unverified brands, ranked queue), FHIR import and draft export, and an online customer-leaflet function are working. The benchmark has run the engine on a 54-case **draft** gold set (labels written by the team from drug labels and guidelines, not yet reviewed by a pharmacist); no chatbot has been scored yet. All limits and rules are still unapproved drafts. The pitch targets e-pharmacies and pharmacy chains (`BUSINESS_MODEL.md`); the demo script is `docs/DEMO.md`.
+Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, branch `v1`: Tracks A to D are built and in the app. 1,137 automated tests (Vitest, re-run 25 Oct) and 102 Python tests pass; the app builds and runs offline. The engine, the Phase 2 review desk (history timeline, kidney re-check, unverified brands, ranked queue), FHIR import and draft export, and an online customer-leaflet function are working. The benchmark has run the engine on a 54-case **draft** gold set (labels written by the team from drug labels and guidelines, not yet reviewed by a pharmacist); no chatbot has been scored yet. All limits and rules are still unapproved drafts. The pitch targets e-pharmacies and pharmacy chains (`BUSINESS_MODEL.md`); the demo script is `docs/DEMO.md`.
 
-**Phase 2 update (24-25 Oct 2026):** built and tested: allergy check through combination brands, pregnancy rules (FDA boxed warnings and the National Formulary of India), lab eGFR input, paracetamol limit by weight, liver disease and alcohol. The demo's paracetamol limit is now the 4,000 mg adult maximum. 992 tests pass. See `docs/TEST_PLAN.md` and `docs/VERIFIED.md`.
+**Phases 2-6 update (25 Oct 2026):** all six phases of `docs/FIX_PLAN.md` are built: allergy and pregnancy checks, lab eGFR, per-patient history for shared accounts, course length from the ordered quantity, no guessed dosing, copyable notes, 31 realistic scenarios, and outside cross-checks (FDA labels, National Formulary of India, ONC list, Eka Care). Details: allergy check through combination brands, pregnancy rules (FDA boxed warnings and the National Formulary of India), lab eGFR input, paracetamol limit by weight, liver disease and alcohol. The demo's paracetamol limit is now the 4,000 mg adult maximum. 1,137 tests pass. See `docs/TEST_PLAN.md` and `docs/VERIFIED.md`; the 10-minute demo is `docs/DEMO.md`.
 
 **Clinical review update (24 Oct 2026, late):** a clinical-realism review found severity problems (contraindicated pairs only Inform; the per-Rx cap can demote a third real Interrupt; any NSAID below CrCl 60 Interrupts; no allergy/pregnancy fields; test cases mostly one molecule under two brands). The fixes are planned in `docs/FIX_PLAN.md` (Phases 0-6) and **not yet built**. This file now follows Phase 0: no claim on a slide goes beyond what the app does today.
 
@@ -150,7 +150,7 @@ Body box starts at y 4.97 in (template 5.05) and is 1.65 in tall; 3 pt after eac
 Fit: 12 pt, bullets, 5.40 × 1.65 in, after 3
 - **Counts, not pairs:** Total mg per ingredient, not pairs (built).
 - **Worst-case SOS:** As-needed doses at daily maximum (built).
-- **Alert budget:** Target ≤1 Interrupt per Rx on average; mutes routinely ignored alerts (built).
+- **Cross-checked outside:** FDA labels, the Indian national formulary, the US high-priority interaction list and Eka Care's brand list; ours vs theirs is on the Data page (built).
 - **Fits their stack:** Offline at counters; CSV and FHIR import (built); billing-system APIs (proposed).
 - **Hard to copy:** Source-tagged Indian compositions, limits, SOS rules, suppression list, awaiting sign-off (built).
 
@@ -181,7 +181,7 @@ Fit: 12 pt, plain, 2.80 × 1.15 in
 
 #### Step 3
 Fit: 12 pt, plain, 2.80 × 1.15 in
-> **Pharmacist reviews and decides:** 2 Interrupts (stop and check), 3–4 Informs; suggested 'Hold, contact doctor'.
+> **Pharmacist reviews and decides:** 2 Interrupts (stop and check), 3–4 Informs; suggested 'Needs pharmacist attention'.
 
 #### Demo caption
 New text box at the bottom of the Flow card, y 6.30 in.
@@ -202,7 +202,7 @@ Wireframe area (template placeholder, 3.40 × 1.80 in): [Screenshot of the Presc
 
 ### TECHNICAL FEASIBILITY
 Fit: 14 pt, bullets, 3.40 × 3.80 in
-- **Engine built:** Brand matcher, dosing reader, dose totals, limits and alert rules pass 814 automated tests.
+- **Engine built:** Brand matcher, dosing reader, dose totals, limits and alert rules pass 1,137 automated tests.
 - **Demo case tested:** A test file fixes the demo's expected outputs (slide 4); engine tests check them.
 - **Proven libraries:** Fuzzy-search, sound-alike and offline-caching libraries chosen; no new algorithms needed.
 - **Runs on what counters have:** Any phone, tablet or PC with a browser; no special hardware.
@@ -248,7 +248,7 @@ Fit: 12 pt, bullets, 4.50 × 1.30 in, indent 0.2
 
 ### 3 TECHNICAL IMPACT
 Fit: 12 pt, bullets, 4.50 × 1.30 in, indent 0.2
-- **Open Indian test set:** 54 prescriptions, team-labelled (a regression test, not proof); 28 realistic multi-doctor cases next (planned).
+- **Open Indian test set:** 54 + 31 realistic multi-doctor prescriptions, team-written (regression tests, not proof); outside checks listed on slide 8 (built).
 - **Reusable drug data:** Indian brand-to-ingredient table with standard IDs; every limit source-tagged (built).
 
 ### 4 EDUCATIONAL IMPACT
@@ -307,6 +307,7 @@ Fit: 11 pt, bullets, 4.40 × 4.05 in, indent 0.2, after 3
 - **Datasets:** DDInter 2.0 (open interaction database): 302,516 interactions across 2,310 drugs (Database Commons).
 - Indian brand compositions: 1mg 2025 and A-Z Kaggle datasets; top ~2,000 outpatient brands, ~40 hand-checked (planned).
 - Government lists: CDSCO banned-combination notices, monthly quality alerts, Jan Aushadhi product list (planned).
+- **Cross-checks (24-25 Oct 2026):** US high-priority interaction list (Phansalkar 2012): 13 of 16 pairs stop the pharmacist, 3 are documented exceptions; FDA labels via openFDA; National Formulary of India doses via Eka NFI MCQA: 5 of 5 comparable agree; Eka Care's Indian brand list.
 - **Existing solution studied:** medThinks publicly offers brand unpacking, pairwise interactions, banned-FDC flags, severity tiers; our USPs are not stated on its public page (checked 24 Oct 2026).
 - **Regulatory hooks:** 156 FDCs (multi-drug pills) banned Aug 2024; some makers got interim relief (Delhi High Court).
 - 16 more FDCs banned 11 Jun 2026, incl. amoxicillin (antibiotic) + serratiopeptidase (enzyme) (Health Ministry).
@@ -356,7 +357,7 @@ Fit: 13 pt, bullets, 3.30 × 4.50 in
 
 **v1 update (24 Oct 2026):** status tags moved to *built* where the feature is now in the app (history, re-check, ranked queue, X-ray, FHIR import); test counts and the benchmark set size filled from real runs. **Fit was not re-measured.** Added since: WHO AWaRe antibiotic groups, more Beers rules, curated interaction pairs, customer leaflet (online), look-alike picker; mention only what the demo shows.
 
-**Clinical review update (24 Oct 2026, late):** edited slide 2 Our Solution (shorthand bullet now names weekly-as-daily), slide 3 Unique Points (no "pharmacist-curated"), slide 4 Step 2 and presenter note (engine's 65+ cap, NSAID story first), slide 6 Technical and Educational (benchmark called a regression test; X-ray and reasons tagged built). **Fit not re-measured.** Kept out of slides on purpose: the Ayurveda starter engine (no real product brand resolves yet) and NSQ as a hold reason (a failure applies to one batch, unknown at review). Not changed yet: "Hold, contact doctor" stays on slide 4 Step 3 because the app still says it; FIX_PLAN 0.6 renames it in the app first.
+**Clinical review update (24 Oct 2026, late):** edited slide 2 Our Solution (shorthand bullet now names weekly-as-daily), slide 3 Unique Points (no "pharmacist-curated"), slide 4 Step 2 and presenter note (engine's 65+ cap, NSAID story first), slide 6 Technical and Educational (benchmark called a regression test; X-ray and reasons tagged built). **Fit not re-measured.** Kept out of slides on purpose: the Ayurveda starter engine (no real product brand resolves yet) and NSQ as a hold reason (a failure applies to one batch, unknown at review). The app now says "Needs pharmacist attention" (FIX_PLAN 0.6 built), and slide 4 Step 3 follows.
 
 **Left out or uncertain:**
 - **Build status (most important):** see the stamp at the top. Everything described is built and tested; limits, rules, the WHO AWaRe list, the curated interaction rules and the benchmark labels are drafts until a pharmacist reviews them. No chatbot has been scored: fill those numbers only from `eval/outputs/` runs. Fill every other `[placeholder]` from real runs before finals.

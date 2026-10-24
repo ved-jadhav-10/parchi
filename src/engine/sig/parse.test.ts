@@ -167,13 +167,16 @@ describe('parseSig', () => {
     expect(s.assumptions?.[0]).toMatch(/upper end/)
   })
 
-  it('assumes once daily with low confidence when no dosing is written', () => {
+  it('does not guess a frequency when no dosing is written: zero doses, flagged as not entered', () => {
     for (const text of ['', '   ']) {
       const s = parseSig(text)
-      expect(s.doses_per_day).toBe(1)
+      expect(s.doses_per_day).toBe(0)
+      expect(s.dosing_missing).toBe(true)
       expect(s.confidence).toBeLessThan(0.5)
       expect(s.assumptions?.[0]).toMatch(/No dosing written/)
     }
+    // Text that is there but unreadable is a different case: still assumed, still flagged.
+    expect(parseSig('qqq').dosing_missing).toBeUndefined()
   })
 
   it('reports words it does not understand and lowers confidence', () => {
