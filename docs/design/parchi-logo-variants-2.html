@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parchi logo variants 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* PREVIEW ONLY. Round 2: no Rx / R. Marks use currentColor + --accent. */
+:root { --ink:#122056; --accent:#5b65dc; --muted:#5a5f7d; --paper:#f4f0e6; --line:#d8d0bd; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font-family:'Plus Jakarta Sans',system-ui,sans-serif; padding:32px 24px 56px; }
+.wrap { max-width:1180px; margin:0 auto; }
+h1 { margin:0 0 4px; font-size:1.75rem; } .sub { margin:0 0 24px; color:var(--muted); max-width:72ch; }
+.grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+@media (max-width:980px){ .grid{grid-template-columns:repeat(2,1fr);} } @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+.card { background:#fbf9f3; border:1px solid var(--line); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; }
+.hero { height:190px; display:flex; align-items:center; justify-content:center; color:var(--ink); }
+.hero svg { transition:transform .25s; } .card:hover .hero svg { transform:scale(1.06); }
+.strip { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--line); }
+.strip > div { height:72px; display:flex; align-items:center; justify-content:center; gap:14px; }
+.on-white { background:#fff; color:var(--ink); } .on-navy { background:#122056; color:#fff; --accent:#8d95f0; }
+.meta { padding:14px 16px 16px; border-top:1px solid var(--line); }
+.meta .n { font:500 .7rem 'IBM Plex Mono',monospace; letter-spacing:.08em; color:var(--muted); text-transform:uppercase; }
+.meta h2 { margin:2px 0 6px; font-size:1.05rem; } .meta p { margin:0; font-size:.85rem; color:var(--muted); }
+.note { margin-top:24px; padding:14px 16px; border:1px dashed #cfc6b0; border-radius:10px; font-size:.88rem; color:var(--muted); }
+svg text { font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Parchi logo variants, round 2</h1>
+<p class="sub">No R / Rx this time. These lean on the name (P, पर्ची) and on how Hindi is written. Each uses <code>currentColor</code> plus one indigo accent, and none uses a tick.</p>
+<div class="grid" id="grid"></div>
+<div class="note">Variant 01 is a simplified geometric take on the Devanagari letter प, and it should be checked by a Hindi reader before it's used. Variant 06 uses live text and would be converted to outlines for a final file.</div>
+</div>
+
+<script>
+const A = 'var(--accent)';
+const V = [
+ { n:'01 · Devanagari', t:'The प headline',
+   why:'An abstract प: the top headline bar, a tall stem, and a hooked loop. Looks like a P to English readers and a प to Hindi readers.',
+   svg:`<path d="M20 30H80" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M65 30V80M40 30V56" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M40 56a10 10 0 0 0 10 10h15" stroke="${A}" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>` },
+ { n:'02 · Letter', t:'The perforated P',
+   why:'A capital P whose stem dissolves into tear-off perforation dots, like a slip being torn from the pad.',
+   svg:`<path d="M34 80V28M34 24h16a14 14 0 0 1 0 28H34" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M34 60V84" stroke="${A}" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="0.1 8" fill="none"/>` },
+ { n:'03 · Negative space', t:'Dog-eared slip, P cut out',
+   why:'A solid slip with a folded corner and a P cut out of it with rounded ends. Strong, compact, and works as an app icon.',
+   svg:`<mask id="pcut"><rect width="100" height="100" fill="#fff"/><path d="M43 76V42h10a8.5 8.5 0 0 1 0 17H43" stroke="#000" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></mask>
+        <path d="M28 14h32l14 14v58H28z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round" mask="url(#pcut)"/>
+        <path d="M60 14v14h14z" fill="${A}" stroke="${A}" stroke-width="3" stroke-linejoin="round"/>` },
+ { n:'04 · Devanagari + data', t:'Hanging lines',
+   why:'A headline bar like the top of Hindi writing, with stems hanging down like letters. They also read as limit bars, and the tallest one is the flagged value.',
+   svg:`<path d="M18 26H82" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+        <g stroke="currentColor" stroke-width="4.5" stroke-linecap="round">
+          <path d="M30 26V58"/><path d="M58 26V48"/><path d="M72 26V66"/></g>
+        <path d="M44 26V78" stroke="${A}" stroke-width="4.5" stroke-linecap="round"/>` },
+ { n:'05 · Concept', t:'Scribble to clear line',
+   why:'A doctor\'s scribble above a clean, readable line. That is the product in one image: messy handwriting in, structured information out.',
+   svg:`<path d="M18 38c6-14 10 14 16 0s10 14 16 0 10 14 16 0 10 14 16 0" stroke="currentColor" stroke-opacity=".5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <path d="M18 62H82" stroke="${A}" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M18 76H54" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>` },
+ { n:'06 · Wordmark', t:'Parchi with a headline bar', wide:true,
+   why:'The word itself with a Devanagari-style headline bar over it, so Hindi writing and the Latin name sit together. Works as a header logo.',
+   vb:'0 0 200 100',
+   svg:`<path d="M28 32H172" stroke="${A}" stroke-width="4.5" stroke-linecap="round"/>
+        <text x="100" y="72" text-anchor="middle" font-size="40" font-weight="700" letter-spacing="-1" fill="currentColor">parchi</text>` }
+];
+let uid = 0;
+const mark = (v, s) => { const vb = v.vb || '0 0 100 100'; const [,, w, h] = vb.split(' ').map(Number); const id = 'u' + (uid++);
+  const body = v.svg.replaceAll('pcut', 'pcut' + id);
+  return `<svg viewBox="${vb}" width="${s * w / h}" height="${s}" role="img" aria-label="${v.t}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`; };
+document.getElementById('grid').innerHTML = V.map(v => `
+  <article class="card">
+    <div class="hero">${mark(v,128)}</div>
+    <div class="strip">
+      <div class="on-white">${mark(v,44)}${v.wide ? '' : `<span style="display:flex;gap:8px;align-items:center">${mark(v,24)}${mark(v,16)}</span>`}</div>
+      <div class="on-navy">${mark(v,44)}${v.wide ? '' : '<b style="font-size:1rem">Parchi</b>'}</div>
+    </div>
+    <div class="meta"><div class="n">${v.n}</div><h2>${v.t}</h2><p>${v.why}</p></div>
+  </article>`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parchi logo concepts</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700&family=Noto+Sans+Devanagari:wght@500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* PREVIEW ONLY. Brand colours from docs/DESIGN.md. */
+:root { --ink:#122056; --accent:#5b65dc; --muted:#5a5f7d; --paper:#fbf9f3; --page:#f4f0e6; }
+* { box-sizing:border-box; }
+body { margin:0; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:var(--ink); background:var(--page); padding:32px 24px 48px; }
+.wrap { max-width:1100px; margin:0 auto; }
+h1 { font-size:1.75rem; margin:0 0 4px; } p.sub { margin:0 0 28px; color:var(--muted); }
+.concept { background:#fff; border:1px solid #d8d0bd; border-radius:12px; padding:20px; margin-bottom:20px; }
+.concept h2 { margin:0 0 2px; font-size:1.2rem; } .concept .why { margin:0 0 16px; color:var(--muted); font-size:.9rem; max-width:70ch; }
+.row { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+@media (max-width:760px){ .row{grid-template-columns:1fr;} }
+.tile { border-radius:10px; padding:22px 16px; display:flex; align-items:center; justify-content:center; border:1px solid #d8d0bd; min-height:110px; }
+.tile.white { background:#fff; --ink:#122056; --paper:#fbf9f3; --muted:#5a5f7d; --fg:#122056; }
+.tile.paper { background:#f4f0e6; --ink:#122056; --paper:#fbf9f3; --muted:#5a5f7d; --fg:#122056; }
+.tile.navy  { background:#122056; --ink:#ffffff; --paper:#122056; --muted:#b9bfe6; --fg:#fff; border-color:#122056; }
+.lockup { display:flex; align-items:center; gap:12px; color:var(--fg); }
+.lockup .wm { display:flex; flex-direction:column; line-height:1; }
+.lockup .en { font-weight:700; font-size:2rem; letter-spacing:-.02em; }
+.lockup .hi { font-family:'Noto Sans Devanagari',sans-serif; font-weight:500; font-size:.9rem; color:var(--muted); margin-top:4px; letter-spacing:.02em; }
+.sizes { display:flex; align-items:flex-end; gap:18px; margin-top:14px; padding-top:14px; border-top:1px dashed #d8d0bd; font:500 .7rem 'IBM Plex Mono',monospace; color:var(--muted); }
+.sizes div { display:flex; flex-direction:column; align-items:center; gap:6px; }
+.note { margin-top:24px; padding:16px; border:1px dashed #cfc6b0; border-radius:10px; font-size:.9rem; color:var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Parchi logo concepts</h1>
+<p class="sub">Three marks, each on white, paper and navy, with the 16/32/48 px sizes below. No tick mark: Parchi informs, it never approves.</p>
+
+<!-- Concept 1 -->
+<section class="concept">
+  <h2>1. The slip</h2>
+  <p class="why">A torn prescription slip with the Rx mark. The indigo bar is a line picked out for review, which is what the product does.</p>
+  <div class="row" id="c1"></div>
+  <div class="sizes" id="s1"></div>
+</section>
+
+<!-- Concept 2 -->
+<section class="concept">
+  <h2>2. The Rx squircle</h2>
+  <p class="why">A rounded indigo app icon with a white Rx monogram. Strongest at small sizes (favicon, PWA home-screen icon).</p>
+  <div class="row" id="c2"></div>
+  <div class="sizes" id="s2"></div>
+</section>
+
+<!-- Concept 3 -->
+<section class="concept">
+  <h2>3. The stub and lens</h2>
+  <p class="why">A tear-off parchi stub with a lens over one line of text: "look closer". The most distinctive, a little busier at small sizes.</p>
+  <div class="row" id="c3"></div>
+  <div class="sizes" id="s3"></div>
+</section>
+
+<div class="note">Devanagari "पर्ची" is live text here and needs Noto Sans Devanagari. For the real asset it should be converted to outlines. The marks are plain SVG shapes using the brand tokens, so they scale cleanly and can be exported as <code>favicon.svg</code> and PWA icons.</div>
+</div>
+
+<script>
+const marks = {
+ 1: s => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true">
+   <path d="M14 10a2 2 0 0 1 2-2h32a2 2 0 0 1 2 2v44L46 50.5 42 54 38 50.5 34 54 30 50.5 26 54 22 50.5 18 54 14 50.5z" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
+   <path d="M24 31V16h8a5 5 0 0 1 0 10h-8M31 26l7 7" fill="none" stroke="var(--ink)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+   <path d="M22 38.5h20" stroke="var(--muted)" stroke-opacity=".55" stroke-width="2" stroke-linecap="round"/>
+   <path d="M22 44h13" stroke="#5b65dc" stroke-width="3.2" stroke-linecap="round"/></svg>`,
+ 2: s => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true">
+   <rect x="4" y="4" width="56" height="56" rx="15" fill="#5b65dc"/>
+   <path d="M23 46V19h11a8 8 0 0 1 0 16H23M33 35l10 12" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+ 3: s => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true">
+   <rect x="6" y="13" width="52" height="38" rx="5" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.4"/>
+   <path d="M21 13v38" stroke="var(--ink)" stroke-width="2" stroke-dasharray="2.5 3.5"/>
+   <path d="M11 25h5M11 31h5M11 37h3" stroke="var(--muted)" stroke-opacity=".6" stroke-width="2" stroke-linecap="round"/>
+   <path d="M33 22h16" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round" opacity=".35"/>
+   <circle cx="40" cy="31" r="8.5" fill="var(--paper)" fill-opacity=".6" stroke="#5b65dc" stroke-width="3"/>
+   <path d="M36 31h8" stroke="var(--ink)" stroke-width="2.4" stroke-linecap="round"/>
+   <path d="M46.5 37.5 52 43" stroke="#5b65dc" stroke-width="3.4" stroke-linecap="round"/></svg>`
+};
+const lock = (n, size) => `<div class="lockup">${marks[n](size)}<div class="wm"><span class="en">Parchi</span><span class="hi">पर्ची</span></div></div>`;
+for (const n of [1,2,3]) {
+  document.getElementById('c'+n).innerHTML = ['white','paper','navy'].map(t => `<div class="tile ${t}">${lock(n,56)}</div>`).join('');
+  document.getElementById('s'+n).innerHTML = [16,32,48].map(s => `<div class="tile white" style="padding:10px;min-height:0;min-width:0">${marks[n](s)}</div>`).join('').replace(/<div class="tile white"([^>]*)>(.*?)<\/div>/g,(m,a,b)=>`<div><span style="display:block">${b}</span></div>`);
+}
+</script>
+</body>
+</html>

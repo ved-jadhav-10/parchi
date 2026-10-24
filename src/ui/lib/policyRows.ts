@@ -1,0 +1,62 @@
+// Rows for the Data & limits page: Track B's dose limits and SOS caps, and Track C's alert rules and suppression list.
+// Every row carries its source and whether a pharmacist approved it; nothing is shown without one or the other.
+import type { LimitsData } from '../../engine/limits'
+import type { AlertRules } from '../../engine/rules'
+import type { DataRow } from './dataFiles'
+import { mg, titleCase } from './format'
+
+const row = (name: string, detail: string, value: string, source: string, approved: boolean | undefined): DataRow => ({ name, detail, value, source, approved })
+
+const perDay = (n: number) => `${mg(n)} mg/day`
+
+/** Adult, elderly, paediatric and kidney limits per ingredient (Track B, src/engine/limits/limits.json). */
+export function limitRows(limits: LimitsData): DataRow[] {
+  const { elderly_age_from: old, paediatric_age_below: young } = limits._meta
+  const rows: DataRow[] = []
+  for (const [id, l] of Object.entries(limits.ingredients)) {
+    const name = titleCase(id)
+    if (l.adult) rows.push(row(name, 'Adult', perDay(l.adult.max_mg_day), l.adult.source, l.adult.pharmacist_approved))
+    if (l.elderly) rows.push(row(name, `Age ${old} and over`, perDay(l.elderly.max_mg_day), l.elderly.source, l.elderly.pharmacist_approved))
+    if (l.paediatric) rows.push(row(name, `Under ${young} years, by weight`, `${mg(l.paediatric.max_mg_per_kg_day)} mg/kg/day`, l.paediatric.source, l.paediatric.pharmacist_approved))
+    for (const r of l.renal ?? []) {
+      const value = r.action === 'avoid' ? 'Avoid' : r.action === 'caution' ? 'Use with caution' : perDay(r.max_mg_day ?? 0)
+      rows.push(row(name, `Kidney: CrCl below ${r.crcl_below} mL/min`, value, r.source, r.pharmacist_approved))
+    }
+  }
+  return rows
+}
+
+/** Doses a day assumed for an as-needed (SOS) line when the prescription writes no maximum. */
+export function sosRows(limits: LimitsData): DataRow[] {
+  const doses = (n: number) => `${n} a day`
+  const detail = 'Assumed when no maximum is written'
+  return [
+    ...Object.entries(limits.sos.by_ingredient).map(([id, c]) => row(titleCase(id), detail, doses(c.max_doses_per_day), c.source, c.pharmacist_approved)),
+    ...Object.entries(limits.sos.by_class).map(([id, c]) => row(`${id.toUpperCase()} class`, detail, doses(c.max_doses_per_day), c.source, c.pharmacist_approved)),
+    row('Any other medicine', detail, doses(limits.sos.fallback.max_doses_per_day), limits.sos.fallback.source, limits.sos.fallback.pharmacist_approved),
+  ]
+}
+
+const tierName = (t: string | null) => (t ? titleCase(t) : 'Not raised')
+
+/** The alert policy (Track C, public/data/alert_rules.json): budget, interaction tiers, duplicate classes, patient rules. */
+export function ruleRows(rules: AlertRules): DataRow[] {
+  const b = rules.alert_budget
+  const d = rules.ddi_tiers
+  return [
+    row('Alert budget', 'Extra Interrupts are shown as Inform', `${b.max_interrupts_per_rx} Interrupts a prescription`, 'Team setting', b.pharmacist_approved),
+    row('Interactions', 'Severity to tier: major, moderate, minor', `${tierName(d.major)}, ${tierName(d.moderate)}, ${tierName(d.minor)}`, d.source, d.pharmacist_approved),
+    ...rules.class_duplication.map((c) => row(c.label, 'Two or more in one prescription', tierName(c.tier), c.source, c.pharmacist_approved)),
+    ...rules.patient_rules.map((p) => {
+      const when = [p.age_at_least !== undefined ? `Age ${p.age_at_least} and over` : '', p.crcl_below !== undefined ? `CrCl below ${p.crcl_below} mL/min` : ''].filter(Boolean).join(', ')
+      return row(titleCase(p.id), when || 'Any patient', tierName(p.tier), p.source, p.pharmacist_approved)
+    }),
+  ]
+}
+
+/** Alerts the pharmacist chose to log without showing. */
+export function suppressionRows(rules: AlertRules): DataRow[] {
+  return rules.suppression.map((s) => row(titleCase(s.id), s.reason, 'Logged, not shown', s.source, s.pharmacist_approved))
+}
+
+export const approvedCount = (rows: DataRow[]) => rows.filter((r) => r.approved === true).length

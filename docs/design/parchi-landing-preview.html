@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#122056">
+<title>Parchi: a second look at every prescription</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* PREVIEW ONLY. Palette from docs/DESIGN.md; the lilac ground and cream slip are landing-page extras.
+   App links (#/check, #/demo ...) point at the app's hash routes, so they resolve once this is served from the app. */
+:root {
+  --ink: #122056; --ink-muted: #5a5f7d; --accent: #5b65dc; --accent-strong: #4a53c7; --accent-soft: #8d95f0;
+  --tint: #eeeffd; --bg: #fafafd; --white: #fff; --lilac: #e4e6f8; --slip: #fbf9f3; --border: #dcdff0;
+  --t-interrupt: #b42318; --t-interrupt-bg: #fef0ee; --ok: #1e7a46;
+  --r-frame: 36px; --r-panel: 28px; --r-pill: 999px; --gap: 12px; --tap: 56px;
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+body { margin: 0; background: var(--lilac); color: var(--ink); font-family: var(--font); font-size: 1rem; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+h1, h2, h3, p { margin: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- page: stacked frames on a lilac ground ---------- */
+.page { max-width: 1264px; margin: 0 auto; padding: var(--gap); display: grid; gap: var(--gap); }
+.frame { background: var(--white); border-radius: var(--r-frame); padding: var(--gap); position: relative; }
+
+/* ---------- navigation (reference: two circles, a pill bar, one action) ---------- */
+.nav { display: flex; align-items: center; gap: 10px; position: relative; z-index: 5; }
+.circle { flex: none; width: var(--tap); height: var(--tap); border-radius: 50%; display: grid; place-items: center; border: 0; text-decoration: none; }
+.circle--brand { background: var(--ink); }
+.circle--status { background: var(--tint); position: relative; color: var(--ink); }
+.status-dot { position: absolute; right: 12px; bottom: 12px; width: 11px; height: 11px; border-radius: 50%; background: var(--ok); border: 2px solid var(--tint); }
+.circle--status[data-online='false'] .status-dot { background: var(--ink-muted); }
+.navbar { flex: 1; min-width: 0; height: var(--tap); border-radius: var(--r-panel); background: var(--tint); display: flex; align-items: center; gap: 28px; padding: 0 28px; }
+.navbar a { text-decoration: none; font-size: .875rem; font-weight: 500; white-space: nowrap; padding: 8px 0; }
+.navbar a:hover { color: var(--accent-strong); }
+.navbar a[aria-current='page'] { font-weight: 700; }
+.navbar__line { flex: 1; height: 1px; background: var(--ink); opacity: .45; min-width: 24px; }
+.navbar__links { display: flex; gap: 28px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: var(--tap); padding: 0 36px; border: 0; border-radius: var(--r-pill); font: 600 .9375rem var(--font); text-decoration: none; cursor: pointer; transition: background .15s, transform .15s, color .15s; }
+.btn--accent { background: var(--accent); color: var(--white); }
+.btn--accent:hover { background: var(--accent-strong); }
+.btn--white { background: var(--white); color: var(--ink); }
+.btn--white:hover { background: var(--tint); }
+.btn--ghost { background: transparent; color: var(--white); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / .7); }
+.btn--ghost:hover { background: rgb(255 255 255 / .12); }
+.btn--ink { background: var(--ink); color: var(--white); }
+.btn--ink:hover { background: #1b2d75; }
+.btn:active { transform: translateY(1px); }
+.menu-btn { display: none; background: var(--tint); cursor: pointer; color: var(--ink); }
+.nav__cta { flex: none; }
+@media (max-width: 900px) {
+  .navbar { display: none; position: absolute; top: calc(var(--tap) + 10px); left: 0; right: 0; height: auto; flex-direction: column; align-items: stretch; gap: 0; padding: 12px 24px 20px; background: var(--tint); box-shadow: 0 12px 32px rgb(18 32 86 / .18); }
+  .navbar[data-open='true'] { display: flex; }
+  .navbar a { padding: 14px 0; font-size: 1rem; }
+  .navbar__line { display: none; }
+  .navbar__links { flex-direction: column; gap: 0; }
+  .menu-btn { display: grid; }
+  .circle--status { display: none; }
+  .nav { justify-content: space-between; }
+  .nav__cta { display: none; }
+  .navbar .btn { margin-top: 12px; }
+}
+@media (min-width: 901px) { .navbar .btn { display: none; } }
+
+/* ---------- hero ---------- */
+.hero { position: relative; margin-top: var(--gap); border-radius: var(--r-panel); background: var(--accent); color: var(--white); overflow: hidden; min-height: 640px; padding: 72px 56px 64px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 32px; align-items: center; }
+.hero__art { position: absolute; top: 0; right: 0; height: 100%; width: min(58%, 700px); pointer-events: none; }
+.hero__art path.draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.4s .15s cubic-bezier(.3, .6, .2, 1) forwards; }
+.hero__art path.draw.d2 { animation-delay: .5s; } .hero__art path.draw.d3 { animation-delay: .85s; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.hero__copy { position: relative; z-index: 2; max-width: 600px; }
+.badge { display: inline-flex; align-items: center; gap: 10px; padding: 6px 18px 6px 6px; border-radius: var(--r-pill); background: var(--tint); color: var(--ink); font-size: .875rem; font-weight: 600; margin-bottom: 28px; }
+.badge__icon { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--white); display: grid; place-items: center; }
+.hero h1 { font-size: clamp(2.25rem, 4.2vw, 3.5rem); line-height: 1.06; letter-spacing: -.025em; font-weight: 700; }
+.hero__rule { height: 1px; background: rgb(255 255 255 / .45); margin: 32px 0 24px; }
+.hero__text { font-size: 1.0625rem; line-height: 1.6; max-width: 46ch; }
+.hero__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.hero__note { margin-top: 20px; font-size: .875rem; }
+
+/* the slip: a sample check, drawn from the app's own demo case */
+.hero__visual { position: relative; z-index: 2; display: grid; justify-items: center; padding: 8px 0 24px; }
+.slip { width: min(100%, 360px); background: var(--slip); color: var(--ink); border-radius: 14px 14px 0 0; padding: 22px 22px 34px; transform: rotate(2.5deg); box-shadow: 0 24px 48px rgb(18 32 86 / .3); }
+.slip__head { display: flex; justify-content: space-between; gap: 12px; font-size: .75rem; color: var(--ink-muted); }
+.slip__head b { color: var(--ink); font-weight: 600; }
+.slip__rows { list-style: none; margin: 14px 0 16px; padding: 0; }
+.slip__rows li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px dashed #cfc6b0; font-size: .875rem; }
+.slip__rows span:last-child { color: var(--ink-muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.alert { background: var(--t-interrupt-bg); border-left: 4px solid var(--t-interrupt); border-radius: 8px; padding: 12px 14px; }
+.tier { display: inline-flex; align-items: center; gap: 6px; font-size: .8125rem; font-weight: 700; color: var(--t-interrupt); }
+.alert p { font-size: .875rem; font-weight: 600; margin-top: 4px; line-height: 1.4; }
+.limit { margin-top: 12px; }
+.limit__track { position: relative; height: 10px; border-radius: var(--r-pill); background: #f3d6d2; }
+.limit__fill { position: absolute; inset: 0; border-radius: var(--r-pill); background: var(--t-interrupt); }
+.limit__mark { position: absolute; top: -3px; bottom: -3px; left: 97.6%; width: 2px; background: var(--ink); }
+.limit__text { margin-top: 6px; font-size: .75rem; color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.slip__foot { margin-top: 14px; font-size: .6875rem; color: var(--ink-muted); }
+.float { position: absolute; border-radius: 50%; display: grid; place-items: center; }
+.float--a { width: 64px; height: 64px; background: var(--tint); color: var(--accent-strong); left: 2%; bottom: 8%; }
+.float--b { width: 52px; height: 52px; background: var(--white); color: var(--ink); right: 4%; top: 2%; }
+.dot { position: absolute; border-radius: 50%; background: var(--white); }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; padding: 48px 24px 40px; min-height: 0; }
+  .hero__art { top: auto; bottom: 0; height: 560px; width: 100%; }
+  .hero__visual { padding-top: 16px; }
+  .slip { transform: rotate(1.5deg); }
+  .float--a { left: 0; } .float--b { right: 0; }
+}
+
+/* ---------- sections ---------- */
+.section { border-radius: var(--r-frame); padding: 72px 56px; display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 56px; align-items: start; }
+.section--white { background: var(--white); }
+.section--ink { background: var(--ink); color: var(--white); }
+@media (min-width: 901px) { .section > :first-child { position: sticky; top: 24px; } }
+.tiers { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 10px; max-width: 420px; }
+.tiers li { display: grid; grid-template-columns: 128px 1fr; gap: 12px; align-items: center; font-size: .875rem; color: #cdd2ee; }
+.tier-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--r-pill); font-size: .8125rem; font-weight: 700; justify-self: start; }
+.tier-chip--interrupt { background: #fef0ee; color: #b42318; } .tier-chip--inform { background: #fff4e5; color: #9a4a00; } .tier-chip--silent { background: #f1f2f8; color: #5c6488; }
+.section--tint { background: var(--tint); }
+.section h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.1; letter-spacing: -.02em; font-weight: 700; }
+.section__lead { margin-top: 18px; font-size: 1.0625rem; line-height: 1.6; color: var(--ink-muted); max-width: 44ch; }
+.section--ink .section__lead { color: #cdd2ee; }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 56px 1fr; gap: 8px 16px; padding: 22px 0; border-top: 1px solid var(--border); }
+.steps li:first-child { border-top: 0; padding-top: 0; }
+.steps li::before { content: counter(step); width: 40px; height: 40px; border-radius: 50%; background: var(--tint); color: var(--accent-strong); display: grid; place-items: center; font-weight: 700; font-variant-numeric: tabular-nums; grid-row: span 2; }
+.steps h3 { font-size: 1.125rem; font-weight: 700; line-height: 1.3; }
+.steps p { color: var(--ink-muted); }
+.xray { margin-top: 28px; background: var(--bg); border-radius: 20px; padding: 20px; max-width: 460px; }
+.xray__label { font-size: .75rem; font-weight: 600; color: var(--ink-muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 14px; }
+.chip { background: var(--tint); color: var(--accent-strong); font-size: .75rem; font-weight: 600; padding: 3px 10px; border-radius: 8px; }
+.xray strong { font-size: .9375rem; }
+.checks { list-style: none; margin: 0; padding: 0; }
+.checks li { padding: 22px 0; border-top: 1px solid rgb(255 255 255 / .18); }
+.checks li:first-child { border-top: 0; padding-top: 0; }
+.checks h3 { font-size: 1.125rem; font-weight: 700; }
+.checks p { margin-top: 4px; color: #cdd2ee; }
+.big-line { font-size: clamp(2rem, 4vw, 3.25rem); line-height: 1.05; letter-spacing: -.025em; font-weight: 700; }
+.evidence { list-style: none; margin: 0 0 28px; padding: 0; display: grid; gap: 14px; }
+.evidence li { background: var(--white); border-radius: 20px; padding: 20px 22px; }
+.evidence h3 { font-size: 1.0625rem; font-weight: 700; }
+.evidence p { margin-top: 4px; color: var(--ink-muted); }
+.cta { position: relative; overflow: hidden; border-radius: var(--r-frame); background: var(--accent); color: var(--white); padding: 80px 56px; display: grid; justify-items: start; gap: 20px; }
+.cta h2 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.08; letter-spacing: -.025em; font-weight: 700; max-width: 18ch; position: relative; z-index: 2; }
+.cta p { max-width: 52ch; font-size: 1.0625rem; position: relative; z-index: 2; }
+.cta .hero__actions { margin-top: 8px; position: relative; z-index: 2; }
+.cta svg.art { position: absolute; right: 0; top: 0; height: 100%; width: min(46%, 560px); pointer-events: none; }
+@media (max-width: 900px) { .cta svg.art { width: 100%; opacity: .3; } }
+.footer { border-radius: var(--r-frame); background: var(--white); padding: 36px 56px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; }
+.footer__brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 1.25rem; }
+.footer p { color: var(--ink-muted); font-size: .875rem; max-width: 56ch; }
+.footer nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.footer nav a { font-size: .875rem; font-weight: 500; text-decoration: none; padding: 10px 0; }
+.footer nav a:hover { color: var(--accent-strong); text-decoration: underline; }
+
+@media (max-width: 900px) {
+  .section { grid-template-columns: 1fr; padding: 48px 24px; gap: 32px; }
+  .cta { padding: 56px 24px; } .footer { padding: 28px 24px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ===== frame 1: navigation + hero ===== -->
+  <div class="frame">
+    <header class="nav">
+      <a class="circle circle--brand" href="#top" aria-label="Parchi home">
+        <svg width="22" height="34" viewBox="24 8 52 80" aria-hidden="true"><path d="M28 16a4 4 0 0 1 4-4h36a4 4 0 0 1 4 4v70l-5.5-6-5.5 6-5.5-6-5.5 6-5.5-6-5.5 6-5.5-6-5.5 6z" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><path d="M38 33h24M38 46h24" stroke="#fff" stroke-opacity=".5" stroke-width="3.4" stroke-linecap="round"/><path d="M38 59h14" stroke="#8d95f0" stroke-width="5" stroke-linecap="round"/></svg>
+      </a>
+      <span class="circle circle--status" id="conn" data-online="true" role="img" aria-label="Online" title="Online">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path d="M12 20h.01"/></svg>
+        <span class="status-dot"></span>
+      </span>
+
+      <nav class="navbar" id="navbar" aria-label="Main">
+        <a href="#top" aria-current="page">Home</a>
+        <span class="navbar__line" aria-hidden="true"></span>
+        <span class="navbar__links">
+          <a href="#how">How it works</a>
+          <a href="#checks">What it checks</a>
+          <a href="#evidence">Evidence</a>
+        </span>
+        <a class="btn btn--accent" href="#/check">Open the checker</a>
+      </nav>
+
+      <a class="btn btn--accent nav__cta" href="#/check">Open the checker</a>
+      <button class="circle menu-btn" id="menu" aria-label="Open menu" aria-expanded="false" aria-controls="navbar">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path id="menu-path" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </header>
+
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <!-- the doctor's scribble, resolving into the clean lines on the slip -->
+      <svg class="hero__art" viewBox="0 0 760 640" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="#fff" stroke-linecap="round" aria-hidden="true">
+        <path class="draw" pathLength="1" stroke-width="2.2" d="M250 36C410 78 590 140 760 238C610 262 450 228 346 262C276 288 292 340 410 366C530 390 654 408 760 452"/>
+        <path class="draw d2" pathLength="1" stroke-width="1.6" stroke-opacity=".6" d="M262 540C330 494 424 496 522 528C620 558 702 592 760 612"/>
+        <path class="draw d3" pathLength="1" stroke-width="2.2" d="M270 640C262 572 320 526 408 538C524 554 642 600 760 640"/>
+        <path class="draw d2" pathLength="1" stroke-width="1.4" stroke-opacity=".45" d="M300 150C400 140 500 160 580 196"/>
+        <circle cx="620" cy="150" r="11" fill="#fff" stroke="none"/><circle cx="694" cy="476" r="8" fill="#fff" stroke="none"/><circle cx="318" cy="596" r="5" fill="#fff" stroke="none"/>
+      </svg>
+
+      <div class="hero__copy">
+        <p class="badge"><span class="badge__icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></span>Made for the chemist's counter</p>
+        <h1 id="hero-title">A second look at every parchi, before it leaves the counter.</h1>
+        <div class="hero__rule" aria-hidden="true"></div>
+        <p class="hero__text">Type a prescription the way it arrives. Parchi splits each brand into its ingredients, adds up the day's dose across every brand, and shows a pharmacist what needs a closer look. It works offline.</p>
+        <div class="hero__actions">
+          <a class="btn btn--white" href="#/check">Check a prescription
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
+          <a class="btn btn--ghost" href="#/demo">See a worked example</a>
+        </div>
+      </div>
+
+      <div class="hero__visual">
+        <span class="float float--a" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg></span>
+        <span class="float float--b" aria-hidden="true"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><path d="M12 20h.01"/><path d="M3 3l18 18"/></svg></span>
+        <div class="slip" id="slip" role="img" aria-label="Sample prescription. Paracetamol totals 4,100 milligrams a day across three brands, above the 4,000 milligram limit. Interrupt.">
+          <div class="slip__head"><span>Sample prescription</span><span><b>68 y</b> · Male · 55 kg</span></div>
+          <ul class="slip__rows">
+            <li><span>Dolo 650</span><span>1-1-1 × 5 days</span></li>
+            <li><span>Crocin Cold &amp; Flu Max</span><span>TDS</span></li>
+            <li><span>Zerodol-P</span><span>BD</span></li>
+          </ul>
+          <div class="alert">
+            <span class="tier"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Interrupt · Overdose</span>
+            <p>Paracetamol totals 4,100 mg/day across 3 brands, above the 4,000 mg/day limit. Review.</p>
+            <div class="limit"><div class="limit__track"><div class="limit__fill"></div><div class="limit__mark"></div></div><div class="limit__text">4,100 / 4,000 mg</div></div>
+          </div>
+          <p class="slip__foot">Decision support for a pharmacist.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== how it works ===== -->
+  <section class="section section--white" id="how" aria-labelledby="how-title">
+    <div>
+      <h2 id="how-title">How a prescription is checked</h2>
+      <p class="section__lead">A drug hidden inside a cold tablet still counts. Every ingredient is totalled per day, across all the brands on the slip.</p>
+      <div class="xray" aria-label="Example: paracetamol across three brands">
+        <div class="xray__label">Paracetamol, from three brands (sample)</div>
+        <div class="chips"><span class="chip">Dolo 650</span><span class="chip">Crocin Cold &amp; Flu Max</span><span class="chip">Zerodol-P</span></div>
+        <div class="limit"><div class="limit__track"><div class="limit__fill"></div><div class="limit__mark"></div></div><div class="limit__text"><strong>4,100 / 4,000 mg</strong> a day</div></div>
+      </div>
+    </div>
+    <ol class="steps">
+      <li><h3>Read the slip</h3><p>Brand names and doses are matched the way they are written, misspellings included, and each medicine is split into its ingredients.</p></li>
+      <li><h3>Add it up</h3><p>Every ingredient is totalled per day across all brands, so a drug hidden inside a cold tablet still counts.</p></li>
+      <li><h3>Compare</h3><p>Totals are held against dose limits and rules that come from data files, each with a source and whether a pharmacist approved it.</p></li>
+      <li><h3>Alert, sparingly</h3><p>Three tiers: Interrupt, Inform and Silent. Interrupts are kept rare, and overriding one needs a reason that is logged.</p></li>
+    </ol>
+  </section>
+
+  <!-- ===== what it checks ===== -->
+  <section class="section section--ink" id="checks" aria-labelledby="checks-title">
+    <div>
+      <h2 id="checks-title" class="big-line">It informs. The pharmacist decides.</h2>
+      <p class="section__lead">Parchi never approves or blocks a prescription. It shows what is worth a second look, and why, with the source beside it.</p>
+      <ul class="tiers" aria-label="The three alert tiers">
+        <li><span class="tier-chip tier-chip--interrupt"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Interrupt</span><span>Act before dispensing</span></li>
+        <li><span class="tier-chip tier-chip--inform"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>Inform</span><span>Worth knowing, no action required</span></li>
+        <li><span class="tier-chip tier-chip--silent"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.7 3A6 6 0 0 1 18 8a21.3 21.3 0 0 0 .6 5"/><path d="M17 17H3s3-2 3-9a4.67 4.67 0 0 1 .3-1.7"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/><path d="m2 2 20 20"/></svg>Silent</span><span>Logged only, collapsed by default</span></li>
+      </ul>
+    </div>
+    <ul class="checks">
+      <li><h3>Daily totals</h3><p>Each ingredient added up across every brand on the slip, against the limit on file.</p></li>
+      <li><h3>Age and kidney function</h3><p>Weight or creatinine is asked for only when a medicine needs it.</p></li>
+      <li><h3>Interactions</h3><p>With a severity and the source it comes from.</p></li>
+      <li><h3>Duplicate classes</h3><p>Two NSAIDs, two PPIs, or any other pair from one class.</p></li>
+      <li><h3>Banned combinations</h3><p>Fixed-dose combinations on the banned list.</p></li>
+    </ul>
+  </section>
+
+  <!-- ===== evidence ===== -->
+  <section class="section section--tint" id="evidence" aria-labelledby="evidence-title">
+    <div>
+      <h2 id="evidence-title">Measured, not claimed</h2>
+      <p class="section__lead">Parchi is tested against pharmacist-labelled prescriptions, and against the chatbots a counter might reach for instead.</p>
+    </div>
+    <div>
+      <ul class="evidence">
+        <li><h3>The same prescriptions, every system</h3><p>The engine and each chatbot are given the same slips and scored the same way.</p></li>
+        <li><h3>Alert load counts</h3><p>Alerts per prescription and false alarms on clean ones are measured, because too many alerts get ignored.</p></li>
+        <li><h3>Every limit has a source</h3><p>Dose limits and rules are shown with where they come from, and whether a pharmacist has approved them.</p></li>
+      </ul>
+      <a class="btn btn--ink" href="#/benchmark">See the benchmark</a>
+    </div>
+  </section>
+
+  <!-- ===== closing call ===== -->
+  <section class="cta" aria-labelledby="cta-title">
+    <svg class="art" viewBox="0 0 700 420" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="#fff" stroke-linecap="round" aria-hidden="true">
+      <path stroke-width="2" d="M60 30C260 60 460 110 700 190C520 220 340 180 220 230C130 268 160 330 320 346C470 360 600 372 700 396"/>
+      <path stroke-width="1.5" stroke-opacity=".5" d="M120 380C220 330 360 340 500 382"/>
+      <circle cx="560" cy="90" r="9" fill="#fff" stroke="none"/><circle cx="640" cy="330" r="6" fill="#fff" stroke="none"/>
+    </svg>
+    <h2 id="cta-title">Put it on the counter.</h2>
+    <p>Install Parchi on a phone or the counter PC. After the first load it works without a connection.</p>
+    <div class="hero__actions">
+      <a class="btn btn--white" href="#/check">Check a prescription</a>
+      <a class="btn btn--ghost" href="#/demo">See a worked example</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div>
+      <div class="footer__brand">
+        <svg width="22" height="34" viewBox="24 8 52 80" aria-hidden="true"><path d="M28 16a4 4 0 0 1 4-4h36a4 4 0 0 1 4 4v70l-5.5-6-5.5 6-5.5-6-5.5 6-5.5-6-5.5 6-5.5-6-5.5 6z" fill="none" stroke="#122056" stroke-width="3.5" stroke-linejoin="round"/><path d="M38 33h24M38 46h24" stroke="#122056" stroke-opacity=".35" stroke-width="3" stroke-linecap="round"/><path d="M38 59h14" stroke="#5b65dc" stroke-width="4.5" stroke-linecap="round"/></svg>
+        Parchi
+      </div>
+      <p style="margin-top:8px">Decision support for a pharmacist. Not a substitute for professional judgement.</p>
+    </div>
+    <nav aria-label="App">
+      <a href="#/check">Check</a><a href="#/demo">Demo</a><a href="#/log">Override log</a><a href="#/benchmark">Benchmark</a><a href="#/data">Data &amp; limits</a>
+    </nav>
+  </footer>
+</div>
+
+<script>
+// Connection circle: reflects the browser's online state.
+const conn = document.getElementById('conn');
+const setConn = () => { const on = navigator.onLine; conn.dataset.online = on; const t = on ? 'Online' : 'Offline: all checks still run'; conn.setAttribute('aria-label', t); conn.title = t; };
+addEventListener('online', setConn); addEventListener('offline', setConn); setConn();
+// Menu (below 900px).
+const menu = document.getElementById('menu'), bar = document.getElementById('navbar'), mp = document.getElementById('menu-path');
+menu.addEventListener('click', () => { const open = bar.dataset.open !== 'true'; bar.dataset.open = open; menu.setAttribute('aria-expanded', open); menu.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); mp.setAttribute('d', open ? 'M6 6l12 12M18 6L6 18' : 'M4 7h16M4 12h16M4 17h16'); });
+bar.addEventListener('click', (e) => { if (e.target.closest('a')) { bar.dataset.open = 'false'; menu.setAttribute('aria-expanded', 'false'); mp.setAttribute('d', 'M4 7h16M4 12h16M4 17h16'); } });
+// Torn bottom edge on the slip (a plain rectangle without script).
+const slip = document.getElementById('slip'); const pts = ['0 0', '100% 0'];
+for (let i = 20; i >= 0; i--) pts.push(`${i * 5}% ${i % 2 ? 'calc(100% - 12px)' : '100%'}`);
+slip.style.clipPath = `polygon(${pts.join(',')})`;
+</script>
+</body>
+</html>

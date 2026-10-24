@@ -3,7 +3,7 @@
 Project: **Parchi**, the HM-02 Indian brand-name prescription safety checker (HYPNEXIS '26). Offline-capable PWA. 4 developers, 4 tracks, working in parallel.
 Built for the verifying pharmacist at e-pharmacies and pharmacy chains (`docs/BUSINESS_MODEL.md`). Phase 2: a customer's multi-doctor history, kidney re-check, unverified brands, ranked alerts (`docs/PS_ANALYSIS.md` §11).
 
-**Read order:** this file -> `docs/PLAN.md` (stack, your track, contracts). Open `docs/PS_ANALYSIS.md` only for the specific section you need; it is large. Track usage notes: `docs/track-a-data.md`, `docs/track-b-dose.md`, `docs/track-c-engine.md`.
+**Read order:** this file -> `docs/PLAN.md` (stack, your track, contracts). Open `docs/PS_ANALYSIS.md` only for the specific section you need; it is large. Track usage notes: `docs/track-a-data.md`, `docs/track-b-dose.md`, `docs/track-c-engine.md`. Any UI work: follow `docs/DESIGN.md` (tokens in `src/ui/styles/tokens.css`).
 
 ## Start of every session
 1. `git status`, confirm you are on your own branch `dev/track-<x>` (never `main`). Branches are `dev/track-a` .. `dev/track-d`; ask the user which track they are if unknown.
