@@ -1,0 +1,31 @@
+{
+ "_note": "Counts only; no Kaggle content. Regenerate with python data/review_diff.py.",
+ "incomplete_brands_in_app": 10452,
+ "matched_in_kaggle": 8831,
+ "by_status": {
+  "adds_ingredients": 1889,
+  "strength_conflict": 49,
+  "contradicts": 41,
+  "agrees": 5572,
+  "ambiguous": 51,
+  "unparsed": 1229
+ },
+ "adds_ingredients_paracetamol_or_nsaid": 550,
+ "added_ingredient_ids": {
+  "phenylephrine": 205,
+  "paracetamol": 168,
+  "serratiopeptidase": 167,
+  "guaifenesin": 163,
+  "voglibose": 129,
+  "menthol": 116,
+  "dextromethorphan": 111,
+  "terbutaline": 100,
+  "pioglitazone": 78,
+  "clopidogrel": 78,
+  "mecobalamin": 51,
+  "folic_acid": 49,
+  "lactic_acid_bacillus": 43,
+  "clotrimazole": 42,
+  "pyridoxine": 38
+ }
+}
