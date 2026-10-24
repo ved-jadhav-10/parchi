@@ -83,6 +83,8 @@ export interface HistoryResult {
   unverified: HistoryLine[]
   prompts: PatientPrompt[]
   crcl: number | null
+  /** Ingredients the interaction data has no entry for. */
+  ddi_gaps: string[]
   /** Set when the check was given the previous result: what the new data added, cleared or moved. */
   changes?: AlertChange[]
   /** The engine's own result (contract 7), kept so a re-check can pass it back as `previous`. */

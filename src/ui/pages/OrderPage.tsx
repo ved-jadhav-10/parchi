@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AlertCard } from '../components/AlertCard'
 import { BrandMatch } from '../components/BrandMatch'
 import { Card } from '../components/Card'
+import { CoverageNote } from '../components/CoverageNote'
 import { DecisionPanel } from '../components/DecisionPanel'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
@@ -270,6 +271,8 @@ export const OrderPage = () => {
                     />
                   ))}
               </div>
+
+              <CoverageNote gaps={result.ddi_gaps} />
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient for the days chosen, against the limit on file">
                 <div className="windows" role="group" aria-label="Days to show">

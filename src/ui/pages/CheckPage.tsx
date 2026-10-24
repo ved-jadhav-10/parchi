@@ -8,6 +8,7 @@ import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
+import { CoverageNote } from '../components/CoverageNote'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
 import { needsReview, tidy } from '../lib/resolved'
@@ -218,6 +219,8 @@ export const CheckPage = () => {
                   />
                 ))}
               </div>
+
+              <CoverageNote gaps={result.ddi_gaps} />
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
                 <XrayTable ledger={result.ledger} alerts={result.alerts} />

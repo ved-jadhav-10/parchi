@@ -4,6 +4,7 @@
 import type { Alert, HistoryResult as EngineResult, Patient, Tier } from '../../engine/contracts'
 import { cockcroftGault } from '../../engine/limits/crcl'
 import { createRealEngine } from '../../engine/wiring'
+import { ddiGapNames } from '../lib/coverage'
 import type { EngineDeps, PatientPrompt } from '../engine'
 import type { AlertChange, HistoryAlert, HistoryLine, HistoryResult, HistoryWindow, LabResult, Order, Prescribed } from './types'
 
@@ -115,6 +116,7 @@ export function createHistoryCheck(deps: EngineDeps) {
       unverified: lines.filter((l) => l.unverified),
       prompts,
       crcl,
+      ddi_gaps: ddiGapNames(lines, deps.ddi, resolver),
       ...(changes && { changes }),
       engine: r,
     }
