@@ -110,5 +110,8 @@ Hindi copy (Finals leaflet) follows the same rules.
 - Alerts container is `aria-live="polite"`; an Interrupt uses `role="alert"`.
 - Respect `prefers-reduced-motion`: no animation beyond 150 ms fades.
 
+## Landing page
+`#/home` (also the root with no hash). It has its own navigation and footer: `src/ui/pages/HomePage.tsx` and `styles/home.css`, every class prefixed `home-`. An indigo hero panel on a lilac ground (`--color-lilac`), a cream sample slip (`--color-slip`), then white, navy and tint panels. Landing-only tokens: `--color-lilac`, `--color-slip`, `--color-accent-soft`, `--color-on-ink-muted`. The slip shows the demo case and is labelled "Sample"; the page carries no results of its own. Smooth scrolling (Lenis, `src/ui/lib/smoothScroll.ts`) runs on this page only, off under reduced motion; the working screens keep native scrolling. Preview: `docs/design/parchi-landing-preview.html`.
+
 ## Not doing
 Dark mode, custom illustration, animation-heavy transitions, any colour outside `tokens.css`.

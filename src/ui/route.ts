@@ -10,7 +10,7 @@ export const routes: { id: Route; label: string }[] = [
   { id: 'data', label: 'Data & limits' },
 ]
 
-/** No hash (or `#/home`) is the start screen. Home is not in `routes`, so it has no nav pill. An unknown hash is Check. */
+/** No hash (or `#/home`) is the landing page. Home is not in `routes`, so it has no nav pill. An unknown hash is Check. */
 const read = (): Route => {
   const id = location.hash.replace(/^#\/?/, '')
   if (id === '' || id === 'home') return 'home'

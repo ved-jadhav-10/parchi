@@ -11,8 +11,7 @@ import { HomePage } from './pages/HomePage'
 import { LogPage } from './pages/LogPage'
 import { useRoute, type Route } from './route'
 
-const pages: Record<Route, () => React.JSX.Element> = {
-  home: HomePage,
+const pages: Record<Exclude<Route, 'home'>, () => React.JSX.Element> = {
   check: CheckPage,
   demo: DemoPage,
   log: LogPage,
@@ -22,6 +21,8 @@ const pages: Record<Route, () => React.JSX.Element> = {
 
 export default function App() {
   const route = useRoute()
+  // The landing page brings its own navigation and footer.
+  if (route === 'home') return <HomePage />
   const Page = pages[route]
   return (
     <>

@@ -23,6 +23,12 @@
 
   /* Surfaces: flat page ground, white cards, one tone step for the workspace panel */
   --color-panel: #f3f4fd;
+
+  /* Landing page only */
+  --color-lilac: #e4e6f8;
+  --color-slip: #fbf9f3;
+  --color-accent-soft: #8d95f0;
+  --color-on-ink-muted: #cdd2ee;
   --ring: 0 0 0 1px rgb(18 32 86 / 0.06);
   --shadow-inset: inset 2px 4px 5px rgb(18 32 86 / 0.1), inset -2px -4px 6px rgb(255 255 255 / 0.6);
   --radius-pill: 999px;

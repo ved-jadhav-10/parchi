@@ -15,7 +15,7 @@ export default defineConfig({
         theme_color: '#122056',
         background_color: '#fafafd',
         display: 'standalone',
-        // An installed app opens straight on the checker; the start screen is for first-time visitors.
+        // An installed app opens straight on the checker; the landing page is for first-time visitors.
         start_url: '/#/check',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
