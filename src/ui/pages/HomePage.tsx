@@ -275,7 +275,6 @@ export const HomePage = () => {
               </li>
             ))}
           </ol>
-          <p className="hint"><a href="#/queue">Open the review desk</a> to see three sample orders, one with a result that arrives later.</p>
         </section>
 
         <section className="home-section home-section--ink" id="checks" aria-labelledby="checks-title">
