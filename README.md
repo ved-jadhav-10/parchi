@@ -1,6 +1,8 @@
-# HM-02 Rx Safety Checker
+# Parchi
 
-Read `CLAUDE.md` then `PLAN.md`.
+Indian brand-name prescription safety checker (HYPNEXIS HM-02). Offline-capable PWA.
+
+Read `docs/CLAUDE.md` then `docs/PLAN.md`.
 
 ```
 npm install
