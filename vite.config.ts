@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       workbox: { globPatterns: ['**/*.{js,css,html,json,svg,png,woff2}'] },
       manifest: {
-        name: 'Rx Safety Checker',
-        short_name: 'RxCheck',
+        name: 'Parchi',
+        short_name: 'Parchi',
         theme_color: '#122056',
         background_color: '#fafafd',
         display: 'standalone',
