@@ -130,7 +130,7 @@
       "crcl_below": 60,
       "crcl_at_least": 30,
       "tier": "inform",
-      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can reduce kidney function; lowest dose for the shortest time. Pharmacist to review.",
+      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can lower kidney function when clearance is already reduced. Pharmacist to review.",
       "source": "Draft renal rule, matches limits.json (caution at CrCl 30-59); stops only together with another kidney stressor (see stack_rules); FIX_PLAN 1.3",
       "pharmacist_approved": false
     },
