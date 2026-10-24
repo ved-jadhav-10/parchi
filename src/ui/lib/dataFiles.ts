@@ -22,6 +22,8 @@ export interface DataRow {
   value: string
   source: string
   approved: boolean | undefined
+  /** Set when a script found the quoted label sentence behind this value. Not a pharmacist's approval. */
+  checked?: string
 }
 
 type Raw = Record<string, unknown>
