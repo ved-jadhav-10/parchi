@@ -27,7 +27,7 @@ export const BenchmarkPage = () => {
         <PageIntro note="Measured, not claimed." title="Engine vs chatbots" />
         <EmptyState title="No benchmark results yet">
           <p>
-            Results appear here once the benchmark has run: the engine and each chatbot on the same pharmacist-labelled prescriptions, so nothing shown is
+            Results appear here once the benchmark has run: the engine and each chatbot on the same labelled prescriptions, so nothing shown is
             estimated.
           </p>
           <ul className="checks">
@@ -45,7 +45,7 @@ export const BenchmarkPage = () => {
             </li>
             <li>
               <strong>Precision and recall, by alert type</strong>
-              <span>Scored against the pharmacist-labelled set.</span>
+              <span>Scored against the labelled set.</span>
             </li>
           </ul>
           <p className="hint">
@@ -64,11 +64,23 @@ export const BenchmarkPage = () => {
     <>
       <PageIntro note="Measured, not claimed." title="Engine vs chatbots" />
       <div className="workspace workspace--single">
+        {bench.label_status?.startsWith('draft') && (
+          <p className="mock-note">
+            The expected alerts in this set are a draft: written from drug labels and guidelines, not yet reviewed by a pharmacist. Read the numbers as a test of the engine, not as
+            clinical validation.
+          </p>
+        )}
+        {bench.systems.length < 2 && (
+          <p className="mock-note">
+            Only the engine is scored so far. Chatbot results appear here once their answers to the same prescriptions are saved in <code>eval/outputs/</code> (see{' '}
+            <code>eval/README.md</code>).
+          </p>
+        )}
         <div className="kpis">
-          <KpiCard label="Prescriptions" value={bench.n_rx ?? '—'} hint="Pharmacist-labelled gold set" />
+          <KpiCard label="Prescriptions" value={bench.n_rx ?? '—'} hint={bench.label_status?.startsWith('draft') ? 'Gold set, draft labels' : 'Pharmacist-labelled gold set'} />
           <KpiCard label="Alerts per Rx" value={num(engine.alerts_per_rx)} hint={engine.name} />
           <KpiCard label="Interrupts per Rx" value={num(engine.interrupts_per_rx)} hint="Target: 1 or fewer" tier="interrupt" />
-          <KpiCard label="Agreement (kappa)" value={bench.kappa?.toFixed(2) ?? '—'} hint="Between two raters" />
+          <KpiCard label="Agreement (kappa)" value={bench.kappa?.toFixed(2) ?? '—'} hint={bench.kappa == null ? 'Needs a second rater' : 'Between two raters'} />
         </div>
 
         <Card title="Alert load" description="Fewer alerts and fewer false alarms on clean prescriptions mean less alert fatigue">
@@ -80,6 +92,7 @@ export const BenchmarkPage = () => {
                   <th scope="col">Alerts per Rx</th>
                   <th scope="col">Interrupts per Rx</th>
                   <th scope="col">False alarms on clean Rx</th>
+                  <th scope="col">Median time</th>
                 </tr>
               </thead>
               <tbody>
@@ -89,6 +102,7 @@ export const BenchmarkPage = () => {
                     <td className="num">{num(s.alerts_per_rx)}</td>
                     <td className="num">{num(s.interrupts_per_rx)}</td>
                     <td className="num">{pct(s.clean_fp_rate)}</td>
+                    <td className="num">{s.median_ms == null ? '—' : `${s.median_ms} ms`}</td>
                   </tr>
                 ))}
               </tbody>

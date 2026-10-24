@@ -1,0 +1,53 @@
+{
+ "n_rx": 50,
+ "kappa": null,
+ "label_status": "draft: expected alerts were written by the developer from drug labels and guidelines (the `why` of each case), independent of the engine, and have NOT yet been reviewed by a pharmacist",
+ "systems": [
+  {
+   "name": "Parchi engine",
+   "n_rx": 50,
+   "alerts_per_rx": 0.82,
+   "interrupts_per_rx": 0.2,
+   "clean_fp_rate": 0.0,
+   "by_type": {
+    "dose_excess": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "duplicate_ingredient": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "class_duplication": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "ddi": {
+     "precision": 1.0,
+     "recall": 0.8
+    },
+    "renal": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "geriatric": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "banned_fdc": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "input_needed": {
+     "precision": 1.0,
+     "recall": 1.0
+    },
+    "schedule_mismatch": {
+     "precision": 1.0,
+     "recall": 1.0
+    }
+   },
+   "median_ms": 1.5
+  }
+ ]
+}
