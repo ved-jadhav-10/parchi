@@ -16,10 +16,10 @@ describe('the real engine behind the UI', () => {
     const para = r.ledger.paracetamol
     expect(para.total_mg_day).toBe(4100)
     expect(para.sources).toHaveLength(3)
-    // Age alone no longer lowers the paracetamol limit (FIX_PLAN 2.4): the 68-year-old gets the adult maximum, a draft the pharmacist has not signed off.
+    // Age alone no longer lowers the paracetamol limit (FIX_PLAN 2.4): the 68-year-old gets the adult maximum, the limit is signed off (Dr. Sanjay Dhanushkar); the rest of the paracetamol cap data is not.
     expect(para.limit_mg_day).toBe(4000)
     expect(para.limit_basis).toBe('Adult maximum')
-    expect(para.limit_pharmacist_approved).toBe(false)
+    expect(para.limit_pharmacist_approved).toBe(true)
     const dose = r.alerts.find((a) => a.type === 'dose_excess')
     expect(dose?.tier).toBe('interrupt')
     expect(dose?.ingredients).toContain('paracetamol')
@@ -29,7 +29,7 @@ describe('the real engine behind the UI', () => {
     const r = await check(demoRxText, demoPatient)
     expect(r.alerts.filter((a) => a.tier === 'interrupt').map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_double_high_risk'])
     expect(r.alerts.find((a) => a.type === 'nsq')?.tier).toBe('silent')
-    expect(r.alerts.every((a) => a.approved !== true || ['nsq', 'banned_fdc'].includes(a.type))).toBe(true)
+    expect(r.alerts.every((a) => a.approved !== true || ['nsq', 'banned_fdc', 'dose_excess'].includes(a.type))).toBe(true)
   })
 
   it('sorts alerts interrupt, then inform, then silent', async () => {

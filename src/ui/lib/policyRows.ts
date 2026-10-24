@@ -5,8 +5,8 @@ import type { AlertRules } from '../../engine/rules'
 import type { DataRow } from './dataFiles'
 import { mg, titleCase } from './format'
 
-const row = (name: string, detail: string, value: string, source: string, approved: boolean | undefined, checked?: string): DataRow => ({
-  name, detail, value, source, approved, ...(checked ? { checked } : {}),
+const row = (name: string, detail: string, value: string, source: string, approved: boolean | undefined, checked?: string, approvedBy?: string): DataRow => ({
+  name, detail, value, source, approved, ...(checked ? { checked } : {}), ...(approvedBy ? { approvedBy } : {}),
 })
 
 /** "Label quote checked 25 Oct 2026": a script found the cited sentence in the label. Says nothing about a pharmacist. */
@@ -24,9 +24,9 @@ export function limitRows(limits: LimitsData): DataRow[] {
   const rows: DataRow[] = []
   for (const [id, l] of Object.entries(limits.ingredients)) {
     const name = titleCase(id)
-    if (l.adult) rows.push(row(name, 'Adult', perDay(l.adult.max_mg_day), l.adult.source, l.adult.pharmacist_approved, labelChecked(l.adult.label_checked)))
-    if (l.elderly) rows.push(row(name, `Age ${old} and over`, perDay(l.elderly.max_mg_day), l.elderly.source, l.elderly.pharmacist_approved, labelChecked(l.elderly.label_checked)))
-    if (l.paediatric) rows.push(row(name, `Under ${young} years, by weight`, `${mg(l.paediatric.max_mg_per_kg_day)} mg/kg/day`, l.paediatric.source, l.paediatric.pharmacist_approved, labelChecked(l.paediatric.label_checked)))
+    if (l.adult) rows.push(row(name, 'Adult', perDay(l.adult.max_mg_day), l.adult.source, l.adult.pharmacist_approved, labelChecked(l.adult.label_checked), l.adult.approved_by))
+    if (l.elderly) rows.push(row(name, `Age ${old} and over`, perDay(l.elderly.max_mg_day), l.elderly.source, l.elderly.pharmacist_approved, labelChecked(l.elderly.label_checked), l.elderly.approved_by))
+    if (l.paediatric) rows.push(row(name, `Under ${young} years, by weight`, `${mg(l.paediatric.max_mg_per_kg_day)} mg/kg/day`, l.paediatric.source, l.paediatric.pharmacist_approved, labelChecked(l.paediatric.label_checked), l.paediatric.approved_by))
     for (const rc of l.risk_caps ?? []) {
       const detail = { low_weight: `Weight under ${rc.weight_below} kg`, liver_disease: 'Liver disease', heavy_alcohol_use: 'Heavy alcohol use' }[rc.factor]
       rows.push(row(name, detail, rc.max_mg_per_kg_day !== undefined ? `${mg(rc.max_mg_per_kg_day)} mg/kg/day` : perDay(rc.max_mg_day ?? 0), rc.source, rc.pharmacist_approved))

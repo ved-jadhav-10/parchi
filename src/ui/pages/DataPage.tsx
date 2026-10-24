@@ -41,7 +41,7 @@ const DataTable = ({ title, description, all, filter, empty }: { title: string; 
     ) : (
       <>
         <p className="hint">
-          {approvedCount(all)} of {all.length} signed off by a pharmacist. Anything else is shown as not signed off and should not be relied on.
+          {approvedCount(all)} of {all.length} signed off. Anything else is shown as not signed off and should not be relied on.
           {filtered && ` Showing ${rows.length}.`}
         </p>
         {rows.length === 0 ? (
@@ -67,6 +67,7 @@ const DataTable = ({ title, description, all, filter, empty }: { title: string; 
                   <td>{r.source || '—'}</td>
                   <td>
                     <Approval approved={r.approved} />
+                    {r.approved && r.approvedBy ? <div className="hint">Signed off by {r.approvedBy}</div> : null}
                     {r.checked ? <div className="hint">{r.checked}</div> : null}
                   </td>
                 </tr>
@@ -117,7 +118,7 @@ export const DataPage = () => {
       <PageIntro note="What the checks rely on." title="Data and limits" />
       <div className="workspace workspace--single">
         <p className="hint" role="status">
-          {unsigned} of {everything.length} numbers and rules here are not signed off by a pharmacist yet. Each is marked, with its source. “Label quote checked” means a script found the cited sentence in the label; it is not a pharmacist’s approval.
+          {unsigned} of {everything.length} numbers and rules here are not signed off yet. Each is marked, with its source. “Label quote checked” means a script found the cited sentence in the label; it is not a sign-off. {approvedCount(everything)} dose limits for everyday medicines were signed off by Dr. Sanjay Dhanushkar; less common medicines, kidney bands, paracetamol with alcohol or liver disease, and as-needed caps were not covered.
         </p>
         <div className="toolbar">
           <label className="field">

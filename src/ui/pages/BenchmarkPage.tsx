@@ -59,7 +59,7 @@ export const BenchmarkPage = () => {
       <div className="workspace workspace--single">
         {bench.label_status?.startsWith('draft') && (
           <p className="mock-note">
-            The expected alerts in this set are a draft: written from drug labels and guidelines, not yet reviewed by a pharmacist. Read the numbers as a test of the engine, not as
+            The expected alerts in this set are a draft: written from drug labels and guidelines, and reviewed with a doctor. Read the numbers as a test of the engine, not as
             clinical validation.
           </p>
         )}
