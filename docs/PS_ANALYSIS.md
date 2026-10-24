@@ -234,6 +234,98 @@ The output should show 2 Interrupts, 3–4 Informs and the rest silent-logged. T
 - India pharmacy retail ≈ USD 30.1B (2025) → USD 52.8B by 2031 (Ken Research).\[70\] Online pharmacy USD 3.71B (2025) → USD 14.08B by 2034 (IMARC).\[71\] Estimates conflict widely (TechSci puts e-pharmacy at only USD 394M for 2024; one vendor claims USD 347.5B retail, which is implausible), so cite one source and label it as an estimate.\[72\]\[73\]
 - Customers: chemist shops (~1M outlets per Ken Research's model), Jan Aushadhi Kendras (20,149), e-pharmacies (prescription verification at scale), EMRs (HealthPlix/Eka as API buyers), hospital pharmacies.\[70\]\[74\]
 
+### 9. Business viability
+Judges will not read the engine. This section covers who uses it, who pays, who resists, and how to pitch it.
+
+**Core insight: the chemist counter is the only place where every prescription meets.** Two doctors' prescriptions plus OTC purchases come together only at the pharmacy. A doctor's EMR (HealthPlix, Eka, Practo) sees only its own prescription, so it cannot notice that the orthopaedist prescribed Zerodol-P while the GP prescribed Dolo and Crocin Cold & Flu Max. This is why the product belongs at the pharmacy, not in the EMR.
+
+**30-second hook (no technical words):**
+> "A 68-year-old with weak kidneys gets 7 medicines from 2 doctors. Three different brands contain paracetamol: 4.1 g a day, above the safe limit, plus two painkillers that can harm the kidneys. We pasted it into ChatGPT. It [missed the hidden paracetamol / raised N alerts]. Our tool raised 2 alerts that matter, in milliseconds, offline, on a pharmacist's phone."
+
+Follow it with one slide: engine vs ChatGPT/Claude/Gemini on the pharmacist gold set (alerts per Rx, missed dangers, false alarms). Use measured numbers only.
+
+**Positioning line:**
+> "medThinks tells you two drugs interact. We tell you this patient is taking 4.1 g of paracetamol across three brands, that their kidneys can't handle two NSAIDs, and we stay quiet about the 20 things the pharmacist would ignore anyway."
+
+#### 9.1 Business points for the pitch
+| # | Point | Why judges like it | Proof |
+|---|---|---|---|
+| 1 | "We reduce alerts, not add them" (≤1 Interrupt per Rx) | Everyone else pitches more warnings | Override rates 46–96% (Poly 2020); LLMs flag non-existent DDIs (Sicard 2025)\[69\] |
+| 2 | Works offline at the counter | Indian chemist shops have patchy internet; rivals are cloud or app based | PWA stack (`PLAN.md`) |
+| 3 | Regulation built in | Shows India-specific understanding | 16 FDCs banned 11 Jun 2026 (too recent for LLMs); NSQ Sep 2026 list\[9\]\[12\] |
+| 4 | Saves the patient money | Social impact plus a rupee figure | Jan Aushadhi 50–80% cheaper (Kendra / government mode only, see 9.4)\[16\] |
+| 5 | Pharmacist-validated, legally sensible | Answers "is this safe/legal?" before it's asked | Named pharmacist sign-off; "informs, never decides" keeps a lower CDSCO software risk class\[17\]\[18\] |
+
+#### 9.2 Who uses it, who pays
+The doctor is neither the user nor the buyer. Doctors care about time, ego and liability (not only money), so they won't pay and may resist being questioned. The user is the counter pharmacist or staff; the buyers are the organisations that carry dispensing risk at scale.
+
+| Stakeholder | Cares about | Gains | Loses | Resistance |
+|---|---|---|---|---|
+| Doctor | Time, reputation, liability | Protection from errors they can't see (another doctor's Rx) | Gets questioned by a pharmacist; awkward given the hierarchy | Medium (social, not money) |
+| Counter pharmacist / staff (user) | Speed, not getting in trouble | "Senior pharmacist in a box", especially for junior or unqualified staff | Time: typing an Rx during a 1–2 min sale | High if it adds steps |
+| Independent chemist owner | Margin, licence, stock | Avoids selling banned FDC or NSQ stock (licence risk, returns) | Slightly fewer duplicate sales; Jan Aushadhi suggestion sends the sale to another shop | High for Jan Aushadhi, low for compliance |
+| Pharmacy chains (Apollo, MedPlus, Wellness Forever) | Brand trust, consistency, liability | Same safety standard at every counter | Licence fee | Low |
+| E-pharmacies (1mg, PharmEasy, Apollo 24/7) | Rx review throughput, compliance, liability | Faster pharmacist review at scale, audit log | Integration effort | Lowest: best first buyer |
+| Hospital pharmacies | Accreditation, adverse events | Supports medication-safety standards (NABH, unverified) | HIS integration | Low, slow sales cycle |
+| Pharma companies | Volume, esp. cold/cough FDCs | Nothing | Banned-FDC flags, fewer duplicate sales | Low in practice: no control over the counter, tiny volume |
+| Patients | Cost, safety | Biggest benefit | Nothing | None, but won't pay |
+| Government (PMBJP, drug controllers) | Public health, enforcement | Bans enforced at the counter, generic adoption | Nothing | None, slow procurement |
+| Insurers (later) | Fewer ADE hospitalisations | Lower claims | Nothing | None, later-stage buyer |
+
+#### 9.3 Segments and revenue model
+| Segment | Viable? | Model | Why |
+|---|---|---|---|
+| E-pharmacies | **Yes, strongest** | Per-check API | Already pay pharmacists to review Rx at scale; we speed it up and cut liability |
+| Pharmacy chains | **Yes** | Per-store licence | Standardises safety across stores, protects the brand |
+| Hospital pharmacies | Yes, slower | Licence / HIS integration | Accreditation and adverse-event costs |
+| EMR platforms (HealthPlix, Eka) | Yes, as partner | API | Adds dose-aware checks to their product; HealthPlix shows the market pays for in-EMR CDSS\[31\]\[32\] |
+| Independent chemists (~1M) | Only free or bundled | Free offline app; reach via billing software | Won't pay standalone; compliance hook drives adoption |
+| Doctors | No | — | Indirect beneficiaries only |
+| Government / Jan Aushadhi Kendras (20,149) | Impact story | Tender / programme | Good for judges, slow for revenue\[74\] |
+
+**Pitch line:** "We sell to the people who carry the risk at scale (e-pharmacies, chains, hospitals) and give it free to the independent chemist, where it protects their licence."
+
+**Market size:** cite one estimate only, labelled as such: Ken Research, Indian pharmacy retail USD 30.1B (2025) → 52.8B (2031).\[70\]
+
+#### 9.4 Adoption resistance and mitigations
+| Resistance | Mitigation |
+|---|---|
+| Counter time: typing every Rx | Business version plugs into pharmacy billing software (e.g. Marg ERP, unverified market share): the bill already lists the brands, so the check runs with zero extra typing. Hackathon build stays typed input, per the problem statement |
+| Chemist margin lost to Jan Aushadhi | Private-chemist mode suggests a cheaper same-composition alternative **in their own stock**; Jan Aushadhi mode only for Kendras and government deployments |
+| Chemist doesn't value patient safety enough to pay | Lead with compliance: "protects your licence" (banned FDC, NSQ batch); safety is the side benefit |
+| Doctor ego when questioned | Generate a short polite query: "Patient is also on Zerodol-P from Dr X. Total paracetamol is 4.1 g/day. Please confirm." Frame it as "a prescription you couldn't see", never "your error" |
+| Alert fatigue wastes counter time | The alert budget is also a business feature: fewer interrupts mean less counter time and fewer awkward doctor calls |
+| Liability for clinical decisions | Pharmacist decides; every alert cited; overrides logged |
+| DDInter licence is non-commercial | Commercial version licenses DDI data (e.g. Medi-Span/CIMS); our IP is the pharmacist-curated Indian layer (compositions, strength variants, limits, SOS rules, suppression list)\[1\] |
+| Pharma loses banned/duplicate FDC volume | Negligible, and they don't control the counter; no mitigation needed |
+
+#### 9.5 Competition (business view)
+| Category | Players | Threat | Their gap / our angle |
+|---|---|---|---|
+| Direct: Indian-brand DDI checkers | medThinks (closest), GoDavaii, CureCheck, MSPC DICP\[26\]\[27\]\[28\]\[38\] | **High** | Pairwise DDI; per this doc, no cumulative dose, patient limits, SOS logic or alert budget (unverified, see 9.6) |
+| Paid incumbent (India) | MIMS/CIMS eMIMSplus\[29\] | Medium-high | Most complete data; beat it on price, offline use, dose awareness, pharmacist workflow |
+| Doctor-side EMRs | HealthPlix, Eka, Practo Ray | Low | See one doctor's Rx only; position them as API customers |
+| Pharmacy portals | Tata 1mg, Apollo Pharmacy | Low | Per-drug warnings, not prescription-level (Apollo's Dolo + Numcold warning proves the problem)\[37\]; potential customers |
+| Global incumbents | Lexicomp, Medi-Span, FDB, Micromedex, Drugs.com, Medscape | Low in India | Expensive, US-brand-centric, don't know Dolo or Zerodol-P |
+| Raw LLMs | ChatGPT, Claude, Gemini | **The competitor in judges' minds** | Severity right 37.3% (Thapa 2025), false alarms, run-to-run variance; beaten by the benchmark |
+| Disappearing free APIs | NLM RxNav DDI API (Jan 2024), DrugBank free checker (reported 2026)\[3\]\[4\] | — | Supports an India-owned engine |
+
+**Defensibility:** a big player (e.g. MIMS) could add a dose ledger. The moat is the curated Indian data, pharmacist validation, offline-first design and distribution, not the algorithm.
+
+#### 9.6 Judge Q&A prep
+- **"Why not just use ChatGPT?"** Benchmark slide; deterministic (same answer every time), auditable, offline.
+- **"medThinks already exists."** Name it first; use the positioning line.
+- **"How do you make money on non-commercial data?"** Licensed DDI data in the commercial version; the curated Indian layer is the IP.
+- **"Who's liable if it's wrong?"** The pharmacist decides; cited alerts, confidence score, "needs pharmacist" route, override log.
+- **"Why would a chemist use it?"** Protects their licence; zero typing once integrated with billing.
+- **"Won't doctors resist?"** Polite query template; framed as another prescription they couldn't see.
+
+#### 9.7 Verify before the pitch
+1. Run the demo Rx through medThinks and screenshot what it misses; the "pairs only" claim is unverified.
+2. NABH medication-safety requirements, e-pharmacy rules and pharmacy billing software market share come from general knowledge, not sourced research.
+3. Competitor claims (GoDavaii, CureCheck, medThinks, Practo) are self-reported.\[27\]\[28\]
+4. Fill every bracketed benchmark number with measured results.
+
 ## Recommendations
 1. **Next 2 hours:** freeze the data model (brand → ingredients[mg, unit, per_volume] → ATC class) on the 1mg 2025 or A-Z dataset, filtered to the ~2,000 top OPD brands. Hand-curate the ~40 brands used in the demo and test set with the pharmacist.
 2. **By midnight:** finish the resolver, sig parser, ledger, limits table (pharmacist-signed, ~25 ingredients), class duplication, banned-FDC table and 3-tier output with the X-ray visual. Use DDInter only for pairs among resolved ingredients.
