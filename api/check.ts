@@ -14,7 +14,7 @@ import { checkRxText, parseHistoryRequest, parsePatient, parsePatientMap } from 
 import { createResolver } from '../src/engine/resolver'
 import { createDdiIndex, type DdiJson } from '../src/engine/resolver/ddi'
 import { decodeData, type BannedJson, type BrandsJson, type IngredientsJson, type JanAushadhiJson, type NsqJson } from '../src/engine/resolver/data'
-import { parseAlertRules } from '../src/engine/rules'
+import { CLINICAL_DATA_VERSION, parseAlertRules } from '../src/engine/rules'
 import { createRealEngine } from '../src/engine/wiring'
 import { createLimiter, intFrom, tooMany } from './_rateLimit'
 
@@ -81,7 +81,7 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
         return json({
           schema: 1,
           mode: 'history_by_patient',
-          disclaimer: DISCLAIMER,
+          disclaimer: DISCLAIMER, data_version: CLINICAL_DATA_VERSION,
           patients: account.patients.map((x) => ({ label: x.label, ...x.result })),
           alerts: account.alerts,
           unassigned: account.unassigned.map((rx) => ({ id: rx.id, doctor: rx.doctor, date: rx.date })),
@@ -92,9 +92,9 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
       const herbal = split && deps.herbal ? herbalHistory(split.herbal, result?.lines ?? [], deps.herbal) : undefined
       if (!result) {
         // Only herbal items were sent: there is no ordinary medicine to check, and that is not a "clear".
-        return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, alerts: [], lines: [], windows: [], ledger: {}, status: 'clear_with_note', priority: 0, ...(herbal && { herbal }), ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
+        return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, data_version: CLINICAL_DATA_VERSION, alerts: [], lines: [], windows: [], ledger: {}, status: 'clear_with_note', priority: 0, ...(herbal && { herbal }), ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
       }
-      return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, ...result, ...(herbal && { herbal }), ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
+      return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, data_version: CLINICAL_DATA_VERSION, ...result, ...(herbal && { herbal }), ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
     } catch {
       return json({ error: 'Check failed' }, 500)
     }
@@ -111,7 +111,7 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
     return json({
       schema: 1,
       mode: 'single',
-      disclaimer: DISCLAIMER,
+      disclaimer: DISCLAIMER, data_version: CLINICAL_DATA_VERSION,
       alerts: result.alerts,
       lines: result.lines,
       ledger: dose.ledger,

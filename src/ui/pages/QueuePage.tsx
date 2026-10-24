@@ -89,7 +89,7 @@ export const QueuePage = () => {
       <div className="workspace workspace--single">
         <div className="kpis kpis--queue" role="group" aria-label="Filter waiting orders by suggestion">
           <KpiCard label="Waiting" value={ready ? waiting.length : '–'} hint={waitingHint || undefined} short="Waiting" pressed={view === 'waiting' && filter === 'all'} onSelect={() => pick('all')} />
-          <KpiCard label="Suggested hold" value={ready ? counts.hold_contact_doctor : '–'} tier="interrupt" short="Hold" pressed={view === 'waiting' && filter === 'hold_contact_doctor'} onSelect={() => pick('hold_contact_doctor')} />
+          <KpiCard label="Needs attention" value={ready ? counts.hold_contact_doctor : '–'} tier="interrupt" short="Attention" pressed={view === 'waiting' && filter === 'hold_contact_doctor'} onSelect={() => pick('hold_contact_doctor')} />
           <KpiCard label="Clear, with a note" value={ready ? counts.clear_with_note : '–'} tier="inform" short="With note" pressed={view === 'waiting' && filter === 'clear_with_note'} onSelect={() => pick('clear_with_note')} />
           <KpiCard label="No alerts" value={ready ? counts.clear : '–'} tier="silent" short="No alerts" pressed={view === 'waiting' && filter === 'clear'} onSelect={() => pick('clear')} />
         </div>
