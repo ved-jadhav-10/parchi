@@ -91,3 +91,17 @@ python -m pytest data/tests && npm test
 ```
 
 Add a brand the pharmacist verified: a row in `data/curated/brands.csv` (composition in dataset style, `Name (500mg) + Name (5mg/5ml)`), rebuild. Add a spelling: `data/curated/ingredient_aliases.csv`.
+
+## Phase 2: catalogue, proposed compositions, alternatives (`resolver/catalogue.ts`)
+
+All offline TypeScript; nothing here decides or substitutes. Fixture: `tests/fixtures/demo_catalogue.csv`.
+
+- **`importCatalogue(csv, resolver)`** reads the buyer's CSV (`,` `;` or tab; quotes; BOM). Headers are matched by name (`Product Name`, `SKU`, `Composition`, `MRP`, `Stock`, `Strength`, `Form` and common variants); `columns` reports the mapping. Pack sizes ("15's", "strip of 10") are dropped. A composition in the name's brackets is used when no column gives one. Each row becomes a `CatalogueItem` with a canonical `resolved` (the Contract 1 shape) and a status:
+  - `confirmed`: exact/curated match, no doubt.
+  - `review`: fuzzy or low confidence, look-alike (LASA), assumed strength, incomplete composition, catalogue composition or strength disagrees with the database, or a banned FDC.
+  - `unmatched`: not in the database; `resolved.proposed_composition` is set when a guess exists.
+  - `review[]` is ranked: banned FDC 0, disagreement 1, unmatched 2, look-alike 3, other doubt 4.
+- **`proposed_composition`** (new optional field on `ResolvedBrand`, set when `match: 'none'`): `{brand, form, route, systemic, ingredients, confidence, basis, unverified: true, caution?}`. `basis` is `similar_brand_name` (closest name; confidence x0.7 if rivals have another composition) or `buyer_composition_text` (the catalogue's own composition, capped at 0.9, 0.5 without strengths). Track C already shows `candidates[0]`; it can switch to this field. Never add it to dose totals before a pharmacist confirms it.
+- **`resolver.proposeFromComposition(text)`**: ingredients named in composition text -> proposal, or `null` if any part is unknown.
+- **`confirmItem(item, ingredients?)`**: pharmacist confirmation; returns a new `confirmed` item (`pharmacist_confirmed: true`). A proposal needs this before it can be used.
+- **`createCatalogue(items)`**: `lookup(name)` (the buyer's own entry for a typed name) and `alternatives(resolved, {referencePrice?, limit?})`: other **confirmed**, in-stock, non-discontinued, non-banned entries with the same ingredients, strengths, form and route, cheapest first. Cautions: release type differs (SR/ER vs plain) or failed-batch brand. The pharmacist confirms equivalence; unconfirmed compositions are never offered.

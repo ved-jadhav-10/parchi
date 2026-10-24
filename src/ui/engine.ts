@@ -42,25 +42,20 @@ export interface EngineDeps {
  */
 export function createCheck(deps: EngineDeps) {
   const { resolver, ddi, rules } = deps
+  // computeDose (not just a ledger) lets the pipeline raise Track B's findings as alerts: weekly drugs written daily,
+  // kidney warnings, unclear sigs, liquids with no known volume. Without it those are silently dropped.
+  const check = createPipeline({ resolver, ddi, rules, parseSig: (text) => parseSig(text), computeDose })
   return async (rxText: string, patient: Patient): Promise<CheckResult> => {
-    let dose: DoseResult | undefined
-    const check = createPipeline({
-      resolver,
-      ddi,
-      rules,
-      parseSig: (text) => parseSig(text),
-      buildLedger: (lines, p) => (dose = computeDose(lines, p, { classesOf: (id) => resolver.ingredient(id)?.classes })).ledger,
-    })
-    const { lines, ledger, alerts } = await check(rxText, patient)
+    const { lines, ledger, alerts, needs, crcl, notes } = await check(rxText, patient)
     if (lines.length === 0) throw new Error('No medicines found in the text')
     return {
       lines,
       ledger,
       alerts,
       // The patient form always asks for sex; only the two fields it hides until needed become prompts.
-      prompts: (dose?.needs ?? []).filter((n): n is typeof n & { field: PatientPrompt['field'] } => n.field !== 'sex').map((n) => ({ field: n.field, reason: n.reason })),
-      crcl: dose?.crcl ?? null,
-      notes: dose?.notes ?? [],
+      prompts: needs.filter((n): n is typeof n & { field: PatientPrompt['field'] } => n.field !== 'sex').map((n) => ({ field: n.field, reason: n.reason })),
+      crcl,
+      notes,
     }
   }
 }
