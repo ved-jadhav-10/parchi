@@ -2,6 +2,8 @@
 
 Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, branch `v1`: Tracks A to D are built and in the app. 738 automated tests (Vitest) and 102 Python tests pass; the app builds and runs offline. The engine, the Phase 2 review desk (history timeline, kidney re-check, unverified brands, ranked queue), FHIR import and draft export, and an online customer-leaflet function are working. The benchmark has run the engine on a 54-case **draft** gold set (labels written by the team from drug labels and guidelines, not yet reviewed by a pharmacist); no chatbot has been scored yet. All limits and rules are still unapproved drafts. The pitch targets e-pharmacies and pharmacy chains (`BUSINESS_MODEL.md`); the demo script is `docs/DEMO.md`.
 
+**Clinical review update (24 Oct 2026, late):** a clinical-realism review found severity problems (contraindicated pairs only Inform; the per-Rx cap can demote a third real Interrupt; any NSAID below CrCl 60 Interrupts; no allergy/pregnancy fields; test cases mostly one molecule under two brands). The fixes are planned in `docs/FIX_PLAN.md` (Phases 0-6) and **not yet built**. This file now follows Phase 0: no claim on a slide goes beyond what the app does today.
+
 Template: official HYPNEXIS '26 deck (`HYPNEXIS26_Official_PPT_Template.pptx`), 9 slides, 13.33 × 7.5 in. Every content slide (2–8) shows "Team Name | Team ID" top right: fill as `[Team name] | [Team ID]`.
 
 How to paste: only lines starting `- `, `1. ` or `> ` go on the slide (`> ` = plain paragraph, no bullet); everything else is an instruction. Each box has a **Fit:** line: font size, list style, and the text box's size in the template. Template body text is 14 pt Calibri, bullets with a 0.375 in hanging indent, 6 pt after each paragraph; a box marked 12 pt needs its font reduced to fit. Keep the template's box positions unless a Fit line says otherwise. Every box was checked to fit by wrapping its text with real Calibri metrics (see Checklist).
@@ -24,7 +26,7 @@ Status tags used on every feature: **(built)** = working code with automated tes
 | F9 | LLMs invent interactions in cases with none | Sicard et al., 2025 | [69], Key Finding 3 | S3 Core technologies 4 |
 | F8 | Alert-budget target: at most 1 Interrupt per prescription on average (a target, not a result) | PS_ANALYSIS §7 | §7 | S3 Unique points 3 |
 | F10 | Demo: "Brufan 400" expected to resolve to Brufen 400 (ibuprofen) | `tests/fixtures/demo_rx.json` | §5 | S4 User flow 1 |
-| F11 | Demo: paracetamol 4,100 mg/day expected vs 4,000 mg/day adult maximum | fixture; FDA label | §5, [81] | S4 User flow 2 |
+| F11 | Demo: paracetamol 4,100 mg/day expected; for the 68-year-old the engine applies its draft age-65+ cap of 3,000 mg/day (adult label max 4,000) | fixture; `limits.json` | §5, [81] | S4 User flow 2 |
 | F12 | Demo: CrCl ≈34 mL/min (68 y, 55 kg, SCr 1.6) | PS_ANALYSIS §5 (Cockcroft-Gault) | §5 | S4 User flow 2 |
 | F14 | Demo: expected 2 Interrupts, 3–4 Informs | fixture | §5 | S4 User flow 3 |
 | F15 | DDInter is non-commercial (CC BY-NC-SA 4.0) | PS_ANALYSIS Key Finding 1 | [1], Key Finding 1 | S5 Economic 3 |
@@ -104,7 +106,7 @@ Fit: 12 pt, plain, 5.40 × 0.70 in, after 0
 Body box 2.25 in tall (template 2.20); 3 pt after each bullet (template 6 pt).
 Fit: 12 pt, bullets, 5.40 × 2.25 in, after 3
 - **Brand unpacking:** Misspelt Indian brands match to ingredients and strengths, with confidence; unknown ones marked unverified (built).
-- **Reads shorthand:** 1-0-1 (morning, none, night), TDS (three times daily), SOS (only when needed), syrup mg per 5 mL (built).
+- **Reads shorthand:** 1-0-1, TDS, SOS, syrup mg per 5 mL; catches weekly methotrexate written as daily (built).
 - **Whole history:** Sums mg/day per ingredient across brands and overlapping Rx from every doctor; re-checks on new kidney tests (built).
 - **Duplicates and clashes:** Two same-type drugs, interactions, banned FDCs, look-alike brands, age and kidney limits (built).
 - **Three tiers, ranked:** Interrupt (stop, check), Inform (FYI), Silent (logged), most urgent first (built); riskiest orders first (built).
@@ -148,7 +150,7 @@ Fit: 12 pt, bullets, 5.40 × 1.65 in, after 3
 - **Worst-case SOS:** As-needed doses at daily maximum (built).
 - **Alert budget:** Target ≤1 Interrupt per Rx on average; mutes routinely ignored alerts (built).
 - **Fits their stack:** Offline at counters; CSV and FHIR import (built); billing-system APIs (proposed).
-- **Hard to copy:** Pharmacist-curated Indian compositions, limits, SOS rules, suppression list (planned).
+- **Hard to copy:** Source-tagged Indian compositions, limits, SOS rules, suppression list, awaiting sign-off (built).
 
 ---
 
@@ -173,7 +175,7 @@ Fit: 12 pt, plain, 2.80 × 1.15 in
 
 #### Step 2
 Fit: 12 pt, plain, 2.80 × 1.15 in
-> **Parchi counts and checks:** paracetamol 4,100 mg/day from three brands vs 4,000 mg adult max (FDA); CrCl ≈34 mL/min flags two NSAIDs (painkillers).
+> **Parchi counts and checks:** two NSAIDs (painkillers) plus aspirin with CrCl ≈34 mL/min; paracetamol 4,100 mg/day hidden in three brands, over the 65+ cap.
 
 #### Step 3
 Fit: 12 pt, plain, 2.80 × 1.15 in
@@ -190,7 +192,7 @@ Fit: 14 pt, plain, 3.40 × 1.60 in
 
 Wireframe area (template placeholder, 3.40 × 1.80 in): [Screenshot of the Prescription X-ray screen from the running app].
 
-*Presenter note: the 4,000 mg/day limit is the FDA adult label maximum; it still needs pharmacist sign-off and an Indian reference before it goes into the limits file. Paracetamol liver-failure statistics are US data (Larson 2005), so do not quote them as Indian.*
+*Presenter note: lead with the painkiller + aspirin + kidney story; the paracetamol excess is the "hidden ingredient" reveal, not the clinical headline. The adult label maximum is 4,000 mg/day; the 3,000 mg cap the engine applies at 65+ is a draft, and FIX_PLAN 2.4 replaces it with risk factors (weight under 50 kg, alcohol, liver disease). Both need sign-off and an Indian reference (NFI 2021). Paracetamol liver-failure statistics are US data (Larson 2005), so do not quote them as Indian.*
 
 ---
 
@@ -244,13 +246,13 @@ Fit: 12 pt, bullets, 4.50 × 1.30 in, indent 0.2
 
 ### 3 TECHNICAL IMPACT
 Fit: 12 pt, bullets, 4.50 × 1.30 in, indent 0.2
-- **Open Indian test set:** 54 labelled prescriptions (draft labels, pharmacist review pending) to score Parchi vs chatbots; chatbot results [pending] (built).
-- **Reusable drug data:** Indian brand-to-ingredient table with standard IDs; every limit source-tagged (planned).
+- **Open Indian test set:** 54 prescriptions, team-labelled (a regression test, not proof); 28 realistic multi-doctor cases next (planned).
+- **Reusable drug data:** Indian brand-to-ingredient table with standard IDs; every limit source-tagged (built).
 
 ### 4 EDUCATIONAL IMPACT
 Fit: 12 pt, bullets, 4.50 × 1.30 in, indent 0.2
-- **Alerts that teach:** Each reason and source shows counter staff which brands hide which ingredients (planned).
-- **Brands made visible:** The Prescription X-ray shows in plain words what each brand contains (planned).
+- **Alerts that teach:** Each reason and source shows counter staff which brands hide which ingredients (built).
+- **Brands made visible:** The Prescription X-ray shows in plain words what each brand contains (built).
 
 *Presenter note: Beers list = drugs risky for older adults. Do not put a number on the environmental benefit.*
 
@@ -351,6 +353,8 @@ Fit: 13 pt, bullets, 3.30 × 4.50 in
 **Phase 2 / B2B update (24 Oct 2026, ~18:00):** reworded for e-pharmacy and chain buyers and Phase 2, and engine tags moved to *built* where code and tests exist. Edited boxes: slide 2 Problem 3 and Our Solution; slide 3 flow-chart labels, pipeline steps, Unique Points; slide 4 Key screens, Step 1, Step 3, demo caption; slide 5 Technical Feasibility 1–2, Operational risk 3; slide 6 Social 1; slide 7 Target Users, Pricing, Sustainability. Each edited box was kept at or below its old character count except Technical Feasibility (+~45 characters, box was not full), Partnerships (+11), Cheaper options (+8), Safer self-care (+6), Problem 3 (+1). **Fit was not re-measured:** run the fit script again before pasting.
 
 **v1 update (24 Oct 2026):** status tags moved to *built* where the feature is now in the app (history, re-check, ranked queue, X-ray, FHIR import); test counts and the benchmark set size filled from real runs. **Fit was not re-measured.** Added since: WHO AWaRe antibiotic groups, more Beers rules, curated interaction pairs, customer leaflet (online), look-alike picker; mention only what the demo shows.
+
+**Clinical review update (24 Oct 2026, late):** edited slide 2 Our Solution (shorthand bullet now names weekly-as-daily), slide 3 Unique Points (no "pharmacist-curated"), slide 4 Step 2 and presenter note (engine's 65+ cap, NSAID story first), slide 6 Technical and Educational (benchmark called a regression test; X-ray and reasons tagged built). **Fit not re-measured.** Kept out of slides on purpose: the Ayurveda starter engine (no real product brand resolves yet) and NSQ as a hold reason (a failure applies to one batch, unknown at review). Not changed yet: "Hold, contact doctor" stays on slide 4 Step 3 because the app still says it; FIX_PLAN 0.6 renames it in the app first.
 
 **Left out or uncertain:**
 - **Build status (most important):** see the stamp at the top. Everything described is built and tested; limits, rules, the WHO AWaRe list, the curated interaction rules and the benchmark labels are drafts until a pharmacist reviews them. No chatbot has been scored: fill those numbers only from `eval/outputs/` runs. Fill every other `[placeholder]` from real runs before finals.
