@@ -1,6 +1,6 @@
 # HM-02 Rx Safety Checker
 
-Read `CLAUDE.md` then `PLAN.md`.
+Read `docs/CLAUDE.md` then `docs/PLAN.md`.
 
 ```
 npm install

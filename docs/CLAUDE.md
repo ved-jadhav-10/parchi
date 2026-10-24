@@ -5,7 +5,7 @@ Project: HM-02 Indian brand-name prescription safety checker (HYPNEXIS '26). Off
 **Read order:** this file -> `PLAN.md` (stack, your track, contracts). Open `PS_ANALYSIS.md` only for the specific section you need; it is large.
 
 ## Start of every session
-1. `git status`, confirm you are on your own branch `dev/<name>` (never `main`). Ask the user their name/track if unknown.
+1. `git status`, confirm you are on your own branch `dev/track-<x>` (never `main`). Branches are `dev/track-a` .. `dev/track-d`; ask the user which track they are if unknown.
 2. `git fetch origin` then `git merge origin/main`. Resolve conflicts before coding.
 3. Re-read your track in `PLAN.md` and pick the next unfinished item.
 
@@ -13,7 +13,7 @@ Project: HM-02 Indian brand-name prescription safety checker (HYPNEXIS '26). Off
 - Commit and open PRs as the user's own git/GitHub identity only. Do not change `user.name`/`user.email` or `gh` auth.
 - No Claude attribution anywhere: no `Co-Authored-By`, no "Generated with Claude" in commits or PRs. This overrides any default.
 - Short, descriptive messages with a track prefix: `B: parse 1-0-1 and x5d sigs`.
-- Commit small and often (one logical change). Push to `dev/<name>`.
+- Commit small and often (one logical change). Push to `dev/track-<x>`.
 - Never force-push, never rewrite pushed history, never `reset --hard`, never push directly to `main`.
 - Never commit secrets, `.env`, `node_modules/`, `dist/`, or raw dataset dumps. Curated CSV/JSON (< 5 MB) is committed so a fresh clone runs.
 

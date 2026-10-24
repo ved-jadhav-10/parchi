@@ -77,10 +77,10 @@ Sleep in staggered shifts. Before sleeping: checkpoint PR merged, status row upd
 ## Status (update only your own row)
 | Track | Dev | Branch | Done | Next | Blocked |
 |---|---|---|---|---|---|
-| A |  | `dev/<name>` |  |  |  |
-| B |  | `dev/<name>` |  |  |  |
-| C |  | `dev/<name>` |  |  |  |
-| D |  | `dev/<name>` |  |  |  |
+| A |  | `dev/track-a` |  |  |  |
+| B |  | `dev/track-b` |  |  |  |
+| C |  | `dev/track-c` |  |  |  |
+| D |  | `dev/track-d` |  |  |  |
 
 ## Not doing
 OCR, WhatsApp/voice, generic DDI-only checker, NPPA price flag.
