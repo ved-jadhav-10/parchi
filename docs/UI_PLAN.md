@@ -8,6 +8,7 @@ Hash routes (`#/check`), no router dependency, installable PWA. Pill nav on desk
 | Route | Page | Status |
 |---|---|---|
 | `#/check` | Prescription check: Rx + patient in, KPI row, alerts, X-ray, brand matches (expandable), silent log, FHIR draft export | Built, runs on mock engine output |
+| `#/demo` | Guided 5-step walkthrough of the 68-year-old case for the pitch. Runs through `runCheck`, so it turns real with the engine; every sentence is built from the result. Arrow keys work. | Built |
 | `#/log` | Override log: IndexedDB, filter by tier and date, CSV export | Built, fully working |
 | `#/data` | Dose limits and suppression list with `source` and approval status | Built, waits for B/C files |
 | `#/benchmark` | Engine vs chatbots: alerts per Rx, precision/recall per alert type | Built, waits for `eval/` output |
@@ -17,7 +18,7 @@ Check page: desktop left column 400 px sticky (Prescription, Patient), result on
 ## Hooks for other tracks
 | What | Who | Detail |
 |---|---|---|
-| Real engine | C | In `src/ui/engine.ts`, replace the body of `runCheck` with `checkPrescription(rxText, patient)`; delete `src/ui/mock/` and set `isMock = false`. |
+| Real engine | C | In `src/ui/engine.ts`, replace the body of `runCheck` with `checkPrescription(rxText, patient)`; delete `src/ui/mock/` and set `isMock = false`. The demo case itself (`src/ui/demoCase.ts`) stays. |
 | `prompts` | C | Proposed additive field on the check result: `{field: 'weight_kg' \| 'serum_creatinine', reason: string}[]`. The UI never decides when to ask. |
 | `public/data/limits.json` | B | Array (or object wrapping one) of `{ingredient, population?, max_mg_day, source, pharmacist_approved}`. Reader is tolerant of field names (`src/ui/lib/dataFiles.ts`). |
 | `public/data/suppression.json` | C | Array of `{ingredients \| rule, reason?, source, pharmacist_approved}`. |
@@ -34,5 +35,6 @@ Visual inspiration only (github.com/MandyTrl/meditec, no licence, so nothing cop
 - Swap mock for the real engine (needs C's `pipeline.ts`).
 - Run the pharmacist session; put real reasons, limits and suppression rules into the files above.
 - Produce `benchmark.json` from `eval/` (needs the gold set).
+- Optional: Jan Aushadhi savings, look-alike picker, recall banner (each needs Track A data).
 - Finals: Hindi leaflet (online only, via B's `api/`), ABDM-profiled FHIR (current export is a draft stub).
 - Dark mode and per-language UI are out of scope.

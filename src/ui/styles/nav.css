@@ -1,0 +1,7 @@
+/* Header fit between the mobile menu (< 720px) and full desktop (>= 900px). Five pills must stay on one line. */
+.pillnav__link { white-space: nowrap; }
+
+@media (min-width: 720px) and (max-width: 899px) {
+  .conn-pill { display: none; }
+  .pillnav__link { display: flex; align-items: center; min-height: var(--tap-min); padding-inline: var(--space-2); }
+}

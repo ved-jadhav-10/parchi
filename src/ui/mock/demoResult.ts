@@ -2,11 +2,6 @@
 // Totals follow PS_ANALYSIS.md section 5; only paracetamol has a limit so "No limit on file" is exercised.
 import type { Alert, Ledger, ResolvedBrand, Sig } from '../../engine/contracts'
 
-export const demoRxText =
-  'Dolo 650 1-1-1 x5d; Crocin cold n flu max TDS; Zerodol P BD; Brufan 400 SOS; Ecosprin 75 OD; Pan D OD; Omez 20 OD'
-
-export const demoPatient = { age: '68', sex: 'M', weight: '55', creatinine: '1.6' }
-
 export const demoLedger: Ledger = {
   paracetamol: { total_mg_day: 4100, sources: ['Dolo 650', 'Crocin Cold & Flu Max', 'Zerodol-P'], limit_mg_day: 4000 },
   ibuprofen: { total_mg_day: 1200, sources: ['Brufen 400'] },

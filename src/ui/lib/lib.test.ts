@@ -3,6 +3,7 @@ import { toCsv } from './csv'
 import { limitState, mg, pct } from './format'
 import { toFhirBundle } from './fhir'
 import { normalizeBenchmark, normalizeRows } from './dataFiles'
+import { pickHiddenIngredient, splitRx } from './demo'
 import type { ResolvedBrand, Sig } from '../../engine/contracts'
 
 const resolved = (raw: string, brand: string | null): ResolvedBrand => ({ raw, brand, confidence: 1, ingredients: [], form: 'tablet', flags: [] })
@@ -63,5 +64,31 @@ describe('data files', () => {
     const b = normalizeBenchmark({ n_rx: 30, systems: [{ name: 'engine', alerts_per_rx: 3.2, clean_fp_rate: 'n/a', by_type: { overdose: { precision: 1, recall: 'x' } } }] })!
     expect(b.systems[0].clean_fp_rate).toBeUndefined()
     expect(b.systems[0].by_type.overdose).toEqual({ precision: 1, recall: undefined })
+  })
+})
+
+describe('demo helpers', () => {
+  it('splits a typed Rx on ; and newlines', () => {
+    expect(splitRx('Dolo 650 TDS; Pan D OD;\n  Omez 20 OD ;')).toEqual(['Dolo 650 TDS', 'Pan D OD', 'Omez 20 OD'])
+  })
+
+  it('picks the ingredient in the most distinct brands, else null', () => {
+    const l = {
+      paracetamol: { total_mg_day: 4100, sources: ['Dolo', 'Crocin', 'Zerodol-P', 'Dolo'], limit_mg_day: 4000 },
+      ibuprofen: { total_mg_day: 1200, sources: ['Brufen'] },
+      omeprazole: { total_mg_day: 40, sources: ['Omez', 'Omee'] },
+    }
+    const hit = pickHiddenIngredient(l)!
+    expect(hit.id).toBe('paracetamol')
+    expect(hit.sources).toEqual(['Dolo', 'Crocin', 'Zerodol-P'])
+    expect(pickHiddenIngredient({ ibuprofen: l.ibuprofen })).toBeNull()
+  })
+
+  it('breaks a tie on the brand count by closeness to the limit', () => {
+    const l = {
+      a: { total_mg_day: 100, sources: ['x', 'y'], limit_mg_day: 1000 },
+      b: { total_mg_day: 900, sources: ['x', 'z'], limit_mg_day: 1000 },
+    }
+    expect(pickHiddenIngredient(l)!.id).toBe('b')
   })
 })

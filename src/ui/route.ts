@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 
-export type Route = 'check' | 'log' | 'benchmark' | 'data'
+export type Route = 'check' | 'demo' | 'log' | 'benchmark' | 'data'
 
 export const routes: { id: Route; label: string }[] = [
   { id: 'check', label: 'Check' },
+  { id: 'demo', label: 'Demo' },
   { id: 'log', label: 'Override log' },
   { id: 'benchmark', label: 'Benchmark' },
   { id: 'data', label: 'Data & limits' },

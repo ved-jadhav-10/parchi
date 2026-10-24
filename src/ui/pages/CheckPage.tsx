@@ -10,7 +10,7 @@ import { XrayTable } from '../components/XrayTable'
 import { runCheck, isMock, type CheckResult } from '../engine'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
-import { demoPatient, demoRxText } from '../mock/demoResult'
+import { demoPatient, demoRxText } from '../demoCase'
 import { addOverride } from '../storage/overrides'
 
 const blank = { age: '', sex: '', weight: '', creatinine: '' }
@@ -101,7 +101,12 @@ export const CheckPage = () => {
                 className="btn btn--secondary"
                 onClick={() => {
                   setRx(demoRxText)
-                  setPatient(demoPatient)
+                  setPatient({
+                    age: String(demoPatient.age_years),
+                    sex: demoPatient.sex ?? '',
+                    weight: String(demoPatient.weight_kg ?? ''),
+                    creatinine: String(demoPatient.serum_creatinine ?? ''),
+                  })
                 }}
               >
                 Load demo
