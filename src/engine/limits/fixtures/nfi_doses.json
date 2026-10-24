@@ -1,0 +1,65 @@
+{
+  "_note": "Adult daily maxima read from the National Formulary of India (NFI 2011) as quoted in Eka Care's Eka_NFI_MCQA question set (huggingface.co/datasets/ekacare/Eka_NFI_MCQA, MIT, 925 questions, downloaded 24 Oct 2026). 'row' is the 0-based index in the test split. Only drugs that appear in both the set and our limits file are listed (5 of 157 dose questions). 'relation': equal = our cap must equal the formulary maximum; at_most = our cap must not exceed it. 'derived' = the maximum is computed from a stated regimen (dextromethorphan 30 mg every 6 hours = 120 mg/day). Question text is secondary: the dataset says it is derived from the NFI, not the NFI itself.",
+  "checks": [
+    {
+      "ingredient": "ibuprofen",
+      "nfi_max_mg_day": 2400,
+      "relation": "equal",
+      "derived": false,
+      "row": 720,
+      "question": "What is the maximum daily dose of Ibuprofen for adults?",
+      "nfi_answer": [
+        "2.4 g"
+      ],
+      "explanation": "The maximum daily dose of Ibuprofen for adults is 2.4 g. The National Formulary of India states that for adults, the initial dose is 300 to 400 mg 3 to 4 times daily, which can be increased if necessary to a maximum of 2.4 g daily."
+    },
+    {
+      "ingredient": "metformin",
+      "nfi_max_mg_day": 2000,
+      "relation": "equal",
+      "derived": false,
+      "row": 818,
+      "question": "What is the maximum daily dose of Metformin for adults?",
+      "nfi_answer": [
+        "2 g"
+      ],
+      "explanation": "The maximum daily dose of Metformin for adults is 2 g per day, given in divided doses. This is clearly stated in the National Formulary of India guidelines for Metformin dosing in adult diabetes mellitus patients."
+    },
+    {
+      "ingredient": "diclofenac",
+      "nfi_max_mg_day": 150,
+      "relation": "equal",
+      "derived": false,
+      "row": 896,
+      "question": "What is the maximum daily oral dose of Diclofenac for adults?",
+      "nfi_answer": [
+        "150 mg"
+      ],
+      "explanation": "The maximum daily oral dose of Diclofenac for adults is 150 mg. This is typically given in 2 to 3 divided doses. Exceeding this dose increases the risk of adverse effects without providing additional therapeutic benefit."
+    },
+    {
+      "ingredient": "dextromethorphan",
+      "nfi_max_mg_day": 120,
+      "relation": "at_most",
+      "derived": true,
+      "row": 480,
+      "question": "What is the oral dose of Dextromethorphan for adults?",
+      "nfi_answer": [
+        "10-20 mg every 4 hours or 30 mg every 6-8 hours"
+      ],
+      "explanation": "The correct oral dose of Dextromethorphan for adults is 10-20 mg every 4 hours or 30 mg every 6-8 hours. This dosage provides effective cough suppression while minimizing the risk of side effects."
+    },
+    {
+      "ingredient": "omeprazole",
+      "nfi_max_mg_day": 40,
+      "relation": "at_most",
+      "derived": false,
+      "row": 902,
+      "question": "What is the recommended oral dose of Omeprazole for treating benign gastric ulcers?",
+      "nfi_answer": [
+        "20 mg once daily for 8 weeks"
+      ],
+      "explanation": "The recommended oral dose of Omeprazole for treating benign gastric ulcers is 20 mg once daily for 8 weeks. This dosage is specifically indicated in the National Formulary of India for gastric ulcers. In severe cases, the dose may be increased to 40 mg, but 20 mg is the standard initial dose."
+    }
+  ]
+}
