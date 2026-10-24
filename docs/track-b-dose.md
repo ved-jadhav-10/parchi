@@ -18,7 +18,7 @@ const dose = computeDose(lines, patient, { classesOf: (id) => resolver.ingredien
 // dose.notes     what was left out or assumed (unresolved line, IU strength, topical, SOS cap assumed ...)
 ```
 
-`parseSigSmart(text)` (online fallback) is async: rules first, and only if they are unsure and the browser is online does it call `/api/parse-sig`. Use it for the live input; `parseSig` for tests and offline.
+`parseSigSmart(text)` (online fallback) is async: rules first, and only if they are unsure (confidence below 0.7) and the browser is online does it call `/api/parse-sig`. Use it for the live input; `parseSig` for tests and offline. Quota protection: each distinct text is sent once (answers and failures are remembered), at most 20 calls per page session (`resetSigSmartState()` clears both). The server uses Gemini when `GEMINI_API_KEY` is set (model `GEMINI_MODEL`, default `gemini-3.5-flash-lite`; Google retires model names quickly, so change it if calls start returning 404), else Anthropic. Only the sig text is sent. The model returns a few numbers; `validateLlmFields` rejects anything implausible, a scheduled line with no frequency, or zero doses, and then the rules result stays (low confidence, flagged).
 
 ## Sig fields (contract `Sig` plus optional detail)
 
@@ -30,7 +30,7 @@ const dose = computeDose(lines, patient, { classesOf: (id) => resolver.ingredien
 | `volume_ml_per_dose`, `dose_unit` | liquids: `5 ml`, `1 tsp` (5 mL), `1 tbsp` (15 mL). Drops and puffs are not converted to mg |
 | `confidence`, `assumptions`, `unparsed` | below 0.7 means something was assumed or not understood; show `assumptions` to the pharmacist |
 
-Rules worth knowing: a range (`1-2 tab TDS`) uses the upper end; several phases (`2 tab stat then 1 tab TDS`, tapers) use the highest daily phase; no dosing written = once daily at confidence 0.4; meal words (`AC`, `khane ke baad`, `breakfast`) are ignored; weekly and monthly sigs are 1/7 and 1/30 per day.
+Rules worth knowing: dotted Latin forms (`b.i.d.`, `t.d.s.`, `q.i.d.`, `p.r.n.`), `qod`/`eod` (every other day) and `qwk` are read; "for a week" is a duration, not weekly dosing; a range (`1-2 tab TDS`) uses the upper end; several phases (`2 tab stat then 1 tab TDS`, tapers) use the highest daily phase; no dosing written = once daily at confidence 0.4; meal words (`AC`, `khane ke baad`, `breakfast`) are ignored; weekly and monthly sigs are 1/7 and 1/30 per day.
 
 ## Ledger rules
 
@@ -49,4 +49,4 @@ Clinical numbers are data, not code. **Every value is `pharmacist_approved: fals
 
 ## Not built
 
-Paediatric kidney function (Schwartz), ideal-body-weight CrCl, Devanagari sigs, `x5` with no unit, "after meals 1 then 2" style meal-specific doses, drops/puffs to mg, rate limiting on `api/parse-sig`. The LLM fallback is tested with a mocked HTTP call only; it has not been run against the live API.
+Paediatric kidney function (Schwartz), ideal-body-weight CrCl, Devanagari sigs, `x5` with no unit, "after meals 1 then 2" style meal-specific doses, drops/puffs to mg, rate limiting on `api/parse-sig`. The LLM fallback was checked live on 14 texts with `gemini-3.5-flash-lite` (correct on the readable ones; it refused "as per doctor's advice" and a prompt-injection text after the schema fix); it has no server-side rate limiting, so protect the deployed endpoint before sharing the URL. Speed: sig + ledger + limits take about 0.09 ms for the 7-line demo prescription (Track A's resolver about 2.5 ms).

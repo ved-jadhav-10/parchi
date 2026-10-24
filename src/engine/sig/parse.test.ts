@@ -63,6 +63,37 @@ const cases: [string, number, number, boolean, number | undefined][] = [
   ['twice a week', 2 / 7, 2 / 7, false, undefined],
   ['alternate days', 0.5, 0.5, false, undefined],
   ['once monthly', 1 / 30, 1 / 30, false, undefined],
+  // "week" as a duration, not a schedule
+  ['1 tab BD for a week', 2, 2, false, 7],
+  ['TDS for one week', 3, 3, false, 7],
+  ['OD for a month', 1, 1, false, 30],
+  ['BD for a fortnight', 2, 2, false, 14],
+  ['BD x 2 fortnights', 2, 2, false, 28],
+  ['once a week', 1 / 7, 1 / 7, false, undefined],
+  ['twice weekly', 2 / 7, 2 / 7, false, undefined],
+  ['every week', 1 / 7, 1 / 7, false, undefined],
+  // dotted Latin forms and extra abbreviations from published lists (Wikipedia 'List of abbreviations used in medical prescriptions', PW Pharma)
+  ['b.i.d.', 2, 2, false, undefined],
+  ['b.d.s.', 2, 2, false, undefined],
+  ['t.d.s.', 3, 3, false, undefined],
+  ['t.i.d.', 3, 3, false, undefined],
+  ['q.i.d.', 4, 4, false, undefined],
+  ['q.d.s.', 4, 4, false, undefined],
+  ['o.d.', 1, 1, false, undefined],
+  ['q.d.', 1, 1, false, undefined],
+  ['q.1.d.', 1, 1, false, undefined],
+  ['q.h.s.', 1, 1, false, undefined],
+  ['p.r.n.', 0, 0, true, undefined],
+  ['qod', 0.5, 0.5, false, undefined],
+  ['q.o.d.', 0.5, 0.5, false, undefined],
+  ['EOD', 0.5, 0.5, false, undefined],
+  ['QWK', 1 / 7, 1 / 7, false, undefined],
+  ['AM', 1, 1, false, undefined],
+  ['AM and PM', 2, 2, false, undefined],
+  ['QAM', 1, 1, false, undefined],
+  ['Q4H', 6, 6, false, undefined],
+  ['Q10H', 2.4, 2.4, false, undefined],
+  ['1.5 tab BD', 3, 3, false, undefined],
   ['monthly', 1 / 30, 1 / 30, false, undefined],
   // STAT
   ['STAT', 1, 1, false, undefined],
@@ -128,7 +159,7 @@ describe('parseSig', () => {
     const s = parseSig('BD zigzag')
     expect(s.doses_per_day).toBe(2)
     expect(s.unparsed).toEqual(['zigzag'])
-    expect(s.confidence).toBeLessThanOrEqual(0.7)
+    expect(s.confidence).toBeLessThan(0.7) // below the online-fallback threshold
   })
 
   it('uses the highest phase when a loading, tapering or step-down dose is written', () => {
@@ -145,6 +176,12 @@ describe('parseSig', () => {
     expect(s.doses_per_day).toBe(1)
     expect(s.confidence).toBe(1)
     expect(s.unparsed).toBeUndefined()
+  })
+
+  it('does not silently drop a dose it cannot place: "one at night" with no unit stays visibly uncertain', () => {
+    const s = parseSig('ut dict')
+    expect(s.confidence).toBeLessThan(0.7)
+    expect(s.unparsed).toEqual(['ut', 'dict'])
   })
 
   it('never throws on odd input', () => {
