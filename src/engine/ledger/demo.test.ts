@@ -83,3 +83,18 @@ describe('ask-only-when-needed on real prescriptions', () => {
     expect(dose.needs.map((n) => n.field)).toEqual(['weight_kg'])
   })
 })
+
+describe('liquid doses written next to the brand', () => {
+  it('keeps "5ml" and "10 ml" as dosing, not part of the brand name, so syrups are counted in mg', () => {
+    const a = run('Syp Ascoril LS 5ml TDS', { age_years: 40 })
+    expect(a.lines[0].sig.volume_ml_per_dose).toBe(5)
+    expect(a.dose.ledger.ambroxol.total_mg_day).toBe(90) // 3 x 5 mL x 30 mg/5 mL
+    const b = run('Syp Ascoril LS 10 ml BD', { age_years: 40 })
+    expect(b.dose.ledger.ambroxol.total_mg_day).toBe(120)
+    expect(b.dose.notes.some((n) => n.kind === 'assumed_measure')).toBe(false)
+  })
+  it('does not mistake a pack size for a dose', () => {
+    const c = run('Ascoril LS Syrup 100ml TDS', { age_years: 40 })
+    expect(c.lines[0].sig.volume_ml_per_dose).toBeUndefined()
+  })
+})

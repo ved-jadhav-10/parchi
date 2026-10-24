@@ -18,6 +18,7 @@ const IGNORE = new Set([
   'tablets', 'cap', 'caps', 'capsule', 'capsules', 'x', 'for', 'next', 'continue', 'then', 'times', 'time', 'baar',
   'bar', 'max', 'maximum', 'upto', 'up', 'not', 'more', 'than', 'no', 'only', 'if', 'when', 'as', 'required', 'needed',
   'need', 'basis', 'hourly', 'hrly', 'hours', 'hour', 'hrs', 'hr', 'every', 'regularly', 'orally', 'oral', 'po',
+  'breakfast', 'lunch', 'dinner', 'nashta', 'nashte', 'bhojan', 'tea', 'chai',
 ])
 
 function normalise(raw: string): string {
@@ -123,6 +124,17 @@ function parseDuration(state: { text: string }): number | undefined {
 
 /** Parse the dosing part of one prescription line. Never throws; unknown text lowers `confidence`. */
 export function parseSig(raw: string): Sig {
+  // "2 tab stat then 1 tab TDS", "1-0-1 x5d then 1-0-0": more than one phase. Daily totals use the highest phase.
+  const phases = normalise(raw).split(/\b(?:then|followed by|thereafter|phir)\b/).map((p) => p.trim()).filter(Boolean)
+  if (phases.length > 1) {
+    const parsed = phases.map(parseSig)
+    const worst = parsed.reduce((a, b) => (Math.max(b.doses_per_day, b.max_doses_per_day) > Math.max(a.doses_per_day, a.max_doses_per_day) ? b : a))
+    return {
+      ...worst,
+      confidence: Math.min(worst.confidence ?? 1, 0.7),
+      assumptions: [...(worst.assumptions ?? []), 'More than one dosing phase written (loading, tapering or step-down); used the highest daily amount as the worst case'],
+    }
+  }
   const state = { text: normalise(raw) }
   const assumptions: string[] = []
   const unparsed: string[] = []

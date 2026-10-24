@@ -129,6 +129,22 @@ describe('parseSig', () => {
     expect(s.confidence).toBeLessThanOrEqual(0.7)
   })
 
+  it('uses the highest phase when a loading, tapering or step-down dose is written', () => {
+    const loading = parseSig('2 tab stat then 1 tab TDS')
+    expect(loading.doses_per_day).toBe(3)
+    expect(loading.confidence).toBeLessThanOrEqual(0.7)
+    expect(loading.assumptions?.join(' ')).toMatch(/highest daily amount/)
+    const taper = parseSig('1-0-1 x5d then 1-0-0 x5d')
+    expect(taper).toMatchObject({ doses_per_day: 2, duration_days: 5 })
+  })
+
+  it('ignores meal words such as breakfast without losing confidence', () => {
+    const s = parseSig('1-0-0 before breakfast')
+    expect(s.doses_per_day).toBe(1)
+    expect(s.confidence).toBe(1)
+    expect(s.unparsed).toBeUndefined()
+  })
+
   it('never throws on odd input', () => {
     for (const text of ['???', '1-', '--', 'x', 'x5', '0-0-0', '99999999999', '½', 'BD BD TDS']) {
       expect(() => parseSig(text)).not.toThrow()
