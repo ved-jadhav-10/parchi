@@ -5,6 +5,8 @@ import { testResolver } from '../../engine/resolver/testing'
 import { clearReadings, parseSigWithReadings, readByAi, readUnclearSigs } from './smartSig'
 
 const resolver = testResolver()
+const VAGUE = 'Dolo 650 take when needed maybe twice or so'
+const SIG = 'twice or so' // what the resolver hands on as the dosing text; the rules read it with confidence 0.6
 const good = { administrations_per_day: 2, units_per_dose: 1, volume_ml_per_dose: null, total_units_per_day: null, sos: false, sos_max_doses_per_day: null, duration_days: 5 }
 const answer = () => vi.fn(async () => new Response(JSON.stringify({ fields: good }), { status: 200 })) as unknown as typeof fetch & ReturnType<typeof vi.fn>
 
@@ -16,8 +18,8 @@ beforeEach(() => {
 describe('readUnclearSigs', () => {
   it('reads a sig the rules cannot understand and hands it to the pipeline marked as read by an AI', async () => {
     const fetchImpl = answer()
-    await readUnclearSigs(resolver, ['Dolo 650 zzz qqq'], 40, { online: true, fetchImpl })
-    const s = parseSigWithReadings('zzz qqq')
+    await readUnclearSigs(resolver, [VAGUE], 40, { online: true, fetchImpl })
+    const s = parseSigWithReadings(SIG)
     expect(readByAi(s)).toBe(true)
     expect(s.doses_per_day).toBe(2)
     expect(fetchImpl).toHaveBeenCalledTimes(1)
@@ -32,16 +34,16 @@ describe('readUnclearSigs', () => {
 
   it('does nothing offline: the rules reading stands', async () => {
     const fetchImpl = answer()
-    await readUnclearSigs(resolver, ['Dolo 650 zzz qqq'], 40, { online: false, fetchImpl })
+    await readUnclearSigs(resolver, [VAGUE], 40, { online: false, fetchImpl })
     expect(fetchImpl).not.toHaveBeenCalled()
-    expect(readByAi(parseSigWithReadings('zzz qqq'))).toBe(false)
+    expect(readByAi(parseSigWithReadings(SIG))).toBe(false)
   })
 
   it('keeps the rules reading when the server fails, and does not throw', async () => {
     const fetchImpl = vi.fn(async () => {
       throw new TypeError('Failed to fetch')
     }) as unknown as typeof fetch
-    await expect(readUnclearSigs(resolver, ['Dolo 650 zzz qqq'], 40, { online: true, fetchImpl })).resolves.toBeUndefined()
-    expect(parseSigWithReadings('zzz qqq')).toEqual(parseSig('zzz qqq'))
+    await expect(readUnclearSigs(resolver, [VAGUE], 40, { online: true, fetchImpl })).resolves.toBeUndefined()
+    expect(parseSigWithReadings(SIG)).toEqual(parseSig(SIG))
   })
 })
