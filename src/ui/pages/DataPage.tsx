@@ -3,7 +3,7 @@ import { parseAlertRules, type AlertRules } from '../../engine/rules'
 import { Card } from '../components/Card'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { useJson, type DataRow } from '../lib/dataFiles'
-import { approvedCount, limitRows, ruleRows, sosRows, suppressionRows } from '../lib/policyRows'
+import { approvedCount, limitRows, ruleRows, sosRows, suppressionRows, supplementRows } from '../lib/policyRows'
 import { SOURCES } from '../lib/sources'
 
 const Approval = ({ approved }: { approved: boolean | undefined }) =>
@@ -73,6 +73,7 @@ const useRules = (): { rules: AlertRules | null; failed: boolean } => {
 
 export const DataPage = () => {
   const { rules, failed } = useRules()
+  const supplement = useJson('/data/ddi_supplement.json')
   const unreadable = 'Could not read public/data/alert_rules.json on this device. Until it loads, no alert rules are applied.'
   return (
     <>
@@ -87,6 +88,12 @@ export const DataPage = () => {
             <DataTable title="Suppression list" description="Alerts the pharmacist chose to log silently instead of showing" rows={rules ? suppressionRows(rules) : []} empty={rules ? 'No alert is logged silently by choice.' : unreadable} />
           </>
         ) : null}
+        <DataTable
+          title="Curated interaction rules"
+          description="Interactions added by hand because the DDInter data lacks them. Each applies to every pair of the listed medicines"
+          rows={supplement.status === 'ok' ? supplementRows(supplement.data) : []}
+          empty="No curated rules could be read, so only DDInter pairs are checked."
+        />
         <Card title="Sources and licences" icon="shield" description="Where the brand, ban, batch and interaction data comes from, and on what terms">
           <div className="xray">
             <table>

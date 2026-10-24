@@ -1,0 +1,215 @@
+{
+  "_note": "Outside evidence for every pregnancy rule in public/data/alert_rules.json, read 24 Oct 2026: FDA label text from openFDA (boxed warning, contraindications, pregnancy or warnings section) and National Formulary of India categories as quoted in Eka NFI MCQA (MIT). A rule with no entry here fails pregnancyEvidence.test.ts. Quotes are verbatim extracts (spacing normalised), not summaries. NFI answers are LLM-written questions derived from NFI 2011, so treat as secondary.",
+  "evidence": [
+    {
+      "ingredient": "ramipril",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed_warning)",
+      "quote": "WARNING: FETAL TOXICITY See full prescribing information for complete boxed warning • When pregnancy is detected, discontinue ramipril as soon as possible ( 5."
+    },
+    {
+      "ingredient": "enalapril",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed_warning)",
+      "quote": "WARNING: FETAL TOXICITY See full prescribing information for complete boxed warning."
+    },
+    {
+      "ingredient": "lisinopril",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed_warning)",
+      "quote": "WARNING: FETAL TOXICITY See full prescribing information for complete boxed warning."
+    },
+    {
+      "ingredient": "telmisartan",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed_warning)",
+      "quote": "WARNING: FETAL TOXICITY When pregnancy is detected, discontinue telmisartan as soon as possible [see Warnings and Precautions (5."
+    },
+    {
+      "ingredient": "losartan",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed_warning)",
+      "quote": "WARNING: FETAL TOXICITY When pregnancy is detected, discontinue losartan potassium as soon as possible."
+    },
+    {
+      "ingredient": "olmesartan",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed_warning)",
+      "quote": "WARNING: FETAL TOXICITY When pregnancy is detected, discontinue olmesartan medoxomil and hydrochlorothiazide as soon as possible [see Warnings and Precautions (5."
+    },
+    {
+      "ingredient": "valsartan",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed_warning)",
+      "quote": "WARNING: FETAL TOXICITY When pregnancy is detected, discontinue ENTRESTO as soon as possible (5."
+    },
+    {
+      "ingredient": "methotrexate",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "WARNING: EMBRYO-FETAL TOXICITY, HYPERSENSITIVITY REACTIONS, SEVERE ADVERSE REACTIONS, and RISK OF MEDICATION ERRORS • Methotrexate tablets can cause embryo-fetal toxicity, including fetal death."
+    },
+    {
+      "ingredient": "misoprostol",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "WARNING: RISK OF UTERINE RUPTURE, ABORTION, PREMATURE BIRTH, BIRTH DEFECTS; SERIOUS CARDIOVASCULAR EVENTS; AND SERIOUS GASTROINTESTINAL EVENTS Uterine Rupture, Abortion, Premature Birth, and Birth Defects Administration of misoprostol, a co"
+    },
+    {
+      "ingredient": "isotretinoin",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "CONTRAINDICATIONS AND WARNINGS Isotretinoin capsules must not be used by patients who are or may become pregnant."
+    },
+    {
+      "ingredient": "thalidomide",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "WARNING: EMBRYO-FETAL TOXICITY AND VENOUS THROMBOEMBOLISM WARNING: EMBRYO-FETAL TOXICITY AND VENOUS THROMBOEMBOLISM See full prescribing information for complete boxed warning."
+    },
+    {
+      "ingredient": "leflunomide",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "WARNING: EMBRYO-FETAL TOXICITY and HEPATOTOXICITY Embryo-Fetal Toxicity Leflunomide is contraindicated for use in pregnant women because of the potential for fetal harm."
+    },
+    {
+      "ingredient": "acitretin",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "CONTRAINDICATIONS AND WARNINGS: Pregnancy Acitretin must not be used by females who are pregnant, or who intend to become pregnant during therapy or at any time for at least 3 years following discontinuation of therapy."
+    },
+    {
+      "ingredient": "ribavirin",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "WARNING: EMBRYO-FETAL TOXICITY, HEMOLYTIC ANEMIA, and MONOTHERAPY NOT RECOMMENDED Significant teratogenic and embryocidal effects have been demonstrated in all animal species exposed to ribavirin."
+    },
+    {
+      "ingredient": "valproic_acid",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "BOXED WARNING Hepatotoxicity General Population: Hepatic failure resulting in fatalities has occurred in patients receiving valproate and its derivatives. These incidents usually have occurred during the first six months of treatment. Serio"
+    },
+    {
+      "ingredient": "mycophenolate_mofetil",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (boxed warning)",
+      "quote": "WARNING: EMBRYOFETAL TOXICITY, MALIGNANCIES and SERIOUS INFECTIONS Use during pregnancy is associated with increased risks of first trimester pregnancy loss and congenital malformations."
+    },
+    {
+      "ingredient": "warfarin",
+      "evidence": "fda_contraindication",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (contraindications)",
+      "quote": "4 CONTRAINDICATIONS Warfarin sodium is contraindicated in: Pregnancy Warfarin sodium is contraindicated in women who are pregnant except in pregnant women with mechanical heart valves, who are at high risk of thromboembolism [see Warnings a"
+    },
+    {
+      "ingredient": "atorvastatin",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (pregnancy)",
+      "quote": "1 Pregnancy Risk Summary Discontinue atorvastatin when pregnancy is recognized."
+    },
+    {
+      "ingredient": "simvastatin",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (pregnancy)",
+      "quote": "1 Pregnancy Risk Summary Discontinue simvastatin when pregnancy is recognized."
+    },
+    {
+      "ingredient": "rosuvastatin",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (pregnancy)",
+      "quote": "1 Pregnancy Risk Summary Discontinue rosuvastatin when pregnancy is recognized."
+    },
+    {
+      "ingredient": "doxycycline",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (warnings section)",
+      "quote": "WARNINGS The use of drugs of the tetracycline class during tooth development (last half of pregnancy, infancy and childhood to the age of 8 years) may cause permanent discoloration of the teeth (yellow-gray-brown)."
+    },
+    {
+      "ingredient": "fluconazole",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (pregnancy section)",
+      "quote": "Pregnancy Teratogenic Effects Potential for Fetal Harm: Use in pregnancy should be avoided except in patients with severe or potentially life-threatening fungal infections in whom fluconazole may be used if the anticipated benefit outweighs"
+    },
+    {
+      "ingredient": "lithium_carbonate",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026 (pregnancy section)",
+      "quote": "1 Pregnancy Risk Summary: Lithium may cause harm when administered to a pregnant woman."
+    },
+    {
+      "ingredient": "danazol",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 609",
+      "quote": "Danazol belongs to pregnancy Category X. This means studies in animals or humans have demonstrated fetal abnormalities, or there is evidence of fetal risk based on human experience. The risk of using "
+    },
+    {
+      "ingredient": "clomifene",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 705",
+      "quote": "Clomifene belongs to Pregnancy Category X. This means that studies in animals or humans have demonstrated fetal abnormalities, or there is evidence of fetal risk based on human experience. The risk of"
+    },
+    {
+      "ingredient": "raloxifene",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 843",
+      "quote": "Raloxifene belongs to Pregnancy Category X. This means studies in animals or humans have demonstrated fetal abnormalities or there is evidence of fetal risk based on human experience. The risk of usin"
+    },
+    {
+      "ingredient": "testosterone",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 920",
+      "quote": "Testosterone belongs to pregnancy Category X. This means that studies in animals or humans have demonstrated fetal abnormalities, or there is evidence of fetal risk based on human experience. The risk"
+    },
+    {
+      "ingredient": "miltefosine",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 423",
+      "quote": "Miltefosine belongs to pregnancy category X. This means that studies in animals or humans have demonstrated fetal abnormalities, or there is evidence of fetal risk based on human experience. The risk "
+    },
+    {
+      "ingredient": "ethinylestradiol",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 651",
+      "quote": "Ethinylestradiol belongs to Pregnancy Category X. This means studies in animals or humans have demonstrated fetal abnormalities, or there is evidence of fetal risk based on human experience. The risk "
+    },
+    {
+      "ingredient": "rubella_vaccine",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 69",
+      "quote": "Rubella Vaccine belongs to Pregnancy Category X. This means that studies in animals or humans have demonstrated fetal abnormalities, or there is evidence of fetal risk based on human experience. The r"
+    },
+    {
+      "ingredient": "measles_vaccine",
+      "evidence": "nfi_category_x",
+      "source": "Eka_NFI_MCQA test row 153",
+      "quote": "Measles Vaccine belongs to Pregnancy Category X. This means that studies in animals or humans have demonstrated fetal abnormalities, or there is evidence of fetal risk based on human experience. The r"
+    },
+    {
+      "ingredient": "alprazolam",
+      "evidence": "nfi_category_d",
+      "source": "Eka_NFI_MCQA test row 483",
+      "quote": "Alprazolam belongs to pregnancy category D. This means there is positive evidence of human fetal risk, but the benefits from use in pregnant women may be acceptable despite the risk in certain situati"
+    },
+    {
+      "ingredient": "clonazepam",
+      "evidence": "nfi_category_d",
+      "source": "Eka_NFI_MCQA test row 879",
+      "quote": "Clonazepam belongs to pregnancy category D. This means there is positive evidence of human fetal risk, but the benefits from use in pregnant women may be acceptable despite the risk in certain situati"
+    },
+    {
+      "ingredient": "lorazepam",
+      "evidence": "nfi_category_d",
+      "source": "Eka_NFI_MCQA test row 918",
+      "quote": "Lorazepam belongs to pregnancy category D. This means there is positive evidence of human fetal risk, but the benefits from use in pregnant women may be acceptable despite the risk in certain situatio"
+    },
+    {
+      "ingredient": "bleomycin",
+      "evidence": "nfi_category_d",
+      "source": "Eka_NFI_MCQA test row 917",
+      "quote": "Bleomycin belongs to pregnancy category D. This means there is positive evidence of human fetal risk, but the benefits from use in pregnant women may be acceptable despite the risk (e.g., if the drug "
+    }
+  ]
+}

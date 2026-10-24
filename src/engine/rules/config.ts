@@ -1,6 +1,9 @@
 // Track C alert policy (data: public/data/alert_rules.json). Numbers and lists live in the data file, not in code.
 import type { OrderStatus, Tier } from '../contracts'
 
+/** Version of the clinical drafts (limits, alert rules, curated pairs); shown on results so a screenshot says which numbers it used. */
+export const CLINICAL_DATA_VERSION = '2026-10-25'
+
 export interface ClassDupRule {
   class: string
   label: string
@@ -17,6 +20,8 @@ export interface PatientRule {
   age_at_least?: number
   /** needs Cockcroft-Gault CrCl; the rule asks for missing inputs instead of silently skipping */
   crcl_below?: number
+  /** lower edge of the CrCl band (inclusive), so a "caution" band does not repeat the "avoid" band below it */
+  crcl_at_least?: number
   tier: Tier
   /** placeholders: {names} {crcl} {age} */
   reason: string
@@ -69,8 +74,74 @@ export interface BurdenScale {
   pharmacist_approved: boolean
 }
 
+/** One group of a stacking rule: the Rx ingredients in these classes or ids, minus `exclude`. */
+export interface StackGroup {
+  label: string
+  classes?: string[]
+  ingredients?: string[]
+  exclude?: string[]
+  /** distinct ingredients needed for the group to count (default 1) */
+  min?: number
+}
+
+/** Harm from a combination of three or more drug types that no pairwise interaction lookup sees (e.g. the "triple whammy"). */
+export interface StackRule {
+  id: string
+  label: string
+  groups: StackGroup[]
+  /** how many groups must be present (default: all of them) */
+  min_groups?: number
+  tier: Tier
+  /** raise the tier when any of these holds */
+  escalate?: { tier: Tier; age_at_least?: number; crcl_below?: number; classes?: string[]; min_ingredients?: number }
+  /** alert types this one replaces when it covers the same ingredients (e.g. a plain class duplication) */
+  supersedes?: string[]
+  /** placeholders: {names} {age} {crcl} */
+  reason: string
+  source: string
+  pharmacist_approved: boolean
+}
+
+/** A drug-allergy group the patient can have recorded ("penicillin"): what a direct reaction covers, and what only cross-reacts. */
+export interface AllergyGroup {
+  label: string
+  classes?: string[]
+  ingredients?: string[]
+  /** Medicines that can cross-react; shown as a note, not a stop. */
+  cross?: { label: string; classes?: string[]; ingredients?: string[]; tier: Tier; note: string }
+  source: string
+  pharmacist_approved: boolean
+}
+
+/** A medicine to avoid or review in pregnancy. `evidence` says where the rule comes from. */
+export interface PregnancyRule {
+  id: string
+  label: string
+  classes?: string[]
+  ingredients?: string[]
+  tier: Tier
+  /** placeholders: {names} */
+  reason: string
+  evidence: 'fda_boxed_warning' | 'fda_contraindication' | 'fda_label' | 'nfi_category_x' | 'nfi_category_d'
+  source: string
+  pharmacist_approved: boolean
+}
+
+/** WHO AWaRe antibiotic groups: which ingredient is Access, Watch or Reserve, and what each group raises. */
+export interface AwareConfig {
+  label: string
+  /** tier per group; a group left out or null raises nothing */
+  tiers: { reserve?: Tier | null; watch?: Tier | null }
+  version: string
+  source: string
+  ingredients: Record<string, 'access' | 'watch' | 'reserve'>
+  pharmacist_approved: boolean
+}
+
 /** Policy for the whole-history check (Phase 2). */
 export interface HistoryPolicy {
+  /** A repeat of the same composition by the same doctor, collected up to this many days early, continues the earlier course instead of overlapping it. Absent or 0 = off. */
+  refill?: { grace_days: number; source: string; pharmacist_approved: boolean }
   /** order status from the worst tier on the order */
   status_by_tier: Record<Tier, OrderStatus>
   /** review-queue ranking: higher = look first */
@@ -85,7 +156,8 @@ export interface HistoryPolicy {
 
 export interface AlertRules {
   schema: number
-  alert_budget: { max_interrupts_per_rx: number; pharmacist_approved: boolean }
+  /** `never_demote`: alert types the budget may never move to Inform (a contraindication is never "one too many") */
+  alert_budget: { max_interrupts_per_rx: number; never_demote?: string[]; pharmacist_approved: boolean }
   ddi_tiers: {
     major: Tier | null
     moderate: Tier | null
@@ -101,6 +173,10 @@ export interface AlertRules {
   suppression: SuppressionRule[]
   dose_policy: DosePolicy
   burden_scales: BurdenScale[]
+  stack_rules: StackRule[]
+  allergy_groups: Record<string, AllergyGroup>
+  pregnancy_rules: PregnancyRule[]
+  aware?: AwareConfig
   history: HistoryPolicy
 }
 
@@ -128,6 +204,9 @@ export function parseAlertRules(json: unknown): AlertRules {
     ...r,
     dose_policy: { ...DEFAULT_DOSE_POLICY, ...r.dose_policy },
     burden_scales: r.burden_scales ?? [],
+    stack_rules: r.stack_rules ?? [],
+    allergy_groups: r.allergy_groups ?? {},
+    pregnancy_rules: r.pregnancy_rules ?? [],
     history: { ...DEFAULT_HISTORY, ...r.history, queue: { ...DEFAULT_HISTORY.queue, ...r.history?.queue } },
   }
 }

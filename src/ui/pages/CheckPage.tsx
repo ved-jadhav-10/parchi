@@ -8,13 +8,17 @@ import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
+import { CoverageNote } from '../components/CoverageNote'
+import { LeafletCard } from '../components/LeafletCard'
+import { askTheCustomer } from '../lib/askCustomer'
 import { downloadText } from '../lib/csv'
+import { CLINICAL_DATA_VERSION } from '../../engine/rules'
 import { toFhirBundle } from '../lib/fhir'
-import { needsReview, tidy } from '../lib/resolved'
+import { needsReview, swapBrand, tidy } from '../lib/resolved'
 import { demoPatient, demoRxText } from '../demoCase'
 import { addOverride } from '../storage/overrides'
 
-const blank = { age: '', sex: '', weight: '', creatinine: '' }
+const blank = { age: '', sex: '', weight: '', creatinine: '', egfr: '', allergies: '', pregnancy: '', liver: '', alcohol: '' }
 
 const Field = ({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
   <label className="field">
@@ -28,6 +32,11 @@ const toPatient = (p: typeof blank): Patient => ({
   ...(p.sex && { sex: p.sex as 'M' | 'F' }),
   ...(p.weight && { weight_kg: Number(p.weight) }),
   ...(p.creatinine && { serum_creatinine: Number(p.creatinine) }),
+  ...(p.egfr && { egfr: Number(p.egfr) }),
+  ...(p.allergies.trim() && { allergies: p.allergies.split(/[,;\n]/).map((a) => a.trim()).filter(Boolean) }),
+  ...((p.pregnancy === 'yes' || p.pregnancy === 'no') && { pregnancy: p.pregnancy }),
+  ...(p.liver && { liver_disease: true }),
+  ...(p.alcohol && { heavy_alcohol_use: true }),
 })
 
 export const CheckPage = () => {
@@ -53,16 +62,26 @@ export const CheckPage = () => {
 
   const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setPatient({ ...patient, [k]: e.target.value })
+  const toggle = (k: 'liver' | 'alcohol') => (e: React.ChangeEvent<HTMLInputElement>) => setPatient({ ...patient, [k]: e.target.checked ? 'yes' : '' })
+  const canBePregnant = patient.sex === 'F' && Number(patient.age) >= 12 && Number(patient.age) <= 50
 
-  const check = async () => {
-    if (!canCheck) return
+  const check = async (text = rx) => {
+    if (text.trim() === '' || !ageOk) return
     try {
       setFailed(false)
       setOverridden({})
-      setResult(await runCheck(rx, toPatient(patient)))
+      setResult(await runCheck(text, toPatient(patient)))
     } catch {
       setFailed(true)
     }
+  }
+
+  /** The pharmacist picked another possible brand for a line: put it in the text and check again. */
+  const pickBrand = (raw: string, brand: string) => {
+    const next = swapBrand(rx, raw, brand)
+    if (next === null) return
+    setRx(next)
+    void check(next)
   }
 
   const alerts = (result?.alerts ?? []).map((alert, i) => ({ alert, i }))
@@ -105,7 +124,7 @@ export const CheckPage = () => {
               onKeyDown={(e) => e.ctrlKey && e.key === 'Enter' && check()}
             />
             <div className="actions">
-              <button className="btn btn--primary" onClick={check} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
+              <button className="btn btn--primary" onClick={() => check()} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
                 {result ? 'Check again' : 'Check prescription'}
               </button>
               <button
@@ -113,6 +132,7 @@ export const CheckPage = () => {
                 onClick={() => {
                   setRx(demoRxText)
                   setPatient({
+                    ...blank,
                     age: String(demoPatient.age_years),
                     sex: demoPatient.sex ?? '',
                     weight: String(demoPatient.weight_kg ?? ''),
@@ -138,6 +158,28 @@ export const CheckPage = () => {
                 </select>
               </label>
             </div>
+            <details className="more">
+              <summary>More about the patient (optional)</summary>
+              <p className="hint">Checked only if filled in. Leaving a box empty means "not entered", never "none".</p>
+              <Field label="Known allergies" placeholder="penicillin, sulfa, NSAIDs, or a medicine name" value={patient.allergies} onChange={set('allergies')} />
+              {canBePregnant && (
+                <label className="field">
+                  <span className="field__label">Pregnant?</span>
+                  <select className="field__input" value={patient.pregnancy} onChange={set('pregnancy')}>
+                    <option value="">Not entered</option>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </select>
+                </label>
+              )}
+              <Field label="Lab eGFR (mL/min/1.73 m²)" type="number" inputMode="decimal" value={patient.egfr} onChange={set('egfr')} />
+              <label className="check">
+                <input type="checkbox" checked={patient.liver === 'yes'} onChange={toggle('liver')} /> Liver disease
+              </label>
+              <label className="check">
+                <input type="checkbox" checked={patient.alcohol === 'yes'} onChange={toggle('alcohol')} /> Regular heavy alcohol use
+              </label>
+            </details>
             {prompts.length > 0 && (
               <div className="prompt">
                 {prompts.map((p) => (
@@ -189,7 +231,7 @@ export const CheckPage = () => {
             </EmptyState>
           ) : (
             <div aria-live="polite" className="result">
-              <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off.</p>
+              <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off (clinical data version {CLINICAL_DATA_VERSION}).</p>
               {prompts.length > 0 && (
                 <p className="result-note">
                   Some limits are not adjusted yet. <a href="#patient">Add what is asked under Patient</a>, then check again.
@@ -219,6 +261,18 @@ export const CheckPage = () => {
                 ))}
               </div>
 
+              <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
+
+              {askTheCustomer(result.lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id))).length > 0 && (
+                <Card title="Ask the customer" description="Parchi only sees this order. These are commonly bought without a prescription.">
+                  <ul className="ask">
+                    {askTheCustomer(result.lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id))).map((q) => (
+                      <li key={q}>{q}</li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
                 <XrayTable ledger={result.ledger} alerts={result.alerts} />
                 <TotalsNotes notes={result.notes} ledger={result.ledger} />
@@ -227,7 +281,7 @@ export const CheckPage = () => {
               <Card title="Brand matches" description="What was typed and what it was matched to. Select a line for details.">
                 <ul className="matches">
                   {result.lines.map((l, i) => (
-                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} />
+                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} onUse={(brand) => pickBrand(l.resolved.raw, brand)} />
                   ))}
                 </ul>
                 {result.lines.some((l) => (l.resolved.jan_aushadhi?.length ?? 0) > 0) && (
@@ -237,6 +291,8 @@ export const CheckPage = () => {
                   </p>
                 )}
               </Card>
+
+              <LeafletCard lines={result.lines} />
 
               {silent.length > 0 && (
                 <details className="silent-log">

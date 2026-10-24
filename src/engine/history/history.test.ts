@@ -70,7 +70,8 @@ describe('the demo history, order by order', () => {
 
   it('flags NSAID and PPI duplicates across doctors, but not a same-doctor duplicate as cross-doctor', async () => {
     const r = await check(rxs, patient, [], { asOf: '2026-10-05' })
-    const nsaid = r.alerts.find((a) => a.type === 'class_duplication' && a.ingredients.includes('ibuprofen'))!
+    // Two NSAIDs in a 68-year-old: the high-risk stack alert replaces the plain class duplicate (FIX_PLAN 1.4).
+    const nsaid = r.alerts.find((a) => a.type === 'nsaid_double_high_risk' && a.ingredients.includes('ibuprofen'))!
     expect(nsaid.cross_doctor).toBe(true)
     const solo = await check(rxs, patient, [], { asOf: '2026-10-01' })
     expect(find(solo.alerts, 'duplicate_ingredient').cross_doctor).toBe(false)
@@ -145,13 +146,13 @@ describe('kidney re-check on a new creatinine', () => {
   it('asks for creatinine before the lab and uses it after', async () => {
     const before = await check(rxs, patient, [], { asOf: '2026-10-05' })
     expect(before.needs?.map((n) => n.field)).toEqual(['serum_creatinine'])
-    expect(types(before.alerts, 'interrupt')).toEqual(['dose_excess'])
+    expect(types(before.alerts, 'interrupt').sort()).toEqual([...ex.without_lab['rx-2'].interrupts].sort())
     const after = await check(rxs, patient, labs, { asOf: '2026-10-05' })
     expect(after.needs).toBeUndefined()
     expect(after.creatinine_used).toEqual(ex.with_lab.creatinine)
   })
 
-  it('lists what changed: NSAID kidney Interrupt added, the creatinine request cleared', async () => {
+  it('lists what changed: NSAID kidney caution added, the creatinine request cleared', async () => {
     const before = await check(rxs, patient, [], { asOf: '2026-10-05' })
     const after = await check(rxs, patient, labs, { asOf: '2026-10-05', previous: before })
     expect(after.changes!.added.map((a) => a.type)).toEqual(ex['recheck_rx-2'].added)
@@ -162,7 +163,7 @@ describe('kidney re-check on a new creatinine', () => {
 
   it('reports an alert that only changed tier', async () => {
     const before = await check(rxs, patient, labs, { asOf: '2026-10-05' })
-    const lowered = { ...before, alerts: before.alerts.map((a) => (a.type === 'nsaid_renal' ? { ...a, tier: 'inform' as const } : a)) }
+    const lowered = { ...before, alerts: before.alerts.map((a) => (a.type === 'nsaid_double_high_risk' ? { ...a, tier: 'inform' as const } : a)) }
     const after = await check(rxs, patient, labs, { asOf: '2026-10-05', previous: lowered })
     expect(after.changes!.changed.map((c) => [c.before.tier, c.after.tier])).toEqual([['inform', 'interrupt']])
   })
@@ -173,12 +174,12 @@ describe('kidney re-check on a new creatinine', () => {
     expect(latestCreatinine([])).toBeUndefined()
   })
 
-  it('a better creatinine clears the kidney Interrupt', async () => {
+  it('a better creatinine clears the kidney caution', async () => {
     const good: LabResult[] = [{ type: 'serum_creatinine', value: 0.9, date: '2026-10-12' }]
     const bad = await check(rxs, patient, labs, { asOf: '2026-10-05' })
     const r = await check(rxs, { ...patient, age_years: 50 }, good, { asOf: '2026-10-05', previous: bad })
-    expect(r.alerts.some((a) => a.type === 'nsaid_renal')).toBe(false)
-    expect(r.changes!.cleared.map((a) => a.type)).toContain('nsaid_renal')
+    expect(r.alerts.some((a) => a.type === 'nsaid_renal_caution')).toBe(false)
+    expect(r.changes!.cleared.map((a) => a.type)).toContain('nsaid_renal_caution')
   })
 })
 
@@ -271,5 +272,41 @@ describe('diffAlerts', () => {
     expect(d.added.map((x) => x.type)).toEqual(['t'])
     expect(d.cleared.map((x) => x.type)).toEqual(['r'])
     expect(d.changed.map((c) => c.after.type)).toEqual(['p'])
+  })
+})
+
+describe('refill smoothing', () => {
+  const adult: Patient = { age_years: 40, weight_kg: 70, serum_creatinine: 0.9, sex: 'M' }
+  const refill = (doctorB: string, secondDate: string): Prescription[] => [
+    { id: 'a', doctor: 'Dr Rao', date: '2026-10-01', text: 'Dolo 650 TDS x10d' },
+    { id: 'b', doctor: doctorB, date: secondDate, text: 'Dolo 650 TDS x10d' },
+  ]
+  const dups = (r: { alerts: Alert[] }) => r.alerts.filter((a) => a.type === 'duplicate_ingredient')
+
+  it('reads a same-doctor repeat a few days early as a continuation, not a double', async () => {
+    const r = await check(refill('Dr Rao', '2026-10-08'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toEqual([])
+    const first = r.lines.find((l) => l.rx_id === 'a')!
+    expect(first.end).toBe('2026-10-08')
+    expect(first.refill_overlap_days).toBe(3)
+    expect(r.lines.find((l) => l.rx_id === 'b')!.refill_overlap_days).toBeUndefined()
+  })
+
+  it('still flags a different doctor repeating it: that is the cross-doctor case', async () => {
+    const r = await check(refill('Dr Mehta', '2026-10-08'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toHaveLength(1)
+    expect(r.lines.find((l) => l.rx_id === 'a')!.refill_overlap_days).toBeUndefined()
+  })
+
+  it('still flags a repeat that starts well before the supply ends', async () => {
+    const r = await check(refill('Dr Rao', '2026-10-02'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toHaveLength(1)
+  })
+
+  it('is off when the policy has no refill setting', async () => {
+    const rules = alertRules()
+    const off = realHistory({ ...rules, history: { ...rules.history, refill: undefined } })
+    const r = await off(refill('Dr Rao', '2026-10-08'), adult, [], { from: '2026-10-01' })
+    expect(dups(r)).toHaveLength(1)
   })
 })

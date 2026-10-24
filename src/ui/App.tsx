@@ -3,6 +3,7 @@ import './styles/components.css'
 import './styles/nav.css'
 import './styles/home.css'
 import './styles/review.css'
+import { useEffect, useRef } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { BenchmarkPage } from './pages/BenchmarkPage'
 import { CheckPage } from './pages/CheckPage'
@@ -28,13 +29,34 @@ const pages: Record<Exclude<Route, 'home'>, () => React.JSX.Element> = {
 
 export default function App() {
   const route = useRoute()
+  const main = useRef<HTMLElement>(null)
+
+  // A hash change swaps the page without a load, so move focus to the new page as a load would (screen readers and
+  // keyboard users otherwise stay on the link they pressed, in the old page's place).
+  useEffect(() => {
+    const onHash = () => main.current?.focus()
+    addEventListener('hashchange', onHash)
+    return () => removeEventListener('hashchange', onHash)
+  }, [])
+
   // The landing page brings its own navigation and footer.
   if (route === 'home') return <HomePage />
   const Page = pages[route]
   return (
     <>
+      {/* Not href="#main": the hash is the router. */}
+      <a
+        className="skip-link"
+        href="#/"
+        onClick={(e) => {
+          e.preventDefault()
+          main.current?.focus()
+        }}
+      >
+        Skip to content
+      </a>
       <AppHeader route={route} />
-      <main className="page">
+      <main className="page" id="main" ref={main} tabIndex={-1}>
         <Page />
       </main>
       <footer className="disclaimer">

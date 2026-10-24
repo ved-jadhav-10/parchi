@@ -65,14 +65,25 @@ describe('applyLimits', () => {
     expect(r.ledger.paracetamol.limit_basis).toBe('Adult maximum')
     expect(r.findings).toEqual([])
   })
-  it('uses the stricter 65+ cap and reports an over-limit finding with its source and approval status', () => {
+  it('reports an over-limit finding with its source and approval status (68 years: no age cap for paracetamol)', () => {
     const r = applyLimits({ paracetamol: entry(4100, { scheduled_mg_day: 4100, sources: ['Dolo', 'Crocin', 'Zerodol-P'] }) }, demo)
-    expect(r.ledger.paracetamol.limit_mg_day).toBe(3000)
+    expect(r.ledger.paracetamol.limit_mg_day).toBe(4000)
     expect(r.ledger.paracetamol.limit_pharmacist_approved).toBe(false)
     const f = r.findings.find((x) => x.kind === 'over_limit')!
-    expect(f).toMatchObject({ ingredient: 'paracetamol', total_mg_day: 4100, limit_mg_day: 3000, basis: 'Age 65+ cap', pharmacist_approved: false })
+    expect(f).toMatchObject({ ingredient: 'paracetamol', total_mg_day: 4100, limit_mg_day: 4000, basis: 'Adult maximum', pharmacist_approved: false })
     expect(f.sos_dependent).toBe(false)
     expect(f.message).toMatch(/4100 mg\/day across 3 lines/)
+  })
+  it('lowers the paracetamol limit for risk factors, not for age (FIX_PLAN 2.4)', () => {
+    const base = { age_years: 70, weight_kg: 70, sex: 'M' as const }
+    const limit = (p: object) => applyLimits({ paracetamol: entry(3500) }, { ...base, ...p }).ledger.paracetamol
+    expect(limit({}).limit_mg_day).toBe(4000)
+    expect(limit({ liver_disease: true })).toMatchObject({ limit_mg_day: 3000, limit_basis: 'Lower cap: liver disease' })
+    expect(limit({ heavy_alcohol_use: true })).toMatchObject({ limit_mg_day: 3000, limit_basis: 'Lower cap: heavy alcohol use' })
+    expect(limit({ weight_kg: 45 })).toMatchObject({ limit_mg_day: 2700, limit_basis: 'Lower cap: weight 45 kg (under 50 kg)' })
+    expect(limit({ weight_kg: 50 }).limit_mg_day).toBe(4000)
+    expect(limit({ liver_disease: true, weight_kg: 40 }).limit_mg_day).toBe(2400)
+    expect(applyLimits({ paracetamol: entry(3500) }, { ...base, liver_disease: true }).findings.some((f) => f.kind === 'over_limit')).toBe(true)
   })
   it('does not flag a total exactly at the limit', () => {
     expect(applyLimits({ paracetamol: entry(4000) }, { age_years: 40 }).findings).toEqual([])
@@ -149,7 +160,7 @@ describe('kidney bands for more drugs (Phase 2)', () => {
     expect(g30.findings.map((f) => f.kind)).toEqual(['over_limit'])
     expect(applyLimits({ gabapentin: entry(200) }, at(5)).ledger.gabapentin.limit_mg_day).toBe(300) // 11.7
     expect(applyLimits({ pregabalin: entry(300) }, at(2.5)).ledger.pregabalin.limit_mg_day).toBe(150)
-    expect(applyLimits({ gabapentin: entry(3600) }, at(0.7)).ledger.gabapentin.limit_mg_day).toBeUndefined() // 83: no kidney cap, no adult limit in data
+    expect(applyLimits({ gabapentin: entry(3600) }, at(0.7)).ledger.gabapentin.limit_mg_day).toBe(3600) // 83: no kidney cap, so the adult maximum
   })
   it('flags avoid and caution drugs, and each NSAID in the list gets the NSAID rule', () => {
     expect(applyLimits({ nitrofurantoin: entry(200) }, at(2.5)).findings.map((f) => f.kind)).toEqual(['renal_avoid'])
@@ -163,7 +174,7 @@ describe('kidney bands for more drugs (Phase 2)', () => {
   })
   it('caps tramadol, allopurinol, cefixime and sitagliptin only in their bands', () => {
     expect(applyLimits({ tramadol: entry(300) }, at(2.5)).ledger.tramadol.limit_mg_day).toBe(200)
-    expect(applyLimits({ tramadol: entry(300) }, at(1.2)).ledger.tramadol.limit_mg_day).toBeUndefined()
+    expect(applyLimits({ tramadol: entry(300) }, at(1.2)).ledger.tramadol.limit_mg_day).toBe(400) // no kidney cap, so the adult maximum
     expect(applyLimits({ sitagliptin: entry(100) }, at(1.8)).ledger.sitagliptin.limit_mg_day).toBe(50) // 32.4
     expect(applyLimits({ sitagliptin: entry(100) }, at(2.5)).ledger.sitagliptin.limit_mg_day).toBe(25)
     expect(applyLimits({ allopurinol: entry(300) }, at(5)).ledger.allopurinol.limit_mg_day).toBe(200)

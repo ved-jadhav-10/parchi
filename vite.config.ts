@@ -26,5 +26,5 @@ export default defineConfig({
     }),
   ],
   // Several suites build the 32k-brand resolver; run in parallel they pass the 5 s default on a busy machine.
-  test: { include: ['tests/**/*.test.ts', 'src/**/*.test.ts'], testTimeout: 20000 },
+  test: { include: ['tests/**/*.test.ts', 'src/**/*.test.ts', 'eval/**/*.test.ts'], testTimeout: 20000 },
 })

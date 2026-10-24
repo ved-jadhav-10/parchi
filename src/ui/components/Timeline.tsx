@@ -65,7 +65,7 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
                         data-unverified={l.unverified}
                         data-assumed={l.end_assumed}
                         style={{ gridColumn: `${col(l.start)} / ${col(l.end)}` }}
-                        title={`${l.text}: ${longDate(l.start)} to ${longDate(addDays(l.end, -1))}${l.end_assumed ? ' (no duration written; default window assumed)' : ''}`}
+                        title={`${l.text}: ${longDate(l.start)} to ${longDate(addDays(l.end, -1))}${l.end_assumed ? ' (no duration written; default window assumed)' : ''}${l.refill_overlap_days ? ` (repeated by the same doctor ${l.refill_overlap_days} days before it ran out; read as a refill)` : ''}`}
                       >
                         <span>{l.text}</span>
                       </div>

@@ -1,0 +1,1256 @@
+{
+ "meta": {
+  "version": 1,
+  "label_status": "draft: expected alerts were written by the developer from drug labels and guidelines (the `why` of each case), independent of the engine, and have NOT yet been reviewed by a pharmacist",
+  "alert_groups": {
+   "dose_excess": [
+    "dose_excess",
+    "dose_excess_sos"
+   ],
+   "duplicate_ingredient": [
+    "duplicate_ingredient"
+   ],
+   "class_duplication": [
+    "class_duplication",
+    "possible_switch",
+    "nsaid_double_high_risk"
+   ],
+   "ddi": [
+    "ddi",
+    "bleeding_anticoagulant_nsaid",
+    "bleeding_dual_antiplatelet_nsaid",
+    "hyperkalaemia_stack",
+    "serotonergic_stack",
+    "qt_stack"
+   ],
+   "renal": [
+    "nsaid_renal",
+    "nsaid_renal_caution",
+    "triple_whammy",
+    "renal_avoid",
+    "renal_caution"
+   ],
+   "geriatric": [
+    "domperidone_elderly",
+    "beers_sedating_antihistamine",
+    "beers_benzodiazepine",
+    "beers_z_drug",
+    "anticholinergic_burden",
+    "cns_stacking",
+    "beers_ketorolac",
+    "beers_tricyclic",
+    "beers_sulfonylurea",
+    "beers_muscle_relaxant",
+    "beers_metoclopramide"
+   ],
+   "banned_fdc": [
+    "banned_fdc"
+   ],
+   "input_needed": [
+    "input_needed"
+   ],
+   "schedule_mismatch": [
+    "schedule_mismatch"
+   ]
+  },
+  "note": "A case with no expected alerts is a clean prescription. An alert matches when its group is the same and it shares at least one ingredient with the expected alert."
+ },
+ "cases": [
+  {
+   "id": "S01",
+   "kind": "single",
+   "why": "Two paracetamol brands add up to 4,100 mg/day (2,600 + 1,500). One dose alert naming both brands is enough; a second \"in 2 brands\" alert would be noise",
+   "rx": "Dolo 650 QID; Calpol 500 TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "dose_excess",
+     "ingredients": [
+      "paracetamol"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S02",
+   "kind": "single",
+   "why": "One paracetamol brand, 1,950 mg/day",
+   "rx": "Dolo 650 TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "S03",
+   "kind": "single",
+   "why": "Paracetamol hidden in a cold tablet and a pain tablet; total 3,450 mg is under the limit but it is still a double",
+   "rx": "Sinarest New TDS; Dolo 650 TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "paracetamol"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S04",
+   "kind": "single",
+   "why": "Tramadol-paracetamol combination plus plain paracetamol",
+   "rx": "Ultracet BD; Dolo 650 TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "paracetamol"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S05",
+   "kind": "single",
+   "why": "Two aceclofenac-paracetamol brands: aceclofenac 400 mg/day (max 200) is one dose alert; paracetamol (1,300 mg) is a plain duplicate",
+   "rx": "Zerodol-P BD; Hifenac-P BD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "dose_excess",
+     "ingredients": [
+      "aceclofenac"
+     ]
+    },
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "paracetamol"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S06",
+   "kind": "single",
+   "why": "Ibuprofen in Combiflam and in Brufen",
+   "rx": "Combiflam BD; Brufen 400 SOS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "ibuprofen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S07",
+   "kind": "single",
+   "why": "Ambroxol and guaifenesin in both a tablet and a syrup",
+   "rx": "Sinarest-CCF TDS; Ascoril LS 10 ml TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "ambroxol"
+     ]
+    },
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "guaifenesin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S08",
+   "kind": "single",
+   "why": "Same cefixime in two brands",
+   "rx": "Taxim-O 200 BD; Zifi 200 BD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "cefixime"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S09",
+   "kind": "single",
+   "why": "Two NSAIDs (diclofenac and aceclofenac)",
+   "rx": "Voveran SR 100 OD; Zerodol-P BD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "class_duplication",
+     "ingredients": [
+      "diclofenac",
+      "aceclofenac"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S10",
+   "kind": "single",
+   "why": "Two PPIs",
+   "rx": "Pan 40 OD; Omez 20 BD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "class_duplication",
+     "ingredients": [
+      "pantoprazole",
+      "omeprazole"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S11",
+   "kind": "single",
+   "why": "Two antihistamines (cetirizine and fexofenadine)",
+   "rx": "Cetzine 10 OD; Allegra 120 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "class_duplication",
+     "ingredients": [
+      "cetirizine",
+      "fexofenadine"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S12",
+   "kind": "single",
+   "why": "Antihistamine in the cold tablet and in Montair-LC",
+   "rx": "Montair-LC OD; Sinarest New TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "class_duplication",
+     "ingredients": [
+      "levocetirizine",
+      "chlorphenamine"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S13",
+   "kind": "single",
+   "why": "Two fluoroquinolones",
+   "rx": "Cifran 500 BD; Levoflox 500 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "class_duplication",
+     "ingredients": [
+      "ciprofloxacin",
+      "levofloxacin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S14",
+   "kind": "single",
+   "why": "Aspirin with ibuprofen: bleeding risk and blocked antiplatelet effect",
+   "rx": "Ecosprin 75 OD; Brufen 400 TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "aspirin",
+      "ibuprofen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S15",
+   "kind": "single",
+   "why": "Warfarin with aspirin: bleeding",
+   "rx": "Warf 5 OD; Ecosprin 75 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "warfarin",
+      "aspirin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S16",
+   "kind": "single",
+   "why": "Warfarin with diclofenac: bleeding",
+   "rx": "Warf 5 OD; Voveran SR 100 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "warfarin",
+      "diclofenac"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S17",
+   "kind": "single",
+   "why": "Clopidogrel with omeprazole: weaker antiplatelet effect",
+   "rx": "Clopitab 75 OD; Omez 20 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "clopidogrel",
+      "omeprazole"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S18",
+   "kind": "single",
+   "why": "Escitalopram with tramadol: serotonin syndrome and seizure risk",
+   "rx": "Nexito 10 OD; Ultracet BD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "escitalopram",
+      "tramadol"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S19",
+   "kind": "single",
+   "why": "ACE inhibitor with spironolactone: high potassium",
+   "rx": "Cardace 5 OD; Aldactone 25 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "ramipril",
+      "spironolactone"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S20",
+   "kind": "single",
+   "why": "ARB with ACE inhibitor: dual blockade",
+   "rx": "Telma 40 OD; Cardace 5 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "telmisartan",
+      "ramipril"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S21",
+   "kind": "single",
+   "why": "NSAID at CrCl about 34",
+   "rx": "Brufen 400 TDS",
+   "patient": {
+    "age_years": 68,
+    "weight_kg": 55,
+    "serum_creatinine": 1.6,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "renal",
+     "ingredients": [
+      "ibuprofen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S22",
+   "kind": "single",
+   "why": "Paracetamol is fine at CrCl about 34",
+   "rx": "Dolo 650 TDS",
+   "patient": {
+    "age_years": 68,
+    "weight_kg": 55,
+    "serum_creatinine": 1.6,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "S23",
+   "kind": "single",
+   "why": "NSAID in a combination tablet at CrCl about 34",
+   "rx": "Zerodol-P BD",
+   "patient": {
+    "age_years": 68,
+    "weight_kg": 55,
+    "serum_creatinine": 1.6,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "renal",
+     "ingredients": [
+      "aceclofenac"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S24",
+   "kind": "single",
+   "why": "Nitrofurantoin at CrCl about 22",
+   "rx": "Niftran 100 BD",
+   "patient": {
+    "age_years": 72,
+    "weight_kg": 50,
+    "serum_creatinine": 1.8,
+    "sex": "F"
+   },
+   "expected": [
+    {
+     "type": "renal",
+     "ingredients": [
+      "nitrofurantoin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S25",
+   "kind": "single",
+   "why": "Metformin at CrCl about 25",
+   "rx": "Glycomet 500 BD",
+   "patient": {
+    "age_years": 75,
+    "weight_kg": 55,
+    "serum_creatinine": 2,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "renal",
+     "ingredients": [
+      "metformin"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S26",
+   "kind": "single",
+   "why": "NSAID for a 70-year-old with no weight or creatinine: the check cannot run until they are entered",
+   "rx": "Brufen 400 TDS",
+   "patient": {
+    "age_years": 70,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "input_needed",
+     "ingredients": [
+      "ibuprofen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S27",
+   "kind": "single",
+   "why": "Domperidone in a 70-year-old (QT risk)",
+   "rx": "Pan-D OD",
+   "patient": {
+    "age_years": 70,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "domperidone"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S28",
+   "kind": "single",
+   "why": "Same tablet in a 30-year-old is fine",
+   "rx": "Pan-D OD",
+   "patient": {
+    "age_years": 30,
+    "weight_kg": 65,
+    "serum_creatinine": 0.7,
+    "sex": "F"
+   },
+   "expected": []
+  },
+  {
+   "id": "S29",
+   "kind": "single",
+   "why": "Hydroxyzine (strongly anticholinergic, Beers) at 72",
+   "rx": "Atarax 25 HS",
+   "patient": {
+    "age_years": 72,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "hydroxyzine"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S30",
+   "kind": "single",
+   "why": "Alprazolam at 72 (Beers: avoid benzodiazepines)",
+   "rx": "Alprax 0.25 HS",
+   "patient": {
+    "age_years": 72,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "alprazolam"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S31",
+   "kind": "single",
+   "why": "Zolpidem at 70 (Beers: avoid Z-drugs)",
+   "rx": "Zolfresh 10 HS",
+   "patient": {
+    "age_years": 70,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "zolpidem"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S32",
+   "kind": "single",
+   "why": "Alprazolam at 30 is not a geriatric flag",
+   "rx": "Alprax 0.25 HS",
+   "patient": {
+    "age_years": 30,
+    "weight_kg": 65,
+    "serum_creatinine": 0.7,
+    "sex": "F"
+   },
+   "expected": []
+  },
+  {
+   "id": "S33",
+   "kind": "single",
+   "why": "Diphenhydramine cold tablet at 68 (Beers)",
+   "rx": "Cheston Cold TDS",
+   "patient": {
+    "age_years": 68,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "diphenhydramine"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S41",
+   "kind": "single",
+   "why": "Amitriptyline at 72 (Beers: avoid tricyclics)",
+   "rx": "Amitriptyline 10 HS",
+   "patient": {
+    "age_years": 72,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "amitriptyline"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S42",
+   "kind": "single",
+   "why": "Glimepiride at 75 (Beers: long-acting sulfonylurea, hypoglycaemia)",
+   "rx": "Glimepiride 2 OD",
+   "patient": {
+    "age_years": 75,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "glimepiride"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S43",
+   "kind": "single",
+   "why": "Metoclopramide at 70 (Beers: avoid unless gastroparesis); CrCl is about 58, below the 60 where the label halves the dose",
+   "rx": "Metoclopramide 10 TDS",
+   "patient": {
+    "age_years": 70,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "metoclopramide"
+     ]
+    },
+    {
+     "type": "renal",
+     "ingredients": [
+      "metoclopramide"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S44",
+   "kind": "single",
+   "why": "Amitriptyline at 40 is not a geriatric flag",
+   "rx": "Amitriptyline 10 HS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "S34",
+   "kind": "single",
+   "why": "Sinarest LP New is on the CDSCO banned list (S.O. 3388(E))",
+   "rx": "Sinarest LP New BD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "banned_fdc",
+     "ingredients": [
+      "levocetirizine",
+      "paracetamol",
+      "phenylephrine"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S35",
+   "kind": "single",
+   "why": "Methotrexate is weekly; written OD it is an overdose risk",
+   "rx": "Methotrexate 2.5 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "schedule_mismatch",
+     "ingredients": [
+      "methotrexate"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S36",
+   "kind": "single",
+   "why": "Common acute infection set, no overlap",
+   "rx": "Augmentin 625 BD x5d; Dolo 650 SOS; Pan 40 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "S37",
+   "kind": "single",
+   "why": "Short azithromycin course with an antihistamine at night",
+   "rx": "Azithral 500 OD x3d; Cetzine 10 HS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "S38",
+   "kind": "single",
+   "why": "Diabetes and blood pressure set with normal kidneys",
+   "rx": "Glycomet 500 BD; Januvia 100 OD; Amlong 5 OD; Atorva 10 HS",
+   "patient": {
+    "age_years": 55,
+    "weight_kg": 78,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "S39",
+   "kind": "single",
+   "why": "Fever tablet and a PPI, no overlap",
+   "rx": "Dolo 650 TDS x3d; Rablet 20 OD",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "S40",
+   "kind": "single",
+   "why": "Allergy tablet with a steroid-free cough syrup",
+   "rx": "Allegra 120 OD; Ascoril LS 10 ml TDS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
+  },
+  {
+   "id": "H01",
+   "kind": "history",
+   "why": "Three doctors, paracetamol overlaps on 4-5 Oct: 1,950 + 2,000 + 650 = 4,600 mg/day",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Rao",
+     "date": "2026-10-01",
+     "text": "Dolo 650 TDS x5d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Mehta",
+     "date": "2026-10-03",
+     "text": "Calpol 500 QID x5d"
+    },
+    {
+     "id": "c",
+     "doctor": "Dr Iyer",
+     "date": "2026-10-04",
+     "text": "Zerodol-P BD x5d"
+    }
+   ],
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": [
+    {
+     "type": "dose_excess",
+     "ingredients": [
+      "paracetamol"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H02",
+   "kind": "history",
+   "why": "Dolo ends before Calpol starts, so only Calpol and Zerodol-P overlap: still a paracetamol duplicate, total 2,650 mg is under the limit",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Rao",
+     "date": "2026-10-01",
+     "text": "Dolo 650 TDS x2d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Mehta",
+     "date": "2026-10-03",
+     "text": "Calpol 500 QID x5d"
+    },
+    {
+     "id": "c",
+     "doctor": "Dr Iyer",
+     "date": "2026-10-04",
+     "text": "Zerodol-P BD x5d"
+    }
+   ],
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": [
+    {
+     "type": "duplicate_ingredient",
+     "ingredients": [
+      "paracetamol"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H03",
+   "kind": "history",
+   "why": "Two NSAID courses three weeks apart: never taken together",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Rao",
+     "date": "2026-09-01",
+     "text": "Brufen 400 TDS x5d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Mehta",
+     "date": "2026-09-22",
+     "text": "Voveran SR 100 OD x5d"
+    }
+   ],
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": []
+  },
+  {
+   "id": "H04",
+   "kind": "history",
+   "why": "Aspirin from one doctor, ibuprofen from another; the 68-year-old has no creatinine on file",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Rao",
+     "date": "2026-10-10",
+     "text": "Brufen 400 TDS x5d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Iyer",
+     "date": "2026-10-11",
+     "text": "Ecosprin 75 OD x30d"
+    }
+   ],
+   "patient": {
+    "age_years": 68,
+    "weight_kg": 55,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "aspirin",
+      "ibuprofen"
+     ]
+    },
+    {
+     "type": "input_needed",
+     "ingredients": [
+      "ibuprofen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H05",
+   "kind": "history",
+   "why": "Same order after creatinine 1.6 arrives (CrCl about 34): the NSAID kidney flag appears",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Rao",
+     "date": "2026-10-10",
+     "text": "Brufen 400 TDS x5d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Iyer",
+     "date": "2026-10-11",
+     "text": "Ecosprin 75 OD x30d"
+    }
+   ],
+   "patient": {
+    "age_years": 68,
+    "weight_kg": 55,
+    "sex": "M"
+   },
+   "labs": [
+    {
+     "type": "serum_creatinine",
+     "value": 1.6,
+     "date": "2026-10-12"
+    }
+   ],
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "aspirin",
+      "ibuprofen"
+     ]
+    },
+    {
+     "type": "renal",
+     "ingredients": [
+      "ibuprofen"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H06",
+   "kind": "history",
+   "why": "Cardiologist started warfarin; orthopaedic surgeon adds diclofenac ten days later",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Iyer (cardiology)",
+     "date": "2026-10-01",
+     "text": "Warf 5 OD x30d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Rao (orthopaedics)",
+     "date": "2026-10-10",
+     "text": "Voveran SR 100 OD x5d"
+    }
+   ],
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": [
+    {
+     "type": "ddi",
+     "ingredients": [
+      "warfarin",
+      "diclofenac"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H07",
+   "kind": "history",
+   "why": "Two doctors each add a PPI",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Iyer",
+     "date": "2026-10-01",
+     "text": "Pan 40 OD x14d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Mehta",
+     "date": "2026-10-05",
+     "text": "Omez 20 OD x7d"
+    }
+   ],
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": [
+    {
+     "type": "class_duplication",
+     "ingredients": [
+      "pantoprazole",
+      "omeprazole"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H08",
+   "kind": "history",
+   "why": "A benzodiazepine and a Z-drug from different doctors for a 72-year-old (Beers: avoid both)",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Iyer",
+     "date": "2026-10-01",
+     "text": "Alprax 0.25 HS x10d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Mehta",
+     "date": "2026-10-02",
+     "text": "Zolfresh 10 HS x10d"
+    }
+   ],
+   "patient": {
+    "age_years": 72,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "alprazolam"
+     ]
+    },
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "zolpidem"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "H09",
+   "kind": "history",
+   "why": "Sequential antibiotic courses with no overlap and a paracetamol course",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Rao",
+     "date": "2026-09-01",
+     "text": "Augmentin 625 BD x5d; Dolo 650 TDS x3d"
+    },
+    {
+     "id": "b",
+     "doctor": "Dr Mehta",
+     "date": "2026-09-20",
+     "text": "Azithral 500 OD x3d"
+    }
+   ],
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "labs": [],
+   "expected": []
+  },
+  {
+   "id": "H10",
+   "kind": "history",
+   "why": "Creatinine in the labs but the patient is 28 and healthy: an NSAID course is fine",
+   "prescriptions": [
+    {
+     "id": "a",
+     "doctor": "Dr Rao",
+     "date": "2026-10-01",
+     "text": "Brufen 400 TDS x3d"
+    }
+   ],
+   "patient": {
+    "age_years": 28,
+    "weight_kg": 62,
+    "sex": "F"
+   },
+   "labs": [
+    {
+     "type": "serum_creatinine",
+     "value": 0.8,
+     "date": "2026-10-02"
+    }
+   ],
+   "expected": []
+  }
+ ]
+}

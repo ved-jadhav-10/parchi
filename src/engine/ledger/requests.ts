@@ -25,7 +25,40 @@ export function parsePatient(x: unknown): { patient: Patient } | { error: string
     if (x.sex !== 'M' && x.sex !== 'F') return { error: 'patient.sex must be "M" or "F"' }
     patient.sex = x.sex
   }
+  if (x.egfr !== undefined) {
+    if (!inRange(x.egfr, 1, 200)) return { error: 'patient.egfr must be a number from 1 to 200 (mL/min/1.73 m2)' }
+    patient.egfr = x.egfr
+  }
+  if (x.allergies !== undefined) {
+    if (!Array.isArray(x.allergies) || x.allergies.length > 20 || !x.allergies.every((a) => typeof a === 'string' && a.trim() !== '' && a.length <= 60)) {
+      return { error: 'patient.allergies must be a list of up to 20 names, each 1-60 characters' }
+    }
+    patient.allergies = x.allergies.map((a) => (a as string).trim())
+  }
+  if (x.pregnancy !== undefined) {
+    if (x.pregnancy !== 'yes' && x.pregnancy !== 'no' && x.pregnancy !== 'unknown') return { error: 'patient.pregnancy must be "yes", "no" or "unknown"' }
+    patient.pregnancy = x.pregnancy
+  }
+  for (const key of ['liver_disease', 'heavy_alcohol_use'] as const) {
+    if (x[key] !== undefined) {
+      if (typeof x[key] !== 'boolean') return { error: `patient.${key} must be true or false` }
+      patient[key] = x[key] as boolean
+    }
+  }
   return { patient }
+}
+
+/** Optional per-person details for an account that orders for several people: { "Priya": { age_years, ... } }. */
+export function parsePatientMap(x: unknown): { patients: Record<string, Patient> } | { error: string } {
+  if (x === undefined) return { patients: {} }
+  if (!isObj(x) || Object.keys(x).length > 10) return { error: 'patients must be an object of up to 10 named patients' }
+  const out: Record<string, Patient> = {}
+  for (const [name, p] of Object.entries(x)) {
+    const r = parsePatient(p)
+    if ('error' in r) return { error: `patients["${name}"]: ${r.error}` }
+    out[name] = r.patient
+  }
+  return { patients: out }
 }
 
 /** Text of one prescription: bounded length and line count. */
@@ -58,7 +91,9 @@ function validatePrescriptions(list: unknown): { prescriptions: Prescription[] }
     if (typeof rx.date !== 'string' || toDay(rx.date) === null) return { error: `${where}.date must be a real date as YYYY-MM-DD` }
     const bad = checkRxText(rx.text, `${where}.text`)
     if (bad) return { error: bad }
-    out.push({ id: rx.id, doctor: rx.doctor.trim(), date: rx.date, text: rx.text as string })
+    if (rx.patient !== undefined && (typeof rx.patient !== 'string' || rx.patient.length > 100)) return { error: `${where}.patient must be a name of up to 100 characters` }
+    const who = typeof rx.patient === 'string' && rx.patient.trim() !== '' ? { patient: rx.patient.trim() } : {}
+    out.push({ id: rx.id, doctor: rx.doctor.trim(), date: rx.date, text: rx.text as string, ...who })
   }
   return { prescriptions: out }
 }

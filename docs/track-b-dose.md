@@ -43,7 +43,7 @@ Rules worth knowing: dotted Latin forms (`b.i.d.`, `t.d.s.`, `q.i.d.`, `p.r.n.`)
 
 ## Limits (`src/engine/limits/limits.json`)
 
-Clinical numbers are data, not code. **Every value is `pharmacist_approved: false`** (11 ingredients: adult, 65+, paediatric mg/kg, kidney bands, SOS caps) and its `source` says so. Show limits as unverified until the pharmacist session; then edit the file and set the flag. Kidney rules need CrCl, so creatinine, weight and sex are requested only when an ingredient with a kidney rule is on the prescription; weight only for a child on a weight-dosed drug. Children under 12 with no paediatric entry get no limit (the adult limit is not borrowed) and a caveat.
+Clinical numbers are data, not code. **Every value is `pharmacist_approved: false`** (adult maximum for 33 ingredients, 65+, paediatric mg/kg, kidney bands, SOS caps) and its `source` says so. 22 adult maximums were added on 24 Oct 2026, each read from a primary label: US FDA labels (DailyMed set id in the source), the US OTC monograph 21 CFR 341 for cold and cough ingredients, and EMA/UK SmPCs for nimesulide, thiocolchicoside, etoricoxib and mefenamic acid. Ingredients with no limit are named under the results ("No daily limit on file"), so a missing alert is never read as "checked" (`docs/DATA_RELIABILITY.md`). Show limits as unverified until the pharmacist session; then edit the file and set the flag. Kidney rules need CrCl, so creatinine, weight and sex are requested only when an ingredient with a kidney rule is on the prescription; weight only for a child on a weight-dosed drug. Children under 12 with no paediatric entry get no limit (the adult limit is not borrowed) and a caveat.
 
 `LimitFinding.kind` is a fact, not a tier. Suggested mapping for Track C: `over_limit` (not `sos_dependent`) and `renal_avoid` = Interrupt candidates; `renal_caution` and `sos_dependent` = Inform.
 
@@ -75,6 +75,26 @@ const check = createPipeline({ resolver, ddi, rules, parseSig: d.parseSig, build
 
 Track B files: 100% line and 96% branch coverage. Beyond unit tests: 20,000 random sigs plus unicode noise and regex-blow-up inputs (`sig/fuzz.test.ts`); property tests against a day-by-day reference (order independence, additivity, TDS = BD + OD, "over-limit iff total > limit", a frailer patient never gets a looser limit, window cutting) in `ledger/properties.test.ts`; a sweep of ~96,000 dose calculations over 4,569 real brands where nothing may throw, go NaN or vanish without a note (`ledger/sweep.test.ts`); Track C's pipeline on B's real functions (`ledger/pipeline.test.ts`); `api/check` and `api/parse-sig` over a real HTTP server and the live Gemini API (run by hand, not in CI). Mutation checks: breaking the CrCl factor, SOS maths, window edges, summing, or limit choice makes tests fail.
 
+## Ayurvedic / herbal names and conflicts (`src/engine/herbal/`)
+
+Starter, evidence-graded, **unverified**: 15 herbs (Hindi, Sanskrit, English and Latin names), 2 formulations (Trikatu, Triphala), 1 ambiguous name (Brahmi is two different plants), 12 rules. Every rule cites its sources in `herbal.json` and has `pharmacist_approved: false`. Evidence is `established` (a regulator's monograph, a published measurement, an Indian multicentre series) or `limited` (one small human study, case reports, interaction databases); animal or lab-only claims are excluded. Suggested tier: established = inform, limited = silent (a note, not an alert); the pharmacist sets the real one.
+
+```ts
+import { splitSingle, herbalSingle, splitHistory, herbalHistory } from './engine/herbal/orchestrate'
+const deps = { isKnownBrand: (b) => resolver.resolve(b).confidence >= 0.97, classesOf: (id) => resolver.ingredient(id)?.classes }
+const { restText, herbal } = splitSingle(rxText, deps)          // 1. take herbal lines OUT before the ordinary resolver sees them
+const result = await check(restText, patient)                   // 2. ordinary pipeline on the rest (skip if restText is empty)
+const report = herbalSingle(herbal, result.lines, deps)         // 3. { items, unrecognised, findings, note } or undefined
+```
+Step 1 matters: the ordinary resolver used to turn "Triphala churna" into an inhaler (Triohale) and "Haldi doodh" into an antipsychotic (Palido-OD). `api/check` does all three steps in both modes (response field `herbal`); in history mode only courses that overlap in time are matched, and each item carries its prescription, doctor and days. Track C and D can call the same functions without touching the pipeline.
+
+What it will not do: say a combination is safe. Unknown Ayurvedic products (anything with churna, vati, kwath, arishta/asava ... that we do not recognise) are listed as `unrecognised` with "ask the patient what it contains". No brand-name Ayurvedic product has a verified ingredient list yet (add them through a catalogue import). No frequency data was found for how often Indians take Ayurvedic and ordinary medicines together (see HOLES.md H26). A 2008 JAMA metals study and a 2022 Indian giloy liver study are the strongest India-relevant items.
+
 ## Not built
 
 Paediatric kidney function (needs a `height_cm` on Patient, labels in C's `INPUT_LABEL` records, a height field in D's UI and pharmacist-set paediatric bands), ideal-body-weight CrCl, Devanagari sigs, `x5` with no unit, "after meals 1 then 2" style meal-specific doses, drops/puffs to mg, rate limiting on `api/parse-sig`. The LLM fallback was checked live on 14 texts with `gemini-3.5-flash-lite` (correct on the readable ones; it refused "as per doctor's advice" and a prompt-injection text after the schema fix); it has no server-side rate limiting, so protect the deployed endpoint before sharing the URL. Speed: sig + ledger + limits take about 0.09 ms for the 7-line demo prescription (Track A's resolver about 2.5 ms).
+
+## Added later
+
+- Course lengths written in words are read after "for": `for ten days`, `for the next two weeks`.
+- `api/leaflet` (POST `{language, medicines:[{brand, how}], points?}`): a customer leaflet in Hindi, Marathi, Gujarati, Bengali, Tamil, Telugu, Kannada, Malayalam or English. The model only rewrites what is sent (no patient name or details), adds no advice, and a leaflet that drops a medicine name is rejected. Keys and limits as for `parse-sig`; `api/_llm.ts` holds the shared model call. Online only; the app hides the button offline.

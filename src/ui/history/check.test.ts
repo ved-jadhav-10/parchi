@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import ddiRaw from '../../../public/data/ddi.json?raw'
 import rulesRaw from '../../../public/data/alert_rules.json?raw'
-import type { Alert } from '../../engine/contracts'
 import { createDdiIndex, type DdiJson } from '../../engine/resolver/ddi'
 import { testResolver } from '../../engine/resolver/testing'
 import { parseAlertRules } from '../../engine/rules'
-import { addDays, alertKey, buildLines, createHistoryCheck, diffAlerts, latestLab, statusOf, windowSpans } from './check'
+import { addDays, createHistoryCheck, latestLab, touches } from './check'
 import { demoOrders } from './demoOrders'
+import { dayBefore, doctorName, rangeLabel, shortDate, STATUS_LABEL } from './labels'
 import type { HistoryAlert, Order } from './types'
 
 const resolver = testResolver()
@@ -15,30 +15,30 @@ const order = (id: string) => demoOrders.find((o) => o.id === id)!
 const withLab = (o: Order): Order => ({ ...o, labs: [...o.labs, ...(o.incoming_labs ?? [])], incoming_labs: [] })
 const find = (alerts: HistoryAlert[], type: string) => alerts.find((a) => a.type === type)
 
-describe('dates and windows', () => {
+describe('dates and lines', () => {
   it('adds days across month ends', () => {
     expect(addDays('2026-10-30', 5)).toBe('2026-11-04')
     expect(addDays('2026-12-30', 3)).toBe('2027-01-02')
   })
 
-  it('gives each line the days it is taken: the written duration, else the default window', () => {
-    const lines = buildLines(order('ORD-1087'), resolver)
-    const dolo = lines.find((l) => l.resolved.brand === 'Dolo 650')!
+  it('gives each line the days it is taken: the written duration, else the engine default window', async () => {
+    const r = await run(order('ORD-1087'))
+    const dolo = r.lines.find((l) => l.resolved.brand === 'Dolo 650')!
     expect(dolo.start).toBe('2026-10-19')
     expect(dolo.end).toBe('2026-10-24')
     expect(dolo.end_assumed).toBe(false)
-    const crocin = lines.find((l) => l.resolved.brand === 'Crocin Cold & Flu Max')!
+    expect(dolo.text).toContain('Dolo 650')
+    const crocin = r.lines.find((l) => l.resolved.brand === 'Crocin Cold & Flu Max')!
     expect(crocin.end_assumed).toBe(true)
   })
 
-  it('cuts the timeline at every start and stop and keeps only stretches with something active', () => {
-    const lines = buildLines(order('ORD-1087'), resolver)
-    const spans = windowSpans(lines)
-    expect(spans[0].start).toBe('2026-10-19')
-    expect(spans.every((s) => s.lines.length > 0)).toBe(true)
-    expect(spans.every((s, i) => i === 0 || spans[i - 1].end <= s.start)).toBe(true)
+  it('cuts the timeline at every start and stop and keeps only stretches with something active', async () => {
+    const r = await run(order('ORD-1087'))
+    expect(r.windows[0].start).toBe('2026-10-19')
+    expect(r.windows.every((w) => w.lines.length > 0)).toBe(true)
+    expect(r.windows.every((w, i) => i === 0 || r.windows[i - 1].end <= w.start)).toBe(true)
     // Dolo stops on the 24th, so the set of active lines changes there.
-    expect(spans.some((s) => s.start === '2026-10-24')).toBe(true)
+    expect(r.windows.some((w) => w.start === '2026-10-24')).toBe(true)
   })
 })
 
@@ -61,17 +61,17 @@ describe('order 1087: three doctors, no kidney result yet', () => {
   it('asks for the kidney result and raises no kidney alert without it', async () => {
     const r = await run(order('ORD-1087'))
     expect(r.prompts.map((p) => p.field)).toContain('serum_creatinine')
-    expect(find(r.alerts, 'nsaid_renal')).toBeUndefined()
+    expect(find(r.alerts, 'nsaid_renal_caution')).toBeUndefined()
     expect(r.crcl).toBeNull()
   })
 
   it('re-checks when the creatinine arrives and reports what changed', async () => {
     const before = await run(order('ORD-1087'))
-    const after = await run(withLab(order('ORD-1087')))
+    const after = await run(withLab(order('ORD-1087')), before)
     expect(after.crcl).toBeGreaterThan(30)
     expect(after.crcl).toBeLessThan(40)
-    const changes = diffAlerts(before.alerts, after.alerts)
-    expect(changes.find((c) => c.alert.type === 'nsaid_renal')?.kind).toBe('added')
+    const changes = after.changes!
+    expect(changes.find((c) => c.alert.type === 'nsaid_renal_caution')?.kind).toBe('added')
     expect(after.prompts.map((p) => p.field)).not.toContain('serum_creatinine')
     expect(changes.every((c) => ['added', 'cleared', 'tier_changed'].includes(c.kind))).toBe(true)
   })
@@ -81,6 +81,19 @@ describe('order 1087: three doctors, no kidney result yet', () => {
     const w = r.windows[r.peak]
     expect(w.ledger.paracetamol.total_mg_day).toBe(4100)
     expect(w.start <= '2026-10-23' && w.end > '2026-10-21').toBe(true)
+  })
+
+  it('shows an alert only in the stretches where what it is about is being taken', async () => {
+    const r = await run(order('ORD-1087'))
+    const dose = find(r.alerts, 'dose_excess')!
+    const w = r.windows[r.peak]
+    expect(w.alerts).toContainEqual(dose)
+    // In every stretch the alert is shown exactly when the total there is over the limit.
+    for (const win of r.windows) {
+      const e = win.ledger.paracetamol
+      const over = !!e && e.limit_mg_day !== undefined && e.total_mg_day > e.limit_mg_day
+      expect(win.alerts.some((a) => a.type === 'dose_excess' && a.ingredients.includes('paracetamol'))).toBe(over)
+    }
   })
 })
 
@@ -109,25 +122,22 @@ describe('the other orders and the queue', () => {
   })
 })
 
-describe('status, keys and labs', () => {
-  const a = (tier: Alert['tier']): Alert => ({ tier, type: 't', ingredients: ['x'], reason: 'r', source: 's', confidence: 1 })
-  it('derives the suggested status from the tiers', () => {
-    expect(statusOf([a('interrupt')], 0, 0)).toBe('hold_contact_doctor')
-    expect(statusOf([a('inform')], 0, 0)).toBe('clear_with_note')
-    expect(statusOf([a('silent')], 0, 0)).toBe('clear')
-    expect(statusOf([], 1, 0)).toBe('clear_with_note')
-    expect(statusOf([], 0, 1)).toBe('clear_with_note')
-  })
-  it('keys an alert by type and ingredients, whatever their order', () => {
-    expect(alertKey({ ...a('inform'), ingredients: ['b', 'a'] })).toBe(alertKey({ ...a('interrupt'), ingredients: ['a', 'b'] }))
-  })
+describe('labs and touches', () => {
   it('takes the most recent creatinine', () => {
     expect(latestLab([{ type: 'serum_creatinine', value: 1, date: '2026-10-01' }, { type: 'serum_creatinine', value: 2, date: '2026-10-20' }])?.value).toBe(2)
     expect(latestLab([])).toBeUndefined()
   })
+  it('ties an alert to the lines it is about', async () => {
+    const r = await run(order('ORD-1087'))
+    const dose = find(r.alerts, 'dose_excess')!
+    expect(r.lines.filter((l) => touches(dose, l)).length).toBeGreaterThanOrEqual(3)
+  })
+  it('keeps the engine result so a re-check can diff against it', async () => {
+    const r = await run(order('ORD-1087'))
+    expect(r.engine.alerts).toHaveLength(r.alerts.length)
+    expect(r.changes).toBeUndefined()
+  })
 })
-
-import { dayBefore, doctorName, rangeLabel, shortDate, STATUS_LABEL } from './labels'
 
 describe('review wording and dates', () => {
   it('words dates and ranges for the screen', () => {

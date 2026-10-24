@@ -35,16 +35,33 @@
         "source": "Standard adult labelled maximum (4 g/day). Confirm against the NFI / approved Indian label.",
         "pharmacist_approved": false
       },
-      "elderly": {
-        "max_mg_day": 3000,
-        "source": "Conservative cap commonly applied to frail or elderly patients; not a label maximum. Pharmacist to decide.",
-        "pharmacist_approved": false
-      },
       "paediatric": {
         "max_mg_per_kg_day": 60,
         "source": "Usual paediatric maximum 60 mg/kg/day (15 mg/kg per dose). Confirm against NFI.",
         "pharmacist_approved": false
-      }
+      },
+      "risk_caps": [
+        {
+          "factor": "liver_disease",
+          "max_mg_day": 3000,
+          "source": "Product information for paracetamol advises a lower dose in liver disease but gives no single number; 3,000 mg/day is a commonly applied draft cap. Pharmacist or NFI to set the number.",
+          "pharmacist_approved": false
+        },
+        {
+          "factor": "heavy_alcohol_use",
+          "max_mg_day": 3000,
+          "source": "Product information for paracetamol advises a lower dose with chronic heavy alcohol use but gives no single number; 3,000 mg/day is a commonly applied draft cap. Pharmacist or NFI to set the number.",
+          "pharmacist_approved": false
+        },
+        {
+          "factor": "low_weight",
+          "weight_below": 50,
+          "max_mg_per_kg_day": 60,
+          "source": "Adults under 50 kg are dosed by weight in paracetamol product information (about 60 mg/kg/day maximum). Recalled, not yet read from a label; verify against the Indian label or NFI.",
+          "pharmacist_approved": false
+        }
+      ],
+      "_note": "The age-65 cap (3,000 mg/day) was removed 24 Oct 2026 (FIX_PLAN 2.4): age alone does not lower the paracetamol maximum; liver disease, heavy alcohol use and low weight do."
     },
     "ibuprofen": {
       "adult": {
@@ -188,6 +205,11 @@
       ]
     },
     "naproxen": {
+      "adult": {
+        "max_mg_day": 1500,
+        "source": "US FDA label (DailyMed setid 000155a8-709c-44e5-a75f-cd890f3a7caf): up to naproxen 1,500 mg/day for limited periods of up to 6 months (naproxen sodium 550 mg = naproxen 500 mg). Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 30,
@@ -204,6 +226,11 @@
       ]
     },
     "etoricoxib": {
+      "adult": {
+        "max_mg_day": 120,
+        "source": "UK SmPC Arcoxia (medicines.org.uk/emc/product/10618): 120 mg once daily only for acute gout, at most 8 days; other indications 60-90 mg. Checked 24 Oct 2026; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 30,
@@ -220,6 +247,11 @@
       ]
     },
     "nimesulide": {
+      "adult": {
+        "max_mg_day": 200,
+        "source": "EMA Article 31 referral on systemic nimesulide: 100 mg twice daily, at most 15 days (ema.europa.eu/en/medicines/human/referrals/nimesulide-1). Checked 24 Oct 2026; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 30,
@@ -252,6 +284,11 @@
       ]
     },
     "mefenamic_acid": {
+      "adult": {
+        "max_mg_day": 1500,
+        "source": "UK SmPC Ponstan Forte 500 mg (medicines.org.uk/emc/product/1732): adults 500 mg three times daily, \"do not exceed the stated dose\". Checked 24 Oct 2026; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 30,
@@ -334,6 +371,11 @@
       ]
     },
     "gabapentin": {
+      "adult": {
+        "max_mg_day": 3600,
+        "source": "US FDA label (DailyMed setid 01b810b7-f4c8-4412-bbc5-b9220d8770d8): epilepsy doses studied up to 3,600 mg/day; no added benefit shown above 1,800 mg/day. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 60,
@@ -359,6 +401,11 @@
       ]
     },
     "pregabalin": {
+      "adult": {
+        "max_mg_day": 600,
+        "source": "US FDA label (DailyMed setid 0101cd1f-4a95-40e9-86a8-ccde8d656e3d): \"maximum dose of 600 mg/day\" (450 mg/day for fibromyalgia). Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 60,
@@ -402,6 +449,11 @@
       ]
     },
     "tramadol": {
+      "adult": {
+        "max_mg_day": 400,
+        "source": "US FDA label (DailyMed setid 007bf37f-0e46-426a-ac8c-be63d4b7414c): immediate-release tablets, \"do not administer at a dose exceeding 400 mg per day\" (extended-release: 300 mg/day). Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 30,
@@ -424,6 +476,11 @@
       ]
     },
     "sitagliptin": {
+      "adult": {
+        "max_mg_day": 100,
+        "source": "US FDA label (DailyMed setid 0098dec4-f0e5-45d5-8aa4-5d0faf9ab142): \"the maximum recommended daily dose is 100 mg of sitagliptin\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      },
       "renal": [
         {
           "crcl_below": 45,
@@ -506,11 +563,113 @@
           "pharmacist_approved": false
         }
       ]
+    },
+    "thiocolchicoside": {
+      "adult": {
+        "max_mg_day": 16,
+        "source": "EMA 2013 restriction: by mouth at most 8 mg every 12 hours for up to 7 days (by injection 4 mg every 12 hours, i.e. 8 mg/day). Checked 24 Oct 2026; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "glimepiride": {
+      "adult": {
+        "max_mg_day": 8,
+        "source": "US FDA label (DailyMed setid 0003458f-352a-46fa-9d99-230daa76ae29): \"the maximum recommended dose is 8 mg once daily\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "montelukast": {
+      "adult": {
+        "max_mg_day": 10,
+        "source": "US FDA label (DailyMed setid 04b3faff-1ea1-4d2a-aa31-9d6e742e1759): adults and adolescents 15 years and older 10 mg once daily; no further dose within 24 hours. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "fexofenadine": {
+      "adult": {
+        "max_mg_day": 180,
+        "source": "US FDA label (DailyMed setid 00ef8467-30a0-7579-e063-6294a90a75af): OTC directions, one 180 mg tablet once a day, \"do not take more than 1 tablet in 24 hours\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "telmisartan": {
+      "adult": {
+        "max_mg_day": 80,
+        "source": "US FDA label (DailyMed setid 09d31eee-cd22-4918-a889-3eb4d2969525): hypertension dose range 40-80 mg once daily. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "amlodipine": {
+      "adult": {
+        "max_mg_day": 10,
+        "source": "US FDA label (DailyMed setid 003dd1ec-16f8-4f96-b6a8-c4689d35892a): \"maximum dose 10 mg once daily\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "atorvastatin": {
+      "adult": {
+        "max_mg_day": 80,
+        "source": "US FDA label (DailyMed setid 00afce9b-48c9-487a-a738-e359c005c707): \"dosage range is 10 mg to 80 mg once daily\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "rosuvastatin": {
+      "adult": {
+        "max_mg_day": 40,
+        "source": "US FDA label (DailyMed setid 02797697-300a-43db-92cf-9b78f08626be): adult range 5-40 mg once daily; for Asian patients start at 5 mg and weigh the risks above 20 mg. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "empagliflozin": {
+      "adult": {
+        "max_mg_day": 25,
+        "source": "US FDA label (DailyMed setid 0fdd0255-0055-65f3-b2c0-db8fbb87beae): \"maximum total daily dosage of empagliflozin 25 mg\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "chlorzoxazone": {
+      "adult": {
+        "max_mg_day": 3000,
+        "source": "US FDA label (DailyMed setid 0a8ee5fa-f393-4568-81bd-269f9a4cecd6): may be increased to 750 mg three or four times daily. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
+        "pharmacist_approved": false
+      }
+    },
+    "phenylephrine": {
+      "adult": {
+        "max_mg_day": 60,
+        "source": "US OTC monograph, 21 CFR 341.80(d)(1)(i): oral phenylephrine hydrochloride, adults 10 mg every 4 hours, not to exceed 60 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
+        "pharmacist_approved": false
+      }
+    },
+    "dextromethorphan": {
+      "adult": {
+        "max_mg_day": 120,
+        "source": "US OTC monograph, 21 CFR 341.74(d): adults 10-20 mg every 4 hours or 30 mg every 6-8 hours, not to exceed 120 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
+        "pharmacist_approved": false
+      }
+    },
+    "diphenhydramine": {
+      "adult": {
+        "max_mg_day": 300,
+        "source": "US OTC monograph, 21 CFR 341.72(d)(7): antihistamine use, adults 25-50 mg every 4-6 hours, not to exceed 300 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
+        "pharmacist_approved": false
+      }
+    },
+    "guaifenesin": {
+      "adult": {
+        "max_mg_day": 2400,
+        "source": "US OTC monograph, 21 CFR 341.78(d): adults 200-400 mg every 4 hours, not to exceed 2,400 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
+        "pharmacist_approved": false
+      }
     }
   },
   "windows": {
     "default_duration_days": 30,
     "source": "Assumed: a one-month supply is the commonest course for a line with no duration written. Pharmacist to confirm or set per class.",
-    "pharmacist_approved": false
+    "pharmacist_approved": false,
+    "by_class": {
+      "antibacterial": 7
+    },
+    "by_class_source": "Assumed: an antibiotic course with no length written runs about a week, so a 30-day default does not invent overlaps with later courses. Not applied to painkillers or chronic medicines, where a short guess could hide a real overlap. Pharmacist to confirm."
   }
 }

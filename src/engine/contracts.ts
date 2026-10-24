@@ -76,6 +76,8 @@ export interface ProposedComposition {
 /** Track A output */
 export interface ResolvedBrand {
   raw: string
+  /** Batch number written on the line ("batch AR5112"); lets a failed-batch (NSQ) alert say whether it is this exact batch. */
+  batch?: string
   brand: string | null
   confidence: number
   ingredients: Ingredient[]
@@ -125,6 +127,8 @@ export interface Sig {
   stat?: boolean
   /** SOS without a written daily maximum: the limits data supplies a worst-case cap. */
   sos_cap_unspecified?: boolean
+  /** true = no dosing was written at all. The line is left out of the daily totals instead of guessing a frequency. */
+  dosing_missing?: boolean
   /** 1 = every part of the text understood; lower = something was assumed or not understood. */
   confidence?: number
   /** Plain-language assumptions, e.g. "No dosing written; assumed once daily". */
@@ -192,6 +196,17 @@ export interface Patient {
   weight_kg?: number
   serum_creatinine?: number
   sex?: 'M' | 'F'
+  // Optional, additive (FIX_PLAN Phase 2). Absent = not entered; the engine never assumes "none".
+  /** Known drug allergies: a group ("penicillin", "sulfonamide", "nsaid", ...) or one medicine's name. */
+  allergies?: string[]
+  /** 'yes' applies the pregnancy rules; 'unknown' (or absent) asks for it only when a drug on the Rx needs it. */
+  pregnancy?: 'yes' | 'no' | 'unknown'
+  /** Known liver disease: lowers the paracetamol limit. */
+  liver_disease?: boolean
+  /** Regular heavy alcohol use: lowers the paracetamol limit. */
+  heavy_alcohol_use?: boolean
+  /** The lab's own eGFR (mL/min/1.73 m2). Used for kidney rules only when Cockcroft-Gault cannot be calculated (no weight or creatinine). */
+  egfr?: number
 }
 
 /** Track C pipeline entry point, called by the UI */
@@ -209,6 +224,8 @@ export interface Prescription {
   doctor: string
   date: string
   text: string
+  /** Whom it is for, as written (a name or a reference). Accounts are often shared by a family, so history is never added up across different names. */
+  patient?: string
 }
 
 /** Contract 6: a lab value. The latest `serum_creatinine` feeds CrCl. */
@@ -230,8 +247,12 @@ export interface HistoryLine {
   end?: string
   /** true = the brand is not recognised; only a proposed composition exists and it is left out of the totals. */
   unverified?: boolean
-  /** true = no duration was written, so the window uses the default length from alert_rules.json. */
+  /** true = no duration was written, so the window uses an assumed length (from the quantity, a class default, or the general default). */
   default_window?: boolean
+  /** Where the length of this line's window came from. */
+  duration_source?: 'written' | 'quantity' | 'class_default' | 'default'
+  /** Days this line was cut short because the same doctor repeated the same medicine a few days before it ran out (a refill, not a double). */
+  refill_overlap_days?: number
 }
 
 /** Alerts added, cleared or moved to another tier between two checks of the same customer. */

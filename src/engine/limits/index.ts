@@ -106,6 +106,19 @@ export function applyLimits(
       } else if (lim.adult) {
         candidates.push({ limit: lim.adult.max_mg_day, basis: 'Adult maximum', source: lim.adult.source, approved: lim.adult.pharmacist_approved })
       }
+      if (!isChild) {
+        for (const rc of lim.risk_caps ?? []) {
+          const applies =
+            rc.factor === 'low_weight'
+              ? patient.weight_kg !== undefined && patient.weight_kg > 0 && patient.weight_kg < (rc.weight_below ?? 0)
+              : patient[rc.factor] === true
+          if (!applies) continue
+          const byWeight = rc.max_mg_per_kg_day !== undefined && patient.weight_kg ? rc.max_mg_per_kg_day * patient.weight_kg : undefined
+          const limit = Math.min(...[rc.max_mg_day, byWeight, lim.adult?.max_mg_day].filter((n): n is number => n !== undefined))
+          const why = { low_weight: `weight ${patient.weight_kg} kg (under ${rc.weight_below} kg)`, liver_disease: 'liver disease', heavy_alcohol_use: 'heavy alcohol use' }[rc.factor]
+          candidates.push({ limit, basis: `Lower cap: ${why}`, source: rc.source, approved: rc.pharmacist_approved })
+        }
+      }
       const renal = crcl !== null ? renalRule(lim.renal, crcl) : undefined
       if (renal && crcl !== null) {
         const basis = `Kidney: CrCl ${crcl} mL/min (below ${renal.crcl_below})`
@@ -121,7 +134,7 @@ export function applyLimits(
             source: renal.source,
             pharmacist_approved: renal.pharmacist_approved,
             crcl_ml_min: crcl,
-            message: `${cap(id)} with kidney function (CrCl) of ${crcl} mL/min: ${avoid ? 'usually avoided' : 'use with caution'}`,
+            message: `${cap(id)} with kidney function (${crclRes.basis === 'egfr' ? 'lab eGFR' : 'CrCl'}) of ${crcl} mL/min: ${avoid ? 'usually avoided' : 'use with caution'}`,
           })
         }
       }

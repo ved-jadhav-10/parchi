@@ -3,8 +3,19 @@
   "_note": "Track C alert policy. Draft values: every entry has pharmacist_approved=false until the pharmacist session (PS_ANALYSIS section 4, Q4/Q6/Q9). Do not present as clinical limits.",
   "alert_budget": {
     "max_interrupts_per_rx": 2,
-    "note": "Extra interrupts are shown as 'inform' (budget_demoted). The demo Rx needs 2; the average-per-Rx target of <=1 is measured by eval/.",
-    "pharmacist_approved": false
+    "note": "Extra routine interrupts are shown as 'inform' (budget_demoted). Types in never_demote (contraindicated interactions, banned FDCs, kidney 'avoid', weekly-read-as-daily, high-risk stacks) are never demoted and do not use up the budget. The average-per-Rx target of <=1 is measured by eval/.",
+    "pharmacist_approved": false,
+    "never_demote": [
+      "ddi",
+      "banned_fdc",
+      "renal_avoid",
+      "schedule_mismatch",
+      "triple_whammy",
+      "bleeding_anticoagulant_nsaid",
+      "bleeding_dual_antiplatelet_nsaid",
+      "allergy",
+      "pregnancy"
+    ]
   },
   "ddi_tiers": {
     "major": "inform",
@@ -107,10 +118,22 @@
       "classes": [
         "nsaid"
       ],
-      "crcl_below": 60,
+      "crcl_below": 30,
       "tier": "interrupt",
-      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can reduce kidney function. Pharmacist to review before dispensing.",
-      "source": "Draft renal rule, threshold unverified",
+      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs are generally avoided below 30 mL/min (kidney injury). Pharmacist to review before dispensing.",
+      "source": "Draft renal rule (avoid below CrCl 30);",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "nsaid_renal_caution",
+      "classes": [
+        "nsaid"
+      ],
+      "crcl_below": 60,
+      "crcl_at_least": 30,
+      "tier": "inform",
+      "reason": "{names} with estimated CrCl {crcl} mL/min (age {age}): NSAIDs can lower kidney function when clearance is already reduced. Pharmacist to review.",
+      "source": "Draft renal rule (caution at CrCl 30-59); stops only together with another kidney stressor (see stack_rules);",
       "pharmacist_approved": false
     },
     {
@@ -156,6 +179,67 @@
       "reason": "{names} in a patient aged {age}: Z-drug sleep medicines are on the Beers list to avoid in older adults (falls, delirium). Pharmacist to review.",
       "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
       "pharmacist_approved": false
+    },
+    {
+      "id": "beers_ketorolac",
+      "ingredients": [
+        "ketorolac"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: ketorolac is on the Beers list to avoid in older adults (bleeding, kidney injury). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_tricyclic",
+      "ingredients": [
+        "amitriptyline",
+        "imipramine",
+        "doxepin"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: tricyclic antidepressants are on the Beers list to avoid (strong anticholinergic effect, sedation, orthostatic hypotension; doxepin only up to 6 mg is acceptable). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_sulfonylurea",
+      "ingredients": [
+        "glibenclamide",
+        "glimepiride"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: sulfonylureas, especially long-acting ones such as glibenclamide and glimepiride, carry a higher risk of prolonged low blood sugar in older adults (Beers: avoid, or prefer a short-acting one). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_muscle_relaxant",
+      "ingredients": [
+        "chlorzoxazone",
+        "methocarbamol",
+        "cyclobenzaprine",
+        "carisoprodol"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: skeletal muscle relaxants are on the Beers list to avoid (sedation, falls, weak benefit). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_metoclopramide",
+      "ingredients": [
+        "metoclopramide"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: metoclopramide is on the Beers list to avoid unless for gastroparesis, and for no more than 12 weeks (movement disorders). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
     }
   ],
   "suppression": [
@@ -181,7 +265,8 @@
     "notes": {
       "schedule_mismatch": "interrupt",
       "unquantified_volume": "inform",
-      "unquantified_dose": "inform"
+      "unquantified_dose": "inform",
+      "dosing_not_entered": "inform"
     },
     "sig_unclear_below": 0.7,
     "sig_unclear_tier": "inform",
@@ -207,9 +292,20 @@
         "dose_excess": 30,
         "renal_avoid": 30,
         "nsaid_renal": 20,
-        "ddi": 5
+        "ddi": 5,
+        "triple_whammy": 30,
+        "bleeding_anticoagulant_nsaid": 30,
+        "bleeding_dual_antiplatelet_nsaid": 30,
+        "nsaid_double_high_risk": 20,
+        "allergy": 50,
+        "pregnancy": 40
       },
       "cross_doctor_bonus": 15,
+      "pharmacist_approved": false
+    },
+    "refill": {
+      "grace_days": 7,
+      "source": "Team setting: a repeat of the same medicine by the same doctor within a week of the supply ending is read as a refill. Pharmacist to set the real number.",
       "pharmacist_approved": false
     }
   },
@@ -254,5 +350,636 @@
       "source": "AGS Beers Criteria 2023, drug-drug interactions: avoid three or more CNS-active drugs (falls, fractures). One point per ingredient in these classes; list of classes to confirm with the pharmacist.",
       "pharmacist_approved": false
     }
-  ]
+  ],
+  "aware": {
+    "_note": "WHO AWaRe antibiotic groups. Reserve = last-resort, only for infections with few options; Watch = higher resistance potential, a stewardship target; Access = first choice. Only systemic lines. Clavulanic acid, sulbactam and tazobactam are partners, not scored on their own.",
+    "label": "WHO AWaRe classification 2023",
+    "tiers": {
+      "reserve": "inform",
+      "watch": "silent"
+    },
+    "version": "WHO AWaRe classification 2023, transcribed by hand for the antibiotics common in India; drugs I was not sure of are left out, not guessed",
+    "source": "https://www.who.int/publications/i/item/WHO-MHP-HPS-EML-2023.04",
+    "pharmacist_approved": false,
+    "ingredients": {
+      "amoxicillin": "access",
+      "ampicillin": "access",
+      "cloxacillin": "access",
+      "penicillin_v": "access",
+      "cefalexin": "access",
+      "cefadroxil": "access",
+      "clindamycin": "access",
+      "doxycycline": "access",
+      "gentamicin": "access",
+      "amikacin": "access",
+      "metronidazole": "access",
+      "nitrofurantoin": "access",
+      "sulfamethoxazole": "access",
+      "trimethoprim": "access",
+      "chloramphenicol": "access",
+      "azithromycin": "watch",
+      "clarithromycin": "watch",
+      "erythromycin": "watch",
+      "roxithromycin": "watch",
+      "cefuroxime": "watch",
+      "cefixime": "watch",
+      "cefpodoxime": "watch",
+      "cefotaxime": "watch",
+      "ceftriaxone": "watch",
+      "ceftazidime": "watch",
+      "cefoperazone": "watch",
+      "cefepime": "watch",
+      "ciprofloxacin": "watch",
+      "levofloxacin": "watch",
+      "ofloxacin": "watch",
+      "moxifloxacin": "watch",
+      "norfloxacin": "watch",
+      "piperacillin": "watch",
+      "meropenem": "watch",
+      "imipenem": "watch",
+      "ertapenem": "watch",
+      "vancomycin": "watch",
+      "teicoplanin": "watch",
+      "linezolid": "reserve",
+      "colistin": "reserve",
+      "polymyxin_b": "reserve",
+      "tigecycline": "reserve"
+    }
+  },
+  "stack_rules": [
+    {
+      "id": "triple_whammy",
+      "label": "ACE inhibitor/ARB + diuretic + NSAID",
+      "groups": [
+        {
+          "label": "ACE inhibitor or ARB",
+          "classes": [
+            "ace_inhibitor",
+            "arb"
+          ]
+        },
+        {
+          "label": "diuretic",
+          "classes": [
+            "thiazide_diuretic",
+            "loop_diuretic"
+          ],
+          "ingredients": [
+            "indapamide",
+            "metolazone"
+          ]
+        },
+        {
+          "label": "NSAID",
+          "classes": [
+            "nsaid"
+          ]
+        }
+      ],
+      "tier": "interrupt",
+      "reason": "{names} together: a blood-pressure drug acting on the kidney, a diuretic and an NSAID (the 'triple whammy') raise the risk of acute kidney injury (age {age}, CrCl {crcl} mL/min). Pharmacist to review before dispensing.",
+      "source": "Lapi F et al., BMJ 2013;346:e8525 (triple combination and acute kidney injury).",
+      "pharmacist_approved": false,
+      "supersedes": [
+        "ddi"
+      ]
+    },
+    {
+      "id": "bleeding_anticoagulant_nsaid",
+      "label": "Anticoagulant + NSAID",
+      "groups": [
+        {
+          "label": "anticoagulant",
+          "classes": [
+            "anticoagulant"
+          ],
+          "ingredients": [
+            "apixaban",
+            "rivaroxaban"
+          ]
+        },
+        {
+          "label": "NSAID",
+          "classes": [
+            "nsaid"
+          ]
+        }
+      ],
+      "tier": "interrupt",
+      "reason": "{names} together: an anticoagulant with an NSAID markedly raises the risk of serious bleeding. Pharmacist to review before dispensing.",
+      "source": "Anticoagulant and NSAID product labelling; AGS Beers Criteria 2023 (interactions to avoid).",
+      "pharmacist_approved": false,
+      "supersedes": [
+        "ddi",
+        "class_duplication"
+      ]
+    },
+    {
+      "id": "bleeding_dual_antiplatelet_nsaid",
+      "label": "Two antiplatelets + NSAID",
+      "groups": [
+        {
+          "label": "antiplatelets",
+          "classes": [
+            "antiplatelet"
+          ],
+          "min": 2
+        },
+        {
+          "label": "NSAID",
+          "classes": [
+            "nsaid"
+          ]
+        }
+      ],
+      "tier": "interrupt",
+      "reason": "{names} together: two antiplatelet drugs plus an NSAID raise the risk of stomach and other serious bleeding. Pharmacist to review before dispensing.",
+      "source": "Antiplatelet and NSAID product labelling.",
+      "pharmacist_approved": false,
+      "supersedes": [
+        "ddi",
+        "class_duplication"
+      ]
+    },
+    {
+      "id": "nsaid_double_high_risk",
+      "label": "Two NSAIDs in a high-risk patient",
+      "groups": [
+        {
+          "label": "NSAIDs",
+          "classes": [
+            "nsaid"
+          ],
+          "min": 2
+        }
+      ],
+      "tier": "inform",
+      "supersedes": [
+        "class_duplication"
+      ],
+      "escalate": {
+        "tier": "interrupt",
+        "age_at_least": 65,
+        "crcl_below": 60,
+        "classes": [
+          "anticoagulant",
+          "antiplatelet"
+        ]
+      },
+      "reason": "{names}: two NSAIDs at once add stomach-bleeding and kidney risk without more pain relief (age {age}, CrCl {crcl} mL/min). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023; NSAID product labelling. Stops at age 65+, CrCl below 60 or with an anticoagulant/antiplatelet.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "hyperkalaemia_stack",
+      "label": "Several potassium-raising drugs",
+      "groups": [
+        {
+          "label": "ACE inhibitor or ARB",
+          "classes": [
+            "ace_inhibitor",
+            "arb"
+          ]
+        },
+        {
+          "label": "potassium-sparing diuretic",
+          "classes": [
+            "potassium_sparing_diuretic"
+          ],
+          "ingredients": [
+            "eplerenone",
+            "amiloride",
+            "triamterene"
+          ]
+        },
+        {
+          "label": "trimethoprim",
+          "ingredients": [
+            "trimethoprim"
+          ]
+        },
+        {
+          "label": "potassium salt",
+          "ingredients": [
+            "potassium_chloride",
+            "potassium_citrate",
+            "potassium_magnesium_citrate"
+          ]
+        }
+      ],
+      "min_groups": 2,
+      "tier": "inform",
+      "escalate": {
+        "tier": "interrupt",
+        "crcl_below": 30
+      },
+      "reason": "{names}: each raises blood potassium; together high potassium is likely, more so with weak kidneys (CrCl {crcl} mL/min). Pharmacist to review.",
+      "source": "Product labelling; AGS Beers Criteria 2023 (interactions to avoid).",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "serotonergic_stack",
+      "label": "SSRI/SNRI + tramadol or dextromethorphan",
+      "groups": [
+        {
+          "label": "SSRI or SNRI",
+          "classes": [
+            "ssri"
+          ],
+          "ingredients": [
+            "venlafaxine",
+            "desvenlafaxine",
+            "duloxetine"
+          ]
+        },
+        {
+          "label": "serotonergic painkiller or cough medicine",
+          "ingredients": [
+            "tramadol",
+            "tapentadol",
+            "dextromethorphan"
+          ]
+        }
+      ],
+      "tier": "inform",
+      "reason": "{names}: together they raise the risk of serotonin syndrome (and seizures with tramadol); cough syrups and painkillers can hide the second drug. Pharmacist to review.",
+      "source": "Product labelling (tramadol, dextromethorphan, SSRIs). tier to confirm",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "qt_stack",
+      "label": "Several QT-prolonging drugs",
+      "groups": [
+        {
+          "label": "QT drugs (known risk)",
+          "ingredients": [
+            "azithromycin",
+            "clarithromycin",
+            "erythromycin",
+            "ciprofloxacin",
+            "levofloxacin",
+            "moxifloxacin",
+            "domperidone",
+            "ondansetron",
+            "hydroxychloroquine",
+            "chloroquine",
+            "haloperidol",
+            "escitalopram",
+            "amiodarone",
+            "sotalol",
+            "fluconazole",
+            "donepezil"
+          ],
+          "min": 2
+        }
+      ],
+      "tier": "inform",
+      "escalate": {
+        "tier": "interrupt",
+        "min_ingredients": 3
+      },
+      "reason": "{names}: each can prolong the QT interval; together the risk of a dangerous heart rhythm rises (age {age}). Pharmacist to review.",
+      "source": "Drug list transcribed from the CredibleMeds 'known risk of TdP' category; to verify against the registered QTdrugs list (non-commercial use).",
+      "pharmacist_approved": false
+    }
+  ],
+  "allergy_groups": {
+    "penicillin": {
+      "label": "penicillin",
+      "classes": [
+        "penicillin"
+      ],
+      "ingredients": [
+        "amoxicillin",
+        "ampicillin",
+        "cloxacillin",
+        "dicloxacillin",
+        "piperacillin",
+        "penicillin_v"
+      ],
+      "cross": {
+        "label": "cephalosporins",
+        "classes": [
+          "cephalosporin"
+        ],
+        "tier": "inform",
+        "note": "a cephalosporin can cross-react with a penicillin allergy; the risk is uncommon but real, so confirm the reaction history"
+      },
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "cephalosporin": {
+      "label": "cephalosporin",
+      "classes": [
+        "cephalosporin"
+      ],
+      "cross": {
+        "label": "penicillins",
+        "classes": [
+          "penicillin"
+        ],
+        "ingredients": [
+          "amoxicillin",
+          "ampicillin",
+          "cloxacillin",
+          "dicloxacillin",
+          "piperacillin",
+          "penicillin_v"
+        ],
+        "tier": "inform",
+        "note": "a penicillin can cross-react with a cephalosporin allergy; confirm the reaction history"
+      },
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "sulfonamide": {
+      "label": "sulfonamide antibiotic",
+      "classes": [
+        "sulfonamide"
+      ],
+      "ingredients": [
+        "sulfamethoxazole"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "nsaid": {
+      "label": "NSAID",
+      "classes": [
+        "nsaid"
+      ],
+      "ingredients": [
+        "aspirin"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "aspirin": {
+      "label": "aspirin",
+      "ingredients": [
+        "aspirin"
+      ],
+      "cross": {
+        "label": "NSAIDs",
+        "classes": [
+          "nsaid"
+        ],
+        "tier": "inform",
+        "note": "NSAIDs can cross-react in aspirin-sensitive patients"
+      },
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "macrolide": {
+      "label": "macrolide",
+      "classes": [
+        "macrolide"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "fluoroquinolone": {
+      "label": "fluoroquinolone",
+      "classes": [
+        "fluoroquinolone"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "tetracycline": {
+      "label": "tetracycline",
+      "classes": [
+        "tetracycline"
+      ],
+      "ingredients": [
+        "doxycycline"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    }
+  },
+  "pregnancy_rules": [
+    {
+      "id": "preg_ace_arb",
+      "label": "ACE inhibitors and ARBs",
+      "ingredients": [
+        "lisinopril"
+      ],
+      "classes": [
+        "ace_inhibitor",
+        "arb"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for fetal toxicity when used in pregnancy. Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning \"Fetal toxicity\". not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_methotrexate",
+      "label": "Methotrexate",
+      "ingredients": [
+        "methotrexate"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_misoprostol",
+      "label": "Misoprostol",
+      "ingredients": [
+        "misoprostol"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_isotretinoin",
+      "label": "Isotretinoin",
+      "ingredients": [
+        "isotretinoin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_thalidomide",
+      "label": "Thalidomide",
+      "ingredients": [
+        "thalidomide"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_leflunomide",
+      "label": "Leflunomide",
+      "ingredients": [
+        "leflunomide"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_acitretin",
+      "label": "Acitretin",
+      "ingredients": [
+        "acitretin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_ribavirin",
+      "label": "Ribavirin",
+      "ingredients": [
+        "ribavirin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_valproate",
+      "label": "Valproate",
+      "ingredients": [
+        "valproic_acid"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for fetal risk (neural tube defects, other malformations, lower IQ). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_mycophenolate",
+      "label": "Mycophenolate",
+      "ingredients": [
+        "mycophenolate_mofetil"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for pregnancy loss and congenital malformations. Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_warfarin",
+      "label": "Warfarin",
+      "ingredients": [
+        "warfarin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: contraindicated in pregnancy except in women with mechanical heart valves at high risk. Pharmacist to review before dispensing.",
+      "evidence": "fda_contraindication",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: contraindications. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_statin",
+      "label": "Statins",
+      "classes": [
+        "statin"
+      ],
+      "tier": "inform",
+      "reason": "{names}: the label says to discontinue when pregnancy is recognized (no longer a blanket contraindication). Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: pregnancy section. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_doxycycline",
+      "label": "Tetracyclines",
+      "ingredients": [
+        "doxycycline"
+      ],
+      "classes": [
+        "tetracycline"
+      ],
+      "tier": "inform",
+      "reason": "{names}: tetracyclines can permanently discolour the teeth if used in the second half of pregnancy. Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: warnings section. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_fluconazole",
+      "label": "Fluconazole",
+      "ingredients": [
+        "fluconazole"
+      ],
+      "tier": "inform",
+      "reason": "{names}: the label says to avoid in pregnancy except in severe or life-threatening fungal infection. Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: pregnancy section. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_lithium",
+      "label": "Lithium",
+      "ingredients": [
+        "lithium_carbonate"
+      ],
+      "tier": "inform",
+      "reason": "{names}: lithium may cause harm in pregnancy (the formulary also lists category D). Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: pregnancy section. not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_nfi_x",
+      "label": "Formulary category X",
+      "ingredients": [
+        "danazol",
+        "clomifene",
+        "raloxifene",
+        "testosterone",
+        "miltefosine",
+        "ethinylestradiol",
+        "rubella_vaccine",
+        "measles_vaccine"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: the National Formulary of India lists pregnancy category X (studies show fetal risk that outweighs any benefit). Pharmacist to review before dispensing.",
+      "evidence": "nfi_category_x",
+      "source": "National Formulary of India 2011, pregnancy category X, as quoted in Eka NFI MCQA (huggingface.co/datasets/ekacare/Eka_NFI_MCQA, MIT). not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_nfi_d",
+      "label": "Formulary category D",
+      "ingredients": [
+        "alprazolam",
+        "clonazepam",
+        "lorazepam",
+        "bleomycin"
+      ],
+      "tier": "inform",
+      "reason": "{names}: the National Formulary of India lists pregnancy category D (positive evidence of fetal risk). Pharmacist to review.",
+      "evidence": "nfi_category_d",
+      "source": "National Formulary of India 2011, pregnancy category D, as quoted in Eka NFI MCQA (huggingface.co/datasets/ekacare/Eka_NFI_MCQA, MIT). not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    }
+  ],
+  "data_version": "2026-10-25"
 }

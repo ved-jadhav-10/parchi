@@ -50,12 +50,15 @@ export interface SystemResult {
   alerts_per_rx?: number
   interrupts_per_rx?: number
   clean_fp_rate?: number
+  median_ms?: number
   by_type: Record<string, { precision?: number; recall?: number }>
 }
 
 export interface Benchmark {
   n_rx?: number
   kappa?: number
+  /** How the gold set was labelled (a "draft" until a pharmacist has reviewed it). */
+  label_status?: string
   systems: SystemResult[]
 }
 
@@ -68,11 +71,13 @@ export function normalizeBenchmark(json: unknown): Benchmark | null {
   return {
     n_rx: num(j.n_rx),
     kappa: num(j.kappa),
+    label_status: str(j.label_status) || undefined,
     systems: (j.systems as Raw[]).map((s) => ({
       name: str(s.name) || 'Unnamed',
       alerts_per_rx: num(s.alerts_per_rx),
       interrupts_per_rx: num(s.interrupts_per_rx),
       clean_fp_rate: num(s.clean_fp_rate),
+      median_ms: num(s.median_ms),
       by_type: Object.fromEntries(
         Object.entries((s.by_type as Record<string, Raw>) ?? {}).map(([t, m]) => [t, { precision: num(m?.precision), recall: num(m?.recall) }]),
       ),

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { DECISIONS, STATUS_LABEL, decisionLabel } from '../history/labels'
 import type { Decision, HistoryResult, Order, OrderStatus } from '../history/types'
+import { buildNote, type Audience } from '../lib/message'
 import { addDecision } from '../storage/orders'
 import { OVERRIDE_REASONS } from './OverrideDialog'
 
@@ -12,6 +13,17 @@ export const DecisionPanel = ({ order, result, last, onSaved }: { order: Order; 
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
   const [failed, setFailed] = useState(false)
+  const [copied, setCopied] = useState<Audience | null>(null)
+
+  const copy = async (audience: Audience) => {
+    const text = buildNote(audience, { name: order.customer.name, age_years: order.customer.age_years }, result.alerts)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(audience)
+    } catch {
+      window.prompt('Copy this note', text)
+    }
+  }
 
   const differs = decision !== result.status
   const needsNote = reason === 'Other'
@@ -85,7 +97,18 @@ export const DecisionPanel = ({ order, result, last, onSaved }: { order: Order; 
         <button type="submit" className="btn btn--primary" disabled={!valid} aria-describedby={valid ? undefined : 'decision-needs'}>
           Save decision
         </button>
+        <button type="button" className="btn btn--secondary" onClick={() => copy('prescriber')}>
+          Copy a note for the prescriber
+        </button>
+        <button type="button" className="btn btn--secondary" onClick={() => copy('customer')}>
+          Copy a note for the customer
+        </button>
       </div>
+      {copied && (
+        <p className="hint" role="status">
+          Copied the note for the {copied}. It quotes the alerts above and adds no advice; read it before sending.
+        </p>
+      )}
       {!valid && (
         <p className="hint" id="decision-needs">
           {differs && reason === '' ? 'Choose why this differs from the suggestion.' : 'Add a note for “Other”.'}

@@ -1,0 +1,12 @@
+{
+  "measured_on": "2026-10-24",
+  "machine": "12th Gen Intel(R) Core(TM) i5-12450HX x12, Node v22.20.0",
+  "prescriptions_checked": 220,
+  "median_ms": 0.82,
+  "p95_ms": 2.5,
+  "max_ms": 28.13,
+  "rx_per_second_single_thread": 1220,
+  "queue_orders": 1000,
+  "queue_rank_ms": 1.09,
+  "note": "Engine only (brand match, sig, ledger, limits, rules) with data already loaded; excludes first data load and any network."
+}

@@ -84,6 +84,11 @@ const cases: [string, number, number, boolean, number | undefined][] = [
   ['TDS for one week', 3, 3, false, 7],
   ['OD for a month', 1, 1, false, 30],
   ['BD for a fortnight', 2, 2, false, 14],
+  // course length written in words
+  ['BD for ten days', 2, 2, false, 10],
+  ['once daily for seven days', 1, 1, false, 7],
+  ['TDS for the next two weeks', 3, 3, false, 14],
+  ['OD for three months', 1, 1, false, 90],
   ['BD x 2 fortnights', 2, 2, false, 28],
   ['once a week', 1 / 7, 1 / 7, false, undefined],
   ['twice weekly', 2 / 7, 2 / 7, false, undefined],
@@ -162,13 +167,16 @@ describe('parseSig', () => {
     expect(s.assumptions?.[0]).toMatch(/upper end/)
   })
 
-  it('assumes once daily with low confidence when no dosing is written', () => {
+  it('does not guess a frequency when no dosing is written: zero doses, flagged as not entered', () => {
     for (const text of ['', '   ']) {
       const s = parseSig(text)
-      expect(s.doses_per_day).toBe(1)
+      expect(s.doses_per_day).toBe(0)
+      expect(s.dosing_missing).toBe(true)
       expect(s.confidence).toBeLessThan(0.5)
       expect(s.assumptions?.[0]).toMatch(/No dosing written/)
     }
+    // Text that is there but unreadable is a different case: still assumed, still flagged.
+    expect(parseSig('qqq').dosing_missing).toBeUndefined()
   })
 
   it('reports words it does not understand and lowers confidence', () => {

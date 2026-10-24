@@ -11,3 +11,9 @@ __pycache__/
 .DS_Store
 data/raw/
 eval/raw/
+eval/prompts/
+
+# Local only: editor/tool settings, the doctor sheet and its answer key, red-team prompts
+.claude/
+docs/expert-review/
+docs/RED_TEAM_PROMPTS.md

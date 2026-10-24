@@ -16,8 +16,18 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | Scoring rubric and weights | **Not disclosed yet** | unknown: we assume equal weights, unverified |
 | Round 1 format | **PPT + prototype + presentation of both, in 10 minutes** | confirmed |
 | Finals format, panel make-up, Q&A length | not known | unknown |
+| Judges shared across tracks? | not known (nothing announced) | unknown |
+| Interactive demo (judge types own prescription) | **Yes, as long as it cannot produce a wrong answer** | decision |
+| Pharmacist / pharmacy-student help for the test set | A friend's grandfather has offered: **MBBS general doctor, 45 years of experience (not a pharmacist)**. The PS wording says "pharmacist or pharmacy student" | confirmed, see H25 |
+| **Provenance rule** | Every slide and doc states exactly who checked what and when (for example "reference-labelled from published sources; reviewed by an MBBS GP on [date]"). Nothing is described as expert-reviewed unless a named person did it. Reference-based work is labelled as such | rule |
+| Presentation work | **Deferred**: first clarify the PS and develop new things, then finalise the presentation. Also planned: landing page and a video | decision |
+| Buyer | **E-pharmacies and chains only** (decision a). Local chemists are not a paying customer; H24 stays open | decision |
+| Expert time | **10 minutes only**, no extra questions (sheet in `docs/expert-review/`). Answers to real-world questions come from published sources | decision |
+| Demo story | One memorable reveal (the 68-year-old, hidden paracetamol), and it must be a case that really happens, not a rare one | decision |
+| Ayurveda | **Full name mapping and conflict engine chosen** (grill 4, decision c). Starter version built by Track B: 15 herbs, 2 formulations, 12 evidence-graded rules, all unverified. See H26 | built (starter) |
 | Judge-run hidden test set or baseline | **Unknown to the team** (none established so far) | unknown |
-| Deliverables and hard rules (AI-assisted code, external APIs, scraped data, live URL) | **Not answered clearly**; `PPT.md` refers to an "official 9-slide HYPNEXIS template" | open question |
+| Deliverables | An official slide **template exists** (the team will share it). Other required items (repo, live URL, video) not confirmed | partly confirmed |
+| Hard rules (AI-assisted code, external APIs, scraped data) | not stated by the organisers as far as the team knows | unknown |
 | Schedule | no round has happened; the team aims to finish the entire solution **by Round 1** | confirmed |
 | Win condition | **First place overall**, across all six tracks | confirmed |
 
@@ -46,22 +56,29 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | H1 | "Did you talk to a single real user?" | H | Time the pharmacist on the demo Rx, by hand vs with Parchi (**measured with a real pharmacist**) | M | D | open |
 | H2 | "Why not just use ChatGPT?" | H | Gold-set benchmark + same-Rx-5-times consistency test (**deterministic, knows June 2026 bans**) | M | D | open |
 | H3 | "medThinks / 1mg already do this, or will build it" | H | medThinks screenshot on the demo Rx + build-vs-buy slide (**plugs in, doesn't replace**) | S | D | open |
-| H4 | "Who checked your clinical numbers?" | H | Pharmacist signs limits + SOS caps; UI badge per limit (**every number shows who approved it**) | M | B, D | open |
-| H5 | "What if you hide an alert that mattered?" | H | Recall per alert type; unsuppressible alert classes; Silent tier kept visible (**quiet, not blind**) | S-M | C | open |
-| H6 | "Patients also buy at the local chemist. Your picture is incomplete" | M | Coverage label + ask-the-patient question for OTC-prone classes (**honest coverage**) | S | C, D | open |
-| H7 | "Isn't this regulated medical-device software?" | M | Wording audit: never output a dose; outputs map to CDSCO "inform" column (**regulatory by design**) | S | C, D | open |
+| H4 | "Who checked your clinical numbers?" | H | Pharmacist signs limits + SOS caps; UI badge per limit (**every number shows who approved it**) | M | B, D | partly built: every limit shows source and "unverified", results carry the data version, 5 doses match the Indian formulary and 20 of 33 are stated in FDA labels; no pharmacist has signed |
+| H5 | "What if you hide an alert that mattered?" | H | Recall per alert type; unsuppressible alert classes; Silent tier kept visible (**quiet, not blind**) | S-M | C | partly built: contraindications, kidney "avoid", banned FDCs and weekly-as-daily are never demoted (FIX_PLAN 1); recall is on a self-labelled set only |
+| H6 | "Patients also buy at the local chemist. Your picture is incomplete" | M | Coverage label + ask-the-patient question for OTC-prone classes (**honest coverage**) | S | C, D | built: Check page "Ask the customer" (paracetamol, painkillers, cold syrups); results say what was not covered |
+| H7 | "Isn't this regulated medical-device software?" | M | Wording audit: never output a dose; outputs map to CDSCO "inform" column (**regulatory by design**) | S | C, D | built (test `rules/wording.test.ts`; 3 texts reworded); slide line still to add |
 | H8 | "Your data is scraped / non-commercial" | M | Runs on the buyer's own catalogue (CSV import); licence column on Data page (**bring your own catalogue**) | S | A, D | open |
 | H9 | "Where does patient data go?" (DPDP) | M | Engine is in-browser; verify `api/` stores nothing (**privacy by architecture**) | S | B | open |
-| H10 | "Does it scale?" | M | Measure ms/Rx and a 1,000-order queue on a laptop (**measured scale**) | S | C | open |
+| H10 | "Does it scale?" | M | Measure ms/Rx and a 1,000-order queue on a laptop (**measured scale**) | S | C | built (`eval/scale.json`: median 0.89 ms, p95 2.7 ms, 1,000 orders ranked in 1.4 ms; one laptop) |
 | H11 | "How do you make money, and how much?" | M | One coherent line: per-check fee priced against pharmacist time saved (from H1) | S | D | open |
-| H12 | "CDSCO lists change monthly. How do you stay current?" | L-M | "Data as of" stamp in UI + refresh script for NSQ/ban lists (**freshness you can see**) | S | A, D | open |
+| H12 | "CDSCO lists change monthly. How do you stay current?" | L-M | "Data as of" stamp in UI + refresh script for NSQ/ban lists (**freshness you can see**) | S | A, D | partly built: Data page shows an "As of" per list and every result shows the clinical data version; refresh script exists for NSQ, no scheduled refresh |
 | H13 | "Doesn't this add work for a busy pharmacist?" | M | Zero typing (cart lines in), ranked queue, alert budget; show clicks per order (**fewer alerts = faster**) | S | D | open |
-| H14 | "The PS says you must build your test set with a pharmacist. Where is it?" | H | _not brainstormed yet_ | - | - | open |
+| H14 | "The PS says you must build your test set with a pharmacist. Where is it?" | H | Say honestly which tests are independent (T1/T2) and which are ours (T3); a short reviewer list from T1 disagreements for the 10-minute session (`TEST_PLAN.md`, `eval/reviewer_list.md`) | M | C, D | partly done: tiers and reviewer list built; an MBBS GP reviewed the list on 24 Oct 2026; still no pharmacist or pharmacy student |
 | H15 | "Half your deck is about e-pharmacy buyers. The PS is a typed-prescription checker" | M | _not brainstormed yet_ | - | - | open |
-| H16 | "You have 10 minutes. Which of your nine screens do I see?" | H | _not brainstormed yet_ | - | - | open |
+| H16 | "You have 10 minutes. Which of your nine screens do I see?" | H | Three screens with a fallback for each (`docs/DEMO.md`) | S | D | built (script); rehearse with a timer |
 | H17 | "Try it on this prescription I just wrote" | H | _not brainstormed yet_ | - | - | open |
 | H18 | "You're judged against AI, Web3, climate and hardware teams. Why does a pharmacy tool win overall?" | M | _not brainstormed yet_ | - | - | open |
-| H19 | "You said everything is done by Round 1. What is not verified?" | H | _not brainstormed yet_ | - | - | open |
+| H19 | "You said everything is done by Round 1. What is not verified?" | H | One table of every claim, its evidence tier and what is not verified (`docs/VERIFIED.md`) | S | D | built; deck slides 3, 6 and 8 now carry the outside checks |
+| H20 | "The doctor already has the patient's previous prescriptions. Your solution is of no use" | H | _not brainstormed yet_ | - | - | open |
+| H21 | "The local pharmacist has no time and no incentive to do any of this" | H | _not brainstormed yet_ | - | - | open |
+| H22 | "People buy medicines right after a diagnosis. Two doctors' prescriptions at once is rare. Where is the problem?" | H | _not brainstormed yet_ | - | - | open |
+| H23 | "If Parchi shows no alert, is it safe? Your interaction data has gaps" | M | Result screens name the ingredients DDInter has nothing on; 13 curated pairs fill known gaps (**honest about what it cannot see**) | S | C, D | built |
+| H24 | "Most Indians buy at local chemist shops. Your buyers (e-pharmacies, chains) are a small share" | H | _not brainstormed yet_ | - | - | open |
+| H25 | "The PS says a pharmacist or pharmacy student helped build the test set. Yours is a general doctor" | M | Label the GP review as what it is (`VERIFIED.md`); ask a pharmacy student to rate the same reviewer list (the PS wording allows a student) | S | D | open |
+| H26 | "Where is the evidence that Ayurvedic and ordinary medicines are really taken together and really clash?" | H | _not brainstormed yet_ | - | - | open |
 
 ## Details
 
@@ -83,7 +100,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **USP:** "We plug into your review desk; we don't replace it."
 
 ### H4. "Who checked your clinical numbers?"
-- **Why it's a hole:** `limits.json` has 11 ingredients, all `pharmacist_approved: false`. Kidney bands for 34 drugs are unverified.
+- **Why it's a hole:** `limits.json` has adult maximums for 33 ingredients (22 read from FDA labels, the US OTC monograph and EMA/UK SmPCs on 24 Oct 2026), all `pharmacist_approved: false`. Kidney bands for 34 drugs are unverified. About 79% of ingredient occurrences in popular oral brands had no limit before that; the results now name the unlimited ones (`docs/DATA_RELIABILITY.md`).
 - **Fixes:** in the session, sign off the demo-critical limits first (paracetamol, NSAIDs, SOS caps). UI shows a badge per limit: approved by [pharmacist] or unverified. Stamp a clinical-data version on every result.
 - **USP:** transparent clinical provenance. A chatbot can't show who approved its numbers.
 
@@ -106,6 +123,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **USP:** "Bring your own catalogue." The IP is the curated rules layer, not the scraped table.
 
 ### H9. "Where does patient data go?" (DPDP Act)
+- **Verified in code (24 Oct 2026, Track B):** nothing in `api/` writes, stores or logs, and only the sig text is sent to the model (a test asserts brand and patient data are not). Not verified: what the host (Vercel) and the model provider keep on their side.
 - **Fixes:** the engine runs in the browser, so offline checks never leave the device. Verify and state that `api/check` and `api/parse-sig` store nothing and that the LLM fallback sends only sig text, no patient identifiers (unverified until checked in code).
 - **USP:** privacy by architecture, not by policy.
 
@@ -149,6 +167,45 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **Why it's a hole:** the team's plan is to finish the whole solution by Round 1. Several things cannot be finished by then without outside people: pharmacist-approved limits, a labelled test set, a measured chatbot comparison, a real-user timing (H1), a live deployment with offline use actually tested, and the unknown rubric. If any appears on a slide as done and is not, that is the hole a judge finds.
 - **Risk:** H. **Status:** open.
 
+### H20. "The doctor already has the patient's previous prescriptions. Your solution is of no use"
+- **Raised by:** the team (anticipated question).
+- **Why it's a hole:** when a patient sees one doctor, that doctor can see their own earlier prescriptions, and doctor-side systems such as HealthPlix and Eka already raise interaction alerts inside the doctor's records (`PS_ANALYSIS.md` §3, company claims). Parchi's value is only where records are split across doctors, pharmacies and over-the-counter purchases. We have not yet shown, with any evidence from a pharmacist or doctor, how often a doctor really lacks that picture.
+- **Risk:** H. **Status:** open.
+
+### H21. "The local pharmacist has no time and no incentive to do any of this"
+- **Raised by:** the team (anticipated question). Related: H13, H11.
+- **Why it's a hole:** an independent chemist is paid for dispensing, not for reviewing; a safety check adds work with no reward. Our buyer story (e-pharmacies and chains, where a pharmacist already verifies every order) answers this for those buyers, but that claim rests on a source in `BUSINESS_MODEL.md` that we have not checked with a person who works at one. The independent chemist, who is the free tier, remains unanswered.
+- **Risk:** H. **Status:** open.
+
+### H22. "People buy medicines right after a diagnosis. Two doctors' prescriptions at once is rare. Where is the problem?"
+- **Raised by:** the team (anticipated question).
+- **Why it's a hole:** Phase 2 and our history timeline assume one customer holding prescriptions from several doctors at overlapping times. We have no measurement of how often that happens. The statistics we cite are about older Indian adults' polypharmacy (Bhagavathula 2021) and self-medication (Rashid 2020), which are not the same thing as simultaneous multi-doctor purchases. Separately, Phase 1's own example (two brands that both contain paracetamol) does not need two doctors at all, so we have not yet said which of the two we claim is the real problem.
+- **Risk:** H. **Status:** open.
+
+### H23. "If Parchi shows no alert, is it safe? Your interaction data has gaps"
+- **Why it's a hole:** DDInter has no entry for several common Indian drugs (aceclofenac, domperidone, nimesulide, etoricoxib, ambroxol) and some drug groups (`track-a-data.md`). The UI is careful ("No alerts from the checks run") and the Data page documents the gaps, but a result screen does not say which of the prescription's ingredients were not covered, so a quiet result can still read as reassurance.
+- **Risk:** M. **Status:** built (24 Oct 2026, branch `v1`): the check and order pages list the ingredients with no interaction data ("Not covered by the interaction data"), and `public/data/ddi_supplement.json` adds 13 unverified rules for pairs DDInter lacks. The benchmark showed two misses (ACE inhibitor + spironolactone, ARB + ACE inhibitor) before that supplement.
+
+### H24. "Most Indians buy at local chemist shops. Your buyers (e-pharmacies, chains) are a small share"
+- **Raised by:** the team, on reviewing the "who is the user" answer (H21).
+- **Why it's a hole:** our paying-buyer story needs a pharmacist who is already paid to verify each order, which exists at e-pharmacies and chains. The cited market estimates put online pharmacy at about USD 3.7B against about USD 30B for all pharmacy retail (IMARC and Ken Research, two different reports, so only a rough ratio and both are estimates), which suggests the local store is where most buying happens. The independent chemist is the largest group and the one with the weakest incentive (H21), and our answer for them is the free tier. So the segment with the clearest business reason is a minority of the places medicines are bought, and judges may count that.
+- **Risk:** H. **Status:** open.
+
+### H25. "The PS says a pharmacist or pharmacy student helped build the test set. Yours is a general doctor"
+- **Why it's a hole:** the problem statement names a pharmacist or pharmacy student. Our available expert is an MBBS doctor with 45 years of general practice. He is a real clinician and can judge whether an alert is clinically sensible, but he is not a pharmacist, and the wording could be read strictly. We also cannot describe him as a pharmacist.
+- **Risk:** M. **Status:** open.
+
+### H26. "Where is the evidence that Ayurvedic and ordinary medicines are really taken together and really clash?"
+- **Raised by:** the team, with the rule that the story must be real and not rare.
+- **What we found (24 Oct 2026, web searches, not a full literature review):** no national measure of how often Indian patients take Ayurvedic and allopathic medicines together. Fragments only: NSS 2014 outpatient data, 6.43% used AYUSH systems against 90.26% allopathy; one Maharashtra study of 401 prescriptions from AYUSH practitioners, about 4.7% mixed the two; an AIIMS Delhi cancer-patient study, 23.4% used Ayurvedic treatment (not specific to concurrent use); a Pune survey (low quality). On interactions: no Indian herb-drug interaction reports found; the national AYUSH pharmacovigilance programme had only 463 suspected adverse-event reports up to August 2020, and a Gujarat study called reporting negligible; a 2001 review found 68.5% of herb-drug case reports could not be evaluated; an ashwagandha-warfarin interaction is not established.
+- **Why it's a hole:** the feature has no solid frequency figure and weak interaction evidence, which is exactly the "assumption" the team wants to avoid. Ayurvedic brand-to-ingredient data and a cited interaction list are also unknown. The honest facts available are the gap itself (use is documented, harm is barely monitored).
+- **Sources:** NSS 2014 via ThePrint; PhcogMag 5(19s) (Maharashtra prescriptions); AIIMS CAM study; PvPI papers (PMC3117316, PMC8963644); BJCP 52(5) herb-drug review.
+- **Risk:** H. **Status:** open.
+
+- **Update (24 Oct 2026, Track B): starter engine built** (`src/engine/herbal/`). 15 herbs with Hindi, Sanskrit, English and Latin names, 2 formulations, 1 ambiguous name (Brahmi), 12 rules (3 established, 9 limited), each with its sources and `pharmacist_approved: false`. It matches names before the ordinary resolver, which used to turn "Triphala churna" into an inhaler and "Haldi doodh" into an antipsychotic. Zero false matches over all 31,978 brand names in the index. It is in `api/check` (single and history modes, history only for overlapping courses). It reports unknown Ayurvedic products as unrecognised and never says "safe".
+- **Still open:** no frequency figure for co-use was found, so the story still cannot claim how common this is; no brand-name Ayurvedic product has a verified composition; no pharmacist or doctor has reviewed the rules; the UI does not show the herbal result yet (Track D); the evidence is mostly limited, so most findings are notes, not alerts.
+- **Risk:** M (reduced from H: the feature now exists and is honest about its evidence; the frequency claim remains unbacked). **Status:** built (starter), evidence gap open.
+
 ## USP shortlist (pick 3-4 for the deck)
 Ranked by judge impact ÷ effort. Update after each council run.
 1. Measured with a real pharmacist (H1)
@@ -161,3 +218,10 @@ Ranked by judge impact ÷ effort. Update after each council run.
 |---|---|---|---|
 | 24 Oct 2026 | Initial list (Claude review of docs) | H1-H13 | Goal = win HM-02 |
 | 24 Oct 2026 | Grill 1: problem statement and parameters (Q1-Q7) | H14-H19 | PS text recorded verbatim. Round 1 = deck + prototype + presentation in 10 min. Win = first overall. Rubric, panel, finals format, hidden test and hard rules still unknown |
+| 24 Oct 2026 | Grill 2: pharmacist help, the judge's hardest questions | H20-H23 | Presentation work deferred until the PS and new features are clear. Interactive demo allowed only if it cannot give a wrong answer. Slide template exists (to be shared). Panel sharing across tracks unknown. H9 partly verified in code |
+| 24 Oct 2026 | Grill 3: expert access, who the buyer is | H24-H25 | Expert = MBBS GP, 45 years. **Provenance rule adopted: say exactly who checked what.** Alert fatigue and patient limits to be the strongest measured results. Interactive demo must show "not sure" and never guess |
+| 24 Oct 2026 | Grill 4: sheet, buyer, Ayurveda | H26 | Buyer = e-pharmacies and chains. Expert time = 10 min sheet. Ayurveda evidence is thin (H26). Generic syrup input found not totalled (Track A) |
+| 24 Oct 2026 | Test reliability (Claude + team) | none | Tests get provenance tiers (T1 external, T2 generated from external, T3 self-written, T4 human). New T1/T2 tests: ONC pairs end to end (found 13 of 16 not stopping; fixed), NFI doses (5 of 5 agree). Reviewer list and `VERIFIED.md` added |
+| 25 Oct 2026 | Phase 2 built (allergy, pregnancy, eGFR, paracetamol by risk) | none | Pregnancy rules each carry an FDA or NFI quote; sections E-G of `eval/reviewer_list.md` are for a second GP review and were not covered by the first |
+| 24 Oct 2026 | GP review of `eval/reviewer_list.md` | none | Team reports the GP agreed with every tier shown (ONC deviations, 8 newly stopping groups, formulary doses). Scope is that list only; limits and other rules still unreviewed. Recorded as T4 (GP, not pharmacist) |
+| 25 Oct 2026 | Phases 3-6 of `FIX_PLAN.md` built (workflow, outside cross-checks, 31 realistic scenarios, UI and demo) | none | H6, H16 built; H4, H12 partly. Sections H-J of `eval/reviewer_list.md` are for the next review and were not covered by the first |
