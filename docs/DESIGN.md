@@ -2,7 +2,10 @@
 
 The single reference for how the app looks, reads and behaves. Tokens live in `src/ui/styles/tokens.css`; this file explains them. Change the tokens there, not hex values in components.
 
-Palette reference: `docs/design/palette-reference.jpg`.
+Palette reference: `docs/design/palette-reference.jpg`. Pages and build order: `UI_PLAN.md`.
+
+## Visual language
+Soft indigo gradient page, frosted white cards (`--glass`, `--ring`, `--shadow-card`) on a translucent panel (`--glass-panel`), pill-shaped nav and buttons (`--radius-pill`), an inset "pressed" state for the active nav item (`--shadow-inset`), and big-number KPI tiles. Tier colour appears only as a 4 px left bar plus icon and label.
 
 ## Principles
 1. **Informs, never decides.** The pharmacist decides. Every screen and string says "review", "check", "consider", never "stop", "unsafe" or "approved".

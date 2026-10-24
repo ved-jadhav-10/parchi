@@ -21,6 +21,14 @@
   --status-ok: #1e7a46;
   --status-ok-bg: #eaf6ef;
 
+  /* Surfaces (frosted cards over a soft gradient) */
+  --bg-gradient: linear-gradient(135deg, #e4e6f8 0%, #eeeffd 30%, #fafafd 60%, #e9ebfa 100%);
+  --glass: rgb(255 255 255 / 0.82);
+  --glass-panel: rgb(255 255 255 / 0.45);
+  --ring: 0 0 0 1px rgb(18 32 86 / 0.06);
+  --shadow-inset: inset 2px 4px 5px rgb(18 32 86 / 0.1), inset -2px -4px 6px rgb(255 255 255 / 0.6);
+  --radius-pill: 999px;
+
   /* Type */
   --font-sans: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --text-xs: 0.75rem;
