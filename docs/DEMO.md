@@ -24,8 +24,8 @@ Paste the same text into a chatbot beforehand, or read `eval/report.md`. Show th
 1. The **Review queue** ranks three orders. Open the top one (ORD-1087, Ramesh K.).
 2. **Timeline:** three doctors, dated, bars overlap. Doses are added up only where the dates overlap. The Interrupt names the doctors and the days.
 3. **Kidney function:** a creatinine result "arrived from the platform's lab". Press **Re-check with this result**. A **What changed** card lists the kidney alert that was added.
-4. **Unverified brand:** open the second order (ORD-1089). An unknown brand is shown with its closest match, marked unverified, and kept out of the totals.
-5. **Your decision:** choose *Hold, contact the doctor*, add a note, save. Open **Override log**: the decision is there, with a reason. This is the audit trail a buyer needs.
+4. **Unverified brand:** open the second order (ORD-1089). An unknown brand is shown with its closest matches, marked unverified, and kept out of the totals. Press **Use this brand** on a match: the order is checked again, the line joins the totals and **What changed** lists the effect. **Undo** takes it back.
+5. **Your decision:** on the first order, open **Query to the doctor (draft)** and show the polite message built from the findings (Parchi sends nothing). Then choose *Hold, contact the doctor* (key 1), add a note, and **Save and open next**. Open **Override log**: the decision is there, with a reason. This is the audit trail a buyer needs.
 6. Optional: **Download as FHIR (draft)**, then **History > Import from FHIR** to show the file goes back in.
 
 ## 4. Offline and the customer (30 s)
@@ -38,6 +38,6 @@ Paste the same text into a chatbot beforehand, or read `eval/report.md`. Show th
 | Symptom | Say |
 |---|---|
 | Leaflet fails | "That one needs the server and a key; everything else you saw ran on this device." |
-| A brand is not recognised | "That is the point: it is marked unverified and kept out of the totals until a pharmacist confirms." |
+| A brand is not recognised | "That is the point: it is marked unverified and kept out of the totals until a pharmacist confirms it. One button confirms it and the order is checked again." |
 | Asked "is it approved?" | "No. Every limit and rule shows a source and `Not approved`; the pharmacist session signs them off." |
 | Asked about OCR | "Out of scope on purpose: buyers already digitise the prescription; we take their structured lines." |

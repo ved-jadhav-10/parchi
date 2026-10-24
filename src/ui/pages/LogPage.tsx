@@ -26,7 +26,7 @@ export const LogPage = () => {
 
       {error && (
         <EmptyState title="This browser cannot store the log">
-          <p>Private windows and blocked site data stop overrides from being saved. Use a normal window to keep a record.</p>
+          <p>Overrides cannot be saved here, so nothing would be kept. Open Parchi in a normal browser window, or ask whoever looks after this device to allow storage.</p>
         </EmptyState>
       )}
 

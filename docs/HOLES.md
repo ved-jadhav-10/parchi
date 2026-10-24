@@ -57,10 +57,10 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | H2 | "Why not just use ChatGPT?" | H | Gold-set benchmark + same-Rx-5-times consistency test (**deterministic, knows June 2026 bans**) | M | D | open |
 | H3 | "medThinks / 1mg already do this, or will build it" | H | medThinks screenshot on the demo Rx + build-vs-buy slide (**plugs in, doesn't replace**) | S | D | open |
 | H4 | "Who checked your clinical numbers?" | H | Pharmacist signs limits + SOS caps; UI badge per limit (**every number shows who approved it**) | M | B, D | open |
-| H5 | "What if you hide an alert that mattered?" | H | Recall per alert type; unsuppressible alert classes; Silent tier kept visible (**quiet, not blind**) | S-M | C | open |
+| H5 | "What if you hide an alert that mattered?" | H | Recall per alert type; unsuppressible alert classes; Silent tier kept visible (**quiet, not blind**) | S-M | C | open (Silent alerts are now listed on Check and on every order, collapsed) |
 | H6 | "Patients also buy at the local chemist. Your picture is incomplete" | M | Coverage label + ask-the-patient question for OTC-prone classes (**honest coverage**) | S | C, D | open |
 | H7 | "Isn't this regulated medical-device software?" | M | Wording audit: never output a dose; outputs map to CDSCO "inform" column (**regulatory by design**) | S | C, D | open |
-| H8 | "Your data is scraped / non-commercial" | M | Runs on the buyer's own catalogue (CSV import); licence column on Data page (**bring your own catalogue**) | S | A, D | open |
+| H8 | "Your data is scraped / non-commercial" | M | Runs on the buyer's own catalogue (CSV import); licence column on Data page (**bring your own catalogue**) | S | A, D | UI built (`#/catalogue`: import, review list, confirm, same-composition prompts); licence column on the Data page as before |
 | H9 | "Where does patient data go?" (DPDP) | M | Engine is in-browser; verify `api/` stores nothing (**privacy by architecture**) | S | B | open |
 | H10 | "Does it scale?" | M | Measure ms/Rx and a 1,000-order queue on a laptop (**measured scale**) | S | C | open |
 | H11 | "How do you make money, and how much?" | M | One coherent line: per-check fee priced against pharmacist time saved (from H1) | S | D | open |
@@ -203,7 +203,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **Risk:** H. **Status:** open.
 
 - **Update (24 Oct 2026, Track B): starter engine built** (`src/engine/herbal/`). 15 herbs with Hindi, Sanskrit, English and Latin names, 2 formulations, 1 ambiguous name (Brahmi), 12 rules (3 established, 9 limited), each with its sources and `pharmacist_approved: false`. It matches names before the ordinary resolver, which used to turn "Triphala churna" into an inhaler and "Haldi doodh" into an antipsychotic. Zero false matches over all 31,978 brand names in the index. It is in `api/check` (single and history modes, history only for overlapping courses). It reports unknown Ayurvedic products as unrecognised and never says "safe".
-- **Still open:** no frequency figure for co-use was found, so the story still cannot claim how common this is; no brand-name Ayurvedic product has a verified composition; no pharmacist or doctor has reviewed the rules; the UI does not show the herbal result yet (Track D); the evidence is mostly limited, so most findings are notes, not alerts.
+- **Still open:** no frequency figure for co-use was found, so the story still cannot claim how common this is; no brand-name Ayurvedic product has a verified composition; no pharmacist or doctor has reviewed the rules; the herbal result is now shown on Check and the order page (`HerbalCard`, starting rule set, every rule marked a draft); the evidence is mostly limited, so most findings are notes, not alerts.
 - **Risk:** M (reduced from H: the feature now exists and is honest about its evidence; the frequency claim remains unbacked). **Status:** built (starter), evidence gap open.
 
 ## USP shortlist (pick 3-4 for the deck)

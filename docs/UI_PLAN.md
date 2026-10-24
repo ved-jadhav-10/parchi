@@ -3,19 +3,20 @@
 Look and tokens: `DESIGN.md`. Contracts: `src/engine/contracts.ts`. The UI calls only `runCheck()` in `src/ui/engine.ts` and reads data files; it never decides alerts.
 
 ## Pages
-Hash routes (`#/check`), no router dependency, installable PWA. Pill nav on desktop, menu button on mobile (`src/ui/route.ts`).
+Hash routes (`#/check`), no router dependency, installable PWA. Pill nav from 900 px, menu button below (`src/ui/route.ts`). Pages load on demand; every chunk is in the service worker's precache.
 
 | Route | Page | Status |
 |---|---|---|
-| (none) / `#/home` | Start screen: what Parchi is, Check a prescription, See a worked example (`#/demo`), how a prescription is checked. Not a nav pill (footer link "About Parchi"); the installed app opens on `#/check` (`start_url`). | Built |
-| `#/check` | Prescription check: Rx + patient in, KPI row, alerts, X-ray, brand matches (expandable), silent log, FHIR draft export | Built on the real engine; look-alike picker, interaction-coverage note, customer leaflet |
+| (none) / `#/home` | Start screen: what Parchi is, Check a prescription, See a worked example (`#/demo`), how a prescription is checked. Not a nav pill (footer link "About Parchi"); the installed app opens on `#/queue` (`start_url`). | Built |
+| `#/check` | Prescription check: Rx + patient in, KPI row, tier key, alerts, herbal items, X-ray, brand matches (expandable), silent log, FHIR draft export | Built on the real engine; look-alike picker, interaction-coverage note, customer leaflet, herbal and Ayurvedic items, catalogue prompts, online reading of unclear dosing |
+| `#/catalogue` | Catalogue import: CSV, matched on this device, review list with confirm, export with status. Kept on the device; feeds same-composition prompts. | Built |
 | `#/demo` | Guided 5-step walkthrough of the 68-year-old case for the pitch. Runs through `runCheck`, so it turns real with the engine; every sentence is built from the result. Arrow keys work. | Built |
 | `#/queue` | Review queue (Phase 2): the buyer's orders ranked by Parchi's priority, each with its suggested status, alert counts and the pharmacist's decision. Sample account until real orders are connected. | Built, on the engine's `checkHistory` |
-| `#/order/<id>` | One order: a verdict (suggested status, lead finding), alerts that name the doctors and days, a timeline by doctor, X-ray by window, unverified brands, each prescription's brand matches; the decision (a different one needs a reason) in a sticky rail with kidney re-check and export in a collapsed tools panel. | Built |
+| `#/order/<id>` | One order: a verdict (suggested status, lead finding), alerts that name the doctors and days, a timeline by doctor, X-ray by window, unverified brands, each prescription's brand matches; the decision (a different one needs a reason) in a sticky rail, or a sheet on a phone; confirm an unverified brand; herbal items; silent alerts; a query-to-the-doctor draft; kidney re-check and export in a collapsed tools panel. | Built |
 | `#/history[/<id>]` | History input: customer, one prescription per doctor and date, lab results, optional FHIR import. Creates or edits an order on this device. | Built |
 | `#/log` | Override log: IndexedDB, filter by tier and date, CSV export; plus the order decisions | Built, fully working |
-| `#/data` | Dose limits and suppression list with `source` and approval status | Built, waits for B/C files |
-| `#/benchmark` | Engine vs chatbots: alerts per Rx, precision/recall per alert type, draft-label notice | Built, reads `public/data/benchmark.json` from `npm run eval` |
+| `#/data` | Dose limits, SOS caps, alert rules, policy, suppression list, curated interactions and herbal rules, each with `source` and sign-off status; filter and "not signed off only" | Built |
+| `#/benchmark` | Engine vs chatbots: alerts per Rx, one precision/recall table by alert type, draft-label notice | Built, reads `public/data/benchmark.json` from `npm run eval` |
 
 Check page: desktop left column 400 px sticky (Prescription, Patient), result on the right; mobile one column. Result order: KPI row -> Interrupt then Inform alerts -> X-ray -> Brand matches -> Silent log (collapsed). Age is required; weight and creatinine appear only when the engine asks (`prompts`).
 
@@ -28,7 +29,10 @@ Check page: desktop left column 400 px sticky (Prescription, Patient), result on
 | Alert rules and suppression list | C | `public/data/alert_rules.json`: budget, interaction tiers, duplicate classes, patient rules, suppression list. The Data page reads it; an unreadable file is said so and never shown as empty rules. |
 | `public/data/benchmark.json` | D (`eval/`) | `{n_rx, kappa, systems: [{name, alerts_per_rx, interrupts_per_rx, clean_fp_rate, by_type: {<alert type>: {precision, recall}}}]}`. First system named engine/parchi is the headline. |
 | Needs pharmacist | A | The "Check match" badge follows A's `needs_pharmacist`; confidence below 0.9 is only a fallback when the field is absent (`src/ui/lib/resolved.ts`). A spelling-corrected match shows "Corrected spelling" unless A flags it. |
-| Override reasons | pharmacist | Starter list in `OverrideDialog.tsx`; replace after the session. |
+| Override and decision reasons | pharmacist | Starter lists in `OverrideDialog.tsx` (per alert) and `history/labels.ts` (`DECISION_REASONS`, per order); replace after the session. |
+| Herbal check | B | `splitSingle`/`splitHistory` take herbal lines out before the resolver; `herbalSingle`/`herbalHistory` match them against the ordinary medicines (`src/ui/lib/herbal.ts`). Shown on Check and the order page as `HerbalCard`. |
+| Online dosing reading | B | `src/ui/lib/smartSig.ts` reads unclear dosing text through `/api/parse-sig` before the (synchronous) pipeline runs; offline nothing changes. `npm run dev` serves no `/api`: use `vercel dev`. |
+| Catalogue | A | `importCatalogue`, `confirmItem`, `createCatalogue` (`src/engine/resolver/catalogue.ts`), stored by `src/ui/storage/catalogue.ts`. |
 
 Missing data files show an empty state naming the file and owner. Nothing is invented or sampled.
 
@@ -41,4 +45,5 @@ Visual inspiration only (github.com/MandyTrl/meditec, no licence, so nothing cop
 - Jan Aushadhi savings: the product list has no prices, so there is nothing to show yet.
 - Recall banner: banned-FDC and failed-batch (NSQ) alerts already show as alert cards; a separate banner would repeat them.
 - Finals: ABDM-profiled FHIR (the export is a plain collection that round-trips through our import, not validated against the NRCeS profile).
+- Order management: delete an order, undo or reopen a decision, flag a decision that an edit has made stale, back up orders. Not built.
 - Dark mode and per-language UI are out of scope.

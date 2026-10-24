@@ -141,7 +141,7 @@ export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaitin
 
       {failed && (
         <p className="dialog__error" role="alert">
-          Could not save on this device. The decision was not recorded. Press save again; if it keeps failing, free browser storage or use a normal window.
+          Could not save on this device. The decision was not recorded. Press save again. If it keeps failing, ask whoever looks after this device: the browser may be blocking storage.
         </p>
       )}
       <div className="actions">

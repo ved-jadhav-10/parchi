@@ -249,7 +249,7 @@ export const HistoryPage = () => {
 
         {failed && (
           <p className="dialog__error" role="alert">
-            Could not save on this device, so the order was not added. Private windows and blocked site data stop this.
+            Could not save on this device, so the order was not added. Press the button again; if it keeps failing, ask whoever looks after this device, because the browser may be blocking storage.
           </p>
         )}
         <div className="actions">
