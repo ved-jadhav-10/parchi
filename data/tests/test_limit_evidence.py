@@ -53,3 +53,21 @@ def test_normalise_keeps_text_next_to_less_than_signs():
     text = le.normalise("incidence <1% of patients. maximum dose 10 mg once daily. weight >50 kg")
     assert "maximum dose 10 mg once daily" in text
     assert le.normalise("<p>Do&nbsp;not exceed</p>") == "do not exceed"
+
+
+def test_label_checked_marks_exactly_the_limits_with_a_label_quote():
+    have = set(le.limit_from_evidence(ROWS))
+    for ing, entry in LIMITS["ingredients"].items():
+        for band in le.BANDS:
+            limit = entry.get(band)
+            if not limit:
+                continue
+            assert ("label_checked" in limit) == ((ing, band) in have), f"{ing}/{band}"
+
+
+def test_a_label_check_is_not_a_pharmacist_approval():
+    for ing, entry in LIMITS["ingredients"].items():
+        for band in le.BANDS:
+            limit = entry.get(band) or {}
+            if "label_checked" in limit:
+                assert limit["pharmacist_approved"] is False, f"{ing}/{band}: only a pharmacist sets this"

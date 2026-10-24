@@ -6,6 +6,11 @@ export interface Provenance {
   /** false until the pharmacist has signed the value off. */
   pharmacist_approved: boolean
   approved_by?: string
+  /**
+   * Date a script last found the quoted label sentence word for word in the source (data/limit_evidence.py).
+   * It says the number matches a label; it is not a pharmacist's approval and never sets pharmacist_approved.
+   */
+  label_checked?: string
 }
 
 export interface MaxPerDay extends Provenance {

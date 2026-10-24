@@ -33,12 +33,14 @@
       "adult": {
         "max_mg_day": 4000,
         "source": "US acetaminophen label (DailyMed setid 3f7a6fdc-6e36-dc3e-e063-6394a90a067d): \"a maximum daily dose of acetaminophen of 4,000 mg per day (includes all routes of administration\" and all acetaminophen-containing products. US OTC directions cap self-medication lower (6 x 500 mg = 3,000 mg). Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "paediatric": {
         "max_mg_per_kg_day": 60,
         "source": "Indian pack insert, Dolo 250 suspension (Micro Labs, medicaldialogues.in/dolo-liquids): \"max. daily dosage: 60 mg/kg to be administered in divided doses of 10-15 mg/kg throughout 24 hours\". Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "risk_caps": [
         {
@@ -67,12 +69,14 @@
       "adult": {
         "max_mg_day": 2400,
         "source": "UK SmPC Brufen 400 mg (medicines.org.uk/emc/product/6713): \"the total daily dose does not exceed 2400 mg in divided doses\". The US prescription label allows 3,200 mg (DailyMed setid 00872852-680a-41b3-901b-b991b12a176d); the lower is used. NFI (via Eka NFI MCQA) also gives 2.4 g. Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "paediatric": {
         "max_mg_per_kg_day": 40,
         "source": "US prescription ibuprofen suspension (DailyMed setid 141b7964-cce6-74e4-e063-6294a90af746): \"the recommended maximum daily dose is 40 mg/kg\". The UK Brufen tablet SmPC gives 20 mg/kg as the usual daily dosage, not a maximum. Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -114,7 +118,8 @@
       "adult": {
         "max_mg_day": 150,
         "source": "UK SmPC Voltarol (medicines.org.uk/emc/product/7859): \"the recommended maximum daily dose of voltarol is 150mg\", across dosage forms. The US label allows up to 200 mg/day for rheumatoid arthritis (DailyMed setid 08e41a9d-644c-4ac6-aba3-38d7c3f36d36); the lower is used. NFI (via Eka NFI MCQA) also gives 150 mg. Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -135,7 +140,8 @@
       "adult": {
         "max_mg_day": 10,
         "source": "US OTC label (DailyMed setid 03c0a599-072a-10ef-e063-6394a90a9698): \"do not take more than one 10 mg tablet in 24 hours\". The US OTC syrup advises 5 mg/day at 65+ for self-medication (setid 06cdcbe0-6c7c-4b91-8158-08ef2e0876dc); not applied as a prescription limit. Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -151,14 +157,16 @@
       "adult": {
         "max_mg_day": 5,
         "source": "US OTC label (DailyMed setid 0216f644-767c-ae88-f48f-cd29ac1547ed): \"do not take more than 1 tablet (5 mg) in 24 hours\". Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "chlorphenamine": {
       "adult": {
         "max_mg_day": 24,
         "source": "US OTC monograph, 21 CFR 341.72(d)(3): chlorpheniramine maleate, adults \"4 milligrams every 4 to 6 hours, not to exceed 24 milligrams in 24 hours\". Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "pantoprazole": {
@@ -179,14 +187,16 @@
       "adult": {
         "max_mg_day": 30,
         "source": "UK SmPC domperidone 10 mg (medicines.org.uk/emc/product/101741): \"a maximum dose of 30 mg per day\", following the EMA 2014 restriction. Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "metformin": {
       "adult": {
         "max_mg_day": 2000,
         "source": "US extended-release label (DailyMed setid 17050df5-9e95-4e1b-ac75-34add289b139): \"up to a maximum dosage of 2000 mg once daily\". The immediate-release label allows 2,550 mg (DailyMed setid 011de1a5-1ac0-4831-9e8d-26ec79ba2205); the lower is used. NFI (via Eka NFI MCQA) also gives 2 g. Quote checked 25 Oct 2026 (data/curated/limit_evidence.csv); confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -208,7 +218,8 @@
       "adult": {
         "max_mg_day": 1500,
         "source": "US FDA label (DailyMed setid 000155a8-709c-44e5-a75f-cd890f3a7caf): up to naproxen 1,500 mg/day for limited periods of up to 6 months (naproxen sodium 550 mg = naproxen 500 mg). Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -229,7 +240,8 @@
       "adult": {
         "max_mg_day": 120,
         "source": "UK SmPC Arcoxia (medicines.org.uk/emc/product/10618): 120 mg once daily only for acute gout, at most 8 days; other indications 60-90 mg. Checked 24 Oct 2026; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -287,7 +299,8 @@
       "adult": {
         "max_mg_day": 1500,
         "source": "UK SmPC Ponstan Forte 500 mg (medicines.org.uk/emc/product/1732): adults 500 mg three times daily, \"do not exceed the stated dose\". Checked 24 Oct 2026; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -374,7 +387,8 @@
       "adult": {
         "max_mg_day": 3600,
         "source": "US FDA label (DailyMed setid 01b810b7-f4c8-4412-bbc5-b9220d8770d8): epilepsy doses studied up to 3,600 mg/day; no added benefit shown above 1,800 mg/day. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -404,7 +418,8 @@
       "adult": {
         "max_mg_day": 600,
         "source": "US FDA label (DailyMed setid 0101cd1f-4a95-40e9-86a8-ccde8d656e3d): \"maximum dose of 600 mg/day\" (450 mg/day for fibromyalgia). Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -452,7 +467,8 @@
       "adult": {
         "max_mg_day": 400,
         "source": "US FDA label (DailyMed setid 007bf37f-0e46-426a-ac8c-be63d4b7414c): immediate-release tablets, \"do not administer at a dose exceeding 400 mg per day\" (extended-release: 300 mg/day). Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -479,7 +495,8 @@
       "adult": {
         "max_mg_day": 100,
         "source": "US FDA label (DailyMed setid 0098dec4-f0e5-45d5-8aa4-5d0faf9ab142): \"the maximum recommended daily dose is 100 mg of sitagliptin\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       },
       "renal": [
         {
@@ -568,98 +585,112 @@
       "adult": {
         "max_mg_day": 16,
         "source": "EMA 2013 restriction: by mouth at most 8 mg every 12 hours for up to 7 days (by injection 4 mg every 12 hours, i.e. 8 mg/day). Checked 24 Oct 2026; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "glimepiride": {
       "adult": {
         "max_mg_day": 8,
         "source": "US FDA label (DailyMed setid 0003458f-352a-46fa-9d99-230daa76ae29): \"the maximum recommended dose is 8 mg once daily\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "montelukast": {
       "adult": {
         "max_mg_day": 10,
         "source": "US FDA label (DailyMed setid 04b3faff-1ea1-4d2a-aa31-9d6e742e1759): adults and adolescents 15 years and older 10 mg once daily; no further dose within 24 hours. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "fexofenadine": {
       "adult": {
         "max_mg_day": 180,
         "source": "US FDA label (DailyMed setid 00ef8467-30a0-7579-e063-6294a90a75af): OTC directions, one 180 mg tablet once a day, \"do not take more than 1 tablet in 24 hours\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "telmisartan": {
       "adult": {
         "max_mg_day": 80,
         "source": "US FDA label (DailyMed setid 09d31eee-cd22-4918-a889-3eb4d2969525): hypertension dose range 40-80 mg once daily. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "amlodipine": {
       "adult": {
         "max_mg_day": 10,
         "source": "US FDA label (DailyMed setid 003dd1ec-16f8-4f96-b6a8-c4689d35892a): \"maximum dose 10 mg once daily\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "atorvastatin": {
       "adult": {
         "max_mg_day": 80,
         "source": "US FDA label (DailyMed setid 00afce9b-48c9-487a-a738-e359c005c707): \"dosage range is 10 mg to 80 mg once daily\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "rosuvastatin": {
       "adult": {
         "max_mg_day": 40,
         "source": "US FDA label (DailyMed setid 02797697-300a-43db-92cf-9b78f08626be): adult range 5-40 mg once daily; for Asian patients start at 5 mg and weigh the risks above 20 mg. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "empagliflozin": {
       "adult": {
         "max_mg_day": 25,
         "source": "US FDA label (DailyMed setid 0fdd0255-0055-65f3-b2c0-db8fbb87beae): \"maximum total daily dosage of empagliflozin 25 mg\". Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "chlorzoxazone": {
       "adult": {
         "max_mg_day": 3000,
         "source": "US FDA label (DailyMed setid 0a8ee5fa-f393-4568-81bd-269f9a4cecd6): may be increased to 750 mg three or four times daily. Checked 24 Oct 2026 via openFDA; confirm against the Indian label.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "phenylephrine": {
       "adult": {
         "max_mg_day": 60,
         "source": "US OTC monograph, 21 CFR 341.80(d)(1)(i): oral phenylephrine hydrochloride, adults 10 mg every 4 hours, not to exceed 60 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "dextromethorphan": {
       "adult": {
         "max_mg_day": 120,
         "source": "US OTC monograph, 21 CFR 341.74(d): adults 10-20 mg every 4 hours or 30 mg every 6-8 hours, not to exceed 120 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "diphenhydramine": {
       "adult": {
         "max_mg_day": 300,
         "source": "US OTC monograph, 21 CFR 341.72(d)(7): antihistamine use, adults 25-50 mg every 4-6 hours, not to exceed 300 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     },
     "guaifenesin": {
       "adult": {
         "max_mg_day": 2400,
         "source": "US OTC monograph, 21 CFR 341.78(d): adults 200-400 mg every 4 hours, not to exceed 2,400 mg in 24 hours. Checked 24 Oct 2026 via eCFR; an Indian label may differ.",
-        "pharmacist_approved": false
+        "pharmacist_approved": false,
+        "label_checked": "2026-10-25"
       }
     }
   },
