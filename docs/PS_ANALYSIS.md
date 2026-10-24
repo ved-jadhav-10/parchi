@@ -326,6 +326,38 @@ The doctor is neither the user nor the buyer. Doctors care about time, ego and l
 3. Competitor claims (GoDavaii, CureCheck, medThinks, Practo) are self-reported.\[27\]\[28\]
 4. Fill every bracketed benchmark number with measured results.
 
+### 10. Verified additions and corrections (24 Oct 2026)
+Checked against primary or reputable secondary sources for the final deck (`PPT.md`). Where this section conflicts with an earlier one, this section wins.
+
+**Additions (new numbers and facts used in the deck)**
+| Item | Value | Source |
+|---|---|---|
+| Polypharmacy, older Indian adults (60+) | 49% (95% CI 42–56); same meta-analysis as Key Finding 9 | \[78\] |
+| Self-medication in India | 53.57% pooled mean, 17 articles, 10,248 participants | \[79\] |
+| Identical-brand LASA example | 'Medzol' = midazolam and pantoprazole | \[80\] |
+| Paracetamol adult maximum | 4,000 mg/day (FDA label); an Indian reference and pharmacist sign-off are still needed | \[81\] |
+| CDSCO MDSW final guidance | Circular dated 21 Jul 2026 (Doc No. CDSCO/MD/GD/MDSW/01/2026). "Inform clinical management" is the lowest-risk column. Modules that recommend drug dosages are named as regulated MDSW. The class-letter matrix comes from a secondary source | \[82\]\[83\] |
+| Pharmacy Act 1948, s.42 | Only a registered pharmacist may dispense on prescription; in force nationally since 1984 | \[84\] |
+| DPDP Act 2023 | Up to ₹250 crore for failing reasonable security safeguards (s.8(5)); Rules notified Nov 2025, phased over 12–18 months | \[85\] |
+| E-pharmacy rules | Draft notified 28 Aug 2018, still a draft; it requires a registered pharmacist for dispensing | \[86\] |
+| NABH 6th edition | Chapter 3 "Management of Medication (MOM)" covers prescribing, dispensing, LASA drugs and adverse-event reporting (secondary) | \[87\] |
+| SDG target 3.8 | "...access to safe, effective, quality and affordable essential medicines and vaccines for all" | \[88\] |
+| 16 FDCs of June 2026 | S.O. 3068(E)–3083(E), dated 11 Jun 2026, Section 26A, immediate effect | \[7\]\[89\] |
+| 156 FDCs of 2024 | Notification dated 12 Aug 2024 (published around 21 Aug 2024). Delhi HC gave petitioner companies interim relief (order of 2 Sep 2024); current status unverified | \[90\]\[91\] |
+| NSQ scope | CDSCO says NSQ failure "relates only to the tested batch" | \[12\] |
+
+**Corrections to earlier sections**
+- Key Finding 3 and TL;DR: Thapa et al. 2025 was done at Koshi Hospital, Biratnagar, **Nepal**, not India. "Documentation 20.6%" means agreement with Micromedex's documentation-quality rating, not a documentation rate. The correct DOI is 10.1016/j.rcsop.2025.100564 (PMC11786904); the URL in source \[5\] (PII S2667276625000964) does not match this paper.\[92\]
+- Key Finding 4: the share of duplication overrides judged appropriate is **82–98% in the two studies that assessed it** (Nanji 2014, 2018), not 82–99%. The setting is hospital order entry. DOI e15653.\[93\]
+- Key Finding 5: Joshi et al. 2007 appeared in the *International* Journal of Risk & Safety in Medicine. Its abstract says "a general hospital in Delhi". The 113,346-entry figure is not in the abstract and is unverifiable, so drop it.\[94\]
+- Key Finding 6: the S.O. 3285–3440(E) range for the 156 FDCs is unverified, and sources give conflicting gazette dates. Cite "August 2024".
+- Key Finding 2, §3 and §9.5: the 2 Jan 2024 RxNav date and the DrugBank free-checker retirement are both unverified, so do not cite either.
+- Key Finding 10: the CDSCO final MDSW guidance is dated 21 Jul 2026 (see additions).
+- §8 and §9.3: "~1M outlets" does not come from Ken Research. The only figure is AIOCD's self-reported membership (~12.4 lakh chemists and distributors, ~9.8 lakh of them retailers). Label it self-reported or skip it.\[95\]
+- §9.4: Marg ERP figures are vendor self-reported. Do not cite them as market share.
+- Paracetamol acute-liver-failure figures (e.g. 42% of US cases) are US data (Larson 2005). In India, anti-TB drugs dominate drug-induced liver injury (Devarbhavi 2010). Do not present paracetamol liver-failure numbers as Indian.\[96\]\[97\]
+- Market size: cite only Ken Research, USD 30.1B (2025) → 52.8B (2031), labelled as an estimate (as in §9.3).
+
 ## Recommendations
 1. **Next 2 hours:** freeze the data model (brand → ingredients[mg, unit, per_volume] → ATC class) on the 1mg 2025 or A-Z dataset, filtered to the ~2,000 top OPD brands. Hand-curate the ~40 brands used in the demo and test set with the pharmacist.
 2. **By midnight:** finish the resolver, sig parser, ledger, limits table (pharmacist-signed, ~25 ingredients), class duplication, banned-FDC table and 3-tier output with the X-ray visual. Use DDInter only for pairs among resolved ingredients.
@@ -420,3 +452,23 @@ The doctor is neither the user nor the buyer. Doctors care about time, ego and l
 75. [Crocin Cold & Flu Tablet - Uses, Side Effects, Substitutes, Composition And More](https://www.lybrate.com/medicine/crocin-cold-flu-tablet)
 76. [CDSCO Registration for SaMD & AI Diagnostics](https://mrdxregulatory.com/blog/cdsco-registration-samd-ai-diagnostic-tools-india-2026)
 77. [ChatGPT as a Tool for Perioperative Safety: Evaluating Drug Interaction Detection in Anesthetic Regimens - PubMed](https://pubmed.ncbi.nlm.nih.gov/41952934/)
+78. [Bhagavathula et al., Prevalence of Polypharmacy, Hyperpolypharmacy and Potentially Inappropriate Medication Use in Older Adults in India, Front Pharmacol 2021 (PMC8173298)](https://pmc.ncbi.nlm.nih.gov/articles/PMC8173298/)
+79. [Rashid et al., Prevalence and Predictors of Self-Medication Practices in India, Curr Clin Pharmacol 2020 (PubMed 31763976)](https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=31763976&rettype=abstract&retmode=text)
+80. [Neelakantan, Sharma, Kulkarni, Look-alike, sound-alike (LASA) drugs in India, Lancet Reg Health Southeast Asia 2024 (PMC11127203)](https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id=11127203)
+81. [FDA, acetaminophen maximum daily dose document](https://fda.gov/media/83588/download)
+82. [National Law Review, Code to Compliance: Decoding India's Medical Device Software Guidance](https://natlawreview.com/article/code-compliance-decoding-indias-medical-device-software-guidance)
+83. [MedDeviceGuide, India CDSCO MDSW guidance 2026 (secondary, vendor blog)](https://meddeviceguide.com/blog/india-cdsco-medical-device-software-mdsw-guidance-2026-guide)
+84. [Pharmacy Council of India, Pharmacy Act 1948 text](https://www.pci.nic.in/pdf/3.pdf)
+85. [Bar & Bench, Companies can save up to 250 crore navigating the DPDP Act 2023](https://www.barandbench.com/view-point/companies-can-save-up-to-250-crore-navigating-the-dpdp-act-2023)
+86. [Novojuris, Draft rules for operation of e-pharmacies in India](https://www.novojuris.com/thought-leadership/draft-rules-for-operation-of-e-pharmacies-in-india.html)
+87. [NABH, 6th edition Chapter 3 Management of Medication (MOM) masterclass](https://nabh.co/training/hco-full-accreditation-masterclass-6th-edition-chapter-3-management-of-medication-mom/)
+88. [United Nations, Sustainable Development Goal 3](https://sdgs.un.org/goals/goal3)
+89. [Business Standard, Centre bans 16 fixed drug combinations over health risks (20 Jun 2026)](https://www.business-standard.com/industry/news/centre-bans-16-fixed-drug-combinations-over-health-risks-126062000464_1.html)
+90. [DT Next, Centre bans 156 fixed-dose combination drugs used for fever, pain, allergies](https://www.dtnext.in/lifestyle/wellbeing/centre-bans-156-fixed-dose-combination-drugs-used-for-fever-pain-allergies-800641)
+91. [ETV Bharat, Court relief for pharma companies against prohibitory order on 156 drugs (31 Aug 2024)](https://www.etvbharat.com/en/!bharat/court-relief-for-pharma-companies-against-govt-prohibitory-order-on-156-drugs-enn24083105087)
+92. [Thapa, Karki, Shrestha, Exploring potential drug-drug interactions in discharge prescriptions, Explor Res Clin Soc Pharm 2025 (PMC11786904)](https://pmc.ncbi.nlm.nih.gov/articles/PMC11786904/)
+93. [Poly et al., Appropriateness of Overridden Alerts in CPOE: Systematic Review, JMIR Med Inform 2020 (PMC7400042)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7400042/)
+94. [Joshi et al., A prospective study of medication errors arising out of LASA brand names confusion, Int J Risk Saf Med 2007 (Crossref)](https://api.crossref.org/works/10.3233/JRS-2007-416)
+95. [The Federal, AIOCD general secretary on chemist membership (self-reported)](https://thefederal.com/category/business/cctv-chemist-shops-rajiv-singhal-aiocd-256909)
+96. [Larson et al., Acetaminophen-induced acute liver failure: US multicenter prospective study, Hepatology 2005 (PubMed 16317692)](https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=16317692&rettype=abstract&retmode=text)
+97. [Devarbhavi et al., drug-induced liver injury in India, Am J Gastroenterol 2010 (PubMed 20648003)](https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=20648003&rettype=abstract&retmode=text)
