@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { DECISIONS, DECISION_REASONS, STATUS_LABEL, decisionLabel } from '../history/labels'
 import type { Decision, HistoryResult, Order, OrderStatus } from '../history/types'
+import { decisionShortcut, targetOf, useSingleKeys } from '../lib/shortcuts'
 import { addDecision } from '../storage/orders'
 
 const count = (r: HistoryResult, tier: 'interrupt' | 'inform') => r.alerts.filter((a) => a.tier === tier).length
@@ -57,31 +58,23 @@ export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaitin
     }
   }
 
-  // Keys act on the latest state without re-binding on every keystroke.
-  const latest = useRef({ save, setDecision })
-  latest.current = { save, setDecision }
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.altKey) return
-      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault()
-        latest.current.save(true)
-        return
-      }
-      const choice = DECISIONS[Number(e.key) - 1]
-      if (!choice || e.ctrlKey || e.metaKey) return
-      const t = e.target as HTMLElement
-      if (t.closest('textarea, select, input:not([type=radio])')) return
-      latest.current.setDecision(choice.value)
+  // The keys belong to this form: a key pressed anywhere else on the page, or in the override dialog, never reaches it.
+  const [singleKeys, setSingleKeys] = useSingleKeys()
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const action = decisionShortcut(e, targetOf(e.target), singleKeys, DECISIONS.length)
+    if (!action) return
+    e.preventDefault()
+    if (action.kind === 'save') save(true)
+    else {
+      setDecision(DECISIONS[action.index].value)
       setReason('')
     }
-    addEventListener('keydown', onKey)
-    return () => removeEventListener('keydown', onKey)
-  }, [])
+  }
 
   return (
     <form
       className="decision"
+      onKeyDown={onKeyDown}
       onSubmit={(e) => {
         e.preventDefault()
         save(true)
@@ -166,7 +159,13 @@ export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaitin
           {decision === null ? 'Choose what you decide.' : differs && reason === '' ? 'Choose why this differs from the suggestion.' : 'Add a note for “Other”.'}
         </p>
       )}
-      <p className="hint decision__keys">Keys 1, 2, 3 choose. Ctrl+Enter saves and opens the next order.</p>
+      <div className="hint decision__keys">
+        <label className="decision__switch">
+          <input type="checkbox" checked={singleKeys} onChange={(e) => setSingleKeys(e.target.checked)} />
+          <span>Keys 1, 2, 3 choose a decision here.</span>
+        </label>
+        <span>Ctrl+Enter (Cmd+Enter on a Mac) saves and opens the next order.</span>
+      </div>
     </form>
   )
 }

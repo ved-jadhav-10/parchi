@@ -6,6 +6,7 @@ import { decisionLabel, doctorName, shortDate } from '../history/labels'
 import { byQueueOrder, leadFinding, suggestionCounts, waitedLabel } from '../history/queue'
 import { runHistory } from '../history/run'
 import type { Decision, HistoryResult, Order, OrderStatus } from '../history/types'
+import { queueShortcut, targetOf, useSingleKeys } from '../lib/shortcuts'
 import { useDecisions, useOrders } from '../storage/orders'
 
 type Result = HistoryResult | 'failed' | undefined
@@ -20,23 +21,22 @@ const tierCount = (r: HistoryResult, tier: 'interrupt' | 'inform') => r.alerts.f
 const openHref = (order: Order) => `#/order/${encodeURIComponent(order.id)}`
 
 /** Keys j and k move focus between the orders' Review links, as in a mail list. Ignored while typing. */
-const useRowKeys = () =>
+const useRowKeys = (on: boolean) =>
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.key !== 'j' && e.key !== 'k') || e.ctrlKey || e.metaKey || e.altKey) return
-      const t = e.target as HTMLElement
-      if (t.closest('input, textarea, select, [contenteditable="true"]')) return
+      const move = queueShortcut(e, targetOf(e.target), on)
+      if (!move || (e.target as HTMLElement).closest('dialog')) return
       const links = [...document.querySelectorAll<HTMLAnchorElement>('.queue__open')]
       if (links.length === 0) return
       const at = links.indexOf(document.activeElement as HTMLAnchorElement)
-      const next = at === -1 ? 0 : Math.min(links.length - 1, Math.max(0, at + (e.key === 'j' ? 1 : -1)))
+      const next = at === -1 ? 0 : Math.min(links.length - 1, Math.max(0, at + (move === 'next' ? 1 : -1)))
       links[next].focus()
       links[next].closest('li')?.scrollIntoView({ block: 'nearest' })
       e.preventDefault()
     }
     addEventListener('keydown', onKey)
     return () => removeEventListener('keydown', onKey)
-  }, [])
+  }, [on])
 
 /** Orders waiting for a pharmacist, riskiest first. The order of the queue is Parchi's suggestion; the pharmacist can open any. */
 export const QueuePage = () => {
@@ -45,7 +45,8 @@ export const QueuePage = () => {
   const [results, setResults] = useState<Record<string, HistoryResult | 'failed'>>({})
   const [view, setView] = useState<View>('waiting')
   const [filter, setFilter] = useState<Filter>('all')
-  useRowKeys()
+  const [singleKeys, setSingleKeys] = useSingleKeys()
+  useRowKeys(singleKeys)
 
   useEffect(() => {
     let live = true
@@ -85,7 +86,7 @@ export const QueuePage = () => {
 
   return (
     <>
-      <PageIntro title="Review queue" note="Ranked by findings, interrupts first; the oldest order goes first on a tie. Keys j and k move between orders." />
+      <PageIntro title="Review queue" note="Ranked by findings, interrupts first; the oldest order goes first on a tie." />
       <div className="workspace workspace--single">
         <div className="kpis kpis--queue" role="group" aria-label="Filter waiting orders by suggestion">
           <KpiCard label="Waiting" value={ready ? waiting.length : '–'} hint={waitingHint || undefined} short="Waiting" pressed={view === 'waiting' && filter === 'all'} onSelect={() => pick('all')} />
@@ -227,6 +228,10 @@ export const QueuePage = () => {
               New order
             </a>
           </p>
+          <label className="decision__switch queue__keys">
+            <input type="checkbox" checked={singleKeys} onChange={(e) => setSingleKeys(e.target.checked)} />
+            <span>Keys j and k move between orders</span>
+          </label>
         </Card>
       </div>
     </>

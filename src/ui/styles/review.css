@@ -141,6 +141,9 @@
 .decision .hint { margin-top: 0; }
 /* The key hints are for a keyboard; a touch screen has none. */
 @media (hover: none) { .decision__key, .decision__keys { display: none; } }
+.decision__keys { display: grid; gap: var(--space-1); }
+.decision__switch { display: flex; align-items: center; gap: var(--space-2); min-height: var(--tap-min); cursor: pointer; }
+.decision__switch input { width: 20px; height: 20px; accent-color: var(--color-accent); }
 
 /* Timeline: one lane per doctor, one row per medicine, one column per day. Rows are subgrids so a bar shares its row with the day cells. */
 .tl__scroll { overflow-x: auto; }

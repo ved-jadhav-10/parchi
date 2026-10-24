@@ -13,6 +13,7 @@ import { LeafletCard } from '../components/LeafletCard'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
 import { needsReview, swapBrand, tidy } from '../lib/resolved'
+import { isRunKey } from '../lib/shortcuts'
 import { demoPatient, demoRxText } from '../demoCase'
 import { addOverride } from '../storage/overrides'
 
@@ -112,7 +113,7 @@ export const CheckPage = () => {
               value={rx}
               placeholder="Dolo 650 1-1-1 x5d; Pan D OD; ..."
               onChange={(e) => setRx(e.target.value)}
-              onKeyDown={(e) => e.ctrlKey && e.key === 'Enter' && check()}
+              onKeyDown={(e) => isRunKey(e) && check()}
             />
             <div className="actions">
               <button className="btn btn--primary" onClick={() => check()} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
