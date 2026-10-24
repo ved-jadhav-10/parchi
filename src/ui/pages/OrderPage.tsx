@@ -3,6 +3,7 @@ import { AlertCard } from '../components/AlertCard'
 import { BrandMatch } from '../components/BrandMatch'
 import { Card } from '../components/Card'
 import { CoverageNote } from '../components/CoverageNote'
+import { LeafletCard } from '../components/LeafletCard'
 import { DecisionPanel } from '../components/DecisionPanel'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
@@ -304,6 +305,8 @@ export const OrderPage = () => {
                   </ul>
                 </Card>
               )}
+
+              <LeafletCard lines={result.lines} />
 
               {order.prescriptions.map((rx) => (
                 <Card key={rx.id} title={`${doctorName(rx.doctor)}, ${longDate(rx.date)}`} description="What was written and what each line was matched to. Select a line for details.">

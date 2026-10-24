@@ -9,6 +9,7 @@ import { EmptyState, PageIntro } from '../components/PageIntro'
 import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
 import { CoverageNote } from '../components/CoverageNote'
+import { LeafletCard } from '../components/LeafletCard'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
 import { needsReview, tidy } from '../lib/resolved'
@@ -240,6 +241,8 @@ export const CheckPage = () => {
                   </p>
                 )}
               </Card>
+
+              <LeafletCard lines={result.lines} />
 
               {silent.length > 0 && (
                 <details className="silent-log">
