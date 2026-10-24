@@ -232,6 +232,8 @@ export interface HistoryLine {
   unverified?: boolean
   /** true = no duration was written, so the window uses the default length from alert_rules.json. */
   default_window?: boolean
+  /** Days this line was cut short because the same doctor repeated the same medicine a few days before it ran out (a refill, not a double). */
+  refill_overlap_days?: number
 }
 
 /** Alerts added, cleared or moved to another tier between two checks of the same customer. */

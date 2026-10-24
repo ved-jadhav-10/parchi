@@ -14,6 +14,7 @@ import { useOnline } from '../route'
 
 const SECTIONS = [
   { id: 'how', label: 'How it works' },
+  { id: 'desk', label: 'For buyers' },
   { id: 'checks', label: 'What it checks' },
   { id: 'evidence', label: 'Evidence' },
 ]
@@ -25,12 +26,20 @@ const STEPS = [
   { title: 'Alert, sparingly', text: 'Three tiers: Interrupt, Inform and Silent. Interrupts are kept rare, and overriding one needs a reason that is logged.' },
 ]
 
+const DESK = [
+  { title: 'The whole history, not one slip', text: 'Prescriptions from several doctors go on one timeline. Doses are added up only where the dates overlap, and an alert names the doctors and the days.' },
+  { title: 'A kidney result re-checks the order', text: 'When a new creatinine arrives the order is checked again, and a short list shows which alerts were added, cleared or moved.' },
+  { title: 'The riskiest order first', text: 'Orders are ranked, each with a suggested status: clear, clear with a note, or hold and contact the doctor. The pharmacist decides, and every decision is logged.' },
+  { title: 'Fits what you already run', text: 'Catalogue import from CSV, FHIR R4 prescription records in and out (the export is a draft), and a JSON check API. No scanning, no tie to one vendor, and it runs offline at a store counter.' },
+]
+
 const CHECKS = [
   { title: 'Daily totals', text: 'Each ingredient added up across every brand on the slip, against the limit on file.' },
   { title: 'Age and kidney function', text: 'Weight or creatinine is asked for only when a medicine needs it.' },
   { title: 'Interactions', text: 'With a severity and the source it comes from.' },
   { title: 'Duplicate classes', text: 'Two NSAIDs, two PPIs, or any other pair from one class.' },
   { title: 'Banned combinations', text: 'Fixed-dose combinations on the banned list.' },
+  { title: 'Older patients and antibiotics', text: 'Beers-list medicines at 65 and over, and the WHO AWaRe group of an antibiotic.' },
 ]
 
 const PROOF = [
@@ -184,17 +193,17 @@ export const HomePage = () => {
             <div className="home-hero__copy">
               <p className="home-badge">
                 <span className="home-badge__icon"><PillIcon size={16} /></span>
-                Made for the chemist's counter
+                Made for the verifying pharmacist
               </p>
               <h1 id="home-title">A second look at every parchi, before it leaves the counter.</h1>
               <div className="home-hero__rule" aria-hidden="true" />
               <p className="home-hero__text">
-                Type a prescription the way it arrives. Parchi splits each brand into its ingredients, adds up the day's dose across every brand, and shows a
-                pharmacist what needs a closer look. It works offline.
+                Give it a prescription the way it arrives: typed, or lines from an order. Parchi splits each brand into its ingredients, adds up the day's dose
+                across every brand and every doctor, and ranks the orders that need a pharmacist's closer look first. It works offline.
               </p>
               <div className="home-actions">
                 <a className="home-btn home-btn--white" href="#/check">Check a prescription <ArrowIcon /></a>
-                <a className="home-btn home-btn--ghost" href="#/demo">See a worked example</a>
+                <a className="home-btn home-btn--ghost" href="#/queue">Open the review desk</a>
               </div>
             </div>
 
@@ -250,6 +259,24 @@ export const HomePage = () => {
           </div>
         </section>
 
+        <section className="home-section home-section--tint home-how" id="desk" aria-labelledby="desk-title">
+          <div className="home-how__head">
+            <h2 id="desk-title" tabIndex={-1}>For e-pharmacies and pharmacy chains</h2>
+            <p className="home-lead">Your pharmacists already review every order before it ships. Parchi works on the data you already hold, so the review is faster and written down.</p>
+          </div>
+          <ol className="home-how__grid">
+            {DESK.map((d, i) => (
+              <li key={d.title}>
+                <span className="home-how__tile" aria-hidden="true">{i + 1}</span>
+                <div>
+                  <h3>{d.title}</h3>
+                  <p>{d.text}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+
         <section className="home-section home-section--ink" id="checks" aria-labelledby="checks-title">
           <div>
             <h2 id="checks-title" tabIndex={-1} className="home-big">It informs. The pharmacist decides.</h2>
@@ -270,7 +297,7 @@ export const HomePage = () => {
         <section className="home-section home-section--tint" id="evidence" aria-labelledby="evidence-title">
           <div>
             <h2 id="evidence-title" tabIndex={-1}>Measured, not claimed</h2>
-            <p className="home-lead">Parchi is tested against pharmacist-labelled prescriptions, and against the chatbots a counter might reach for instead.</p>
+            <p className="home-lead">Parchi is scored on a set of labelled prescriptions, and against the chatbots a counter might reach for instead. The labels are a draft until a pharmacist has reviewed them, and the benchmark page says so.</p>
           </div>
           <div>
             <ul className="home-evidence">
@@ -291,7 +318,7 @@ export const HomePage = () => {
             <circle cx="640" cy="330" r="6" fill="#fff" stroke="none" />
           </svg>
           <h2 id="cta-title">Put it on the counter.</h2>
-          <p>Install Parchi on a phone or the counter PC. After the first load it works without a connection.</p>
+          <p>Install Parchi on a phone or the counter PC, or open the review desk for orders that carry prescriptions from several doctors. After the first load it works without a connection.</p>
           <div className="home-actions">
             <a className="home-btn home-btn--white" href="#/check">Check a prescription</a>
             <a className="home-btn home-btn--ghost" href="#/demo">See a worked example</a>
@@ -308,6 +335,7 @@ export const HomePage = () => {
           </div>
           <nav aria-label="App">
             <a href="#/check">Check</a>
+            <a href="#/queue">Review desk</a>
             <a href="#/demo">Demo</a>
             <a href="#/log">Override log</a>
             <a href="#/benchmark">Benchmark</a>

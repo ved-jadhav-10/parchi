@@ -78,3 +78,8 @@ Track B files: 100% line and 96% branch coverage. Beyond unit tests: 20,000 rand
 ## Not built
 
 Paediatric kidney function (needs a `height_cm` on Patient, labels in C's `INPUT_LABEL` records, a height field in D's UI and pharmacist-set paediatric bands), ideal-body-weight CrCl, Devanagari sigs, `x5` with no unit, "after meals 1 then 2" style meal-specific doses, drops/puffs to mg, rate limiting on `api/parse-sig`. The LLM fallback was checked live on 14 texts with `gemini-3.5-flash-lite` (correct on the readable ones; it refused "as per doctor's advice" and a prompt-injection text after the schema fix); it has no server-side rate limiting, so protect the deployed endpoint before sharing the URL. Speed: sig + ledger + limits take about 0.09 ms for the 7-line demo prescription (Track A's resolver about 2.5 ms).
+
+## Added later
+
+- Course lengths written in words are read after "for": `for ten days`, `for the next two weeks`.
+- `api/leaflet` (POST `{language, medicines:[{brand, how}], points?}`): a customer leaflet in Hindi, Marathi, Gujarati, Bengali, Tamil, Telugu, Kannada, Malayalam or English. The model only rewrites what is sent (no patient name or details), adds no advice, and a leaflet that drops a medicine name is rejected. Keys and limits as for `parse-sig`; `api/_llm.ts` holds the shared model call. Online only; the app hides the button offline.

@@ -156,6 +156,67 @@
       "reason": "{names} in a patient aged {age}: Z-drug sleep medicines are on the Beers list to avoid in older adults (falls, delirium). Pharmacist to review.",
       "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
       "pharmacist_approved": false
+    },
+    {
+      "id": "beers_ketorolac",
+      "ingredients": [
+        "ketorolac"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: ketorolac is on the Beers list to avoid in older adults (bleeding, kidney injury). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_tricyclic",
+      "ingredients": [
+        "amitriptyline",
+        "imipramine",
+        "doxepin"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: tricyclic antidepressants are on the Beers list to avoid (strong anticholinergic effect, sedation, orthostatic hypotension; doxepin only up to 6 mg is acceptable). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_sulfonylurea",
+      "ingredients": [
+        "glibenclamide",
+        "glimepiride"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: sulfonylureas, especially long-acting ones such as glibenclamide and glimepiride, carry a higher risk of prolonged low blood sugar in older adults (Beers: avoid, or prefer a short-acting one). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_muscle_relaxant",
+      "ingredients": [
+        "chlorzoxazone",
+        "methocarbamol",
+        "cyclobenzaprine",
+        "carisoprodol"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: skeletal muscle relaxants are on the Beers list to avoid (sedation, falls, weak benefit). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_metoclopramide",
+      "ingredients": [
+        "metoclopramide"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: metoclopramide is on the Beers list to avoid unless for gastroparesis, and for no more than 12 weeks (movement disorders). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
     }
   ],
   "suppression": [
@@ -211,6 +272,11 @@
       },
       "cross_doctor_bonus": 15,
       "pharmacist_approved": false
+    },
+    "refill": {
+      "grace_days": 7,
+      "source": "Team setting: a repeat of the same medicine by the same doctor within a week of the supply ending is read as a refill. Pharmacist to set the real number.",
+      "pharmacist_approved": false
     }
   },
   "burden_scales": [
@@ -254,5 +320,60 @@
       "source": "AGS Beers Criteria 2023, drug-drug interactions: avoid three or more CNS-active drugs (falls, fractures). One point per ingredient in these classes; list of classes to confirm with the pharmacist.",
       "pharmacist_approved": false
     }
-  ]
+  ],
+  "aware": {
+    "_note": "WHO AWaRe antibiotic groups. Reserve = last-resort, only for infections with few options; Watch = higher resistance potential, a stewardship target; Access = first choice. Only systemic lines. Clavulanic acid, sulbactam and tazobactam are partners, not scored on their own.",
+    "label": "WHO AWaRe classification 2023",
+    "tiers": {
+      "reserve": "inform",
+      "watch": "silent"
+    },
+    "version": "WHO AWaRe classification 2023, transcribed by hand for the antibiotics common in India; drugs I was not sure of are left out, not guessed",
+    "source": "https://www.who.int/publications/i/item/WHO-MHP-HPS-EML-2023.04",
+    "pharmacist_approved": false,
+    "ingredients": {
+      "amoxicillin": "access",
+      "ampicillin": "access",
+      "cloxacillin": "access",
+      "penicillin_v": "access",
+      "cefalexin": "access",
+      "cefadroxil": "access",
+      "clindamycin": "access",
+      "doxycycline": "access",
+      "gentamicin": "access",
+      "amikacin": "access",
+      "metronidazole": "access",
+      "nitrofurantoin": "access",
+      "sulfamethoxazole": "access",
+      "trimethoprim": "access",
+      "chloramphenicol": "access",
+      "azithromycin": "watch",
+      "clarithromycin": "watch",
+      "erythromycin": "watch",
+      "roxithromycin": "watch",
+      "cefuroxime": "watch",
+      "cefixime": "watch",
+      "cefpodoxime": "watch",
+      "cefotaxime": "watch",
+      "ceftriaxone": "watch",
+      "ceftazidime": "watch",
+      "cefoperazone": "watch",
+      "cefepime": "watch",
+      "ciprofloxacin": "watch",
+      "levofloxacin": "watch",
+      "ofloxacin": "watch",
+      "moxifloxacin": "watch",
+      "norfloxacin": "watch",
+      "piperacillin": "watch",
+      "meropenem": "watch",
+      "imipenem": "watch",
+      "ertapenem": "watch",
+      "vancomycin": "watch",
+      "teicoplanin": "watch",
+      "linezolid": "reserve",
+      "colistin": "reserve",
+      "polymyxin_b": "reserve",
+      "tigecycline": "reserve"
+    }
+  }
 }

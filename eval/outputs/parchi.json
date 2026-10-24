@@ -1,0 +1,723 @@
+{
+ "S01": {
+  "alerts": [
+   {
+    "type": "dose_excess",
+    "tier": "interrupt",
+    "ingredients": [
+     "paracetamol"
+    ]
+   }
+  ],
+  "ms": 29.95
+ },
+ "S02": {
+  "alerts": [],
+  "ms": 1.19
+ },
+ "S03": {
+  "alerts": [
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "paracetamol"
+    ]
+   }
+  ],
+  "ms": 12.33
+ },
+ "S04": {
+  "alerts": [
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "paracetamol"
+    ]
+   }
+  ],
+  "ms": 3.45
+ },
+ "S05": {
+  "alerts": [
+   {
+    "type": "dose_excess",
+    "tier": "interrupt",
+    "ingredients": [
+     "aceclofenac"
+    ]
+   },
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "paracetamol"
+    ]
+   }
+  ],
+  "ms": 4.16
+ },
+ "S06": {
+  "alerts": [
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "ibuprofen"
+    ]
+   }
+  ],
+  "ms": 4.21
+ },
+ "S07": {
+  "alerts": [
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "ambroxol"
+    ]
+   },
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "guaifenesin"
+    ]
+   },
+   {
+    "type": "ddi",
+    "tier": "silent",
+    "ingredients": [
+     "levosalbutamol",
+     "phenylephrine"
+    ]
+   }
+  ],
+  "ms": 3.03
+ },
+ "S08": {
+  "alerts": [
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "cefixime"
+    ]
+   },
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "cefixime"
+    ]
+   },
+   {
+    "type": "aware_watch",
+    "tier": "silent",
+    "ingredients": [
+     "cefixime"
+    ]
+   }
+  ],
+  "ms": 1.73
+ },
+ "S09": {
+  "alerts": [
+   {
+    "type": "class_duplication",
+    "tier": "inform",
+    "ingredients": [
+     "aceclofenac",
+     "diclofenac"
+    ]
+   }
+  ],
+  "ms": 2.71
+ },
+ "S10": {
+  "alerts": [
+   {
+    "type": "class_duplication",
+    "tier": "inform",
+    "ingredients": [
+     "omeprazole",
+     "pantoprazole"
+    ]
+   },
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "pantoprazole"
+    ]
+   }
+  ],
+  "ms": 1.27
+ },
+ "S11": {
+  "alerts": [
+   {
+    "type": "class_duplication",
+    "tier": "inform",
+    "ingredients": [
+     "cetirizine",
+     "fexofenadine"
+    ]
+   }
+  ],
+  "ms": 5.48
+ },
+ "S12": {
+  "alerts": [
+   {
+    "type": "class_duplication",
+    "tier": "inform",
+    "ingredients": [
+     "chlorphenamine",
+     "levocetirizine"
+    ]
+   },
+   {
+    "type": "ddi",
+    "tier": "silent",
+    "ingredients": [
+     "chlorphenamine",
+     "levocetirizine"
+    ]
+   }
+  ],
+  "ms": 2.07
+ },
+ "S13": {
+  "alerts": [
+   {
+    "type": "class_duplication",
+    "tier": "inform",
+    "ingredients": [
+     "ciprofloxacin",
+     "levofloxacin"
+    ]
+   },
+   {
+    "type": "aware_watch",
+    "tier": "silent",
+    "ingredients": [
+     "ciprofloxacin",
+     "levofloxacin"
+    ]
+   }
+  ],
+  "ms": 1.27
+ },
+ "S14": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "aspirin",
+     "ibuprofen"
+    ]
+   }
+  ],
+  "ms": 1.36
+ },
+ "S15": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "aspirin",
+     "warfarin"
+    ]
+   }
+  ],
+  "ms": 1.09
+ },
+ "S16": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "diclofenac",
+     "warfarin"
+    ]
+   }
+  ],
+  "ms": 1.23
+ },
+ "S17": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "clopidogrel",
+     "omeprazole"
+    ]
+   }
+  ],
+  "ms": 0.98
+ },
+ "S18": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "escitalopram",
+     "tramadol"
+    ]
+   }
+  ],
+  "ms": 1.38
+ },
+ "S19": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "ramipril",
+     "spironolactone"
+    ]
+   }
+  ],
+  "ms": 1.39
+ },
+ "S20": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "ramipril",
+     "telmisartan"
+    ]
+   }
+  ],
+  "ms": 1
+ },
+ "S21": {
+  "alerts": [
+   {
+    "type": "nsaid_renal",
+    "tier": "interrupt",
+    "ingredients": [
+     "ibuprofen"
+    ]
+   }
+  ],
+  "ms": 0.74
+ },
+ "S22": {
+  "alerts": [],
+  "ms": 0.52
+ },
+ "S23": {
+  "alerts": [
+   {
+    "type": "nsaid_renal",
+    "tier": "interrupt",
+    "ingredients": [
+     "aceclofenac"
+    ]
+   }
+  ],
+  "ms": 1.19
+ },
+ "S24": {
+  "alerts": [
+   {
+    "type": "renal_avoid",
+    "tier": "interrupt",
+    "ingredients": [
+     "nitrofurantoin"
+    ]
+   }
+  ],
+  "ms": 0.75
+ },
+ "S25": {
+  "alerts": [
+   {
+    "type": "renal_avoid",
+    "tier": "interrupt",
+    "ingredients": [
+     "metformin"
+    ]
+   }
+  ],
+  "ms": 0.83
+ },
+ "S26": {
+  "alerts": [
+   {
+    "type": "input_needed",
+    "tier": "inform",
+    "ingredients": [
+     "ibuprofen"
+    ]
+   }
+  ],
+  "ms": 0.63
+ },
+ "S27": {
+  "alerts": [
+   {
+    "type": "domperidone_elderly",
+    "tier": "inform",
+    "ingredients": [
+     "domperidone"
+    ]
+   },
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "pantoprazole",
+     "domperidone"
+    ]
+   }
+  ],
+  "ms": 0.6
+ },
+ "S28": {
+  "alerts": [
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "pantoprazole",
+     "domperidone"
+    ]
+   }
+  ],
+  "ms": 0.55
+ },
+ "S29": {
+  "alerts": [
+   {
+    "type": "beers_sedating_antihistamine",
+    "tier": "inform",
+    "ingredients": [
+     "hydroxyzine"
+    ]
+   }
+  ],
+  "ms": 0.58
+ },
+ "S30": {
+  "alerts": [
+   {
+    "type": "beers_benzodiazepine",
+    "tier": "inform",
+    "ingredients": [
+     "alprazolam"
+    ]
+   }
+  ],
+  "ms": 0.55
+ },
+ "S31": {
+  "alerts": [
+   {
+    "type": "beers_z_drug",
+    "tier": "inform",
+    "ingredients": [
+     "zolpidem"
+    ]
+   }
+  ],
+  "ms": 0.69
+ },
+ "S32": {
+  "alerts": [],
+  "ms": 0.48
+ },
+ "S33": {
+  "alerts": [
+   {
+    "type": "beers_sedating_antihistamine",
+    "tier": "inform",
+    "ingredients": [
+     "diphenhydramine"
+    ]
+   }
+  ],
+  "ms": 1.02
+ },
+ "S41": {
+  "alerts": [
+   {
+    "type": "beers_tricyclic",
+    "tier": "inform",
+    "ingredients": [
+     "amitriptyline"
+    ]
+   }
+  ],
+  "ms": 0.5
+ },
+ "S42": {
+  "alerts": [
+   {
+    "type": "beers_sulfonylurea",
+    "tier": "inform",
+    "ingredients": [
+     "glimepiride"
+    ]
+   }
+  ],
+  "ms": 0.27
+ },
+ "S43": {
+  "alerts": [
+   {
+    "type": "renal_caution",
+    "tier": "inform",
+    "ingredients": [
+     "metoclopramide"
+    ]
+   },
+   {
+    "type": "beers_metoclopramide",
+    "tier": "inform",
+    "ingredients": [
+     "metoclopramide"
+    ]
+   }
+  ],
+  "ms": 0.17
+ },
+ "S44": {
+  "alerts": [],
+  "ms": 0.1
+ },
+ "S34": {
+  "alerts": [
+   {
+    "type": "banned_fdc",
+    "tier": "interrupt",
+    "ingredients": [
+     "levocetirizine",
+     "phenylephrine",
+     "paracetamol"
+    ]
+   }
+  ],
+  "ms": 1.44
+ },
+ "S35": {
+  "alerts": [
+   {
+    "type": "schedule_mismatch",
+    "tier": "interrupt",
+    "ingredients": [
+     "methotrexate"
+    ]
+   }
+  ],
+  "ms": 0.22
+ },
+ "S36": {
+  "alerts": [
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "pantoprazole"
+    ]
+   },
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "amoxicillin",
+     "clavulanic_acid"
+    ]
+   }
+  ],
+  "ms": 2.63
+ },
+ "S37": {
+  "alerts": [
+   {
+    "type": "aware_watch",
+    "tier": "silent",
+    "ingredients": [
+     "azithromycin"
+    ]
+   }
+  ],
+  "ms": 1.96
+ },
+ "S38": {
+  "alerts": [],
+  "ms": 3.54
+ },
+ "S39": {
+  "alerts": [],
+  "ms": 1.33
+ },
+ "S40": {
+  "alerts": [],
+  "ms": 1.82
+ },
+ "H01": {
+  "alerts": [
+   {
+    "type": "dose_excess",
+    "tier": "interrupt",
+    "ingredients": [
+     "paracetamol"
+    ]
+   }
+  ],
+  "ms": 6.24
+ },
+ "H02": {
+  "alerts": [
+   {
+    "type": "duplicate_ingredient",
+    "tier": "inform",
+    "ingredients": [
+     "paracetamol"
+    ]
+   }
+  ],
+  "ms": 2.52
+ },
+ "H03": {
+  "alerts": [],
+  "ms": 1.71
+ },
+ "H04": {
+  "alerts": [
+   {
+    "type": "input_needed",
+    "tier": "inform",
+    "ingredients": [
+     "ibuprofen"
+    ]
+   },
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "aspirin",
+     "ibuprofen"
+    ]
+   }
+  ],
+  "ms": 1.79
+ },
+ "H05": {
+  "alerts": [
+   {
+    "type": "nsaid_renal",
+    "tier": "interrupt",
+    "ingredients": [
+     "ibuprofen"
+    ]
+   },
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "aspirin",
+     "ibuprofen"
+    ]
+   }
+  ],
+  "ms": 1.57
+ },
+ "H06": {
+  "alerts": [
+   {
+    "type": "ddi",
+    "tier": "inform",
+    "ingredients": [
+     "diclofenac",
+     "warfarin"
+    ]
+   }
+  ],
+  "ms": 1.3
+ },
+ "H07": {
+  "alerts": [
+   {
+    "type": "class_duplication",
+    "tier": "inform",
+    "ingredients": [
+     "omeprazole",
+     "pantoprazole"
+    ]
+   },
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "pantoprazole"
+    ]
+   }
+  ],
+  "ms": 0.97
+ },
+ "H08": {
+  "alerts": [
+   {
+    "type": "beers_benzodiazepine",
+    "tier": "inform",
+    "ingredients": [
+     "alprazolam"
+    ]
+   },
+   {
+    "type": "beers_z_drug",
+    "tier": "inform",
+    "ingredients": [
+     "zolpidem"
+    ]
+   },
+   {
+    "type": "ddi",
+    "tier": "silent",
+    "ingredients": [
+     "alprazolam",
+     "zolpidem"
+    ]
+   }
+  ],
+  "ms": 2.81
+ },
+ "H09": {
+  "alerts": [
+   {
+    "type": "aware_watch",
+    "tier": "silent",
+    "ingredients": [
+     "azithromycin"
+    ]
+   },
+   {
+    "type": "nsq",
+    "tier": "silent",
+    "ingredients": [
+     "amoxicillin",
+     "clavulanic_acid"
+    ]
+   }
+  ],
+  "ms": 2.05
+ },
+ "H10": {
+  "alerts": [],
+  "ms": 0.51
+ }
+}

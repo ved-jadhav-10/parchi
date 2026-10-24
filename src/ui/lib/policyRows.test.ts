@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import rulesRaw from '../../../public/data/alert_rules.json?raw'
 import { LIMITS } from '../../engine/limits'
 import { parseAlertRules } from '../../engine/rules'
-import { approvedCount, limitRows, ruleRows, sosRows, suppressionRows } from './policyRows'
+import { approvedCount, limitRows, ruleRows, sosRows, suppressionRows, supplementRows } from './policyRows'
 
 const rules = parseAlertRules(JSON.parse(rulesRaw))
 
@@ -44,5 +44,16 @@ describe('policy rows for the Data page', () => {
     expect(rows.length).toBe(rules.suppression.length)
     expect(rows.every((r) => r.value === 'Logged, not shown')).toBe(true)
     expect(approvedCount([{ name: '', detail: '', value: '', source: '', approved: true }, { name: '', detail: '', value: '', source: '', approved: undefined }])).toBe(1)
+  })
+})
+
+describe('curated interaction rows', () => {
+  it('lists each rule with its medicines, level, source and approval', () => {
+    const rows = supplementRows({ rules: [{ id: 'acei_k_sparing', a: ['ramipril'], b: ['spironolactone'], level: 'major', note: 'both raise potassium', source: 'Labelling', pharmacist_approved: false }] })
+    expect(rows).toEqual([{ name: 'Acei k sparing', detail: 'ramipril with spironolactone: both raise potassium', value: 'Major', source: 'Labelling', approved: false }])
+  })
+  it('gives no rows for unreadable input', () => {
+    expect(supplementRows(null)).toEqual([])
+    expect(supplementRows({ rules: 'x' })).toEqual([])
   })
 })

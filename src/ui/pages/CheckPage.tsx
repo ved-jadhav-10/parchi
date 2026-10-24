@@ -8,9 +8,11 @@ import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
+import { CoverageNote } from '../components/CoverageNote'
+import { LeafletCard } from '../components/LeafletCard'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
-import { needsReview, tidy } from '../lib/resolved'
+import { needsReview, swapBrand, tidy } from '../lib/resolved'
 import { demoPatient, demoRxText } from '../demoCase'
 import { addOverride } from '../storage/overrides'
 
@@ -54,15 +56,23 @@ export const CheckPage = () => {
   const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setPatient({ ...patient, [k]: e.target.value })
 
-  const check = async () => {
-    if (!canCheck) return
+  const check = async (text = rx) => {
+    if (text.trim() === '' || !ageOk) return
     try {
       setFailed(false)
       setOverridden({})
-      setResult(await runCheck(rx, toPatient(patient)))
+      setResult(await runCheck(text, toPatient(patient)))
     } catch {
       setFailed(true)
     }
+  }
+
+  /** The pharmacist picked another possible brand for a line: put it in the text and check again. */
+  const pickBrand = (raw: string, brand: string) => {
+    const next = swapBrand(rx, raw, brand)
+    if (next === null) return
+    setRx(next)
+    void check(next)
   }
 
   const alerts = (result?.alerts ?? []).map((alert, i) => ({ alert, i }))
@@ -105,7 +115,7 @@ export const CheckPage = () => {
               onKeyDown={(e) => e.ctrlKey && e.key === 'Enter' && check()}
             />
             <div className="actions">
-              <button className="btn btn--primary" onClick={check} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
+              <button className="btn btn--primary" onClick={() => check()} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
                 {result ? 'Check again' : 'Check prescription'}
               </button>
               <button
@@ -219,6 +229,8 @@ export const CheckPage = () => {
                 ))}
               </div>
 
+              <CoverageNote gaps={result.ddi_gaps} />
+
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
                 <XrayTable ledger={result.ledger} alerts={result.alerts} />
                 <TotalsNotes notes={result.notes} ledger={result.ledger} />
@@ -227,7 +239,7 @@ export const CheckPage = () => {
               <Card title="Brand matches" description="What was typed and what it was matched to. Select a line for details.">
                 <ul className="matches">
                   {result.lines.map((l, i) => (
-                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} />
+                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} onUse={(brand) => pickBrand(l.resolved.raw, brand)} />
                   ))}
                 </ul>
                 {result.lines.some((l) => (l.resolved.jan_aushadhi?.length ?? 0) > 0) && (
@@ -237,6 +249,8 @@ export const CheckPage = () => {
                   </p>
                 )}
               </Card>
+
+              <LeafletCard lines={result.lines} />
 
               {silent.length > 0 && (
                 <details className="silent-log">

@@ -105,3 +105,7 @@ All offline TypeScript; nothing here decides or substitutes. Fixture: `tests/fix
 - **`resolver.proposeFromComposition(text)`**: ingredients named in composition text -> proposal, or `null` if any part is unknown.
 - **`confirmItem(item, ingredients?)`**: pharmacist confirmation; returns a new `confirmed` item (`pharmacist_confirmed: true`). A proposal needs this before it can be used.
 - **`createCatalogue(items)`**: `lookup(name)` (the buyer's own entry for a typed name) and `alternatives(resolved, {referencePrice?, limit?})`: other **confirmed**, in-stock, non-discontinued, non-banned entries with the same ingredients, strengths, form and route, cheapest first. Cautions: release type differs (SR/ER vs plain) or failed-batch brand. The pharmacist confirms equivalence; unconfirmed compositions are never offered.
+
+## Curated interaction supplement
+
+`public/data/ddi_supplement.json` is hand-edited (not built from DDInter): rules `{id, a[], b[], level, note, source, pharmacist_approved}`, each expanding to every a x b pair. It exists because DDInter's bulk files lack several cardiovascular pairs and Indian-only drugs. Every rule is unverified. Keep ids canonical; `ddiSupplement.test.ts` checks that.

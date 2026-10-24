@@ -46,6 +46,11 @@ function normalise(raw: string): string {
     .trim()
 }
 
+/** Counts written out in a course length ("for ten days"). Needs "for", so "one week" alone is never read as a duration here. */
+const DURATION_WORDS: Record<string, number> = {
+  one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, twelve: 12, fourteen: 14, fifteen: 15, twenty: 20, thirty: 30,
+}
+
 /** Longest course the parser will believe (ten years). */
 export const MAX_DURATION_DAYS = 3650
 
@@ -127,6 +132,9 @@ function parseDuration(state: { text: string }): number | undefined {
   // "for a week", "for one month", "for a fortnight": a count of one written as a word. Needs "for" so "once a week" is not a duration.
   const word = take(state, /\bfor\s+(?:the\s+next\s+)?(?:a|an|one)\s+(day|week|month|fortnight)\b/)
   if (word) return { day: 1, week: 7, fortnight: 14, month: 30 }[word[1] as 'day' | 'week' | 'fortnight' | 'month']
+  // "for ten days", "for the next two weeks"
+  const spelled = take(state, new RegExp(`\\bfor\\s+(?:the\\s+next\\s+)?(${Object.keys(DURATION_WORDS).join('|')})\\s+(days?|weeks?|months?)\\b`))
+  if (spelled) return DURATION_WORDS[spelled[1]] * (spelled[2].startsWith('w') ? 7 : spelled[2].startsWith('m') ? 30 : 1)
   // Shorthand "x 5/7" (days), "2/52" (weeks), "1/12" (months)
   const frac = take(state, new RegExp(`(?:\\bx|\\bfor)\\s*(\\d{1,3})\\s*/\\s*(7|52|12)\\b|(?<![\\w.-])(\\d{1,3})\\s*/\\s*(52|12)\\b`))
   if (frac) {

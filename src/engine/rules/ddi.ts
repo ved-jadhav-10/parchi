@@ -18,11 +18,11 @@ export const ddiRule: Rule = (ctx) => {
       tier,
       type: 'ddi',
       ingredients: [hit.a, hit.b],
-      reason: `${joinNames([ctx.info(hit.a).name, ctx.info(hit.b).name])}: ${hit.level} interaction (${joinNames(lines.map(lineDesc))}). Pharmacist to review.`,
+      reason: `${joinNames([ctx.info(hit.a).name, ctx.info(hit.b).name])}: ${hit.level} interaction${hit.note ? `, ${hit.note}` : ''} (${joinNames(lines.map(lineDesc))}). Pharmacist to review.`,
       source: hit.source,
       confidence: confidenceOf(lines),
       brands: lines.map(lineLabel),
-      approved: tiers.pharmacist_approved,
+      approved: tiers.pharmacist_approved && hit.curated !== true,
       ...originFields(lines),
     })
   }

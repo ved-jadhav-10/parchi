@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AlertCard } from '../components/AlertCard'
 import { BrandMatch } from '../components/BrandMatch'
 import { Card } from '../components/Card'
+import { CoverageNote } from '../components/CoverageNote'
+import { LeafletCard } from '../components/LeafletCard'
 import { DecisionPanel } from '../components/DecisionPanel'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
@@ -9,10 +11,12 @@ import { StatusBadge } from '../components/StatusBadge'
 import { Timeline } from '../components/Timeline'
 import { TierBadge } from '../components/Icons'
 import { XrayTable } from '../components/XrayTable'
-import { diffAlerts, latestLab } from '../history/check'
+import { latestLab } from '../history/check'
 import { doctorName, longDate, rangeLabel, shortDate, todayIso } from '../history/labels'
 import { runHistory } from '../history/run'
 import type { AlertChange, HistoryAlert, HistoryResult, LabResult, Order } from '../history/types'
+import { downloadText } from '../lib/csv'
+import { orderToFhir } from '../lib/fhirOrder'
 import { alertTypeLabel, candidateLabel } from '../lib/resolved'
 import { pct } from '../lib/format'
 import { useRouteParam } from '../route'
@@ -127,11 +131,12 @@ export const OrderPage = () => {
     if (!order) return
     let live = true
     setFailed(false)
-    runHistory(order)
+    const diffAgainst = wantDiff.current ? (previous.current ?? undefined) : undefined
+    runHistory(order, diffAgainst)
       .then((r) => {
         if (!live) return
-        if (wantDiff.current && previous.current) {
-          setChanges(diffAlerts(previous.current.alerts, r.alerts))
+        if (diffAgainst) {
+          setChanges(r.changes ?? [])
           wantDiff.current = false
         }
         previous.current = r
@@ -228,6 +233,15 @@ export const OrderPage = () => {
             <p className="hint">
               <a href={`#/history/${encodeURIComponent(order.id)}`}>Edit prescriptions and labs</a>
             </p>
+            <div className="actions">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={() => downloadText(`${order.id}.fhir.json`, JSON.stringify(orderToFhir(order), null, 2), 'application/json')}
+              >
+                Download as FHIR (draft)
+              </button>
+            </div>
           </div>
 
           <div className="workspace__result">
@@ -259,6 +273,8 @@ export const OrderPage = () => {
                   ))}
               </div>
 
+              <CoverageNote gaps={result.ddi_gaps} />
+
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient for the days chosen, against the limit on file">
                 <div className="windows" role="group" aria-label="Days to show">
                   {result.windows.map((win, i) => (
@@ -289,6 +305,8 @@ export const OrderPage = () => {
                   </ul>
                 </Card>
               )}
+
+              <LeafletCard lines={result.lines} />
 
               {order.prescriptions.map((rx) => (
                 <Card key={rx.id} title={`${doctorName(rx.doctor)}, ${longDate(rx.date)}`} description="What was written and what each line was matched to. Select a line for details.">

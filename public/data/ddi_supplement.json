@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "_note": "Hand-curated interaction rules that DDInter lacks: its bulk files do not hold several cardiovascular pairs, and Indian-only drugs are missing. Each rule expands to every a x b pair. Where DDInter also lists a pair, the more severe level is used. Severity and wording are drafts for the pharmacist to confirm.",
+  "rules": [
+    {
+      "id": "acei_arb_dual_blockade",
+      "a": [
+        "ramipril",
+        "enalapril",
+        "lisinopril"
+      ],
+      "b": [
+        "telmisartan",
+        "losartan",
+        "olmesartan",
+        "valsartan",
+        "irbesartan",
+        "azilsartan"
+      ],
+      "level": "major",
+      "note": "dual blockade of the renin-angiotensin system raises the risk of low blood pressure, high potassium and kidney injury",
+      "source": "ONTARGET (N Engl J Med 2008;358:1547); product labelling. Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "acei_k_sparing",
+      "a": [
+        "ramipril",
+        "enalapril",
+        "lisinopril"
+      ],
+      "b": [
+        "spironolactone",
+        "eplerenone",
+        "amiloride",
+        "triamterene"
+      ],
+      "level": "major",
+      "note": "both raise potassium; high potassium is more likely in older adults and in kidney impairment",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "arb_k_sparing",
+      "a": [
+        "telmisartan",
+        "losartan",
+        "olmesartan",
+        "valsartan",
+        "irbesartan",
+        "azilsartan"
+      ],
+      "b": [
+        "spironolactone",
+        "eplerenone",
+        "amiloride",
+        "triamterene"
+      ],
+      "level": "major",
+      "note": "both raise potassium; high potassium is more likely in older adults and in kidney impairment",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "sacubitril_acei",
+      "a": [
+        "sacubitril"
+      ],
+      "b": [
+        "ramipril",
+        "enalapril",
+        "lisinopril"
+      ],
+      "level": "major",
+      "note": "contraindicated: risk of angioedema (leave 36 hours between them)",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "simvastatin_clarithromycin",
+      "a": [
+        "simvastatin"
+      ],
+      "b": [
+        "clarithromycin"
+      ],
+      "level": "major",
+      "note": "contraindicated: raises simvastatin levels, risk of muscle breakdown",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "pde5_nitrate",
+      "a": [
+        "sildenafil",
+        "tadalafil"
+      ],
+      "b": [
+        "isosorbide_mononitrate",
+        "isosorbide_dinitrate",
+        "nitroglycerin"
+      ],
+      "level": "major",
+      "note": "contraindicated: severe fall in blood pressure",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "methotrexate_trimethoprim",
+      "a": [
+        "methotrexate"
+      ],
+      "b": [
+        "trimethoprim",
+        "sulfamethoxazole"
+      ],
+      "level": "major",
+      "note": "bone-marrow suppression: low blood counts",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "linezolid_ssri",
+      "a": [
+        "linezolid"
+      ],
+      "b": [
+        "fluoxetine",
+        "sertraline",
+        "escitalopram",
+        "paroxetine",
+        "fluvoxamine"
+      ],
+      "level": "major",
+      "note": "risk of serotonin syndrome",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "digoxin_amiodarone",
+      "a": [
+        "digoxin"
+      ],
+      "b": [
+        "amiodarone"
+      ],
+      "level": "major",
+      "note": "raises digoxin levels (the digoxin dose usually needs halving)",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "azathioprine_xanthine_oxidase",
+      "a": [
+        "azathioprine"
+      ],
+      "b": [
+        "allopurinol",
+        "febuxostat"
+      ],
+      "level": "major",
+      "note": "raises azathioprine exposure: severe bone-marrow suppression (febuxostat is contraindicated)",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "tizanidine_cyp1a2",
+      "a": [
+        "tizanidine"
+      ],
+      "b": [
+        "ciprofloxacin",
+        "fluvoxamine"
+      ],
+      "level": "major",
+      "note": "contraindicated: raises tizanidine levels, low blood pressure and sedation",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "theophylline_ciprofloxacin",
+      "a": [
+        "theophylline"
+      ],
+      "b": [
+        "ciprofloxacin"
+      ],
+      "level": "major",
+      "note": "raises theophylline levels: toxicity, seizures",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "colchicine_strong_cyp3a4",
+      "a": [
+        "colchicine"
+      ],
+      "b": [
+        "clarithromycin",
+        "ketoconazole",
+        "itraconazole"
+      ],
+      "level": "major",
+      "note": "raises colchicine levels: toxicity, can be fatal in kidney or liver impairment",
+      "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    }
+  ]
+}

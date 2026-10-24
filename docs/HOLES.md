@@ -75,7 +75,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | H20 | "The doctor already has the patient's previous prescriptions. Your solution is of no use" | H | _not brainstormed yet_ | - | - | open |
 | H21 | "The local pharmacist has no time and no incentive to do any of this" | H | _not brainstormed yet_ | - | - | open |
 | H22 | "People buy medicines right after a diagnosis. Two doctors' prescriptions at once is rare. Where is the problem?" | H | _not brainstormed yet_ | - | - | open |
-| H23 | "If Parchi shows no alert, is it safe? Your interaction data has gaps" | M | _not brainstormed yet_ | - | - | open |
+| H23 | "If Parchi shows no alert, is it safe? Your interaction data has gaps" | M | Result screens name the ingredients DDInter has nothing on; 13 curated pairs fill known gaps (**honest about what it cannot see**) | S | C, D | built |
 | H24 | "Most Indians buy at local chemist shops. Your buyers (e-pharmacies, chains) are a small share" | H | _not brainstormed yet_ | - | - | open |
 | H25 | "The PS says a pharmacist or pharmacy student helped build the test set. Yours is a general doctor" | M | _not brainstormed yet_ | - | - | open |
 | H26 | "Where is the evidence that Ayurvedic and ordinary medicines are really taken together and really clash?" | H | _not brainstormed yet_ | - | - | open |
@@ -184,7 +184,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 
 ### H23. "If Parchi shows no alert, is it safe? Your interaction data has gaps"
 - **Why it's a hole:** DDInter has no entry for several common Indian drugs (aceclofenac, domperidone, nimesulide, etoricoxib, ambroxol) and some drug groups (`track-a-data.md`). The UI is careful ("No alerts from the checks run") and the Data page documents the gaps, but a result screen does not say which of the prescription's ingredients were not covered, so a quiet result can still read as reassurance.
-- **Risk:** M. **Status:** open.
+- **Risk:** M. **Status:** built (24 Oct 2026, branch `v1`): the check and order pages list the ingredients with no interaction data ("Not covered by the interaction data"), and `public/data/ddi_supplement.json` adds 13 unverified rules for pairs DDInter lacks. The benchmark showed two misses (ACE inhibitor + spironolactone, ARB + ACE inhibitor) before that supplement.
 
 ### H24. "Most Indians buy at local chemist shops. Your buyers (e-pharmacies, chains) are a small share"
 - **Raised by:** the team, on reviewing the "who is the user" answer (H21).

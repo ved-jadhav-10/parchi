@@ -23,7 +23,8 @@ const SHOW = 3
 const More = ({ total }: { total: number }) => (total > SHOW ? <li className="match__more">and {total - SHOW} more</li> : null)
 
 /** One resolved line. Click to expand what it matched, what it contains and everything Track A knows about it. */
-export const BrandMatch = ({ resolved, sig }: { resolved: ResolvedBrand; sig: Sig }) => {
+/** `onUse` lets the pharmacist pick one of the other possible brands; the page then checks again with that brand. */
+export const BrandMatch = ({ resolved, sig, onUse }: { resolved: ResolvedBrand; sig: Sig; onUse?: (brand: string) => void }) => {
   const [open, setOpen] = useState(false)
   const r = resolved
   const generic = r.brand === null && r.match === 'generic'
@@ -102,7 +103,17 @@ export const BrandMatch = ({ resolved, sig }: { resolved: ResolvedBrand; sig: Si
               <dd>
                 <ul className="match__list">
                   {candidates.map((c) => (
-                    <li key={c.brand}>{candidateLabel(c)}</li>
+                    <li key={c.brand}>
+                      {candidateLabel(c)}
+                      {onUse && (
+                        <>
+                          {' '}
+                          <button type="button" className="btn btn--link" onClick={() => onUse(c.brand)}>
+                            Use this brand
+                          </button>
+                        </>
+                      )}
+                    </li>
                   ))}
                 </ul>
               </dd>

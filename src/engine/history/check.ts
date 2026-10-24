@@ -45,6 +45,30 @@ interface DatedLine extends HistoryLine {
   endDay: number
 }
 
+const composition = (l: HistoryLine) => l.resolved.ingredients.map((i) => `${i.id}:${i.mg}`).sort().join('+')
+
+/**
+ * A refill collected a few days early is not a double dose: when the same doctor repeats the same composition up to
+ * `graceDays` before the earlier supply ends, the earlier line stops where the new one starts.
+ */
+export function smoothRefills(lines: DatedLine[], graceDays: number): void {
+  if (!(graceDays > 0)) return
+  const byStart = [...lines].sort((a, b) => a.startDay - b.startDay)
+  for (const b of byStart) {
+    const sig = composition(b)
+    if (!sig) continue
+    for (const a of byStart) {
+      if (a === b || a.doctor !== b.doctor || a.rx_id === b.rx_id || a.startDay >= b.startDay || composition(a) !== sig) continue
+      const overlap = a.endDay - b.startDay
+      if (overlap > 0 && overlap <= graceDays) {
+        a.endDay = b.startDay
+        a.end = isoDay(b.startDay)
+        a.refill_overlap_days = overlap
+      }
+    }
+  }
+}
+
 export function createHistoryChecker(engine: Engine): CheckHistory {
   const { resolver, rules } = engine
   const policy = rules.history
@@ -91,6 +115,8 @@ export function createHistoryChecker(engine: Engine): CheckHistory {
         })
       })
     }
+
+    smoothRefills(lines, policy.refill?.grace_days ?? 0)
 
     const windows = buildWindows(
       lines.map((l) => ({ start: l.startDay, end: l.endDay })),

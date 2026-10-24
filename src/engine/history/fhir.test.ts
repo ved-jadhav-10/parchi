@@ -71,3 +71,21 @@ describe('FHIR PrescriptionRecord import', () => {
     expect(fromFhir.status).toBe('hold_contact_doctor')
   })
 })
+
+describe('FHIR Patient and weight', () => {
+  it('reads name, sex, birth date and a body-weight Observation', () => {
+    const r = fhirToHistory({
+      resourceType: 'Bundle',
+      entry: [
+        { resource: { resourceType: 'Patient', name: [{ given: ['Asha'], family: 'Kulkarni' }], gender: 'female', birthDate: '1950-04-02' } },
+        { resource: { resourceType: 'Observation', code: { coding: [{ code: '29463-7' }] }, valueQuantity: { value: 58, unit: 'kg' }, effectiveDateTime: '2026-10-01' } },
+      ],
+    })
+    expect(r.patient).toEqual({ name: 'Asha Kulkarni', sex: 'F', birth_date: '1950-04-02', weight_kg: 58 })
+    expect(r.labs).toEqual([])
+  })
+
+  it('leaves patient out when the bundle has none', () => {
+    expect(fhirToHistory({ resourceType: 'Bundle', entry: [] }).patient).toBeUndefined()
+  })
+})

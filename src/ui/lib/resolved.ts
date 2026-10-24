@@ -54,6 +54,16 @@ export const isoDate = (d: string) => {
 /** A candidate the text could also mean, as one line: "Zerodol-P 100mg/500mg: Aceclofenac 100 mg + Paracetamol 500 mg". */
 export const candidateLabel = (c: NonNullable<ResolvedBrand['candidates']>[number]) => `${c.brand}: ${c.ingredients.map(ingredientLabel).join(' + ')}`
 
+/**
+ * Replaces the first typed occurrence of `raw` in the prescription text with the brand the pharmacist picked, keeping the
+ * dosing that follows it. Returns null when `raw` is not found as typed (so nothing is changed by guesswork).
+ */
+export function swapBrand(rx: string, raw: string, brand: string): string | null {
+  const at = rx.toLowerCase().indexOf(raw.trim().toLowerCase())
+  if (raw.trim() === '' || at < 0) return null
+  return rx.slice(0, at) + brand + rx.slice(at + raw.trim().length)
+}
+
 /** Drops trailing full stops and spaces, so a sentence we end ourselves never doubles up ("Ltd.." ). */
 export const tidy = (s: string) => s.replace(/[.\s]+$/, '')
 
@@ -92,6 +102,25 @@ const ALERT_TYPES: Record<string, string> = {
   low_confidence: 'Unsure match',
   unresolved: 'Not recognised',
   discontinued: 'Discontinued',
+  dose_excess_sos: 'Over the limit if the as-needed dose is used',
+  renal_avoid: 'Avoid at this kidney function',
+  renal_caution: 'Kidney caution',
+  schedule_mismatch: 'Not a daily medicine',
+  sig_unclear: 'Dosing unclear',
+  unquantified_volume: 'Liquid amount unknown',
+  unquantified_dose: 'Dose not quantified',
+  beers_sedating_antihistamine: 'Older patient: sedating antihistamine',
+  beers_benzodiazepine: 'Older patient: benzodiazepine',
+  beers_z_drug: 'Older patient: sleeping tablet',
+  beers_ketorolac: 'Older patient: ketorolac',
+  beers_tricyclic: 'Older patient: tricyclic',
+  beers_sulfonylurea: 'Older patient: sulfonylurea',
+  beers_muscle_relaxant: 'Older patient: muscle relaxant',
+  beers_metoclopramide: 'Older patient: metoclopramide',
+  anticholinergic_burden: 'Anticholinergic burden',
+  cns_stacking: 'Sedatives stacking',
+  aware_reserve: 'Reserve antibiotic',
+  aware_watch: 'Watch antibiotic',
 }
 
 /** A readable name for an alert type from Track C; an unknown type falls back to its id in words. */

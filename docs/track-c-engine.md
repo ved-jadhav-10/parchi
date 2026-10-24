@@ -60,9 +60,17 @@ Pairs or classmates that only meet inside one combination brand do not alert. No
 
 Alert budget (2 Interrupts per check), DDI map, duplicate classes, patient rules (incl. Beers 65+: sedating antihistamines, benzodiazepines, Z-drugs), burden scales (ACB subset, CNS stacking), dose policy, history/queue policy, suppression list. Every entry has `source` and `pharmacist_approved: false`. The suppression list quiets Inform/Silent only, never an Interrupt. The ACB scores are a starter subset and the CNS class list is ours: both need the pharmacist's check against the published tables.
 
+## Added after Phase 2
+
+- **Refill smoothing:** a repeat of the same composition by the same doctor, up to `history.refill.grace_days` before the earlier supply ends (7, unverified), cuts the earlier line at the repeat's start (`refill_overlap_days` on the line). A different doctor is still a cross-doctor alert.
+- **WHO AWaRe:** `aware` in `alert_rules.json` lists antibiotics as access/watch/reserve (hand-transcribed from the 2023 classification, unverified). Reserve is Inform (`aware_reserve`), Watch is a silent log (`aware_watch`), Access raises nothing.
+- **More Beers 2023 rules (65+, Inform):** ketorolac, tricyclics, sulfonylureas (glibenclamide, glimepiride), muscle relaxants, metoclopramide. Data only.
+- **Curated interaction pairs:** `public/data/ddi_supplement.json` (13 rules, each expands to every a x b pair) fills pairs DDInter lacks, e.g. ACE inhibitor + spironolactone. The more severe level wins; alerts say why and show a `Curated:` source. Unverified.
+- `fhirToHistory` also returns `patient` (name, sex, birth date, weight).
+
 ## Not built
 
-AWaRe antibiotic checks (Finals), FHIR export (D, Finals), history in `api/check` (B), refill-overlap smoothing (a refill collected a few days early reads as a duplicate), paediatric kidney checks (B has no formula), Beers criteria beyond the three classes and the CNS/ACB stacking, duration words the sig parser misses (default window applies).
+Paediatric kidney checks (Cockcroft-Gault is for adults and no height is collected), Beers criteria beyond these eight rules and the CNS/ACB stacking, a `BD 5/7` style course length without "x" (the default window applies), ABDM-profile validation of exported FHIR.
 
 ## Open pharmacist questions (PS_ANALYSIS section 4)
 

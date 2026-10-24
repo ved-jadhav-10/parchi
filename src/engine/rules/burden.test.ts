@@ -62,3 +62,28 @@ describe('CNS-active stacking', () => {
     expect(types((await check('Alprazolam 0.5 HS; Zolpidem 10 HS; Tramadol 50 BD', elder({ age_years: 40 }))).alerts)).not.toContain('cns_stacking')
   })
 })
+
+describe('more Beers rules (65+)', () => {
+  it.each([
+    ['Ketorolac 10 SOS', 'beers_ketorolac'],
+    ['Amitriptyline 10 HS', 'beers_tricyclic'],
+    ['Glimepiride 2 OD', 'beers_sulfonylurea'],
+    ['Glibenclamide 5 OD', 'beers_sulfonylurea'],
+    ['Methocarbamol 500 BD', 'beers_muscle_relaxant'],
+    ['Metoclopramide 10 TDS', 'beers_metoclopramide'],
+  ])('flags %s at 72 as %s, Inform, draft', async (rx, type) => {
+    const { alerts } = await check(rx, elder())
+    const a = alerts.find((x) => x.type === type)!
+    expect(a, rx).toBeDefined()
+    expect(a.tier).toBe('inform')
+    expect(a.source).toContain('Beers')
+    expect(a.approved).toBe(false)
+  })
+
+  it('stays quiet below 65', async () => {
+    for (const rx of ['Ketorolac 10 SOS', 'Amitriptyline 10 HS', 'Glimepiride 2 OD', 'Methocarbamol 500 BD', 'Metoclopramide 10 TDS']) {
+      const { alerts } = await check(rx, elder({ age_years: 50 }))
+      expect(alerts.filter((x) => x.type.startsWith('beers_')), rx).toEqual([])
+    }
+  })
+})

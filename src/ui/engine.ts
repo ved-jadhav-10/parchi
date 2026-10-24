@@ -5,6 +5,7 @@ import { loadResolver, type Resolver } from '../engine/resolver'
 import { loadDdi, type DdiIndex } from '../engine/resolver/ddi'
 import { loadAlertRules, type AlertRules } from '../engine/rules'
 import { parseSig } from '../engine/sig'
+import { ddiGapNames } from './lib/coverage'
 
 /** Ask-only-when-needed: a patient field the engine wants before it can apply a limit, with the reason to show. */
 export interface PatientPrompt {
@@ -27,6 +28,8 @@ export interface CheckResult {
   crcl: number | null
   /** What was left out of or assumed in the daily totals (Track B). */
   notes: DoseResult['notes']
+  /** Ingredients the interaction data has no entry for: "no alert" means nothing on file for these. */
+  ddi_gaps: string[]
 }
 
 export interface EngineDeps {
@@ -56,6 +59,7 @@ export function createCheck(deps: EngineDeps) {
       prompts: needs.filter((n): n is typeof n & { field: PatientPrompt['field'] } => n.field !== 'sex').map((n) => ({ field: n.field, reason: n.reason })),
       crcl,
       notes,
+      ddi_gaps: ddiGapNames(lines, ddi, resolver),
     }
   }
 }
