@@ -80,6 +80,7 @@ function parseFrequency(state: { text: string }): Frequency | null {
   if (hourly) return { administrations: 24 / Number(hourly[1]) }
   // weekly and alternate day
   if (take(state, /\b(?:alternate days?|every other day|alt day)\b/)) return { administrations: 0.5 }
+  if (take(state, /\b(?:once\s+(?:a\s+|per\s+)?month(?:ly)?|monthly|every month|1\s*\/\s*month)\b/)) return { administrations: 1 / 30 }
   const weekly = take(state, new RegExp(`\\b(?:(once|twice|thrice|${NUM}\\s*(?:x|times)?)\\s*(?:a|per|/)?\\s*)?(?:weekly|week|hafte)\\b`))
   if (weekly) {
     const k = weekly[1]?.trim()

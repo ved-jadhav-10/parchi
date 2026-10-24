@@ -105,6 +105,53 @@ describe('computeLedger', () => {
     })
   })
 
+  describe('liquids with a missing or assumed volume (Track A data gaps)', () => {
+    it('does not count a liquid whose strength has no stated volume, and says so', () => {
+      const drops = brand('Wikoryl drops', [{ id: 'paracetamol', mg: 125 }], { form: 'oral_drops' })
+      const { ledger, notes } = computeLedger([line(drops, '0.6 ml TDS')])
+      expect(ledger).toEqual({})
+      expect(notes[0]).toMatchObject({ kind: 'unquantified_volume', ingredient: 'paracetamol' })
+      expect(notes[0].message).toMatch(/does not say what volume/)
+    })
+    it('counts drops stored as mg per 1 mL from the written mL dose (Calpol drops 100 mg/mL)', () => {
+      const calpol = brand('Calpol drops', [{ id: 'paracetamol', mg: 100, per_volume_ml: 1 }], { form: 'oral_drops' })
+      expect(computeLedger([line(calpol, '0.6 ml TDS')]).ledger.paracetamol.total_mg_day).toBe(180)
+    })
+    it('adds a caveat when the per-volume strength was assumed rather than stated', () => {
+      const syrup = brand('Some syrup', [{ id: 'paracetamol', mg: 125, per_volume_ml: 5, per_volume_assumed: true }], { form: 'syrup' })
+      const { ledger } = computeLedger([line(syrup, '5 ml TDS')])
+      expect(ledger.paracetamol.total_mg_day).toBe(375)
+      expect(ledger.paracetamol.caveats?.[0]).toMatch(/per 5 mL was not stated and is assumed/)
+    })
+    it('still counts non-oral-liquid forms such as injections per dose', () => {
+      const inj = brand('Diclofenac inj', [{ id: 'diclofenac', mg: 75 }], { form: 'injection', route: 'parenteral' })
+      expect(computeLedger([line(inj, 'BD')]).ledger.diclofenac.total_mg_day).toBe(150)
+    })
+  })
+
+  describe('weekly and monthly drugs read as daily', () => {
+    const mtx = (extra: Partial<ResolvedBrand> = {}) =>
+      brand('Methotrexate 2.5', [{ id: 'methotrexate', mg: 2.5 }], { schedule_hint: 'weekly', schedule_source: 'NHS', ...extra })
+    it('notes a daily sig on a weekly drug, still counting what was written', () => {
+      const { ledger, notes } = computeLedger([line(mtx(), 'OD')])
+      expect(notes[0]).toMatchObject({ kind: 'schedule_mismatch', brand: 'Methotrexate 2.5' })
+      expect(notes[0].message).toMatch(/once a week.*NHS.*1 time a day/)
+      expect(ledger.methotrexate.total_mg_day).toBe(2.5)
+    })
+    it('is quiet when the sig is weekly, and flags a missing sig', () => {
+      expect(computeLedger([line(mtx(), 'once weekly')]).notes).toEqual([])
+      expect(computeLedger([line(mtx(), '')]).notes.map((n) => n.kind)).toEqual(['schedule_mismatch'])
+    })
+    it('handles monthly drugs', () => {
+      const ibn = brand('Ibandronate 150', [{ id: 'ibandronic-acid', mg: 150 }], { schedule_hint: 'monthly' })
+      expect(computeLedger([line(ibn, 'once monthly')]).notes).toEqual([])
+      expect(computeLedger([line(ibn, 'OD')]).notes[0].kind).toBe('schedule_mismatch')
+    })
+    it('does nothing for brands without a schedule hint', () => {
+      expect(computeLedger([line(brand('Dolo 650', para(650)), 'TDS')]).notes).toEqual([])
+    })
+  })
+
   describe('caveats the pharmacist should see next to the total', () => {
     it('warns when a brand composition may be incomplete, the match is uncertain, or dosing was assumed', () => {
       const incomplete = brand('Cold FDC', para(500), { composition_complete: false })

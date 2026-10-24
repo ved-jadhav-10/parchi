@@ -98,3 +98,28 @@ describe('liquid doses written next to the brand', () => {
     expect(c.lines[0].sig.volume_ml_per_dose).toBeUndefined()
   })
 })
+
+describe('Track A data gaps on real brands', () => {
+  it('converts paediatric drops stored as mg per 1 mL (Calpol 100 mg/mL, 0.6 mL three times a day)', () => {
+    const { dose } = run('Calpol drops 0.6 ml TDS', { age_years: 1, weight_kg: 10 })
+    expect(dose.ledger.paracetamol.total_mg_day).toBe(180)
+    expect(dose.ledger.paracetamol.limit_mg_day).toBe(600) // 60 mg/kg/day x 10 kg
+    expect(dose.findings).toEqual([])
+  })
+  it('leaves out drops whose volume the source does not state, and says so (Wikoryl, Sinarest Paediatric)', () => {
+    for (const rx of ['Wikoryl drops 1 ml BD', 'Sinarest paediatric drops 1 ml TDS']) {
+      const { dose } = run(rx, { age_years: 1, weight_kg: 10 })
+      expect(dose.ledger).toEqual({})
+      expect(dose.notes.some((n) => n.kind === 'unquantified_volume')).toBe(true)
+    }
+  })
+  it('notes a weekly drug (methotrexate) written as daily, and stays quiet for a weekly sig', () => {
+    expect(run('Methotrexate 2.5 OD', { age_years: 50 }).dose.notes.map((n) => n.kind)).toContain('schedule_mismatch')
+    expect(run('Folitrax 7.5 once weekly', { age_years: 50 }).dose.notes.map((n) => n.kind)).not.toContain('schedule_mismatch')
+  })
+  it('reports an unrecognised line instead of counting it', () => {
+    const { dose } = run('Qzxvbn 500 BD', { age_years: 40 })
+    expect(dose.ledger).toEqual({})
+    expect(dose.notes[0].kind).toBe('unresolved')
+  })
+})
