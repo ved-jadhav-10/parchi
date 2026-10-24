@@ -100,7 +100,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **USP:** "We plug into your review desk; we don't replace it."
 
 ### H4. "Who checked your clinical numbers?"
-- **Why it's a hole:** `limits.json` has 11 ingredients, all `pharmacist_approved: false`. Kidney bands for 34 drugs are unverified.
+- **Why it's a hole:** `limits.json` has adult maximums for 33 ingredients (22 read from FDA labels, the US OTC monograph and EMA/UK SmPCs on 24 Oct 2026), all `pharmacist_approved: false`. Kidney bands for 34 drugs are unverified. About 79% of ingredient occurrences in popular oral brands had no limit before that; the results now name the unlimited ones (`docs/DATA_RELIABILITY.md`).
 - **Fixes:** in the session, sign off the demo-critical limits first (paracetamol, NSAIDs, SOS caps). UI shows a badge per limit: approved by [pharmacist] or unverified. Stamp a clinical-data version on every result.
 - **USP:** transparent clinical provenance. A chatbot can't show who approved its numbers.
 
