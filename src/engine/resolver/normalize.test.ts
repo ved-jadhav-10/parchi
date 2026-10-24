@@ -47,6 +47,12 @@ describe('splitBrandAndSig', () => {
     ['Montair LC ½-0-½ x 10 days', 'Montair LC', '½-0-½ x 10 days'],
     ['Pantocid 40 subah khali pet', 'Pantocid 40', 'subah khali pet'],
     ['Augmentin 625 Duo', 'Augmentin 625 Duo', ''],
+    // liquid dose volumes start the sig; pack sizes and concentrations stay in the brand (Track B ledger needs mL/dose)
+    ['Syp Ascoril LS 5ml TDS', 'Syp Ascoril LS', '5ml TDS'],
+    ['Ascoril LS 10 ml BD', 'Ascoril LS', '10 ml BD'],
+    ['Ascoril LS Syrup 100ml TDS', 'Ascoril LS Syrup 100ml', 'TDS'],
+    ['Calpol 120mg/5ml syp 1 tsp TDS', 'Calpol 120mg/5ml syp', '1 tsp TDS'],
+    ['Calpol drops 15ml 0.6 ml TDS', 'Calpol drops 15ml', '0.6 ml TDS'], // 15 mL is the pack, 0.6 mL the dose
   ])('%s', (line, brand, sig) => {
     expect(splitBrandAndSig(line)).toEqual({ brand, sig })
   })

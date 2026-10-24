@@ -50,10 +50,14 @@ ROUTES = sorted({r for _, _, r in _RULES} | {"other"})
 SYSTEMIC_ROUTES = frozenset({"oral", "parenteral", "inhaled", "rectal", "transdermal"})
 
 
+_FLAVOURS = re.compile(r"\bice[- ]?cream\b|\bcream (?:biscuit|flavou?r)\b")
+
+
 def detect_form(name: str, pack_label: str = "") -> tuple[str, str]:
     """Return (form, route). The pack label is the more reliable source; the name breaks ties."""
     label = re.sub(r"^\s*\w+ of [\d.]+\s*", "", (pack_label or "").lower())  # "bottle of 100 ml Syrup" -> "ml syrup"
-    for text in (f"{label} {name.lower()}", name.lower()):
+    name = _FLAVOURS.sub(" ", name.lower())  # "Oral Suspension American Ice Cream" is not a cream
+    for text in (f"{label} {name}", name):
         for rx, form, route in _COMPILED:
             if rx.search(text):
                 return form, route

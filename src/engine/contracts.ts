@@ -12,6 +12,8 @@ export interface Ingredient {
   other_unit?: { unit: string; amount: number }
   /** Track A, optional: the source gives no usable strength. `mg` is 0 then. */
   strength_unknown?: boolean
+  /** Track A, optional: per_volume_ml was not stated but inferred (per-5-mL syrup convention or a sibling ingredient). */
+  per_volume_assumed?: boolean
 }
 
 /** Track A, optional detail. Only systemic routes count toward the daily mg ledger. */
@@ -75,23 +77,62 @@ export interface ResolvedBrand {
   nsq?: NsqRef[]
   /** Jan Aushadhi generics with the same ingredients and strengths (not a safety flag). Pharmacist confirms equivalence. */
   jan_aushadhi?: JanAushadhiRef[]
+  /** Track A, optional: usual labelled schedule is not daily (methotrexate tablets, alendronate 70 mg: weekly; ibandronate 150 mg: monthly). Track C can warn on a daily sig. Sourced per drug in data/curated/schedule_hints.csv. */
+  schedule_hint?: 'weekly' | 'monthly'
+  /** Source URL for `schedule_hint`. */
+  schedule_source?: string
   /** Short reasons for the pharmacist, e.g. "Assumed 650 mg; Dolo is also sold as 500 mg". */
   notes?: string[]
 }
 
-/** Track B output */
+/**
+ * Track B output. `doses_per_day` counts unit doses (tablets, capsules, or one measure of liquid) taken per day,
+ * so "1-0-1" is 2 and "2 tab TDS" is 6. SOS lines have `doses_per_day: 0`; `max_doses_per_day` is the worst case.
+ */
 export interface Sig {
   doses_per_day: number
   max_doses_per_day: number
   sos: boolean
   duration_days?: number
+  // Optional Track B detail (see docs/track-b-dose.md). Absent fields mean "not written".
+  /** Times the medicine is taken per day (1-0-1 = 2), as opposed to units taken per time. */
+  administrations_per_day?: number
+  /** mL per administration for liquids ("5 ml", "1 tsp"); the ledger converts with per_volume_ml. */
+  volume_ml_per_dose?: number
+  /** What one dose is: tablets/capsules, mL, drops or puffs. Drops and puffs cannot be turned into mg. */
+  dose_unit?: 'unit' | 'ml' | 'drop' | 'puff'
+  stat?: boolean
+  /** SOS without a written daily maximum: the limits data supplies a worst-case cap. */
+  sos_cap_unspecified?: boolean
+  /** 1 = every part of the text understood; lower = something was assumed or not understood. */
+  confidence?: number
+  /** Plain-language assumptions, e.g. "No dosing written; assumed once daily". */
+  assumptions?: string[]
+  /** Words in the sig that the parser did not understand. */
+  unparsed?: string[]
 }
 
-/** Track B output */
-export type Ledger = Record<
-  string,
-  { total_mg_day: number; sources: string[]; limit_mg_day?: number }
->
+/** Track B output. `total_mg_day` includes SOS lines at their worst-case maximum. */
+export interface LedgerEntry {
+  total_mg_day: number
+  sources: string[]
+  limit_mg_day?: number
+  // Optional Track B detail (see docs/track-b-dose.md).
+  /** Regular (non-SOS) part of `total_mg_day`. */
+  scheduled_mg_day?: number
+  /** SOS part of `total_mg_day`, at the worst-case number of doses. */
+  sos_mg_day?: number
+  /** Which rule `limit_mg_day` came from, e.g. "Adult maximum" or "Age 65+ cap". */
+  limit_basis?: string
+  /** Source of the limit (label, guideline). */
+  limit_source?: string
+  /** false until the pharmacist has signed the limit off. Show it as unverified. */
+  limit_pharmacist_approved?: boolean
+  /** Why the total may be understated or overstated (assumed measure, SOS cap assumed, ...). */
+  caveats?: string[]
+}
+
+export type Ledger = Record<string, LedgerEntry>
 
 /** Track C output */
 export interface Alert {

@@ -130,3 +130,94 @@ describe('resolver behaviour', () => {
     expect(r.canonicalId('not a drug at all')).toBeNull()
   })
 })
+
+describe('liquid strengths for the mL -> mg ledger', () => {
+  const r = testResolver()
+
+  it('flags a per-5-mL volume inferred for a syrup or suspension that did not state one', () => {
+    const res = r.resolve('Combiflam suspension')
+    expect(res.form).toBe('suspension')
+    for (const ing of res.ingredients) {
+      expect(ing.per_volume_ml).toBe(5)
+      expect(ing.per_volume_assumed).toBe(true)
+    }
+  })
+
+  it('keeps stated volumes unflagged (oral drops per 1 mL)', () => {
+    const res = r.resolve('Calpol Paediatric drops')
+    expect(res.ingredients).toEqual([{ id: 'paracetamol', mg: 100, per_volume_ml: 1 }])
+  })
+})
+
+describe('verified cold and analgesic combinations (hidden paracetamol)', () => {
+  const r = testResolver()
+  const paracetamolMg = (q: string) => r.resolve(q).ingredients.find((i) => i.id === 'paracetamol')?.mg
+
+  it.each([
+    ['Vicks Action 500 Advanced', 500],
+    ['Cheston Cold Total', 325],
+    ['D Cold Total', 500],
+    ['Wikoryl 10', 500],
+    ['Coldact Plus', 500],
+    ['Voveran Plus', 325],
+    ['Ultracet', 325],
+    ['Hifenac P', 325],
+    ['Zerodol SP', 325],
+  ])('%s carries %i mg paracetamol and a complete composition', (q, mg) => {
+    expect(paracetamolMg(q)).toBe(mg)
+    expect(r.resolve(q).composition_complete).toBe(true)
+  })
+
+  it('flags Sinarest LP New under the right notification (levocetirizine + phenylephrine + paracetamol)', () => {
+    const res = r.resolve('Sinarest LP New')
+    expect(res.flags).toContain('banned_fdc')
+    expect(res.banned_fdc?.map((b) => b.so)).toEqual(['S.O. 3388(E)'])
+    expect(res.banned_fdc?.[0].certain).toBe(true)
+  })
+
+  it('keeps the Hifenac P 650 mg variant reachable by strength', () => {
+    expect(r.resolve('Hifenac P 650').ingredients.find((i) => i.id === 'paracetamol')?.mg).toBe(650)
+  })
+})
+
+describe('schedule hints (weekly / monthly drugs)', () => {
+  const r = testResolver()
+
+  it('flags methotrexate tablets as weekly, with a source, for brands and generics', () => {
+    for (const q of ['Folitrax 15', 'Methotrexate 7.5 tab']) {
+      const res = r.resolve(q)
+      expect(res.schedule_hint).toBe('weekly')
+      expect(res.schedule_source).toMatch(/^https:\/\/www\.nhs\.uk\/medicines\/methotrexate/)
+      expect(res.notes?.join(' ')).toMatch(/weekly, not daily/)
+    }
+  })
+
+  it('is strength-specific: alendronate 70 mg is weekly, the 10 mg daily tablet is not', () => {
+    expect(r.resolve('Osteofos 70').schedule_hint).toBe('weekly')
+    expect(r.resolve('Osteofos 10').schedule_hint).toBeUndefined()
+  })
+
+  it('flags ibandronate 150 mg tablets as monthly', () => {
+    expect(r.resolve('Idrofos 150').schedule_hint).toBe('monthly')
+  })
+
+  it('leaves ordinary daily drugs alone, including methotrexate injection vials', () => {
+    expect(r.resolve('Dolo 650').schedule_hint).toBeUndefined()
+    expect(r.resolve('Folitrax 50 injection').schedule_hint).toBeUndefined()
+  })
+})
+
+describe('systemic is always set explicitly', () => {
+  const r = testResolver()
+  const inputs = [
+    'Dolo 650', 'Brufan 400', 'Dolo', 'Paracetamol 500', 'Cetirizine + Paracetamol + Phenylephrine', 'Betnovate cream',
+    'Volini gel', 'Ascoril LS syp', 'डोलो 650', 'qwxz kplm', 'Calpol drops', 'Sinarest LP New', '', '   ', '650', 'tab',
+    'Nise', 'Combiflem', 'Zerodol P', 'Methotrexate 7.5',
+  ]
+  it.each(inputs)('%j', (q) => {
+    const res = r.resolve(q)
+    expect(typeof res.systemic).toBe('boolean')
+    expect(res.route).toBeDefined()
+    if (res.ingredients.length === 0) expect(res.systemic).toBe(false)
+  })
+})
