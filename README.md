@@ -48,7 +48,7 @@ The verifying pharmacist at an e-pharmacy or pharmacy chain. Doctors are never u
 | **Deterministic engine** | Every alert comes from rules and data, so the same input always gives the same answer. No LLM decides an alert. |
 | **Runs offline** | The engine runs in the browser as a PWA. After the first load it works with no connection. |
 | **Optional online extras** | An LLM can read messy dosing text and draft a customer leaflet. It is marked as AI-read and hides itself offline. |
-| **Sourced data** | Every dose limit and rule carries a `source` and a `pharmacist_approved` flag (the flag name is historical; it means "signed off", and `approved_by` says by whom). Signed-off limits also name who signed in `approved_by`. Unverified numbers are marked, never invented. |
+| **Sourced data** | Every dose limit and rule carries a `source` and a `pharmacist_approved` flag (the flag name is historical; it means "signed off", and `approved_by` says by whom). Unverified numbers are marked, never invented. |
 | **Check API** | A JSON endpoint lets a buyer call the same engine from their own system. |
 
 ## Tech stack
