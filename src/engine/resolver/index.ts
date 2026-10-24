@@ -2,7 +2,7 @@
 // Deterministic and offline: all data comes from public/data/*.json.
 import { distance } from 'fastest-levenshtein'
 import { doubleMetaphone } from 'double-metaphone'
-import type { Ingredient, ResolvedBrand, Route } from '../contracts'
+import type { Ingredient, ProposedComposition, ResolvedBrand, Route } from '../contracts'
 import { createBannedIndex } from './banned'
 import { createJanAushadhiIndex } from './janaushadhi'
 import { createScheduleIndex } from './schedule'
@@ -35,6 +35,8 @@ export interface Resolver {
   ingredient(id: string): IngredientInfo | undefined
   /** Other in-index brands with exactly the same composition (not discontinued), most popular first. */
   sameComposition(resolved: ResolvedBrand, limit?: number): string[]
+  /** Phase 2: ingredients named in composition text ("Paracetamol 500 + Caffeine 65"), as an unverified proposal; null if any part is unknown. */
+  proposeFromComposition(text: string): ProposedComposition | null
 }
 
 interface Line {
@@ -87,7 +89,8 @@ function trigrams(s: string): string[] {
   return out
 }
 
-function signature(ings: Ingredient[]): string {
+/** Same ingredients, strengths and per-volume basis, regardless of order. */
+export function signature(ings: Ingredient[]): string {
   return ings.map((i) => `${i.id}:${i.mg}:${i.per_volume_ml ?? ''}`).sort().join('|')
 }
 
@@ -368,7 +371,35 @@ export function createResolver(data: ResolverData): Resolver {
     }
     if (scored.length) res.candidates = candidateList(scored)
     res.notes = ['Could not identify this medicine confidently; please confirm the brand.']
+    const proposal = proposeFromNames(scored)
+    if (proposal) res.proposed_composition = proposal
     return res
+  }
+
+  /** Below this the closest name is too far off to guess a composition from. */
+  const PROPOSE_ABOVE = 0.4
+
+  function proposeFromNames(scored: Scored[]): ProposedComposition | undefined {
+    const best = scored[0]
+    if (!best || best.score < PROPOSE_ABOVE) return undefined
+    const rivals = scored.filter(
+      (s) => s.score >= best.score - 0.1 && signature(s.v.rec.ingredients) !== signature(best.v.rec.ingredients),
+    )
+    const cautions: string[] = []
+    if (rivals.length) cautions.push(`${rivals.length === 1 ? 'Another similar brand has' : 'Other similar brands have'} a different composition (${describe(rivals[0].v.rec)}).`)
+    if (best.strength === 'mismatch') cautions.push('The strength written does not match this product.')
+    if (!best.v.rec.complete) cautions.push('Source lists at most two ingredients for this product.')
+    return {
+      brand: best.v.rec.display,
+      form: best.v.rec.form,
+      route: best.v.rec.route,
+      systemic: data.systemicRoutes.has(best.v.rec.route),
+      ingredients: best.v.rec.ingredients.map((i) => ({ ...i })),
+      confidence: round(best.score * (rivals.length ? 0.7 : 1)),
+      basis: 'similar_brand_name',
+      unverified: true,
+      ...(cautions.length ? { caution: cautions.join(' ') } : {}),
+    }
   }
 
   function resolveGeneric(raw: string, q: ParsedName): ResolvedBrand | null {
@@ -502,6 +533,21 @@ export function createResolver(data: ResolverData): Resolver {
       return id && ingJson.ingredients[id] ? id : null
     },
     ingredient: (id) => ingJson.ingredients[id],
+    proposeFromComposition(text) {
+      const g = resolveGeneric(text, parseName(text))
+      if (!g || !g.ingredients.length) return null
+      return {
+        brand: null,
+        form: g.form,
+        route: g.route,
+        systemic: g.systemic,
+        ingredients: g.ingredients,
+        confidence: round(Math.min(g.confidence, g.ingredients.some((i) => i.strength_unknown) ? 0.5 : 0.9)),
+        basis: 'buyer_composition_text',
+        unverified: true,
+        ...(g.notes?.length ? { caution: g.notes.join(' ') } : {}),
+      }
+    },
     sameComposition(resolved, limit = 5) {
       if (!resolved.brand) return []
       const sig = signature(resolved.ingredients)
