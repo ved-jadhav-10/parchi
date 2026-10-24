@@ -1,12 +1,12 @@
 /* Guided stories (tour overlay). Tokens only; see docs/DESIGN.md. The dim panels leave a hole around the lit element, so a step can ask for a real click. */
 
 .tour { position: fixed; inset: 0; z-index: 1000; pointer-events: none; }
-.tour__dim { position: fixed; background: rgb(18 32 86 / 0.62); pointer-events: auto; transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease; }
+.tour__dim { position: fixed; background: rgb(18 32 86 / 0.62); pointer-events: auto; transition: top 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 .tour__dim--all { inset: 0; }
 .tour__dim--clear { background: transparent; }
 .tour__ring {
   position: fixed; border: 2px solid var(--color-accent-soft); border-radius: var(--radius-md); pointer-events: none;
-  box-shadow: 0 0 0 4px rgb(141 149 240 / 0.35); transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+  box-shadow: 0 0 0 4px rgb(141 149 240 / 0.35); transition: top 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   animation: tour-pulse 2s ease-in-out infinite;
 }
 @keyframes tour-pulse { 50% { box-shadow: 0 0 0 8px rgb(141 149 240 / 0.15); } }
@@ -14,7 +14,9 @@
 .tour__busy {
   position: fixed; left: 50%; top: 40%; margin: 0; padding: var(--space-3) var(--space-5); transform: translateX(-50%);
   border-radius: var(--radius-pill); background: var(--color-surface); color: var(--color-ink); font-weight: 600; pointer-events: auto;
+  animation: tour-late 0.3s 0.9s ease both;
 }
+@keyframes tour-late { from { opacity: 0; } }
 
 .tour__card {
   position: fixed; display: grid; gap: var(--space-3); max-height: calc(100dvh - 24px); overflow-y: auto; padding: var(--space-5);

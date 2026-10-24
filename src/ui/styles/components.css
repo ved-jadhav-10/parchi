@@ -445,3 +445,9 @@ code { padding: 1px var(--space-1); border-radius: var(--radius-sm); background:
 .xray .chip.chip--hit { box-shadow: none; background: var(--color-lilac); color: var(--color-accent-strong); }
 .xray td:last-child { min-width: 150px; }
 .xray tbody th, .xray tbody td { padding-block: var(--space-2); }
+
+/* X-ray: room between the tier bar and the text, rows on one centre line */
+.xray tbody th, .xray thead th:first-child { padding-left: var(--space-4); }
+.xray td { vertical-align: middle !important; }
+.xray tbody td:last-child, .xray thead th:last-child { padding-right: var(--space-3); }
+.xray tbody th > * + * { margin-top: var(--space-1); }

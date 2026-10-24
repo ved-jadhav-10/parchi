@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import '../styles/tour.css'
-import { clickWithCursor, findTarget, hideCursor, reducedMotion, runAction, sleep, waitFor } from './dom'
+import { clickWithCursor, findTarget, hideCursor, reducedMotion, runAction, setVisual, sleep, waitFor } from './dom'
 import { scenarioById } from './scenarios'
 import { backStep, exitTour, nextStep, setAuto, useTour } from './store'
 
@@ -52,7 +52,7 @@ export const Tour = () => {
     if (!step) return
     const signal = { cancelled: false }
     setBusy(true)
-    setBox(null)
+    if (step.route && location.hash !== `#/${step.route}`) setBox(null)
     const run = async () => {
       if (step.route && location.hash !== `#/${step.route}`) {
         location.hash = `#/${step.route}`
@@ -112,9 +112,10 @@ export const Tour = () => {
   }, [step, busy])
 
   useEffect(() => {
-    if (!scenario) hideCursor()
-    return hideCursor
-  }, [scenario])
+    setVisual(!!scenario && auto)
+  }, [scenario, auto])
+
+  useEffect(() => hideCursor, [])
 
   // Autoplay: read time scales with the words on the card; a step that waits for a click gets one after a beat.
   const dwell = step ? (step.userClicks ? 1600 : Math.min(7500, 2200 + (step.title.length + step.body.length) * 26)) : 0

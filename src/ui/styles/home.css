@@ -293,3 +293,17 @@
   .home-cta { min-height: calc(100dvh - 120px); align-content: center; padding: 48px 72px; border-radius: 28px; }
   .home-footer { border-radius: 28px; padding: 28px 72px; }
 }
+
+/* Wide sections: the heading and its closing note on the left, the content in a padded block on the right */
+@media (min-width: 901px) {
+  .home-section.home-how, .home-section.home-compare-section {
+    display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); grid-template-rows: auto 1fr; gap: 28px 72px;
+    align-content: center; align-items: start; padding: 56px 72px;
+  }
+  .home-how__head, .home-compare-section__head { grid-column: 1; grid-row: 1; padding: 0; position: static; }
+  .home-how__grid { grid-column: 2; grid-row: 1 / span 2; margin: 0; border: 1px solid var(--color-border); border-radius: 20px; overflow: hidden; }
+  .home-how__grid li { padding: 24px 28px; }
+  .home-how__foot { grid-column: 1; grid-row: 2; align-self: end; display: grid; gap: 16px; padding: 0; }
+  .home-compare { grid-column: 2; grid-row: 1 / span 2; padding: 0; }
+  .home-section.home-how > .home-how__grid:last-child { grid-row: 1; }
+}

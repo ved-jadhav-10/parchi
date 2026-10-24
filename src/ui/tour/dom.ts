@@ -27,6 +27,12 @@ export const waitFor = async (t: Target, timeout = 4000, signal?: { cancelled: b
 const ARROW =
   '<svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3l14 8-6 1.6L10 19z" fill="#122056" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>'
 let cursor: HTMLElement | null = null
+/** The pointer only shows while a story plays by itself. When the visitor drives, or has paused it, things happen without it. */
+let visual = false
+export const setVisual = (on: boolean) => {
+  visual = on
+  if (!on) hideCursor()
+}
 
 const ensureCursor = () => {
   if (cursor) return cursor
@@ -49,8 +55,9 @@ export const hideCursor = () => {
 
 const glideTo = async (el: HTMLElement, signal: { cancelled: boolean }, side: 'center' | 'start' = 'center') => {
   el.scrollIntoView({ block: 'center', behavior: 'auto' })
+  if (!visual) return
   await sleep(120)
-  if (signal.cancelled) return
+  if (signal.cancelled || !visual) return
   const c = ensureCursor()
   const r = el.getBoundingClientRect()
   const x = side === 'start' ? r.left + 28 : r.left + Math.min(r.width / 2, 140)
@@ -61,7 +68,7 @@ const glideTo = async (el: HTMLElement, signal: { cancelled: boolean }, side: 'c
 
 const press = async () => {
   const c = cursor
-  if (!c) return
+  if (!c || !visual) return
   c.classList.add('is-press')
   const ring = document.createElement('span')
   ring.className = 'tour__ripple'
