@@ -1,0 +1,14 @@
+brand,form,composition,aliases,discontinued,source,checked_on,notes,pharmacist_approved
+Dolo 650,tablet,Paracetamol (650mg),,false,https://www.1mg.com/drugs/dolo-650-tablet-74467,2026-10-24,,false
+Crocin Cold & Flu Max,tablet,Paracetamol (500mg) + Caffeine (32mg) + Phenylephrine (10mg),,false,https://www.1mg.com/drugs/crocin-cold-flu-max-tablet-117236,2026-10-24,Dataset row lists only paracetamol + caffeine and marks it discontinued; pack page lists 3 ingredients and sells it,false
+Zerodol-P,tablet,Aceclofenac (100mg) + Paracetamol (325mg),,false,https://www.1mg.com/drugs/zerodol-p-tablet-67304,2026-10-24,Strength variant Zerodol-P 100mg/500mg exists,false
+Zerodol-P 100mg/500mg,tablet,Aceclofenac (100mg) + Paracetamol (500mg),,false,https://www.1mg.com/drugs/zerodol-p-100mg-500mg-tablet-943062,2026-10-24,Higher paracetamol variant of Zerodol-P,false
+Brufen 400,tablet,Ibuprofen (400mg),,false,https://www.medicines.org.uk/emc/product/6713/smpc,2026-10-24,Dataset agrees (single ingredient),false
+Ecosprin 75,tablet,Aspirin (75mg),,false,https://www.1mg.com/drugs/ecosprin-75-tablet-40765,2026-10-24,,false
+Pan-D,capsule,Pantoprazole (40mg) + Domperidone (30mg),Pan D,false,https://www.1mg.com/drugs/pan-d-capsule-pr-343042,2026-10-24,Capsule PR (domperidone prolonged release),false
+Omez,capsule,Omeprazole (20mg),,false,https://www.1mg.com/drugs/omez-capsule-356834,2026-10-24,,false
+Sinarest New,tablet,Paracetamol (500mg) + Phenylephrine (10mg) + Chlorpheniramine Maleate (2mg),,false,https://www.truemeds.in/medicine/sinarest-new-tablet-tm-tacr1-053965,2026-10-24,,false
+Montair-LC,tablet,Levocetirizine (5mg) + Montelukast (10mg),,false,https://www.1mg.com/drugs/montair-lc-tablet-565306,2026-10-24,,false
+Combiflam,tablet,Ibuprofen (400mg) + Paracetamol (325mg),,false,https://www.truemeds.in/medicine/combiflam-tablet-tm-tacr1-009412,2026-10-24,,false
+Sinarest-CCF,tablet,Paracetamol (500mg) + Chlorpheniramine Maleate (2mg) + Ambroxol (30mg) + Guaifenesin (100mg) + Phenylephrine (10mg),Sinarest CCF,false,https://www.centaurpharma.com/downloads/Sinarest-CCF-Tab.pdf,2026-10-24,Dataset row lists only 2 of 5 ingredients,false
+Ascoril LS,syrup,Ambroxol (30mg/5ml) + Guaifenesin (50mg/5ml) + Levosalbutamol (1mg/5ml),,false,https://www.1mg.com/drugs/ascoril-ls-syrup-63412,2026-10-24,Dataset row lists only 2 of 3 ingredients,false
