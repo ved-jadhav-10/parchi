@@ -16,9 +16,9 @@ describe('the real engine behind the UI', () => {
     const para = r.ledger.paracetamol
     expect(para.total_mg_day).toBe(4100)
     expect(para.sources).toHaveLength(3)
-    // A 68-year-old gets Track B's age 65+ cap, a draft the pharmacist has not signed off.
-    expect(para.limit_mg_day).toBe(3000)
-    expect(para.limit_basis).toBe('Age 65+ cap')
+    // Age alone no longer lowers the paracetamol limit (FIX_PLAN 2.4): the 68-year-old gets the adult maximum, a draft the pharmacist has not signed off.
+    expect(para.limit_mg_day).toBe(4000)
+    expect(para.limit_basis).toBe('Adult maximum')
     expect(para.limit_pharmacist_approved).toBe(false)
     const dose = r.alerts.find((a) => a.type === 'dose_excess')
     expect(dose?.tier).toBe('interrupt')

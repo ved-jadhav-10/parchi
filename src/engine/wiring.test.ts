@@ -21,11 +21,11 @@ describe('demo Rx through the real engine', () => {
     expect(byType(out.alerts, 'nsq')[0].tier).toBe('silent')
   })
 
-  it('takes the 65+ paracetamol cap and its basis from the limits data, shown as unverified', async () => {
+  it('takes the paracetamol limit and its basis from the limits data (age alone no longer lowers it), shown as unverified', async () => {
     const { alerts, ledger } = await check(demo.rx_text, patient)
-    expect(ledger.paracetamol.limit_mg_day).toBe(3000)
+    expect(ledger.paracetamol.limit_mg_day).toBe(4000)
     const a = byType(alerts, 'dose_excess')[0]
-    expect(a.reason).toContain('3,000 mg/day limit (age 65+ cap)')
+    expect(a.reason).toContain('4,000 mg/day limit (adult maximum)')
     expect(a.approved).toBe(false)
   })
 

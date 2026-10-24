@@ -9,15 +9,16 @@ import type { Patient } from '../contracts'
 import { realPipeline } from './testing'
 
 const DOSE_ADVICE =
-  /\b(halv\w*|doubl\w*|reduc\w+ the dose|lower the dose|increas\w+ the dose|titrat\w+|start (at|with)|leave \d+ hours|space (the )?doses|give |should (be )?(take|giv|use|start|stop)|do not exceed|usually needs|dose (to|of) \d|lowest dose|take (it|them) (with|after|before))\b/i
+  /\b(halv\w*|doubl\w*|reduc\w+ the dose|lower the dose|increas\w+ the dose|titrat\w+|start (at|with)|leave \d+ hours|space (the )?doses|give |should (be )?(take|giv|use|start|stop)|do not exceed|stop (when|taking|using)|usually needs|dose (to|of) \d|lowest dose|take (it|them) (with|after|before))\b/i
 
 const rules = JSON.parse(rulesRaw)
 const supplement = JSON.parse(supplementRaw)
 
 const policyTexts: [string, string][] = [
-  ...(['patient_rules', 'stack_rules', 'burden_scales', 'suppression'] as const).flatMap((sec) =>
+  ...(['patient_rules', 'stack_rules', 'burden_scales', 'suppression', 'pregnancy_rules'] as const).flatMap((sec) =>
     (rules[sec] as { id: string; reason?: string }[]).filter((r) => r.reason).map((r): [string, string] => [`${sec}:${r.id}`, r.reason!]),
   ),
+  ...(Object.entries(rules.allergy_groups) as [string, { cross?: { note: string } }][]).flatMap(([k, g]): [string, string][] => (g.cross ? [[`allergy cross-reaction:${k}`, g.cross.note]] : [])),
   ...(supplement.rules as { id: string; note: string }[]).map((r): [string, string] => [`curated interaction:${r.id}`, r.note]),
 ]
 
@@ -26,8 +27,8 @@ describe('alert wording never recommends a dose', () => {
     expect(text).not.toMatch(DOSE_ADVICE)
   })
 
-  it('every patient and stacking rule hands the decision to the pharmacist', () => {
-    for (const r of [...rules.patient_rules, ...rules.stack_rules] as { id: string; reason: string }[]) {
+  it('every patient, stacking and pregnancy rule hands the decision to the pharmacist', () => {
+    for (const r of [...rules.patient_rules, ...rules.stack_rules, ...rules.pregnancy_rules] as { id: string; reason: string }[]) {
       expect(r.reason, r.id).toMatch(/pharmacist to review/i)
     }
   })

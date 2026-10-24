@@ -16,7 +16,7 @@ import { needsReview, swapBrand, tidy } from '../lib/resolved'
 import { demoPatient, demoRxText } from '../demoCase'
 import { addOverride } from '../storage/overrides'
 
-const blank = { age: '', sex: '', weight: '', creatinine: '' }
+const blank = { age: '', sex: '', weight: '', creatinine: '', egfr: '', allergies: '', pregnancy: '', liver: '', alcohol: '' }
 
 const Field = ({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
   <label className="field">
@@ -30,6 +30,11 @@ const toPatient = (p: typeof blank): Patient => ({
   ...(p.sex && { sex: p.sex as 'M' | 'F' }),
   ...(p.weight && { weight_kg: Number(p.weight) }),
   ...(p.creatinine && { serum_creatinine: Number(p.creatinine) }),
+  ...(p.egfr && { egfr: Number(p.egfr) }),
+  ...(p.allergies.trim() && { allergies: p.allergies.split(/[,;\n]/).map((a) => a.trim()).filter(Boolean) }),
+  ...((p.pregnancy === 'yes' || p.pregnancy === 'no') && { pregnancy: p.pregnancy }),
+  ...(p.liver && { liver_disease: true }),
+  ...(p.alcohol && { heavy_alcohol_use: true }),
 })
 
 export const CheckPage = () => {
@@ -55,6 +60,8 @@ export const CheckPage = () => {
 
   const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setPatient({ ...patient, [k]: e.target.value })
+  const toggle = (k: 'liver' | 'alcohol') => (e: React.ChangeEvent<HTMLInputElement>) => setPatient({ ...patient, [k]: e.target.checked ? 'yes' : '' })
+  const canBePregnant = patient.sex === 'F' && Number(patient.age) >= 12 && Number(patient.age) <= 50
 
   const check = async (text = rx) => {
     if (text.trim() === '' || !ageOk) return
@@ -123,6 +130,7 @@ export const CheckPage = () => {
                 onClick={() => {
                   setRx(demoRxText)
                   setPatient({
+                    ...blank,
                     age: String(demoPatient.age_years),
                     sex: demoPatient.sex ?? '',
                     weight: String(demoPatient.weight_kg ?? ''),
@@ -148,6 +156,28 @@ export const CheckPage = () => {
                 </select>
               </label>
             </div>
+            <details className="more">
+              <summary>More about the patient (optional)</summary>
+              <p className="hint">Checked only if filled in. Leaving a box empty means "not entered", never "none".</p>
+              <Field label="Known allergies" placeholder="penicillin, sulfa, NSAIDs, or a medicine name" value={patient.allergies} onChange={set('allergies')} />
+              {canBePregnant && (
+                <label className="field">
+                  <span className="field__label">Pregnant?</span>
+                  <select className="field__input" value={patient.pregnancy} onChange={set('pregnancy')}>
+                    <option value="">Not entered</option>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </select>
+                </label>
+              )}
+              <Field label="Lab eGFR (mL/min/1.73 m²)" type="number" inputMode="decimal" value={patient.egfr} onChange={set('egfr')} />
+              <label className="check">
+                <input type="checkbox" checked={patient.liver === 'yes'} onChange={toggle('liver')} /> Liver disease
+              </label>
+              <label className="check">
+                <input type="checkbox" checked={patient.alcohol === 'yes'} onChange={toggle('alcohol')} /> Regular heavy alcohol use
+              </label>
+            </details>
             {prompts.length > 0 && (
               <div className="prompt">
                 {prompts.map((p) => (

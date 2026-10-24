@@ -8,7 +8,8 @@ Phases are in priority order. Phases 0 and 1 matter most for judging; do them fi
 |---|---|
 | 0 Claims | Done in `PPT.md` and the filled deck; UI rename of "Hold, contact doctor" (0.6) still open |
 | 1 Severity | **Done**: 9 curated contraindications Interrupt; budget never demotes protected types; NSAID kidney bands <30 stop / 30-59 caution; 7 stacking rules (`stack_rules` in `alert_rules.json`, `src/engine/rules/stack.ts`); scenario tests in `src/engine/rules/stack.test.ts`. Demo still 2 Interrupts (paracetamol over cap; two NSAIDs at 68). Benchmark: 0 misses, 1 extra (QT note on two fluoroquinolones) |
-| 2-6 | Open |
+| 2 Patient facts | **Done** (25 Oct 2026): allergies (8 groups, free text, combination brands), pregnancy (17 rules: FDA boxed warnings and contraindications, NFI categories X/D), lab eGFR when weight or creatinine is missing, paracetamol limit by weight / liver disease / heavy alcohol use instead of age (removes the 3,000 mg age cap). Check page has an optional "More about the patient" section. History/order pages not yet (Phase 3, per patient). Breastfeeding not built: no source found. Demo paracetamol limit is now 4,000 mg |
+| 3-6 | Open |
 
 ---
 

@@ -37,6 +37,8 @@ export interface RuleContext {
   config: AlertRules
   /** display name and Track A classes for a canonical id */
   info: (id: string) => { name: string; classes: string[] }
+  /** a typed name (generic, brand or alias) to its canonical ingredient id, or null; reads free-text allergies */
+  canonicalId?: (name: string) => string | null
 }
 
 export type Rule = (ctx: RuleContext) => Alert[]

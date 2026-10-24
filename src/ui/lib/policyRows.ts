@@ -18,6 +18,10 @@ export function limitRows(limits: LimitsData): DataRow[] {
     if (l.adult) rows.push(row(name, 'Adult', perDay(l.adult.max_mg_day), l.adult.source, l.adult.pharmacist_approved))
     if (l.elderly) rows.push(row(name, `Age ${old} and over`, perDay(l.elderly.max_mg_day), l.elderly.source, l.elderly.pharmacist_approved))
     if (l.paediatric) rows.push(row(name, `Under ${young} years, by weight`, `${mg(l.paediatric.max_mg_per_kg_day)} mg/kg/day`, l.paediatric.source, l.paediatric.pharmacist_approved))
+    for (const rc of l.risk_caps ?? []) {
+      const detail = { low_weight: `Weight under ${rc.weight_below} kg`, liver_disease: 'Liver disease', heavy_alcohol_use: 'Heavy alcohol use' }[rc.factor]
+      rows.push(row(name, detail, rc.max_mg_per_kg_day !== undefined ? `${mg(rc.max_mg_per_kg_day)} mg/kg/day` : perDay(rc.max_mg_day ?? 0), rc.source, rc.pharmacist_approved))
+    }
     for (const r of l.renal ?? []) {
       const value = r.action === 'avoid' ? 'Avoid' : r.action === 'caution' ? 'Use with caution' : perDay(r.max_mg_day ?? 0)
       rows.push(row(name, `Kidney: CrCl below ${r.crcl_below} mL/min`, value, r.source, r.pharmacist_approved))

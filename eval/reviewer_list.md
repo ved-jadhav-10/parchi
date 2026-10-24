@@ -32,3 +32,31 @@ Ibuprofen 2.4 g, metformin 2 g, diclofenac 150 mg match NFI exactly. Nothing to 
 - **Scope:** sections A, B and D of this list (the 3 pairs we show as Inform, the 8 groups that now stop, the doses that match the formulary). Section C (brand compositions) needs a strip in hand and was not part of it.
 - **Outcome as reported by the team:** the reviewer agreed with the tier we show on every row. This is the team's report of the session, not a signed sheet; attach the sheet if one exists.
 - **What this does not cover:** the dose limits, the other alert rules and the 28 stacking and kidney rules were not on this list, so they remain unreviewed.
+
+---
+
+# Second review: Phase 2 (not yet reviewed)
+
+Written 25 Oct 2026. **None of this was in the first review**; the record above does not cover it. Same question per row: stop (S), tell (T) or leave alone (N)?
+
+## E. Pregnancy: medicines we stop on when pregnancy is entered
+Source for each is the FDA label (boxed warning or contraindication) or the National Formulary of India category, quoted in `src/engine/rules/fixtures/pregnancy_evidence.json`.
+| # | Medicines | Source | We show | Your call |
+|---|---|---|---|---|
+| 9 | ACE inhibitors and ARBs (ramipril, enalapril, lisinopril, telmisartan, losartan, olmesartan, valsartan) | FDA boxed warning, fetal toxicity | Stop | S / T / N |
+| 10 | Methotrexate, misoprostol, isotretinoin, thalidomide, leflunomide, acitretin, ribavirin, valproate, mycophenolate | FDA boxed warning | Stop | S / T / N |
+| 11 | Warfarin | FDA contraindication (except mechanical heart valves) | Stop | S / T / N |
+| 12 | Danazol, clomifene, raloxifene, testosterone, miltefosine, ethinylestradiol, rubella and measles vaccines | NFI category X | Stop | S / T / N |
+| 13 | Statins | FDA label: discontinue when pregnancy is recognized (not a contraindication) | Tell | S / T / N |
+| 14 | Doxycycline, fluconazole, lithium | FDA label | Tell | S / T / N |
+| 15 | Alprazolam, clonazepam, lorazepam, bleomycin | NFI category D | Tell | S / T / N |
+
+**Left out on purpose, your judgement needed:** quinine (the formulary set says X, but malaria guidance uses it in early pregnancy) and urea (topical). Should either be added?
+
+If pregnancy is not entered for a woman aged 12-50 on a "stop" medicine, we only ask for it (a note). Is that right, or should it stop?
+
+## F. Allergy
+A recorded penicillin allergy stops on any penicillin, including amoxicillin inside Mox-CV or Augmentin. A cephalosporin only gets a note. Same for sulfonamide antibiotics, NSAIDs (aspirin counts), macrolides, fluoroquinolones, tetracyclines. For aspirin allergy, NSAIDs get a note. Cross-reaction groupings are from recall of a 2022 allergy practice parameter, **not re-read**. **Is penicillin-then-cephalosporin as a note the right call?**
+
+## G. Paracetamol limit (replaces the old age-65 cap)
+Healthy adult 4,000 mg/day at any age. 3,000 mg/day with liver disease or heavy alcohol use. 60 mg/kg/day under 50 kg (recalled, not read from a label). Numbers are drafts. **Do you agree age alone should not lower it?**

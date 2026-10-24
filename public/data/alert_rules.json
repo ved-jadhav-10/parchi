@@ -12,7 +12,9 @@
       "schedule_mismatch",
       "triple_whammy",
       "bleeding_anticoagulant_nsaid",
-      "bleeding_dual_antiplatelet_nsaid"
+      "bleeding_dual_antiplatelet_nsaid",
+      "allergy",
+      "pregnancy"
     ]
   },
   "ddi_tiers": {
@@ -293,7 +295,9 @@
         "triple_whammy": 30,
         "bleeding_anticoagulant_nsaid": 30,
         "bleeding_dual_antiplatelet_nsaid": 30,
-        "nsaid_double_high_risk": 20
+        "nsaid_double_high_risk": 20,
+        "allergy": 50,
+        "pregnancy": 40
       },
       "cross_doctor_bonus": 15,
       "pharmacist_approved": false
@@ -635,6 +639,344 @@
       },
       "reason": "{names}: each can prolong the QT interval; together the risk of a dangerous heart rhythm rises (age {age}). Pharmacist to review.",
       "source": "Drug list transcribed from the CredibleMeds 'known risk of TdP' category; to verify against the registered QTdrugs list (non-commercial use). Draft rule, FIX_PLAN 1.4",
+      "pharmacist_approved": false
+    }
+  ],
+  "allergy_groups": {
+    "penicillin": {
+      "label": "penicillin",
+      "classes": [
+        "penicillin"
+      ],
+      "ingredients": [
+        "amoxicillin",
+        "ampicillin",
+        "cloxacillin",
+        "dicloxacillin",
+        "piperacillin",
+        "penicillin_v"
+      ],
+      "cross": {
+        "label": "cephalosporins",
+        "classes": [
+          "cephalosporin"
+        ],
+        "tier": "inform",
+        "note": "a cephalosporin can cross-react with a penicillin allergy; the risk is uncommon but real, so confirm the reaction history"
+      },
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "cephalosporin": {
+      "label": "cephalosporin",
+      "classes": [
+        "cephalosporin"
+      ],
+      "cross": {
+        "label": "penicillins",
+        "classes": [
+          "penicillin"
+        ],
+        "ingredients": [
+          "amoxicillin",
+          "ampicillin",
+          "cloxacillin",
+          "dicloxacillin",
+          "piperacillin",
+          "penicillin_v"
+        ],
+        "tier": "inform",
+        "note": "a penicillin can cross-react with a cephalosporin allergy; confirm the reaction history"
+      },
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "sulfonamide": {
+      "label": "sulfonamide antibiotic",
+      "classes": [
+        "sulfonamide"
+      ],
+      "ingredients": [
+        "sulfamethoxazole"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "nsaid": {
+      "label": "NSAID",
+      "classes": [
+        "nsaid"
+      ],
+      "ingredients": [
+        "aspirin"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "aspirin": {
+      "label": "aspirin",
+      "ingredients": [
+        "aspirin"
+      ],
+      "cross": {
+        "label": "NSAIDs",
+        "classes": [
+          "nsaid"
+        ],
+        "tier": "inform",
+        "note": "NSAIDs can cross-react in aspirin-sensitive patients"
+      },
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "macrolide": {
+      "label": "macrolide",
+      "classes": [
+        "macrolide"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "fluoroquinolone": {
+      "label": "fluoroquinolone",
+      "classes": [
+        "fluoroquinolone"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    "tetracycline": {
+      "label": "tetracycline",
+      "classes": [
+        "tetracycline"
+      ],
+      "ingredients": [
+        "doxycycline"
+      ],
+      "source": "Drug allergy cross-reactivity as in Khan DA et al., Drug allergy: a 2022 practice parameter update (J Allergy Clin Immunol 2022;150:1333). Recalled, not re-read; draft grouping, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    }
+  },
+  "pregnancy_rules": [
+    {
+      "id": "preg_ace_arb",
+      "label": "ACE inhibitors and ARBs",
+      "ingredients": [
+        "lisinopril"
+      ],
+      "classes": [
+        "ace_inhibitor",
+        "arb"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for fetal toxicity when used in pregnancy. Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning \"Fetal toxicity\". Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_methotrexate",
+      "label": "Methotrexate",
+      "ingredients": [
+        "methotrexate"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_misoprostol",
+      "label": "Misoprostol",
+      "ingredients": [
+        "misoprostol"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_isotretinoin",
+      "label": "Isotretinoin",
+      "ingredients": [
+        "isotretinoin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_thalidomide",
+      "label": "Thalidomide",
+      "ingredients": [
+        "thalidomide"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_leflunomide",
+      "label": "Leflunomide",
+      "ingredients": [
+        "leflunomide"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_acitretin",
+      "label": "Acitretin",
+      "ingredients": [
+        "acitretin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_ribavirin",
+      "label": "Ribavirin",
+      "ingredients": [
+        "ribavirin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for use in pregnancy (embryo-fetal toxicity or birth defects). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_valproate",
+      "label": "Valproate",
+      "ingredients": [
+        "valproic_acid"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for fetal risk (neural tube defects, other malformations, lower IQ). Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_mycophenolate",
+      "label": "Mycophenolate",
+      "ingredients": [
+        "mycophenolate_mofetil"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: boxed warning for pregnancy loss and congenital malformations. Pharmacist to review before dispensing.",
+      "evidence": "fda_boxed_warning",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: boxed warning. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_warfarin",
+      "label": "Warfarin",
+      "ingredients": [
+        "warfarin"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: contraindicated in pregnancy except in women with mechanical heart valves at high risk. Pharmacist to review before dispensing.",
+      "evidence": "fda_contraindication",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: contraindications. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_statin",
+      "label": "Statins",
+      "classes": [
+        "statin"
+      ],
+      "tier": "inform",
+      "reason": "{names}: the label says to discontinue when pregnancy is recognized (no longer a blanket contraindication). Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: pregnancy section. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_doxycycline",
+      "label": "Tetracyclines",
+      "ingredients": [
+        "doxycycline"
+      ],
+      "classes": [
+        "tetracycline"
+      ],
+      "tier": "inform",
+      "reason": "{names}: tetracyclines can permanently discolour the teeth if used in the second half of pregnancy. Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: warnings section. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_fluconazole",
+      "label": "Fluconazole",
+      "ingredients": [
+        "fluconazole"
+      ],
+      "tier": "inform",
+      "reason": "{names}: the label says to avoid in pregnancy except in severe or life-threatening fungal infection. Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: pregnancy section. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_lithium",
+      "label": "Lithium",
+      "ingredients": [
+        "lithium_carbonate"
+      ],
+      "tier": "inform",
+      "reason": "{names}: lithium may cause harm in pregnancy (the formulary also lists category D). Pharmacist to review.",
+      "evidence": "fda_label",
+      "source": "openFDA drug label API (api.fda.gov/drug/label.json), read 24 Oct 2026: pregnancy section. Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_nfi_x",
+      "label": "Formulary category X",
+      "ingredients": [
+        "danazol",
+        "clomifene",
+        "raloxifene",
+        "testosterone",
+        "miltefosine",
+        "ethinylestradiol",
+        "rubella_vaccine",
+        "measles_vaccine"
+      ],
+      "tier": "interrupt",
+      "reason": "{names}: the National Formulary of India lists pregnancy category X (studies show fetal risk that outweighs any benefit). Pharmacist to review before dispensing.",
+      "evidence": "nfi_category_x",
+      "source": "National Formulary of India 2011, pregnancy category X, as quoted in Eka NFI MCQA (huggingface.co/datasets/ekacare/Eka_NFI_MCQA, MIT). Draft rule, not yet checked by a pharmacist",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "preg_nfi_d",
+      "label": "Formulary category D",
+      "ingredients": [
+        "alprazolam",
+        "clonazepam",
+        "lorazepam",
+        "bleomycin"
+      ],
+      "tier": "inform",
+      "reason": "{names}: the National Formulary of India lists pregnancy category D (positive evidence of fetal risk). Pharmacist to review.",
+      "evidence": "nfi_category_d",
+      "source": "National Formulary of India 2011, pregnancy category D, as quoted in Eka NFI MCQA (huggingface.co/datasets/ekacare/Eka_NFI_MCQA, MIT). Draft rule, not yet checked by a pharmacist",
       "pharmacist_approved": false
     }
   ]

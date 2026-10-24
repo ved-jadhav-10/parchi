@@ -216,6 +216,10 @@
 .fields { display: grid; gap: var(--space-3); grid-template-columns: 1fr 1fr; }
 .field { display: grid; gap: var(--space-1); }
 .field__label { font-size: var(--text-sm); font-weight: 600; }
+.more { margin-top: var(--space-4); display: grid; gap: var(--space-3); }
+.more > summary { cursor: pointer; font-weight: 600; font-size: var(--text-sm); min-height: var(--tap-min); display: flex; align-items: center; }
+.more[open] > summary { margin-bottom: var(--space-1); }
+.check { display: flex; gap: var(--space-2); align-items: center; font-size: var(--text-sm); min-height: var(--tap-min); }
 .prompt { margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--color-border); display: grid; gap: var(--space-3); }
 .prompt__reason { margin: 0; font-weight: 600; font-size: var(--text-sm); }
 .prompt__skip { margin: 0; color: var(--color-ink-muted); font-size: var(--text-sm); }

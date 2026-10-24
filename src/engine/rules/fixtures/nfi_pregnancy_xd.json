@@ -1,0 +1,115 @@
+{
+  "_note": "Every drug the National Formulary of India (as quoted in Eka NFI MCQA, MIT) rates pregnancy category X or D that is in our ingredient table, with whether a pregnancy rule covers it. Generated 24 Oct 2026; an excluded drug needs a written reason.",
+  "drugs": [
+    {
+      "ingredient": "rubella_vaccine",
+      "nfi_category": "X",
+      "row": 69,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "lithium_carbonate",
+      "nfi_category": "D",
+      "row": 99,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "losartan",
+      "nfi_category": "D",
+      "row": 141,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "measles_vaccine",
+      "nfi_category": "X",
+      "row": 153,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "urea",
+      "nfi_category": "D",
+      "row": 243,
+      "decision": "excluded",
+      "reason": "used as a topical keratolytic and not a systemic dose; the category D answer is not meaningful for a pharmacist check"
+    },
+    {
+      "ingredient": "leflunomide",
+      "nfi_category": "X",
+      "row": 255,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "valproic_acid",
+      "nfi_category": "D",
+      "row": 315,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "miltefosine",
+      "nfi_category": "X",
+      "row": 423,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "alprazolam",
+      "nfi_category": "D",
+      "row": 483,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "danazol",
+      "nfi_category": "X",
+      "row": 609,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "ethinylestradiol",
+      "nfi_category": "X",
+      "row": 651,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "clomifene",
+      "nfi_category": "X",
+      "row": 705,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "quinine",
+      "nfi_category": "X",
+      "row": 777,
+      "decision": "excluded",
+      "reason": "the formulary set lists category X, but malaria guidance uses quinine in early pregnancy; left for the reviewer rather than raising a stop that may be wrong"
+    },
+    {
+      "ingredient": "raloxifene",
+      "nfi_category": "X",
+      "row": 843,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "clonazepam",
+      "nfi_category": "D",
+      "row": 879,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "bleomycin",
+      "nfi_category": "D",
+      "row": 917,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "lorazepam",
+      "nfi_category": "D",
+      "row": 918,
+      "decision": "rule"
+    },
+    {
+      "ingredient": "testosterone",
+      "nfi_category": "X",
+      "row": 920,
+      "decision": "rule"
+    }
+  ]
+}

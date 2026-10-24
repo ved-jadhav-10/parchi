@@ -25,6 +25,26 @@ export function parsePatient(x: unknown): { patient: Patient } | { error: string
     if (x.sex !== 'M' && x.sex !== 'F') return { error: 'patient.sex must be "M" or "F"' }
     patient.sex = x.sex
   }
+  if (x.egfr !== undefined) {
+    if (!inRange(x.egfr, 1, 200)) return { error: 'patient.egfr must be a number from 1 to 200 (mL/min/1.73 m2)' }
+    patient.egfr = x.egfr
+  }
+  if (x.allergies !== undefined) {
+    if (!Array.isArray(x.allergies) || x.allergies.length > 20 || !x.allergies.every((a) => typeof a === 'string' && a.trim() !== '' && a.length <= 60)) {
+      return { error: 'patient.allergies must be a list of up to 20 names, each 1-60 characters' }
+    }
+    patient.allergies = x.allergies.map((a) => (a as string).trim())
+  }
+  if (x.pregnancy !== undefined) {
+    if (x.pregnancy !== 'yes' && x.pregnancy !== 'no' && x.pregnancy !== 'unknown') return { error: 'patient.pregnancy must be "yes", "no" or "unknown"' }
+    patient.pregnancy = x.pregnancy
+  }
+  for (const key of ['liver_disease', 'heavy_alcohol_use'] as const) {
+    if (x[key] !== undefined) {
+      if (typeof x[key] !== 'boolean') return { error: `patient.${key} must be true or false` }
+      patient[key] = x[key] as boolean
+    }
+  }
   return { patient }
 }
 
