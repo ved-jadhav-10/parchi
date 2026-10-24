@@ -1,7 +1,9 @@
 import type { Alert } from '../../engine/contracts'
 import { TierBadge } from './Icons'
 
-export const AlertCard = ({ alert }: { alert: Alert }) => (
+type Props = { alert: Alert; onOverride?: () => void; overriddenReason?: string }
+
+export const AlertCard = ({ alert, onOverride, overriddenReason }: Props) => (
   <article className="card alert" data-tier={alert.tier} role={alert.tier === 'interrupt' ? 'alert' : undefined}>
     <header className="alert__head">
       <TierBadge tier={alert.tier} />
@@ -17,5 +19,14 @@ export const AlertCard = ({ alert }: { alert: Alert }) => (
       ))}
       <span className="chip chip--source">{alert.source}</span>
     </footer>
+    {overriddenReason ? (
+      <p className="alert__overridden">Overridden: {overriddenReason}</p>
+    ) : (
+      onOverride && (
+        <button className="btn btn--secondary alert__action" onClick={onOverride}>
+          Override with reason
+        </button>
+      )
+    )}
   </article>
 )

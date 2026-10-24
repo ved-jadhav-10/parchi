@@ -1,0 +1,75 @@
+import { Card } from '../components/Card'
+import { EmptyState, PageIntro } from '../components/PageIntro'
+import { normalizeRows, useJson, type DataRow } from '../lib/dataFiles'
+
+const Approval = ({ approved }: { approved: boolean | undefined }) =>
+  approved === true ? (
+    <span className="tier-badge" data-tier="silent" style={{ color: 'var(--status-ok)', background: 'var(--status-ok-bg)' }}>
+      Approved
+    </span>
+  ) : (
+    <span className="tier-badge" data-tier="inform">
+      {approved === false ? 'Not approved' : 'Unknown'}
+    </span>
+  )
+
+const DataSection = ({ title, file, owner, description }: { title: string; file: string; owner: string; description: string }) => {
+  const { status, data } = useJson(`/data/${file}`)
+  const rows: DataRow[] = status === 'ok' ? normalizeRows(data) : []
+  const approved = rows.filter((r) => r.approved === true).length
+
+  return (
+    <Card title={title} icon="shield" description={description}>
+      {status === 'loading' ? null : rows.length === 0 ? (
+        <EmptyState title="Nothing to show yet">
+          <p>
+            <code>public/data/{file}</code> is missing or empty. It comes from {owner}.
+          </p>
+        </EmptyState>
+      ) : (
+        <>
+          <p className="hint">
+            {approved} of {rows.length} approved by a pharmacist. Anything else is shown as not approved and should not be relied on.
+          </p>
+          <div className="xray">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col">Applies to</th>
+                  <th scope="col">Value</th>
+                  <th scope="col">Source</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i}>
+                    <th scope="row">{r.name}</th>
+                    <td>{r.detail || '—'}</td>
+                    <td className="num">{r.value || '—'}</td>
+                    <td>{r.source || '—'}</td>
+                    <td>
+                      <Approval approved={r.approved} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+    </Card>
+  )
+}
+
+export const DataPage = () => (
+  <>
+    <PageIntro eyebrow="What the checks rely on," title="Data and limits" />
+    <div className="workspace workspace--single">
+      <p className="hint">Every number here needs a source and a pharmacist sign-off. Anything without one is marked.</p>
+      <DataSection title="Dose limits" file="limits.json" owner="Track B" description="Maximum mg/day and SOS caps used by the X-ray and overdose alerts" />
+      <DataSection title="Suppression list" file="suppression.json" owner="Track C" description="Alerts the pharmacist chose to log silently instead of showing" />
+    </div>
+  </>
+)

@@ -79,14 +79,14 @@ Names are the component names to use in `src/ui/`.
 | `PatientForm` | Age (always), sex | Asks only what the engine needs; see `PatientPrompt`. |
 | `PatientPrompt` | Ask-only-when-needed fields (weight, serum creatinine) | Appears inline with the reason: "Creatinine needed because NSAIDs are present." Skippable; skipping shows "limit not adjusted for renal function". |
 | `ResultSummary` | Top line of results | Counts per tier, e.g. "1 Interrupt · 3 Inform · 4 logged". |
-| `AlertCard` | One alert | Tier icon + label, one-line `reason`, `SourceChip`, confidence. Interrupt cards sit first and full width with an "Acknowledge / Override" action. |
+| `AlertCard` | One alert | Tier icon + label, one-line `reason`, `SourceChip`, confidence. Interrupt cards sit first and full width with an "Override with reason" action. |
 | `SourceChip` | Citation | Tint chip, `--text-xs`: "DDInter #1234", "S.O. 3285(E)", "Beers 2023". |
 | `XrayTable` | Prescription X-ray: brand -> ingredients -> daily total vs limit | One row per ingredient from the ledger, listing its source brands. `LimitBar` in the last column. |
 | `LimitBar` | total_mg_day vs limit_mg_day | Fill colour: < 80% within-limit green, 80-100% Inform amber, > 100% Interrupt red with overflow past a 100% marker. No limit on file -> dashed muted outline + "No limit on file" (never invent one). |
 | `BrandMatch` | Resolved brand per line | Shows `raw -> brand`. Confidence < threshold -> "Check match" badge + "needs pharmacist" route. |
 | `FlagBadge` | `banned_fdc`, `lasa`, `discontinued` | Banned FDC uses Interrupt colours; LASA and discontinued use Inform colours. |
 | `SilentLog` | Silent alerts | Collapsed `<details>`: "4 logged (not shown)". |
-| `OverrideDialog` | Override with reason | Reason required (preset list + free text). Saved to IndexedDB with timestamp. |
+| `OverrideDialog` | Override with reason | Reason required (preset list; "Other" also needs a note). Saved to IndexedDB with timestamp, listed on `#/log`. |
 
 States every result view needs: empty (before first check), loading (engine is fast; show nothing if < 300 ms), result, engine error ("Could not check this line" per line, never fail the whole Rx silently).
 

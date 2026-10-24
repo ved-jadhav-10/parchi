@@ -1,7 +1,6 @@
 import type { Ledger } from '../../engine/contracts'
-import { LimitBar, mg } from './LimitBar'
-
-const name = (id: string) => id.charAt(0).toUpperCase() + id.slice(1)
+import { mg, titleCase } from '../lib/format'
+import { LimitBar } from './LimitBar'
 
 /** Prescription X-ray: ingredient -> brands that contribute -> daily total vs limit. */
 export const XrayTable = ({ ledger }: { ledger: Ledger }) => {
@@ -21,7 +20,7 @@ export const XrayTable = ({ ledger }: { ledger: Ledger }) => {
         <tbody>
           {rows.map(([id, row]) => (
             <tr key={id}>
-              <th scope="row">{name(id)}</th>
+              <th scope="row">{titleCase(id)}</th>
               <td>
                 <span className="chips">
                   {row.sources.map((s) => (

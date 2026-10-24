@@ -1,4 +1,4 @@
-export const mg = (n: number) => n.toLocaleString('en-IN')
+import { limitState, mg } from '../lib/format'
 
 /** total_mg_day against limit_mg_day. No limit on file -> dashed outline, never a guessed limit. */
 export const LimitBar = ({ total, limit }: { total: number; limit?: number }) => {
@@ -10,8 +10,7 @@ export const LimitBar = ({ total, limit }: { total: number; limit?: number }) =>
       </div>
     )
   }
-  const ratio = total / limit
-  const state = ratio > 1 ? 'interrupt' : ratio >= 0.8 ? 'inform' : 'ok'
+  const state = limitState(total, limit)
   const scale = Math.max(limit * 1.25, total)
   return (
     <div className="limit">

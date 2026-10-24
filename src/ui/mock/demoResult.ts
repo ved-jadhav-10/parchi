@@ -1,6 +1,6 @@
-// MOCK for UI work only. Replace with the real checkPrescription() from src/engine/pipeline.ts (Track C).
+// MOCK for UI work only. Replaced by the real checkPrescription() in src/ui/engine.ts once Track C lands pipeline.ts.
 // Totals follow PS_ANALYSIS.md section 5; only paracetamol has a limit so "No limit on file" is exercised.
-import type { Alert, Ledger, ResolvedBrand } from '../../engine/contracts'
+import type { Alert, Ledger, ResolvedBrand, Sig } from '../../engine/contracts'
 
 export const demoRxText =
   'Dolo 650 1-1-1 x5d; Crocin cold n flu max TDS; Zerodol P BD; Brufan 400 SOS; Ecosprin 75 OD; Pan D OD; Omez 20 OD'
@@ -36,12 +36,22 @@ export const demoAlerts: Alert[] = [
   a('silent', 'duplication', ['pantoprazole', 'domperidone'], 'Fixed combination in Pan-D, logged only.', 'Suppression list', 0.95),
 ]
 
-export const demoLines: Pick<ResolvedBrand, 'raw' | 'brand' | 'confidence'>[] = [
-  { raw: 'Dolo 650', brand: 'Dolo 650', confidence: 1 },
-  { raw: 'Crocin cold n flu max', brand: 'Crocin Cold & Flu Max', confidence: 0.96 },
-  { raw: 'Zerodol P', brand: 'Zerodol-P', confidence: 0.94 },
-  { raw: 'Brufan 400', brand: 'Brufen 400', confidence: 0.82 },
-  { raw: 'Ecosprin 75', brand: 'Ecosprin 75', confidence: 1 },
-  { raw: 'Pan D', brand: 'Pan-D', confidence: 0.97 },
-  { raw: 'Omez 20', brand: 'Omez', confidence: 0.98 },
+const line = (raw: string, brand: string, confidence: number, ingredients: ResolvedBrand['ingredients'], sig: Sig, form = 'tablet') => ({
+  resolved: { raw, brand, confidence, ingredients, form, flags: [] } as ResolvedBrand,
+  sig,
+})
+
+export const demoLines = [
+  line('Dolo 650', 'Dolo 650', 1, [{ id: 'paracetamol', mg: 650 }], { doses_per_day: 3, max_doses_per_day: 3, sos: false, duration_days: 5 }),
+  line('Crocin cold n flu max', 'Crocin Cold & Flu Max', 0.96, [{ id: 'paracetamol', mg: 500 }, { id: 'caffeine', mg: 32 }, { id: 'phenylephrine', mg: 10 }], { doses_per_day: 3, max_doses_per_day: 3, sos: false }),
+  line('Zerodol P', 'Zerodol-P', 0.94, [{ id: 'aceclofenac', mg: 100 }, { id: 'paracetamol', mg: 325 }], { doses_per_day: 2, max_doses_per_day: 2, sos: false }),
+  line('Brufan 400', 'Brufen 400', 0.82, [{ id: 'ibuprofen', mg: 400 }], { doses_per_day: 0, max_doses_per_day: 3, sos: true }),
+  line('Ecosprin 75', 'Ecosprin 75', 1, [{ id: 'aspirin', mg: 75 }], { doses_per_day: 1, max_doses_per_day: 1, sos: false }),
+  line('Pan D', 'Pan-D', 0.97, [{ id: 'pantoprazole', mg: 40 }, { id: 'domperidone', mg: 30 }], { doses_per_day: 1, max_doses_per_day: 1, sos: false }, 'capsule'),
+  line('Omez 20', 'Omez', 0.98, [{ id: 'omeprazole', mg: 20 }], { doses_per_day: 1, max_doses_per_day: 1, sos: false }, 'capsule'),
+]
+
+export const demoPrompts = [
+  { field: 'weight_kg' as const, reason: 'NSAIDs are present and dosing may depend on weight' },
+  { field: 'serum_creatinine' as const, reason: 'NSAIDs are present and renal function affects the limit' },
 ]

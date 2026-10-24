@@ -10,6 +10,9 @@ const paths = {
   user: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 8a7 7 0 0 1 14 0',
   flask: 'M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3',
   chart: 'M4 20V10m6 10V4m6 16v-7m4 7H3',
+  download: 'M12 4v11m0 0-4-4m4 4 4-4M4 20h16',
+  shield: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z',
+  log: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
 } as const
 
 export type IconName = keyof typeof paths
