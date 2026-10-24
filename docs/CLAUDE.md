@@ -1,6 +1,6 @@
 # CLAUDE.md (read this first, every session)
 
-Project: HM-02 Indian brand-name prescription safety checker (HYPNEXIS '26). Offline-capable PWA. 4 developers, 4 tracks, working in parallel.
+Project: **Parchi**, the HM-02 Indian brand-name prescription safety checker (HYPNEXIS '26). Offline-capable PWA. 4 developers, 4 tracks, working in parallel.
 
 **Read order:** this file -> `PLAN.md` (stack, your track, contracts). Open `PS_ANALYSIS.md` only for the specific section you need; it is large.
 
