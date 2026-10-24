@@ -192,6 +192,17 @@ export interface Patient {
   weight_kg?: number
   serum_creatinine?: number
   sex?: 'M' | 'F'
+  // Optional, additive (FIX_PLAN Phase 2). Absent = not entered; the engine never assumes "none".
+  /** Known drug allergies: a group ("penicillin", "sulfonamide", "nsaid", ...) or one medicine's name. */
+  allergies?: string[]
+  /** 'yes' applies the pregnancy rules; 'unknown' (or absent) asks for it only when a drug on the Rx needs it. */
+  pregnancy?: 'yes' | 'no' | 'unknown'
+  /** Known liver disease: lowers the paracetamol limit. */
+  liver_disease?: boolean
+  /** Regular heavy alcohol use: lowers the paracetamol limit. */
+  heavy_alcohol_use?: boolean
+  /** The lab's own eGFR (mL/min/1.73 m2). Used for kidney rules only when Cockcroft-Gault cannot be calculated (no weight or creatinine). */
+  egfr?: number
 }
 
 /** Track C pipeline entry point, called by the UI */

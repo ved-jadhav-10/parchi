@@ -99,6 +99,31 @@ export interface StackRule {
   pharmacist_approved: boolean
 }
 
+/** A drug-allergy group the patient can have recorded ("penicillin"): what a direct reaction covers, and what only cross-reacts. */
+export interface AllergyGroup {
+  label: string
+  classes?: string[]
+  ingredients?: string[]
+  /** Medicines that can cross-react; shown as a note, not a stop. */
+  cross?: { label: string; classes?: string[]; ingredients?: string[]; tier: Tier; note: string }
+  source: string
+  pharmacist_approved: boolean
+}
+
+/** A medicine to avoid or review in pregnancy. `evidence` says where the rule comes from. */
+export interface PregnancyRule {
+  id: string
+  label: string
+  classes?: string[]
+  ingredients?: string[]
+  tier: Tier
+  /** placeholders: {names} */
+  reason: string
+  evidence: 'fda_boxed_warning' | 'fda_contraindication' | 'fda_label' | 'nfi_category_x' | 'nfi_category_d'
+  source: string
+  pharmacist_approved: boolean
+}
+
 /** WHO AWaRe antibiotic groups: which ingredient is Access, Watch or Reserve, and what each group raises. */
 export interface AwareConfig {
   label: string
@@ -146,6 +171,8 @@ export interface AlertRules {
   dose_policy: DosePolicy
   burden_scales: BurdenScale[]
   stack_rules: StackRule[]
+  allergy_groups: Record<string, AllergyGroup>
+  pregnancy_rules: PregnancyRule[]
   aware?: AwareConfig
   history: HistoryPolicy
 }
@@ -175,6 +202,8 @@ export function parseAlertRules(json: unknown): AlertRules {
     dose_policy: { ...DEFAULT_DOSE_POLICY, ...r.dose_policy },
     burden_scales: r.burden_scales ?? [],
     stack_rules: r.stack_rules ?? [],
+    allergy_groups: r.allergy_groups ?? {},
+    pregnancy_rules: r.pregnancy_rules ?? [],
     history: { ...DEFAULT_HISTORY, ...r.history, queue: { ...DEFAULT_HISTORY.queue, ...r.history?.queue } },
   }
 }

@@ -57,7 +57,7 @@ describe('demo prescription (68 y, 55 kg, creatinine 1.6)', () => {
     const kinds = dose.findings.map((f) => `${f.kind}:${f.ingredient}`).sort()
     expect(kinds).toEqual(['over_limit:paracetamol', 'renal_caution:aceclofenac', 'renal_caution:ibuprofen'])
     const over = dose.findings.find((f) => f.kind === 'over_limit')!
-    expect(over).toMatchObject({ total_mg_day: 4100, limit_mg_day: 3000, basis: 'Age 65+ cap', sos_dependent: false })
+    expect(over).toMatchObject({ total_mg_day: 4100, limit_mg_day: 4000, basis: 'Adult maximum', sos_dependent: false })
     expect(dose.findings.every((f) => f.pharmacist_approved === false && f.source.length > 0)).toBe(true)
   })
 

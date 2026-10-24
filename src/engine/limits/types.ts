@@ -24,11 +24,21 @@ export interface RenalRule extends Provenance {
   max_mg_day?: number
 }
 
+/** A lower adult cap that applies when a risk factor is present (instead of an age-only cap). */
+export interface RiskCap extends Provenance {
+  factor: 'low_weight' | 'liver_disease' | 'heavy_alcohol_use'
+  /** low_weight only: applies when weight is below this many kg. */
+  weight_below?: number
+  max_mg_day?: number
+  max_mg_per_kg_day?: number
+}
+
 export interface IngredientLimits {
   adult?: MaxPerDay
   elderly?: MaxPerDay
   paediatric?: MaxPerKgDay
   renal?: RenalRule[]
+  risk_caps?: RiskCap[]
 }
 
 export interface SosCap extends Provenance {

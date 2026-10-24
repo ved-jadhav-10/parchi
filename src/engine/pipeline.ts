@@ -77,6 +77,7 @@ export function createEngine(deps: PipelineDeps): Engine {
         ddi,
         config: rules,
         info,
+        canonicalId: (name) => resolver.canonicalId(name),
       }
       const needs = new Map((dose?.needs ?? []).map((n) => [n.field, n]))
       for (const field of neededInputs(ctx)) {
