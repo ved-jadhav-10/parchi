@@ -7,6 +7,7 @@ import { lazy, Suspense, useEffect, useRef, type ComponentType } from 'react'
 import { AppHeader } from './components/AppHeader'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import { UpdateToast } from './components/UpdateToast'
+import { Tour } from './tour/Tour'
 import { HomePage } from './pages/HomePage'
 import { CLINICAL_DATA_VERSION } from '../engine/rules'
 import { routes, useRoute, useRouteParam, type Route } from './route'
@@ -71,6 +72,7 @@ export default function App() {
       <>
         <HomePage />
         <UpdateToast />
+      <Tour />
       </>
     )
   }
@@ -104,6 +106,7 @@ export default function App() {
         <a href="#/home">About Parchi</a>
       </footer>
       <UpdateToast />
+      <Tour />
     </>
   )
 }

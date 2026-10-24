@@ -38,35 +38,15 @@ export const AlertCard = ({ alert, headline, onOverride, overriddenReason, extra
   const moved = movedBecause(alert)
   const lead = headline ?? trimReason(alert.reason)
   const showFull = lead !== alert.reason && lead !== alert.reason.replace(/\.$/, '')
+  const urgent = alert.tier === 'interrupt'
   return (
-    <article className="card alert" data-tier={alert.tier} role={alert.tier === 'interrupt' ? 'alert' : undefined}>
+    <article className="card alert" data-tier={alert.tier} role={urgent ? 'alert' : undefined}>
       <header className="alert__head">
         <TierBadge tier={alert.tier} />
         <span className="alert__type">{alertTypeLabel(alert.type)}</span>
-        <span className="alert__conf num">{Math.round(alert.confidence * 100)}%</span>
       </header>
       <p className="alert__reason">{lead}</p>
-      {showFull && (
-        <details className="alert__full">
-          <summary>Full reason</summary>
-          <p>{alert.reason}</p>
-        </details>
-      )}
-      {extra}
-      {moved && <p className="alert__moved">{moved}</p>}
-      <footer className="chips">
-        {alert.ingredients.map((i) => (
-          <span key={i} className="chip">
-            {i}
-          </span>
-        ))}
-        <span className="chip chip--source">{alert.source}</span>
-        {alert.approved === true && (
-          <span className="chip chip--ok" title="A pharmacist has signed off the rule behind this alert.">
-            Approved rule
-          </span>
-        )}
-      </footer>
+      {urgent && extra}
       {nested}
       {alert.type === 'input_needed' && inputAction && (
         <button type="button" className="btn btn--secondary alert__action" onClick={inputAction.onClick}>
@@ -82,6 +62,26 @@ export const AlertCard = ({ alert, headline, onOverride, overriddenReason, extra
           </button>
         )
       )}
+      <details className="alert__more">
+        <summary>Why, and the source</summary>
+        {showFull && <p className="alert__full">{alert.reason}</p>}
+        {!urgent && extra}
+        {moved && <p className="alert__moved">{moved}</p>}
+        <footer className="chips">
+          {alert.ingredients.map((i) => (
+            <span key={i} className="chip">
+              {i}
+            </span>
+          ))}
+          <span className="chip chip--source">{alert.source}</span>
+          {alert.approved === true && (
+            <span className="chip chip--ok" title="A pharmacist has signed off the rule behind this alert.">
+              Approved rule
+            </span>
+          )}
+          <span className="alert__conf num">Confidence {Math.round(alert.confidence * 100)}%</span>
+        </footer>
+      </details>
     </article>
   )
 }
