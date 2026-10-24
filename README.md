@@ -2,7 +2,7 @@
 
 Indian brand-name prescription safety checker (HYPNEXIS HM-02). Offline-capable PWA.
 
-Read `docs/CLAUDE.md` then `docs/PLAN.md`.
+Read `CLAUDE.md` then `docs/PLAN.md`.
 
 ```
 npm install
