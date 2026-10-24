@@ -27,6 +27,18 @@ What was measured against sources outside this repo, what changed, and what is s
 - **Composition completeness.** About 34% of dataset brands are marked `composition_complete: false` (the source holds at most two ingredients). The Eka comparison shows real cases: Watace-SP lacks serratiopeptidase, Krose Gold lacks clopidogrel. 1,499 paracetamol/NSAID brands are still unverified (`data/reports/`).
 - **No Indian prescription-level evidence** for the herb-drug feature (HOLES H26).
 
+## 5. Where clinical numbers come from, and how that is checked (25 Oct 2026)
+**Order of preference for a dose limit.** (1) Indian approved label or pack insert; (2) National Formulary of India; (3) Indian regulator notices (CDSCO S.O. numbers, the 325 mg paracetamol-in-FDC cap); (4) US FDA label or OTC monograph (21 CFR 341), EMA/UK SmPC. WHO ATC is used only to classify drugs and WHO DDD is a drug-use statistic, not a maximum; neither sets a limit. What we hold today: one Indian insert (Dolo, paediatric paracetamol), NFI 2011 figures as quoted in Eka's NFI question set for 5 drugs (`limits/nfiDose.test.ts`; we do not have NFI 2021), and FDA/EMA/UK labels for the rest.
+**Checked by a script, not by trust.** `data/curated/limit_evidence.csv` holds the label sentence behind each limit; `data/limit_evidence.py` fails if the sentence is not in the label word for word. 31 limits carry `label_checked` (the date of that check). That is not an approval: `pharmacist_approved` stays `false` everywhere until a pharmacist signs, and a test keeps the two apart. Where labels disagree (ibuprofen 2,400 UK vs 3,200 US) the lower is used and both are named.
+**Interactions that weaken a drug.** DDInter's bulk files give a level but not a direction. 12 curated rules in `ddi_supplement.json` say which drug loses effect and how (activation blocked, opposing action, absorption blocked, faster breakdown), each with an FDA label quote checked word for word (`data/tests/test_ddi_evidence.py`): clopidogrel + omeprazole/esomeprazole, ibuprofen + low-dose aspirin, NSAIDs with ACE inhibitors and diuretics, quinolones/tetracyclines/levothyroxine with calcium, iron and antacids, rifampicin and carbamazepine with hormonal contraceptives, carbamazepine with paracetamol, and timolol eye drops with reliever inhalers and oral beta-blockers (eye drops otherwise never count). Tiers still come from the existing policy: only a label contraindication interrupts.
+**Not used as data:** Medscape and other commercial checkers (no stated source, proprietary; a 2021 comparison of eight checkers found poor agreement). They are a manual second opinion only. The Kaggle 1mg 2025 scrape (CC BY-NC-SA) only feeds a review list (`data/review_diff.py`), never the app.
+
+## 6. Why rules decide and the language model does not
+- The engine must give the same answer twice, name its source and work offline; a model does none of these.
+- LLMs over-flag and misgrade severity: Sicard et al. 2025 (82 DDI cases, 22 negative controls): fully correct answers ChatGPT 66%, Claude 68%, Gemini 33%, all "often detecting non-existent DDIs". Thapa et al. 2025 (Nepal, 301 patients, vs Micromedex): severity matched in 214 of 574 interactions (37.3%).
+- Even assisting a pharmacist, the best published LLM set-up caught 61% of errors (Ong et al., Cell Rep Med 2025, 91 scenarios).
+- So the model only reads sig text the rules cannot parse (online, validated, never sets a tier) and writes the customer leaflet. Real-world need: an ICMR audit of 4,838 prescriptions found 9.8% with unacceptable deviations (Shetty et al., IJMR 2024;159:130).
+
 ## Sources
 - Eka.Care Indian Drug MCQA: huggingface.co/datasets/ekacare/indian_drug_mcqa (MIT).
 - Phansalkar S et al. High-priority drug-drug interactions for use in electronic health records. JAMIA 2012;19:735-43. Table via Kim et al., PMC5102850.
@@ -34,3 +46,5 @@ What was measured against sources outside this repo, what changed, and what is s
 - EMA domperidone referral 2014; EMA thiocolchicoside 2013; EMA nimesulide Article 31 referral.
 - openFDA drug label API; eCFR 21 CFR part 341; medicines.org.uk SmPCs (Arcoxia, Ponstan Forte, ivabradine, verapamil).
 - Damerau FJ 1964, CACM 7:171; Pollock JJ, Zamora A 1983, JASIS 34:51.
+- Sicard J et al. Ther Adv Drug Saf 2025 (doi 10.1177/20420986251339358); Thapa et al. Explor Res Clin Soc Pharm 2025 (PMC11786904); Ong JCL et al. Cell Rep Med 2025;6(10):102323; Shetty Y et al. IJMR 2024;159(2):130-141.
+- FDA labels behind the interaction rules (DailyMed set ids): clopidogrel 0078fb3d, ibuprofen 0170876a and 0387bfaa, ciprofloxacin 0fac4466, doxycycline 0106a3d3, levothyroxine 008de8fd, rifampin 0391f1e1, carbamazepine 047bc284, albuterol 04c8a345, dorzolamide/timolol 02d89d37.

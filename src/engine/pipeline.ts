@@ -20,7 +20,15 @@ export interface PipelineDeps {
   computeDose?: (lines: { resolved: ResolvedBrand; sig: Sig }[], patient: Patient, opts: { classesOf: (id: string) => string[] }) => DoseResult
   /** Ledger only (test stand-ins). `limit_mg_day` must be set where a limit exists; no limit = the dose rule stays silent. */
   buildLedger?: (lines: { resolved: ResolvedBrand; sig: Sig }[], patient: Patient) => Ledger
+  /**
+   * Optional, online only (Track B's parseSigSmart): re-read a sig the rules were unsure of. It returns the rules' Sig
+   * unchanged offline or on any failure; a model-read Sig has confidence 0.5, so the line is always flagged to confirm.
+   */
+  refineSig?: (sigText: string, rules: Sig) => Promise<Sig>
 }
+
+/** Below this sig confidence the optional reader is asked (same cut-off as the `sig_unclear` alert). */
+const REFINE_BELOW = 0.7
 
 /** A resolved line ready for the rules; `origin` is set by the history check. */
 export interface AnalysisLine {
@@ -92,9 +100,16 @@ export function createEngine(deps: PipelineDeps): Engine {
 export function createPipeline(deps: PipelineDeps): (rxText: string, patient: Patient) => Promise<CheckResult> {
   const engine = createEngine(deps)
   return async (rxText, patient) => {
-    const lines = engine.resolver
+    const parsed = engine.resolver
       .resolveText(rxText, { age_years: patient.age_years })
-      .map(({ resolved, sig_text }) => ({ resolved, sig: engine.sigFor(sig_text, resolved) }))
+      .map(({ resolved, sig_text }) => ({ resolved, sig_text, sig: engine.sigFor(sig_text, resolved) }))
+    const refine = deps.refineSig
+    const lines = await Promise.all(
+      parsed.map(async ({ resolved, sig_text, sig }) => ({
+        resolved,
+        sig: refine && sig_text.trim() && (sig.confidence ?? 1) < REFINE_BELOW ? await refine(sig_text, sig).catch(() => sig) : sig,
+      })),
+    )
     const { raw, ...rest } = engine.analyze(lines, patient)
     return { lines, alerts: engine.finalize(raw), ...rest }
   }

@@ -96,3 +96,18 @@ describe('ordering and duplicates', () => {
     expect(finalizeAlerts([alert({ ingredients: ['a', 'b'] }), alert({ ingredients: ['b', 'a'] })], ctx())).toHaveLength(1)
   })
 })
+
+describe('uncertain brand matches', () => {
+  it('an Interrupt resting on a brand the resolver could not confirm becomes an Inform with a caveat', () => {
+    const [a] = finalizeAlerts([alert({ tier: 'interrupt', type: 'dose_excess', ingredients: ['levocetirizine'], confidence: 0.6 })], ctx())
+    expect(a.tier).toBe('inform')
+    expect(a.uncertain_match).toBe(true)
+    expect(a.caveats?.join(' ')).toMatch(/confirm the brand/)
+  })
+
+  it('a confident match keeps its Interrupt', () => {
+    const [a] = finalizeAlerts([alert({ tier: 'interrupt', type: 'dose_excess', ingredients: ['paracetamol'], confidence: 0.97 })], ctx())
+    expect(a.tier).toBe('interrupt')
+    expect(a.uncertain_match).toBeUndefined()
+  })
+})

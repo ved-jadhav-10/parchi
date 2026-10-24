@@ -16,8 +16,21 @@ export interface DdiJson {
 export interface DdiSupplementJson {
   schema: number
   /** `interrupt`: a contraindicated pair that stops the pharmacist; `basis` says why (label contraindication, ONC high-priority list, ...). */
-  rules: { id: string; a: string[]; b: string[]; level: DdiLevel; note: string; source: string; pharmacist_approved: boolean; interrupt?: boolean; basis?: string }[]
+  rules: {
+    id: string; a: string[]; b: string[]; level: DdiLevel; note: string; source: string; pharmacist_approved: boolean; interrupt?: boolean; basis?: string
+    /** What the pair does: one drug weakens another (`reduces` names which), or both add to the same effect. */
+    effect?: InteractionEffect
+    reduces?: string[]
+    mechanism?: InteractionMechanism
+    /** Ingredients whose eye/ear/skin lines still count for this rule (timolol eye drops are absorbed). */
+    non_systemic?: string[]
+    /** Label sentences behind the rule, checked word for word by data/tests/test_ddi_evidence.py. */
+    evidence?: { set_id: string; quote: string }[]
+  }[]
 }
+
+export type InteractionEffect = 'reduces_effect' | 'adds_effect'
+export type InteractionMechanism = 'activation_blocked' | 'opposing_action' | 'absorption_blocked' | 'faster_breakdown' | 'same_action'
 
 export interface DdiHit {
   a: string
@@ -31,6 +44,14 @@ export interface DdiHit {
   curated?: boolean
   /** true = a curated contraindication: Track C raises it as an Interrupt whatever the level maps to. */
   interrupt?: boolean
+  /** Curated rules only: how the pair interacts, and which of the two loses effect. */
+  effect?: InteractionEffect
+  reduces?: string[]
+  mechanism?: InteractionMechanism
+  /** Ingredients of this pair whose non-systemic lines (eye drops) count. */
+  non_systemic?: string[]
+  /** The curated rule's label citation, when `source` stays DDInter's id (same level in both). */
+  label_source?: string
 }
 
 export interface DdiIndex {
@@ -40,6 +61,8 @@ export interface DdiIndex {
   /** True when DDInter has the drug at all; absence of a hit then means "no known interaction". */
   covers(id: string): boolean
   gaps: string
+  /** Ingredients that some curated rule checks even on an eye/ear/skin line. */
+  nonSystemic?: ReadonlySet<string>
 }
 
 export function createDdiIndex(json: DdiJson, supplement?: DdiSupplementJson): DdiIndex {
@@ -48,14 +71,25 @@ export function createDdiIndex(json: DdiJson, supplement?: DdiSupplementJson): D
   for (const [i, j, lv] of json.pairs) level.set(`${json.ingredients[i]}|${json.ingredients[j]}`, lv)
   const covered = new Set(Object.keys(json.ddinter_ids))
   const curated = new Map<string, DdiHit>()
+  const nonSystemic = new Set<string>()
   for (const rule of supplement?.schema === 1 ? supplement.rules : []) {
+    for (const id of rule.non_systemic ?? []) nonSystemic.add(id)
     for (const p of rule.a) {
       for (const q of rule.b) {
         if (p === q) continue
         const [x, y] = p < q ? [p, q] : [q, p]
         const have = curated.get(`${x}|${y}`)
         if (!have || json.levels.indexOf(rule.level) > json.levels.indexOf(have.level) || (rule.interrupt && !have.interrupt)) {
-          curated.set(`${x}|${y}`, { a: x, b: y, level: rule.level, source: `Curated: ${rule.source}`, note: rule.note, curated: true, ...(rule.interrupt ? { interrupt: true } : {}) })
+          const reduces = rule.reduces?.filter((id) => id === x || id === y)
+          const ns = rule.non_systemic?.filter((id) => id === x || id === y)
+          curated.set(`${x}|${y}`, {
+            a: x, b: y, level: rule.level, source: `Curated: ${rule.source}`, note: rule.note, curated: true,
+            ...(rule.interrupt ? { interrupt: true } : {}),
+            ...(rule.effect ? { effect: rule.effect } : {}),
+            ...(reduces?.length ? { reduces } : {}),
+            ...(rule.mechanism ? { mechanism: rule.mechanism } : {}),
+            ...(ns?.length ? { non_systemic: ns } : {}),
+          })
         }
       }
     }
@@ -69,7 +103,15 @@ export function createDdiIndex(json: DdiJson, supplement?: DdiSupplementJson): D
     const extra = curated.get(`${x}|${y}`)
     // Where both list the pair, the more severe one wins (a curated rule never softens DDInter).
     // A curated contraindication also wins, so its Interrupt flag and reason are not lost behind an equal DDInter level.
-    return extra && (!base || extra.interrupt || json.levels.indexOf(extra.level) > json.levels.indexOf(base.level)) ? extra : base
+    const lx = extra ? json.levels.indexOf(extra.level) : -1
+    const lb = base ? json.levels.indexOf(base.level) : -1
+    if (extra && base && !extra.interrupt && extra.effect && lx === lb) {
+      // Same level, and the curated rule says how the pair interacts: keep DDInter's id as the source chip and add
+      // the direction (which drug loses effect) with the label behind it.
+      const { a: _a, b: _b, level: _l, source, ...how } = extra
+      return { ...base, ...how, label_source: source }
+    }
+    return extra && (!base || extra.interrupt || lx > lb) ? extra : base
   }
 
   return {
@@ -87,6 +129,7 @@ export function createDdiIndex(json: DdiJson, supplement?: DdiSupplementJson): D
     },
     covers: (id) => covered.has(id),
     gaps: json.source.gaps,
+    nonSystemic,
   }
 }
 
