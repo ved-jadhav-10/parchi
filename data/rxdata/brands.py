@@ -184,8 +184,8 @@ def read_curated(path: Path, reg: Registry) -> list[Brand]:
         for row in csv.DictReader(f):
             if not row["brand"].strip() or row["brand"].startswith("#"):
                 continue
-            comps = parse_composition(split_salt_composition(row["composition"]), reg)
             form = row["form"].strip()
+            comps = fill_liquid_volumes(parse_composition(split_salt_composition(row["composition"]), reg), form)
             route = detect_form(form)[1]
             out.append(
                 Brand(
@@ -230,11 +230,20 @@ def dedupe(brands: list[Brand]) -> list[Brand]:
 def select(dataset: list[Brand], curated: list[Brand], top_per_letter: int) -> list[Brand]:
     """Keep whole product lines (all strengths/forms) if any variant ranks in its letter's top N.
 
-    Curated brands replace dataset rows with the same display name and form.
+    A curated brand replaces dataset rows with the same display name and form whose ingredients are
+    a subset of the verified ones (truncated copies). A different product that shares the name,
+    e.g. "Sinarest Linctus" next to "Sinarest Syrup", stays.
     """
-    curated_keys = {(b.display.lower(), b.form) for b in curated}
+    curated_ids: dict[tuple[str, str], list[set[str]]] = {}
+    for b in curated:
+        curated_ids.setdefault((b.display.lower(), b.form), []).append({c.id for c in b.components})
     curated_lines = {b.key for b in curated}
-    rows = [b for b in dedupe(dataset) if (b.display.lower(), b.form) not in curated_keys]
+
+    def replaced(b: Brand) -> bool:
+        ids = {c.id for c in b.components}
+        return any(ids <= verified for verified in curated_ids.get((b.display.lower(), b.form), []))
+
+    rows = [b for b in dedupe(dataset) if not replaced(b)]
     hot_lines = {b.key for b in rows if b.rank < top_per_letter} | curated_lines
     kept = [b for b in rows if b.key in hot_lines]
     return curated + sorted(kept, key=lambda b: (b.key, b.rank))

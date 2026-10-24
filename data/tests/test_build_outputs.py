@@ -155,3 +155,18 @@ def test_most_liquid_brands_can_be_converted_to_mg(brands):
     rows = [b for b in brands["brands"] if brands["forms"][b[2]] in liquids]
     ok = [b for b in rows if all(len(c) > 2 and c[2] is not None for c in brands["compositions"][b[1]])]
     assert len(ok) / len(rows) > 0.85
+
+
+def test_verified_cold_and_pain_combinations_keep_their_paracetamol(brands):
+    # Dataset rows for these dropped paracetamol (truncated to two ingredients); curated rows fix them.
+    for name, form, mg in [("Vicks Action 500 Advanced", "tablet", 500), ("Cheston Cold Total", "tablet", 325),
+                           ("Wikoryl DS", "syrup", 250), ("Sinarest LP New", "tablet", 500)]:
+        variants = {f: comps for f, comps, _ in decode(brands, name)}
+        assert ("paracetamol", mg) in [(c[0], c[1]) for c in variants[form]], name
+
+
+def test_curated_override_keeps_a_different_product_with_the_same_name(brands):
+    syrups = [comps for form, comps, _ in decode(brands, "Sinarest") if form == "syrup"]
+    ids = [{c[0] for c in comps} for comps in syrups]
+    assert any("dextromethorphan" in s for s in ids)  # Sinarest Linctus survives
+    assert any("paracetamol" in s for s in ids)  # verified Sinarest Syrup

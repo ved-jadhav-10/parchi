@@ -5,8 +5,12 @@ popularity_tier,brand,form,ingredient,strength_as_listed,reason,source
 0,Emty,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
 0,Gudlax-Plus Laxative Peppermint Sugar Free,suspension,liquid_paraffin,1.25ml,unit ml,dataset
 0,Junior Cipeg,oral_solution,polyethylene_glycol,8.5gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
-0,Sinarest Paediatric,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
-0,Sinarest Paediatric,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+0,Sinarest Paediatric,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Sinarest Paediatric,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Sinarest Paediatric,oral_drops,phenylephrine,2.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Solvin Cold,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Solvin Cold,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
+0,Solvin Cold,oral_drops,phenylephrine,2.5mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),curated
 0,Uprise-D3,oral_drops,colecalciferol,400IU/0.5ml,strength not given,dataset
 0,Wikoryl,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
 0,Wikoryl,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
@@ -52,8 +56,6 @@ popularity_tier,brand,form,ingredient,strength_as_listed,reason,source
 1,Q Coril,syrup,diphenhydramine,NA,strength not given,dataset
 1,Quick-D3 Nano Shot,oral_solution,colecalciferol,60000IU,unit iu,dataset
 1,Smuth,suspension,liquid_paraffin,1.25ml/5ml,strength not given,dataset
-1,Solvin Cold,oral_drops,chlorphenamine,1mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
-1,Solvin Cold,oral_drops,paracetamol,125mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
 1,Taxim-O,oral_drops,cefixime,25mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
 1,Urofit,oral_solution,potassium_citrate,1100mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
 1,Urofit,oral_solution,magnesium_citrate,375mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
@@ -117,6 +119,7 @@ popularity_tier,brand,form,ingredient,strength_as_listed,reason,source
 2,Dentogel,oral_solution,choline_salicylate,8.7% w/w,unit percent_ww,dataset
 2,Dentogel,oral_solution,lidocaine,2% w/w,unit percent_ww,dataset
 2,DexLuz,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
+2,Deys Milk OF Magnesia,oral_solution,magnesium_hydroxide,8% w/w,unit percent_ww,dataset
 2,Distaclor,oral_drops,cefaclor,50mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
 2,Domways 10mg,oral_drops,domperidone,10mg,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset
 2,Duphalac Bulk,oral_solution,lactulose,10gm,no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous),dataset

@@ -94,3 +94,10 @@ def test_sibling_volume_wins_and_drops_are_never_guessed():
     assert alone[0].strength.per_volume_ml is None  # 1/3 of stated drops are per 5 mL: no guess
     tablet = fill_liquid_volumes([Component("paracetamol", parse_strength("500mg"))], "tablet")
     assert tablet[0].strength.per_volume_ml is None
+
+
+def test_flavour_names_do_not_set_the_form():
+    from rxdata.forms import detect_form
+
+    assert detect_form("Wikoryl Oral Suspension American Ice Cream", "bottle of 60 ml Oral Suspension")[0] == "suspension"
+    assert detect_form("Betnovate Cream", "tube of 20 gm Cream")[0] == "cream"

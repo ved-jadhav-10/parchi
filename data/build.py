@@ -153,7 +153,9 @@ def main() -> int:
     for e in banned:
         by_set.setdefault(tuple(e.ingredients), []).append(e)
     hits = 0
-    in_index = {(b.display, b.form) for b in brands}
+    # A dataset row is "in the app index" only if it was kept as-is: a curated row with the same
+    # name and form replaces truncated copies, so those copies are not what the app resolves to.
+    in_index = {(b.display, b.form, b.signature) for b in brands if b.source != "curated"}
     with open(report, "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")
         w.writerow(["so_number", "list", "brand", "form", "discontinued", "composition_complete", "popularity_tier", "in_app_index"])
@@ -163,7 +165,7 @@ def main() -> int:
                 if banned_matches(e, b):
                     hits += 1
                     w.writerow([e.so_number, e.list, b.display, b.form, b.discontinued, b.complete,
-                                popularity_tier(b.rank), (b.display, b.form) in in_index])
+                                popularity_tier(b.rank), (b.display, b.form, b.signature) in in_index])
 
     liquid_report(brands, HERE / "reports" / "liquid_strength_gaps.csv")
 

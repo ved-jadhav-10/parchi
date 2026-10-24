@@ -76,7 +76,7 @@ def read_rows(pdf_path: Path) -> list[tuple[int, str, str]]:
                 elif not left and rows and (name or unit):
                     rows[-1][1] = f"{rows[-1][1]} {name}".strip()
                     rows[-1][2] = f"{rows[-1][2]} {unit}".strip()
-    return [(c, re.sub(r"inection", "Injection", n, flags=re.I), u) for c, n, u in rows]
+    return [(c, re.sub(r"\binection\b", "Injection", n, flags=re.I), u) for c, n, u in rows]
 
 
 def _release(name: str) -> str | None:

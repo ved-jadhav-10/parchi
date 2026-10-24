@@ -148,3 +148,34 @@ describe('liquid strengths for the mL -> mg ledger', () => {
     expect(res.ingredients).toEqual([{ id: 'paracetamol', mg: 100, per_volume_ml: 1 }])
   })
 })
+
+describe('verified cold and analgesic combinations (hidden paracetamol)', () => {
+  const r = testResolver()
+  const paracetamolMg = (q: string) => r.resolve(q).ingredients.find((i) => i.id === 'paracetamol')?.mg
+
+  it.each([
+    ['Vicks Action 500 Advanced', 500],
+    ['Cheston Cold Total', 325],
+    ['D Cold Total', 500],
+    ['Wikoryl 10', 500],
+    ['Coldact Plus', 500],
+    ['Voveran Plus', 325],
+    ['Ultracet', 325],
+    ['Hifenac P', 325],
+    ['Zerodol SP', 325],
+  ])('%s carries %i mg paracetamol and a complete composition', (q, mg) => {
+    expect(paracetamolMg(q)).toBe(mg)
+    expect(r.resolve(q).composition_complete).toBe(true)
+  })
+
+  it('flags Sinarest LP New under the right notification (levocetirizine + phenylephrine + paracetamol)', () => {
+    const res = r.resolve('Sinarest LP New')
+    expect(res.flags).toContain('banned_fdc')
+    expect(res.banned_fdc?.map((b) => b.so)).toEqual(['S.O. 3388(E)'])
+    expect(res.banned_fdc?.[0].certain).toBe(true)
+  })
+
+  it('keeps the Hifenac P 650 mg variant reachable by strength', () => {
+    expect(r.resolve('Hifenac P 650').ingredients.find((i) => i.id === 'paracetamol')?.mg).toBe(650)
+  })
+})
