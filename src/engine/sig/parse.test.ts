@@ -184,6 +184,16 @@ describe('parseSig', () => {
     expect(s.unparsed).toEqual(['ut', 'dict'])
   })
 
+  it('ignores an implausible course length (0 days, more than ten years) and says so', () => {
+    for (const t of ['BD x 0 days', 'BD x 99999 days', 'BD for 400 months']) {
+      const s = parseSig(t)
+      expect(s.duration_days).toBeUndefined()
+      expect(s.doses_per_day).toBe(2)
+      expect(s.assumptions?.join(' ')).toMatch(/not plausible and was ignored/)
+    }
+    expect(parseSig('BD x 3650 days').duration_days).toBe(3650)
+  })
+
   it('never throws on odd input', () => {
     for (const text of ['???', '1-', '--', 'x', 'x5', '0-0-0', '99999999999', '½', 'BD BD TDS']) {
       expect(() => parseSig(text)).not.toThrow()

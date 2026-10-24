@@ -45,6 +45,9 @@ function normalise(raw: string): string {
     .trim()
 }
 
+/** Longest course the parser will believe (ten years). */
+export const MAX_DURATION_DAYS = 3650
+
 const toNum = (s: string): number => (s in NUMBER_WORDS ? NUMBER_WORDS[s] : parseFloat(s))
 
 /** Remove the first match of `re` from `state.text` and return it. */
@@ -154,7 +157,10 @@ export function parseSig(raw: string): Sig {
   const unparsed: string[] = []
 
   const stat = take(state, /\bstat\b/) !== null
-  const duration_days = parseDuration(state)
+  const durationRaw = parseDuration(state)
+  // A course of 0 days or more than ten years is a typo or noise, not a duration: ignore it and say so.
+  const duration_days = durationRaw !== undefined && durationRaw >= 1 && durationRaw <= MAX_DURATION_DAYS ? durationRaw : undefined
+  if (durationRaw !== undefined && duration_days === undefined) assumptions.push(`Course length "${durationRaw}" days is not plausible and was ignored`)
   const slotMatch = parseSlots(state)
   const sosRe = /\b(?:sos|prn|as needed|as required|as and when required|if needed|if required|when needed|when required|need basis|jab zaroorat ho|zaroorat padne par|zaroorat ho to|zarurat ho to|if (?:fever|pain|vomiting|nausea|cough))\b/
   let sos = false

@@ -22,8 +22,13 @@ export function toDay(iso: string): number | null {
   return t / DAY_MS
 }
 
+const MIN_DAY = Date.UTC(1000, 0, 1) / DAY_MS
+const MAX_DAY = Date.UTC(9999, 11, 31) / DAY_MS
+
+/** ISO date for a day number; clamped to years 1000-9999 so the result is always a valid four-digit-year date. */
 export function fromDay(day: number): IsoDate {
-  return new Date(day * DAY_MS).toISOString().slice(0, 10)
+  const clamped = Math.min(MAX_DAY, Math.max(MIN_DAY, Number.isFinite(day) ? day : MIN_DAY))
+  return new Date(clamped * DAY_MS).toISOString().slice(0, 10)
 }
 
 export interface LineWindow {
@@ -43,7 +48,7 @@ export function lineWindow(startIso: IsoDate, sig: { duration_days?: number }, d
   const start = toDay(startIso)
   if (start === null) return null
   const given = sig.duration_days
-  const assumed = !(typeof given === 'number' && Number.isFinite(given) && given >= 1)
+  const assumed = !(typeof given === 'number' && Number.isFinite(given) && given >= 1 && given <= 3650)
   const days = assumed ? data.windows.default_duration_days : Math.ceil(given as number)
   return { start: startIso, end: fromDay(start + days - 1), days, duration_assumed: assumed }
 }
