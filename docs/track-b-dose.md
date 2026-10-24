@@ -75,6 +75,21 @@ const check = createPipeline({ resolver, ddi, rules, parseSig: d.parseSig, build
 
 Track B files: 100% line and 96% branch coverage. Beyond unit tests: 20,000 random sigs plus unicode noise and regex-blow-up inputs (`sig/fuzz.test.ts`); property tests against a day-by-day reference (order independence, additivity, TDS = BD + OD, "over-limit iff total > limit", a frailer patient never gets a looser limit, window cutting) in `ledger/properties.test.ts`; a sweep of ~96,000 dose calculations over 4,569 real brands where nothing may throw, go NaN or vanish without a note (`ledger/sweep.test.ts`); Track C's pipeline on B's real functions (`ledger/pipeline.test.ts`); `api/check` and `api/parse-sig` over a real HTTP server and the live Gemini API (run by hand, not in CI). Mutation checks: breaking the CrCl factor, SOS maths, window edges, summing, or limit choice makes tests fail.
 
+## Ayurvedic / herbal names and conflicts (`src/engine/herbal/`)
+
+Starter, evidence-graded, **unverified**: 15 herbs (Hindi, Sanskrit, English and Latin names), 2 formulations (Trikatu, Triphala), 1 ambiguous name (Brahmi is two different plants), 12 rules. Every rule cites its sources in `herbal.json` and has `pharmacist_approved: false`. Evidence is `established` (a regulator's monograph, a published measurement, an Indian multicentre series) or `limited` (one small human study, case reports, interaction databases); animal or lab-only claims are excluded. Suggested tier: established = inform, limited = silent (a note, not an alert); the pharmacist sets the real one.
+
+```ts
+import { splitSingle, herbalSingle, splitHistory, herbalHistory } from './engine/herbal/orchestrate'
+const deps = { isKnownBrand: (b) => resolver.resolve(b).confidence >= 0.97, classesOf: (id) => resolver.ingredient(id)?.classes }
+const { restText, herbal } = splitSingle(rxText, deps)          // 1. take herbal lines OUT before the ordinary resolver sees them
+const result = await check(restText, patient)                   // 2. ordinary pipeline on the rest (skip if restText is empty)
+const report = herbalSingle(herbal, result.lines, deps)         // 3. { items, unrecognised, findings, note } or undefined
+```
+Step 1 matters: the ordinary resolver used to turn "Triphala churna" into an inhaler (Triohale) and "Haldi doodh" into an antipsychotic (Palido-OD). `api/check` does all three steps in both modes (response field `herbal`); in history mode only courses that overlap in time are matched, and each item carries its prescription, doctor and days. Track C and D can call the same functions without touching the pipeline.
+
+What it will not do: say a combination is safe. Unknown Ayurvedic products (anything with churna, vati, kwath, arishta/asava ... that we do not recognise) are listed as `unrecognised` with "ask the patient what it contains". No brand-name Ayurvedic product has a verified ingredient list yet (add them through a catalogue import). No frequency data was found for how often Indians take Ayurvedic and ordinary medicines together (see HOLES.md H26). A 2008 JAMA metals study and a 2022 Indian giloy liver study are the strongest India-relevant items.
+
 ## Not built
 
 Paediatric kidney function (needs a `height_cm` on Patient, labels in C's `INPUT_LABEL` records, a height field in D's UI and pharmacist-set paediatric bands), ideal-body-weight CrCl, Devanagari sigs, `x5` with no unit, "after meals 1 then 2" style meal-specific doses, drops/puffs to mg, rate limiting on `api/parse-sig`. The LLM fallback was checked live on 14 texts with `gemini-3.5-flash-lite` (correct on the readable ones; it refused "as per doctor's advice" and a prompt-injection text after the schema fix); it has no server-side rate limiting, so protect the deployed endpoint before sharing the URL. Speed: sig + ledger + limits take about 0.09 ms for the 7-line demo prescription (Track A's resolver about 2.5 ms).
