@@ -61,3 +61,25 @@ describe('curated interaction rows', () => {
     expect(supplementRows({ rules: 'x' })).toEqual([])
   })
 })
+
+describe('label checks on the Data page', () => {
+  it('marks limits whose label quote was verified, dated, and never as approved', () => {
+    const rows = limitRows(LIMITS)
+    const adult = rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Adult')!
+    expect(adult.checked).toMatch(/^Label quote checked \d{1,2} \w{3} 2026$/)
+    expect(adult.approved).toBe(false)
+    expect(rows.filter((r) => r.checked).every((r) => r.approved !== true)).toBe(true)
+  })
+
+  it('does not mark a limit that has no label quote', () => {
+    const rows = limitRows(LIMITS)
+    expect(rows.find((r) => r.name === 'Aceclofenac' && r.detail === 'Adult')?.checked).toBeUndefined()
+  })
+
+  it('says which drug an interaction weakens, and that a label quote backs it', () => {
+    const [r] = supplementRows({ rules: [{ id: 'clopidogrel_omeprazole', a: ['clopidogrel'], b: ['omeprazole'], level: 'major', note: 'x', source: 's', pharmacist_approved: false, effect: 'reduces_effect', reduces: ['clopidogrel'], evidence: [{ set_id: 'a', quote: 'b' }] }] })
+    expect(r.value).toBe('Major: may weaken Clopidogrel')
+    expect(r.checked).toBe('Label quote checked')
+    expect(r.approved).toBe(false)
+  })
+})

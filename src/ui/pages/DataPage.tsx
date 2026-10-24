@@ -49,6 +49,7 @@ const DataTable = ({ title, description, rows, empty }: { title: string; descrip
                   <td>{r.source || '—'}</td>
                   <td>
                     <Approval approved={r.approved} />
+                    {r.checked ? <div className="hint">{r.checked}</div> : null}
                   </td>
                 </tr>
               ))}
@@ -79,7 +80,7 @@ export const DataPage = () => {
     <>
       <PageIntro note="What the checks rely on." title="Data and limits" />
       <div className="workspace workspace--single">
-        <p className="hint">Every number here needs a source and a pharmacist sign-off. Anything without one is marked.</p>
+        <p className="hint">Every number here needs a source and a pharmacist sign-off. Anything without one is marked. “Label quote checked” means a script found the cited sentence in the label; it is not a pharmacist’s approval.</p>
         <DataTable title="Dose limits" description="Maximum mg/day by age and kidney function, used by the X-ray and the overdose alert" rows={limitRows(LIMITS)} empty="No limits are listed, so the X-ray shows “No limit on file”." />
         <DataTable title="As-needed (SOS) caps" description="Doses a day assumed for an as-needed line that writes no maximum" rows={sosRows(LIMITS)} empty="No caps are listed." />
         {rules || failed ? (
