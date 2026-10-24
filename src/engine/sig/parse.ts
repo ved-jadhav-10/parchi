@@ -35,6 +35,9 @@ function normalise(raw: string): string {
     .replace(/\b3\/4\b/g, '0.75')
     .replace(/(?<=[\d.])\+(?=[\d.])/g, '-')
     .replace(/(?<=[a-z])-(?=[a-z])/g, ' ')
+    // dotted Latin initialisms: b.i.d., t.d.s., q.i.d., o.d., p.r.n., q.1.d. -> bid, tds, qid, od, prn, q1d
+    .replace(/\bq\.1\.d\b\.?/g, 'qd')
+    .replace(/(?<![\w.])(?:[a-z]\.){2,4}/g, (m) => m.replace(/\./g, ''))
     .replace(/\bs\.?\s?o\.?\s?s\.?(?=\W|$)/g, 'sos')
     .replace(/[,;:()[\]]/g, ' ')
     .replace(/(?<!\d)\.|\.(?!\d)/g, ' ')
@@ -52,10 +55,12 @@ function take(state: { text: string }, re: RegExp): RegExpExecArray | null {
 }
 
 const ABBREVIATIONS: [RegExp, number][] = [
-  [/\b(?:qid|qds|q\.?i\.?d)\b/, 4],
-  [/\b(?:tds|tid|t\.?d\.?s)\b/, 3],
-  [/\b(?:bd|bid|b\.?d)\b/, 2],
+  [/\b(?:qid|qds|q1d)\b/, 4],
+  [/\b(?:tds|tid|td)\b/, 3],
+  [/\b(?:bd|bid|bds)\b/, 2],
   [/\b(?:od|qd|qhs|hs|qam|qpm|mane|nocte|bedtime)\b/, 1],
+  [/\b(?:qod|eod)\b/, 0.5],
+  [/\bqwk\b/, 1 / 7],
 ]
 
 interface Frequency {
@@ -81,7 +86,11 @@ function parseFrequency(state: { text: string }): Frequency | null {
   // weekly and alternate day
   if (take(state, /\b(?:alternate days?|every other day|alt day)\b/)) return { administrations: 0.5 }
   if (take(state, /\b(?:once\s+(?:a\s+|per\s+)?month(?:ly)?|monthly|every month|1\s*\/\s*month)\b/)) return { administrations: 1 / 30 }
-  const weekly = take(state, new RegExp(`\\b(?:(once|twice|thrice|${NUM}\\s*(?:x|times)?)\\s*(?:a|per|/)?\\s*)?(?:weekly|week|hafte)\\b`))
+  // "weekly" or a count before "week" (once a week, twice weekly, 2 x week). A bare "week" is a duration ("for a week"), not a schedule.
+  const weekly = take(
+    state,
+    new RegExp(`\\b(?:(once|twice|thrice|${NUM}\\s*(?:x|times))\\s*(?:a|per|/|in)?\\s*(?:weekly|week|wk|hafte)|(?:every|per|each)\\s+week|weekly)\\b`),
+  )
   if (weekly) {
     const k = weekly[1]?.trim()
     const n = !k ? 1 : k === 'once' ? 1 : k === 'twice' ? 2 : k === 'thrice' ? 3 : parseFloat(k)
@@ -100,9 +109,9 @@ function parseFrequency(state: { text: string }): Frequency | null {
   // times of day: "subah shaam", "morning night"
   const found = new Set<string>()
   const tod: [string, RegExp][] = [
-    ['morning', /\b(?:morning|subah|mane)\b/],
+    ['morning', /\b(?:morning|subah|mane|am)\b/],
     ['noon', /\b(?:noon|afternoon|dopahar)\b/],
-    ['evening', /\b(?:evening|shaam|sham)\b/],
+    ['evening', /\b(?:evening|shaam|sham|pm)\b/],
     ['night', /\b(?:night|raat|bedtime)\b/],
   ]
   for (const [name, re] of tod) if (take(state, re)) found.add(name)
@@ -111,13 +120,17 @@ function parseFrequency(state: { text: string }): Frequency | null {
 }
 
 function parseDuration(state: { text: string }): number | undefined {
+  // "for a week", "for one month", "for a fortnight": a count of one written as a word. Needs "for" so "once a week" is not a duration.
+  const word = take(state, /\bfor\s+(?:the\s+next\s+)?(?:a|an|one)\s+(day|week|month|fortnight)\b/)
+  if (word) return { day: 1, week: 7, fortnight: 14, month: 30 }[word[1] as 'day' | 'week' | 'fortnight' | 'month']
   const m = take(
     state,
-    new RegExp(`(?:(?:\\bx|\\bfor\\s+(?:next\\s+)?|\\bnext\\s+|\\bcontinue\\s+for\\s+)\\s*|(?<![\\w.-]))(${NUM})\\s*(days?|d|din|weeks?|wks?|w|hafta|hafte|haftey|months?|mths?|mahina|mahine)\\b`),
+    new RegExp(`(?:(?:\\bx|\\bfor\\s+(?:next\\s+)?|\\bnext\\s+|\\bcontinue\\s+for\\s+)\\s*|(?<![\\w.-]))(${NUM})\\s*(days?|d|din|weeks?|wks?|w|hafta|hafte|haftey|fortnights?|months?|mths?|mahina|mahine)\\b`),
   )
   if (!m) return undefined
   const n = Number(m[1])
   const unit = m[2]
+  if (/^fortnight/.test(unit)) return n * 14
   if (/^(?:w|wks?|weeks?|haft)/.test(unit)) return n * 7
   if (/^(?:m|mth|mahin)/.test(unit)) return n * 30
   return n
@@ -220,7 +233,7 @@ export function parseSig(raw: string): Sig {
   }
 
   for (const w of state.text.split(' ').filter(Boolean)) if (/[a-z0-9]/.test(w) && !IGNORE.has(w)) unparsed.push(w)
-  if (unparsed.length) confidence = Math.min(confidence, 0.7)
+  if (unparsed.length) confidence = Math.min(confidence, 0.6)
   if ((dose_unit === 'drop' || dose_unit === 'puff') && !sos) {
     assumptions.push(`Dose in ${dose_unit}s cannot be turned into mg without the product's strength per ${dose_unit}`)
     confidence = Math.min(confidence, 0.6)
