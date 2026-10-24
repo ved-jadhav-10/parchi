@@ -54,7 +54,7 @@ export interface LimitsData {
   }
   ingredients: Record<string, IngredientLimits>
   /** Phase 2: how long a line with no duration is assumed to run. */
-  windows: { default_duration_days: number } & Provenance
+  windows: { default_duration_days: number; /** assumed course length per Track A class, used only when no duration or quantity is written */ by_class?: Record<string, number> } & Provenance
 }
 
 /** Patient detail the engine needs and does not have yet. Ask for it only when an ingredient on the prescription needs it. */

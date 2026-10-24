@@ -229,6 +229,7 @@ export function parseSig(raw: string): Sig {
   let administrations: number
   let unitsPerDay: number
   let confidence = 1
+  let dosingMissing = false
   if (slotMatch && !slotMatch.range) {
     administrations = slotMatch.slots.filter((p) => p > 0).length
     unitsPerDay = slotMatch.slots.reduce((a, b) => a + b, 0)
@@ -243,9 +244,12 @@ export function parseSig(raw: string): Sig {
     administrations = 0
     unitsPerDay = 0
   } else if (state.text === '' && raw.trim() === '') {
-    administrations = 1
-    unitsPerDay = unitCount ?? 1
-    assumptions.push('No dosing written; assumed once daily')
+    // A cart line has a product and a pack, not a frequency. Guessing "once daily" would understate a TDS course, so the
+    // line is counted as "dosing not entered" and left out of the daily totals (it still takes part in duplicate and interaction checks).
+    administrations = 0
+    unitsPerDay = 0
+    dosingMissing = true
+    assumptions.push('No dosing written')
     confidence = 0.4
   } else {
     administrations = 1
@@ -287,6 +291,7 @@ export function parseSig(raw: string): Sig {
     out.max_doses_per_day = out.doses_per_day
     out.administrations_per_day = administrations
   }
+  if (dosingMissing) out.dosing_missing = true
   if (volume !== undefined) out.volume_ml_per_dose = volume
   if (dose_unit !== 'unit') out.dose_unit = dose_unit
   else if (unitCount !== undefined || freq || slotMatch) out.dose_unit = 'unit'

@@ -48,6 +48,19 @@ export function parsePatient(x: unknown): { patient: Patient } | { error: string
   return { patient }
 }
 
+/** Optional per-person details for an account that orders for several people: { "Priya": { age_years, ... } }. */
+export function parsePatientMap(x: unknown): { patients: Record<string, Patient> } | { error: string } {
+  if (x === undefined) return { patients: {} }
+  if (!isObj(x) || Object.keys(x).length > 10) return { error: 'patients must be an object of up to 10 named patients' }
+  const out: Record<string, Patient> = {}
+  for (const [name, p] of Object.entries(x)) {
+    const r = parsePatient(p)
+    if ('error' in r) return { error: `patients["${name}"]: ${r.error}` }
+    out[name] = r.patient
+  }
+  return { patients: out }
+}
+
 /** Text of one prescription: bounded length and line count. */
 export function checkRxText(text: unknown, label = 'rx_text'): string | null {
   if (typeof text !== 'string' || text.trim() === '' || text.length > LIMITS_API.maxRxChars) return `${label} must be 1-${LIMITS_API.maxRxChars} characters`
@@ -78,7 +91,9 @@ function validatePrescriptions(list: unknown): { prescriptions: Prescription[] }
     if (typeof rx.date !== 'string' || toDay(rx.date) === null) return { error: `${where}.date must be a real date as YYYY-MM-DD` }
     const bad = checkRxText(rx.text, `${where}.text`)
     if (bad) return { error: bad }
-    out.push({ id: rx.id, doctor: rx.doctor.trim(), date: rx.date, text: rx.text as string })
+    if (rx.patient !== undefined && (typeof rx.patient !== 'string' || rx.patient.length > 100)) return { error: `${where}.patient must be a name of up to 100 characters` }
+    const who = typeof rx.patient === 'string' && rx.patient.trim() !== '' ? { patient: rx.patient.trim() } : {}
+    out.push({ id: rx.id, doctor: rx.doctor.trim(), date: rx.date, text: rx.text as string, ...who })
   }
   return { prescriptions: out }
 }

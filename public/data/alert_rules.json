@@ -265,7 +265,8 @@
     "notes": {
       "schedule_mismatch": "interrupt",
       "unquantified_volume": "inform",
-      "unquantified_dose": "inform"
+      "unquantified_dose": "inform",
+      "dosing_not_entered": "inform"
     },
     "sig_unclear_below": 0.7,
     "sig_unclear_tier": "inform",

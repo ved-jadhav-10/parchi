@@ -7,10 +7,10 @@
 // endpoint answers 503, so it can never be left open by accident. Deploy note: include public/data/** in the function
 // bundle (vercel.json "functions": { "api/check.ts": { "includeFiles": "public/data/**" } }).
 import type { CheckPrescription, HistoryResult, Patient } from '../src/engine/contracts'
-import type { CheckHistory } from '../src/engine/history'
+import { checkByPatient, patientKey, type CheckHistory } from '../src/engine/history'
 import { herbalHistory, herbalSingle, splitHistory, splitSingle, type HerbalDeps } from '../src/engine/herbal/orchestrate'
 import { createDoseDeps, type DoseResult, type LedgerLine } from '../src/engine/ledger'
-import { checkRxText, parseHistoryRequest, parsePatient } from '../src/engine/ledger/requests'
+import { checkRxText, parseHistoryRequest, parsePatient, parsePatientMap } from '../src/engine/ledger/requests'
 import { createResolver } from '../src/engine/resolver'
 import { createDdiIndex, type DdiJson } from '../src/engine/resolver/ddi'
 import { decodeData, type BannedJson, type BrandsJson, type IngredientsJson, type JanAushadhiJson, type NsqJson } from '../src/engine/resolver/data'
@@ -71,6 +71,23 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
     try {
       const split = deps.herbal ? splitHistory(h.request.prescriptions, deps.herbal) : undefined
       const engineRx = split ? split.engine : h.request.prescriptions
+      const named = engineRx.some((rx) => rx.patient)
+      if (named && engineRx.length) {
+        // An account that orders for several people: each person is checked on their own, never added up together.
+        const map = parsePatientMap(body.patients)
+        if ('error' in map) return json({ error: map.error }, 400)
+        const byKey = new Map(Object.entries(map.patients).map(([name, pat]) => [patientKey(name), pat]))
+        const account = await checkByPatient(deps.history, engineRx, (label) => byKey.get(patientKey(label)), p.patient, h.request.labs, h.request.options)
+        return json({
+          schema: 1,
+          mode: 'history_by_patient',
+          disclaimer: DISCLAIMER,
+          patients: account.patients.map((x) => ({ label: x.label, ...x.result })),
+          alerts: account.alerts,
+          unassigned: account.unassigned.map((rx) => ({ id: rx.id, doctor: rx.doctor, date: rx.date })),
+          ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}),
+        })
+      }
       const result: HistoryResult | undefined = engineRx.length ? await deps.history(engineRx, p.patient, h.request.labs, h.request.options) : undefined
       const herbal = split && deps.herbal ? herbalHistory(split.herbal, result?.lines ?? [], deps.herbal) : undefined
       if (!result) {

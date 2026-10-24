@@ -99,12 +99,15 @@ describe('alerts from Track B dose facts', () => {
     expect(byType(alerts, 'schedule_mismatch')).toHaveLength(0)
   })
 
-  it('flags a sig that had to be guessed', async () => {
-    const { alerts } = await check('Omez 20', adult())
-    const a = byType(alerts, 'sig_unclear')
+  it('says dosing was not entered instead of guessing a frequency, and leaves the line out of the totals', async () => {
+    const { alerts, ledger } = await check('Omez 20', adult())
+    const a = byType(alerts, 'dosing_not_entered')
     expect(a).toHaveLength(1)
     expect(a[0].tier).toBe('inform')
-    expect(a[0].reason).toContain('once daily')
+    expect(a[0].reason).toContain('dosing not entered')
+    expect(a[0].brands).toEqual(['Omez'])
+    expect(ledger.omeprazole).toBeUndefined()
+    expect(byType(alerts, 'sig_unclear')).toHaveLength(0)
   })
 
   it('does not flag a clearly written sig', async () => {
