@@ -1,3 +1,4 @@
+import { Select } from './Select'
 import { useState } from 'react'
 import type { ResolvedBrand, Sig } from '../../engine/contracts'
 import { downloadText } from '../lib/csv'
@@ -56,16 +57,7 @@ export const LeafletCard = ({ lines, inDetails }: { lines: { resolved: ResolvedB
       ) : (
         <>
           <div className="fields">
-            <label className="field">
-              <span className="field__label">Language</span>
-              <select className="field__input" value={language} onChange={(e) => setLanguage(e.target.value)}>
-                {LEAFLET_LANGUAGES.map(([code, label]) => (
-                  <option key={code} value={code}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <Select label="Language" value={language} onChange={setLanguage} options={LEAFLET_LANGUAGES.map(([value, label]) => ({ value, label }))} />
           </div>
           <label className="field">
             <span className="field__label">Points to tell the customer (optional, one per line)</span>

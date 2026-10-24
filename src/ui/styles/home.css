@@ -265,3 +265,31 @@
 .home-stack { display: grid; gap: 12px; }
 .home-stack[data-stack='on'] .home-stack__item { position: sticky; top: var(--stack-top); }
 .home-stack[data-stack='on'] .home-stack__item > * { transform-origin: top center; will-change: transform; box-shadow: 0 -10px 30px color-mix(in srgb, var(--color-ink) 10%, transparent); }
+
+/* Proof strip: four figures from the app's own data files */
+.home-proof { padding: var(--space-6) var(--space-5); border-radius: 36px; background: var(--color-surface); }
+.home-proof ul { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 0; padding: 0; list-style: none; }
+.home-proof li { display: grid; gap: 2px; align-content: start; }
+.home-proof strong { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--color-accent-strong); }
+.home-proof span { font-weight: 600; }
+.home-proof small { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
+
+/* ---------- one screen per section ---------- */
+@media (min-width: 901px) {
+  .home-hero { min-height: max(540px, calc(100dvh - 120px)); }
+  .home-trailer__video { width: 100%; height: calc(100dvh - 160px); min-height: 360px; object-fit: contain; background: var(--color-accent); border-radius: 24px; }
+  .home-section { min-height: calc(100dvh - 120px); align-content: center; }
+  .home-cta { min-height: calc(100dvh - 120px); align-content: center; }
+
+  /* the heading and its closing note on the left, the content in a padded block on the right */
+  .home-section.home-how, .home-section.home-compare-section {
+    display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); grid-template-rows: auto 1fr; gap: 28px 56px;
+    align-content: center; align-items: start; padding: 56px;
+  }
+  .home-how__head, .home-compare-section__head { grid-column: 1; grid-row: 1; padding: 0; position: static; }
+  .home-how__grid { grid-column: 2; grid-row: 1 / span 2; margin: 0; border: 1px solid var(--color-border); border-radius: 20px; overflow: hidden; }
+  .home-how__grid li { padding: 24px 28px; }
+  .home-how__foot { grid-column: 1; grid-row: 2; align-self: end; display: grid; gap: 16px; padding: 0; }
+  .home-compare { grid-column: 2; grid-row: 1 / span 2; padding: 0; }
+  .home-section.home-how > .home-how__grid:last-child { grid-row: 1; }
+}

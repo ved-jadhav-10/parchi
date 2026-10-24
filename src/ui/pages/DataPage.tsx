@@ -3,7 +3,7 @@ import { HERBAL_RULES } from '../../engine/herbal'
 import { LIMITS } from '../../engine/limits'
 import { ScrollRegion } from '../components/ScrollRegion'
 import { parseAlertRules, type AlertRules } from '../../engine/rules'
-import { Card } from '../components/Card'
+import { Card, KpiCard } from '../components/Card'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { useJson, type DataRow } from '../lib/dataFiles'
 import { approvedCount, herbalRows, limitRows, policyRows, ruleRows, sosRows, suppressionRows, supplementRows } from '../lib/policyRows'
@@ -15,10 +15,26 @@ const Approval = ({ approved }: { approved: boolean | undefined }) =>
       Signed off
     </span>
   ) : (
-    <span className="tier-badge" data-tier="inform">
-      {approved === false ? 'Not signed off' : 'Unknown'}
-    </span>
+    <span className="data__draft">{approved === false ? 'Draft' : 'Unknown'}</span>
   )
+
+/** Long source text stays to two lines until asked for, so a table reads as rows, not paragraphs. */
+const Clamp = ({ text }: { text: string }) => {
+  const [open, setOpen] = useState(false)
+  if (text.length < 110) return <>{text || '—'}</>
+  return (
+    <>
+      <span className="data__clamp" data-open={open}>
+        {text}
+      </span>
+      <button type="button" className="btn--link data__more" onClick={() => setOpen(!open)} aria-expanded={open}>
+        {open ? 'Less' : 'More'}
+      </button>
+    </>
+  )
+}
+
+const FIRST_ROWS = 8
 
 interface Filter {
   text: string
@@ -28,57 +44,69 @@ interface Filter {
 const matches = (r: DataRow, f: Filter) =>
   (!f.unsignedOnly || r.approved !== true) && (f.text === '' || [r.name, r.detail, r.value, r.source].join(' ').toLowerCase().includes(f.text.toLowerCase()))
 
-/** One table of values with a source and a pharmacist approval each. An empty list keeps its frame and says so. */
+/** One table of values with a source and a pharmacist approval each. Folded by default: the heading says how many rows and how many are signed off. */
 const DataTable = ({ title, description, all, filter, empty }: { title: string; description: string; all: DataRow[]; filter: Filter; empty: string }) => {
+  const [showAll, setShowAll] = useState(false)
   const rows = all.filter((r) => matches(r, filter))
   const filtered = filter.text !== '' || filter.unsignedOnly
+  const shown = showAll || filtered ? rows : rows.slice(0, FIRST_ROWS)
+  const signed = approvedCount(all)
   return (
-  <Card title={title} icon="shield" description={description}>
-    {all.length === 0 ? (
-      <EmptyState title="Nothing listed">
-        <p>{empty}</p>
-      </EmptyState>
-    ) : (
-      <>
-        <p className="hint">
-          {approvedCount(all)} of {all.length} signed off. Anything else is shown as not signed off and should not be relied on.
-          {filtered && ` Showing ${rows.length}.`}
-        </p>
-        {rows.length === 0 ? (
-          <p className="hint">No row here matches the filter.</p>
-        ) : (
-        <ScrollRegion className="xray" label={`${title}, scrolls sideways`}>
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Applies to</th>
-                <th scope="col">Value</th>
-                <th scope="col">Source</th>
-                <th scope="col">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => (
-                <tr key={i}>
-                  <th scope="row">{r.name}</th>
-                  <td>{r.detail || '—'}</td>
-                  <td className="num">{r.value || '—'}</td>
-                  <td>{r.source || '—'}</td>
-                  <td>
-                    <Approval approved={r.approved} />
-                    {r.approved && r.approvedBy ? <div className="hint">Signed off by {r.approvedBy}</div> : null}
-                    {r.checked ? <div className="hint">{r.checked}</div> : null}
-                  </td>
+    <details className="card datasec" open={filtered || undefined}>
+      <summary className="datasec__sum">
+        <span className="datasec__name">{title}</span>
+        <span className="datasec__count">
+          {all.length === 0 ? 'none listed' : `${all.length} ${all.length === 1 ? 'row' : 'rows'} · ${signed} signed off`}
+          {filtered && all.length > 0 ? ` · ${rows.length} match` : ''}
+        </span>
+      </summary>
+      <p className="hint">{description}</p>
+      {all.length === 0 ? (
+        <EmptyState title="Nothing listed">
+          <p>{empty}</p>
+        </EmptyState>
+      ) : rows.length === 0 ? (
+        <p className="hint">No row here matches the filter.</p>
+      ) : (
+        <>
+          <ScrollRegion className="xray" label={`${title}, scrolls sideways`}>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Item</th>
+                  <th scope="col">Applies to</th>
+                  <th scope="col">Value</th>
+                  <th scope="col">Source</th>
+                  <th scope="col">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </ScrollRegion>
-        )}
-      </>
-    )}
-  </Card>
+              </thead>
+              <tbody>
+                {shown.map((r, i) => (
+                  <tr key={i}>
+                    <th scope="row">{r.name}</th>
+                    <td>{r.detail || '—'}</td>
+                    <td className="num">{r.value || '—'}</td>
+                    <td className="data__src">
+                      <Clamp text={r.source} />
+                    </td>
+                    <td>
+                      <Approval approved={r.approved} />
+                      {r.approved && r.approvedBy ? <div className="hint">Signed off by {r.approvedBy}</div> : null}
+                      {r.checked ? <div className="hint">{r.checked}</div> : null}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </ScrollRegion>
+          {shown.length < rows.length && (
+            <button type="button" className="btn btn--secondary data__all" onClick={() => setShowAll(true)}>
+              Show all {rows.length} rows
+            </button>
+          )}
+        </>
+      )}
+    </details>
   )
 }
 
@@ -117,8 +145,13 @@ export const DataPage = () => {
     <>
       <PageIntro note="What the checks rely on." title="Data and limits" />
       <div className="workspace workspace--single">
+        <div className="kpis">
+          <KpiCard label="Rows listed" value={everything.length} hint="limits, rules, policy, herbal" />
+          <KpiCard label="Signed off" value={everything.length - unsigned} hint="by a named reviewer" />
+          <KpiCard label="Drafts" value={unsigned} hint="each marked, with its source" tier="inform" />
+        </div>
         <p className="hint" role="status">
-          {unsigned} of {everything.length} numbers and rules here are not signed off yet. Each is marked, with its source. “Label quote checked” means a script found the cited sentence in the label; it is not a sign-off. {approvedCount(everything)} dose limits for everyday medicines were signed off by Dr. Sanjay Dhanushkar; less common medicines, kidney bands, paracetamol with alcohol or liver disease, and as-needed caps were not covered.
+          {unsigned} of {everything.length} numbers and rules here are not signed off yet. Each is marked, with its source. “Label quote checked” means a script found the cited sentence in the label; it is not a sign-off. {approvedCount(everything)} dose limits for everyday medicines were signed off by Dr. Sanjay Dhanushkar; less common medicines, kidney bands, paracetamol with alcohol or liver disease, and as-needed caps were not covered. Each table opens below.
         </p>
         <div className="toolbar">
           <label className="field">

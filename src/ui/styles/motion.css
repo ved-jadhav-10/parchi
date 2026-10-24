@@ -1,0 +1,43 @@
+/* Motion: things arrive in order of importance, then stay still. Everything here is off for people who ask for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise { from { opacity: 0; transform: translateY(12px); } }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes pop { from { opacity: 0; transform: translateY(-6px) scale(0.98); } }
+  @keyframes grow { from { transform: scaleX(0); } }
+  @keyframes flash { 0% { box-shadow: 0 0 0 0 rgb(180 35 24 / 0.35); } 100% { box-shadow: 0 0 0 14px rgb(180 35 24 / 0); } }
+
+  /* a page arrives as its blocks, top to bottom */
+  .page .intro, .page .workspace > *, .page .card:not(.alert):not(.kpi) { animation: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .page .workspace > :nth-child(2) { animation-delay: 60ms; }
+  .page .workspace > :nth-child(3) { animation-delay: 120ms; }
+
+  /* alerts: Interrupts first, each a beat after the last */
+  .alerts > .alert { animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .alerts > .alert:nth-child(2) { animation-delay: 90ms; }
+  .alerts > .alert:nth-child(3) { animation-delay: 180ms; }
+  .alerts > .alert:nth-child(4) { animation-delay: 270ms; }
+  .alerts > .alert:nth-child(n + 5) { animation-delay: 340ms; }
+  .alert[data-tier='interrupt'] { animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both, flash 1.1s 0.5s ease-out 1; }
+
+  .kpis > * { animation: rise 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .kpis > :nth-child(2) { animation-delay: 70ms; }
+  .kpis > :nth-child(3) { animation-delay: 140ms; }
+  .kpis > :nth-child(4) { animation-delay: 210ms; }
+
+  .limit__fill { transform-origin: left; animation: grow 0.9s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .tabpanel > * { animation: fade 0.3s ease both; }
+  .queue__row { animation: rise 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .queue__row:nth-child(2) { animation-delay: 60ms; }
+  .queue__row:nth-child(3) { animation-delay: 120ms; }
+  .queue__row:nth-child(n + 4) { animation-delay: 180ms; }
+  .story { animation: rise 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .story:nth-child(2) { animation-delay: 80ms; }
+  .story:nth-child(3) { animation-delay: 160ms; }
+  .story:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+  .select__list { animation: pop 0.14s ease-out both; }
+  details[open] > :not(summary) { animation: fade 0.25s ease both; }
+
+  .btn { transition: background-color 0.15s ease, transform 0.12s ease, color 0.15s ease; }
+  .btn:active:not(:disabled) { transform: scale(0.97); }
+  .tabs__tab, .pillnav__link, .chipbtn { transition: background-color 0.15s ease, color 0.15s ease; }
+}

@@ -1,0 +1,67 @@
+/* Guided stories (tour overlay). Tokens only; see docs/DESIGN.md. The dim panels leave a hole around the lit element, so a step can ask for a real click. */
+
+.tour { position: fixed; inset: 0; z-index: 1000; pointer-events: none; }
+.tour__dim { position: fixed; background: rgb(18 32 86 / 0.62); pointer-events: auto; transition: top 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+.tour__dim--all { inset: 0; }
+.tour__dim--clear { background: transparent; }
+.tour__ring {
+  position: fixed; border: 2px solid var(--color-accent-soft); border-radius: var(--radius-md); pointer-events: none;
+  box-shadow: 0 0 0 4px rgb(141 149 240 / 0.35); transition: top 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: tour-pulse 2s ease-in-out infinite;
+}
+@keyframes tour-pulse { 50% { box-shadow: 0 0 0 8px rgb(141 149 240 / 0.15); } }
+
+.tour__busy {
+  position: fixed; left: 50%; top: 40%; margin: 0; padding: var(--space-3) var(--space-5); transform: translateX(-50%);
+  border-radius: var(--radius-pill); background: var(--color-surface); color: var(--color-ink); font-weight: 600; pointer-events: auto;
+  animation: tour-late 0.3s 0.9s ease both;
+}
+@keyframes tour-late { from { opacity: 0; } }
+
+.tour__card {
+  position: fixed; display: grid; gap: var(--space-3); max-height: calc(100dvh - 24px); overflow-y: auto; padding: var(--space-5);
+  border-radius: var(--radius-lg); background: var(--color-surface); box-shadow: var(--shadow-card), 0 18px 48px rgb(18 32 86 / 0.28);
+  pointer-events: auto; outline: none;
+}
+.tour__top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.tour__eyebrow { margin: 0; color: var(--color-accent-strong); font-size: var(--text-sm); line-height: var(--leading-sm); font-weight: 600; }
+.tour__auto {
+  margin-left: auto; padding: 0 var(--space-3); min-height: 32px; border: 1px solid var(--color-border); border-radius: var(--radius-pill); background: var(--color-tint);
+  color: var(--color-accent-strong); font: inherit; font-size: var(--text-sm); font-weight: 600; cursor: pointer;
+}
+.tour__auto[aria-pressed='true'] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
+.tour__timer { height: 3px; border-radius: var(--radius-pill); background: var(--color-accent); transform-origin: left; animation: tour-timer linear both; }
+@keyframes tour-timer { from { transform: scaleX(0); } }
+.tour__done { color: var(--status-ok); }
+.tour__done circle { fill: var(--status-ok-bg); stroke: currentColor; stroke-width: 2.5; }
+.tour__done path { fill: none; stroke: currentColor; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 40; stroke-dashoffset: 40; animation: tour-draw 0.6s 0.25s ease-out forwards; }
+@keyframes tour-draw { to { stroke-dashoffset: 0; } }
+.tour__card { animation: tour-in 0.38s cubic-bezier(0.2, 0.9, 0.25, 1.1) both; }
+@keyframes tour-in { from { opacity: 0; transform: translateY(14px) scale(0.96); } }
+.tour__card > :not(.tour__timer) { animation: tour-line 0.4s ease both; }
+.tour__card > :nth-child(2) { animation-delay: 60ms; }
+.tour__card > :nth-child(3) { animation-delay: 120ms; }
+.tour__card > :nth-child(4) { animation-delay: 180ms; }
+@keyframes tour-line { from { opacity: 0; transform: translateY(6px); } }
+.tour__cursor { position: fixed; top: 0; left: 0; z-index: 1002; width: 28px; height: 28px; margin: -3px 0 0 -4px; pointer-events: none; transition: transform 0.8s cubic-bezier(0.45, 0, 0.2, 1); filter: drop-shadow(0 3px 5px rgb(18 32 86 / 0.35)); }
+.tour__cursor svg { transition: transform 0.12s ease; transform-origin: 4px 3px; }
+.tour__cursor.is-press svg { transform: scale(0.82); }
+.tour__ripple { position: absolute; left: 0; top: 0; width: 18px; height: 18px; margin: -6px 0 0 -2px; border-radius: 50%; border: 2px solid var(--color-accent); animation: tour-ripple 0.55s ease-out forwards; }
+@keyframes tour-ripple { to { transform: scale(3.4); opacity: 0; } }
+.tour__x {
+  display: grid; place-items: center; width: var(--tap-min); height: var(--tap-min); margin: calc(var(--space-2) * -1); border: 0; border-radius: var(--radius-pill);
+  background: transparent; color: var(--color-ink-muted); font: inherit; font-size: var(--text-xl); line-height: 1; cursor: pointer;
+}
+.tour__x:hover { background: var(--color-tint); color: var(--color-ink); }
+.tour__title { margin: 0; font-size: var(--text-lg); line-height: var(--leading-lg); }
+.tour__body { margin: 0; color: var(--color-ink-muted); }
+.tour__dots { display: flex; gap: 6px; }
+.tour__dots span { flex: 1; height: 4px; border-radius: var(--radius-pill); background: var(--color-tint); }
+.tour__dots span[data-on='true'] { background: var(--color-accent); }
+.tour__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
+.tour__hint { margin: 0; color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); text-align: right; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tour__dim, .tour__ring, .tour__card, .tour__card > *, .tour__cursor { transition: none; animation: none; }
+  .tour__timer { animation: none; transform: none; }
+}

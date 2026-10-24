@@ -9,9 +9,11 @@
 import { useState } from 'react'
 import { LogoMark } from '../components/LogoMark'
 import { scrollToTarget, useSmoothScroll } from '../lib/smoothScroll'
+import { ProofStrip } from '../components/ProofStrip'
 import { SlipCompare } from '../components/SlipCompare'
 import { StackedSections } from '../components/StackedSections'
 import { TrailerVideo } from '../components/TrailerVideo'
+import { startTour } from '../tour/store'
 import { useOnline } from '../route'
 
 const SECTIONS = [
@@ -174,10 +176,11 @@ export const HomePage = () => {
                   <a key={s.id} href="#/home" onClick={go(s.id)}>{s.label}</a>
                 ))}
               </span>
-              <a className="home-btn home-btn--accent" href="#/check">Open the checker</a>
+              <a href="#/demo">Demo</a>
+              <a className="home-btn home-btn--accent" href="#/demo">Open Parchi</a>
             </nav>
 
-            <a className="home-btn home-btn--accent home-nav__cta" href="#/check">Open the checker</a>
+            <a className="home-btn home-btn--accent home-nav__cta" href="#/demo">Open Parchi</a>
             <button
               className="home-circle home-menu-btn"
               aria-label={open ? 'Close menu' : 'Open menu'}
@@ -215,8 +218,8 @@ export const HomePage = () => {
                 across every brand and every doctor, and ranks the orders that need a pharmacist's closer look first. It works offline.
               </p>
               <div className="home-actions">
-                <a className="home-btn home-btn--white" href="#/check">Check a prescription <ArrowIcon /></a>
-                <a className="home-btn home-btn--ghost" href="#/queue">Open the review desk</a>
+                <button type="button" className="home-btn home-btn--white" onClick={() => startTour('hidden-dose', true)}>Watch it work <ArrowIcon /></button>
+                <a className="home-btn home-btn--ghost" href="#/check">Check a prescription</a>
               </div>
             </div>
 
@@ -247,6 +250,8 @@ export const HomePage = () => {
         </div>
 
         <TrailerVideo />
+
+        <ProofStrip />
 
         <StackedSections>
         <section className="home-section home-section--white home-how" id="how" aria-labelledby="how-title">
@@ -343,8 +348,8 @@ export const HomePage = () => {
           <h2 id="cta-title">Put it on the counter.</h2>
           <p>Install Parchi on a phone or the counter PC, or open the review desk for orders that carry prescriptions from several doctors. After the first load it works without a connection.</p>
           <div className="home-actions">
-            <a className="home-btn home-btn--white" href="#/check">Check a prescription</a>
-            <a className="home-btn home-btn--ghost" href="#/demo">See a worked example</a>
+            <button type="button" className="home-btn home-btn--white" onClick={() => startTour('hidden-dose', true)}>Watch it work</button>
+            <a className="home-btn home-btn--ghost" href="#/check">Check a prescription</a>
           </div>
         </section>
 
