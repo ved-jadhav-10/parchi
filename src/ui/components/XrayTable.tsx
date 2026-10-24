@@ -58,7 +58,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
                   {flag && (
                     <span className="xray__flag">
                       <TierBadge tier={flag.tier} />
-                      <span className="xray__why">{alertTypeLabel(flag.type)}</span>
+                      <span className="sr-only">{alertTypeLabel(flag.type)}</span>
                     </span>
                   )}
                 </th>
@@ -72,6 +72,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
                   </span>
                 </td>
                 <td role="cell">
+                  <div className="xray__total">
                   <LimitBar total={row.total_mg_day} limit={row.limit_mg_day} />
                   <span className="sr-only">{mg(row.total_mg_day)} milligrams per day</span>
                   {((row.sos_mg_day ?? 0) > 0 || row.limit_basis || (row.caveats?.length ?? 0) > 0) && (
@@ -91,6 +92,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
                       ))}
                     </details>
                   )}
+                  </div>
                 </td>
               </tr>
             )

@@ -9,6 +9,7 @@
 import { useState } from 'react'
 import { LogoMark } from '../components/LogoMark'
 import { scrollToTarget, useSmoothScroll } from '../lib/smoothScroll'
+import { ProofStrip } from '../components/ProofStrip'
 import { SlipCompare } from '../components/SlipCompare'
 import { StackedSections } from '../components/StackedSections'
 import { TrailerVideo } from '../components/TrailerVideo'
@@ -176,10 +177,10 @@ export const HomePage = () => {
                 ))}
               </span>
               <a href="#/demo">Demo</a>
-              <a className="home-btn home-btn--accent" href="#/check">Open the checker</a>
+              <a className="home-btn home-btn--accent" href="#/demo">Open Parchi</a>
             </nav>
 
-            <a className="home-btn home-btn--accent home-nav__cta" href="#/check">Open the checker</a>
+            <a className="home-btn home-btn--accent home-nav__cta" href="#/demo">Open Parchi</a>
             <button
               className="home-circle home-menu-btn"
               aria-label={open ? 'Close menu' : 'Open menu'}
@@ -249,6 +250,8 @@ export const HomePage = () => {
         </div>
 
         <TrailerVideo />
+
+        <ProofStrip />
 
         <StackedSections>
         <section className="home-section home-section--white home-how" id="how" aria-labelledby="how-title">

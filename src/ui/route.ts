@@ -7,9 +7,9 @@ export type Route = 'home' | 'check' | 'demo' | 'queue' | 'order' | 'history' | 
  * measured comparison and the data behind the checks) sit under "More". `order` and `history` are reached from the queue.
  */
 export const routes: { id: Route; label: string; group: 'main' | 'more' }[] = [
+  { id: 'demo', label: 'Demo', group: 'main' },
   { id: 'queue', label: 'Review queue', group: 'main' },
   { id: 'check', label: 'Check', group: 'main' },
-  { id: 'demo', label: 'Demo', group: 'main' },
   { id: 'log', label: 'Override log', group: 'main' },
   { id: 'benchmark', label: 'Benchmark', group: 'more' },
   { id: 'catalogue', label: 'Catalogue', group: 'more' },

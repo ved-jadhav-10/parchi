@@ -265,3 +265,11 @@
 .home-stack { display: grid; gap: 12px; }
 .home-stack[data-stack='on'] .home-stack__item { position: sticky; top: var(--stack-top); }
 .home-stack[data-stack='on'] .home-stack__item > * { transform-origin: top center; will-change: transform; box-shadow: 0 -10px 30px color-mix(in srgb, var(--color-ink) 10%, transparent); }
+
+/* Proof strip: four figures from the app's own data files */
+.home-proof { padding: var(--space-6) var(--space-5); border-radius: 36px; background: var(--color-surface); }
+.home-proof ul { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 0; padding: 0; list-style: none; }
+.home-proof li { display: grid; gap: 2px; align-content: start; }
+.home-proof strong { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; letter-spacing: -0.02em; color: var(--color-accent-strong); }
+.home-proof span { font-weight: 600; }
+.home-proof small { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }

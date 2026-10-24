@@ -1,7 +1,7 @@
 import type { Flag, ResolvedBrand } from '../../engine/contracts'
 import { brandLabel } from '../lib/resolved'
 import { FlagBadge } from './BrandMatch'
-import { Card } from './Card'
+import { Icon } from './Icons'
 
 const SHOWN: Flag[] = ['banned_fdc', 'nsq', 'lasa', 'discontinued']
 
@@ -13,17 +13,17 @@ export const FlagSummary = ({ lines }: { lines: { resolved: ResolvedBrand }[] })
   const flagged = lines.map((l) => ({ name: brandLabel(l.resolved), flags: l.resolved.flags.filter((f) => SHOWN.includes(f)) })).filter((l) => l.flags.length > 0)
   if (flagged.length === 0) return null
   return (
-    <Card title="Check before dispensing" icon="shield" description="Flags on the brand itself. Detail is under Brand matches.">
-      <ul className="flags">
-        {flagged.map((l, i) => (
-          <li key={`${l.name}-${i}`}>
-            <strong>{l.name}</strong>
-            {l.flags.map((f) => (
-              <FlagBadge key={f} flag={f} />
-            ))}
-          </li>
-        ))}
-      </ul>
-    </Card>
+    <div className="flagbar" role="note">
+      <Icon name="shield" size={16} />
+      <strong>Check before dispensing</strong>
+      {flagged.map((l, i) => (
+        <span key={`${l.name}-${i}`} className="flagbar__item">
+          {l.name}
+          {l.flags.map((f) => (
+            <FlagBadge key={f} flag={f} />
+          ))}
+        </span>
+      ))}
+    </div>
   )
 }

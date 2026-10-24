@@ -3,7 +3,7 @@ import type { Alert, Patient } from '../../engine/contracts'
 import { AlertCard, NestedAlert, type InputAction } from '../components/AlertCard'
 import { AlertGroups } from '../components/AlertGroups'
 import { BrandMatch } from '../components/BrandMatch'
-import { Card, KpiCard } from '../components/Card'
+import { Card } from '../components/Card'
 import { FlagSummary } from '../components/FlagSummary'
 import { Icon } from '../components/Icons'
 import { Select } from '../components/Select'
@@ -286,12 +286,24 @@ export const CheckPage = () => {
                 </p>
               )}
 
-              <div className="kpis">
-                <KpiCard label="Interrupt" value={count('interrupt')} hint="Target: 1 or fewer per Rx" tier="interrupt" />
-                <KpiCard label="Inform" value={count('inform')} tier="inform" />
-                <KpiCard label="Logged" value={count('silent')} hint="Silent, not shown" tier="silent" />
-                <KpiCard label="Brands to check" value={toCheck} hint="Low-confidence match" />
-              </div>
+              <p className="sumstrip" role="status">
+                <span data-tier="interrupt">
+                  <strong className="num">{count('interrupt')}</strong> Interrupt
+                </span>
+                <span data-tier="inform">
+                  <strong className="num">{count('inform')}</strong> Inform
+                </span>
+                {count('silent') > 0 && (
+                  <span data-tier="silent">
+                    <strong className="num">{count('silent')}</strong> logged
+                  </span>
+                )}
+                {toCheck > 0 && (
+                  <span>
+                    <strong className="num">{toCheck}</strong> {toCheck === 1 ? 'brand' : 'brands'} to check
+                  </span>
+                )}
+              </p>
 
               <Tabs prefix="check" label="Parts of the result" items={tabs} value={tab} onChange={setTab} />
               <div className="tabpanel" role="tabpanel" id={panelId('check')} aria-labelledby={tabId('check', tab)} tabIndex={0}>

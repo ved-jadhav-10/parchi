@@ -417,3 +417,31 @@ code { padding: 1px var(--space-1); border-radius: var(--radius-sm); background:
 .alert[data-tier='interrupt'] { padding: var(--space-4); }
 .select__value { flex: 1; text-align: left; }
 @media (min-width: 960px) { .workspace { padding: var(--space-4); gap: var(--space-4); } }
+
+/* Use the width: Interrupts side by side, Informs as a grid of short tiles */
+:root { --sidebar-width: 360px; }
+.alertgroup .alerts { grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+.sumstrip { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; }
+.sumstrip span { padding: var(--space-1) var(--space-3); border-radius: var(--radius-pill); background: var(--color-surface); box-shadow: var(--ring); color: var(--color-ink-muted); font-size: var(--text-sm); }
+.sumstrip strong { margin-right: 2px; font-size: var(--text-md); color: var(--color-ink); }
+.sumstrip span[data-tier='interrupt'] { background: var(--tier-interrupt-bg); color: var(--tier-interrupt); font-weight: 600; }
+.sumstrip span[data-tier='interrupt'] strong { color: var(--tier-interrupt); }
+.sumstrip span[data-tier='inform'] { background: var(--tier-inform-bg); color: var(--tier-inform); font-weight: 600; }
+.sumstrip span[data-tier='inform'] strong { color: var(--tier-inform); }
+.flagbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); background: var(--tier-inform-bg); color: var(--tier-inform); font-size: var(--text-sm); }
+.flagbar__item { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--color-ink); font-weight: 600; }
+
+/* X-ray: names and numbers, the evidence on request */
+.xray .chip { border: 0; background: var(--color-tint); font-weight: 500; }
+.xray .chip.chip--hit { box-shadow: inset 0 0 0 1.5px var(--color-accent); }
+.xray__total { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-1) var(--space-3); }
+.xray__total > .limit { min-width: 0; }
+.xray__total > .xray__basis { margin: 0; text-align: right; }
+.xray__total > .xray__basis[open] { grid-column: 1 / -1; text-align: left; }
+.xray__basis > summary { font-weight: 500; color: var(--color-ink-muted); font-size: var(--text-xs); }
+
+.xray__total { display: block; }
+.xray__total > .xray__basis, .xray__total > .xray__basis[open] { margin-top: 2px; text-align: left; }
+.xray .chip.chip--hit { box-shadow: none; background: var(--color-lilac); color: var(--color-accent-strong); }
+.xray td:last-child { min-width: 150px; }
+.xray tbody th, .xray tbody td { padding-block: var(--space-2); }

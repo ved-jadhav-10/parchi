@@ -28,6 +28,11 @@ const place = (box: Box | null): React.CSSProperties => {
   const width = Math.min(POP_W, vw - 32)
   if (!box) return { left: (vw - width) / 2, top: Math.max(24, vh * 0.28), width }
   const left = Math.min(Math.max(16, box.left), vw - width - 16)
+  if (box.height > vh * 0.55) {
+    if (box.left > width + 32) return { left: 16, top: Math.max(16, vh * 0.2), width }
+    if (vw - (box.left + box.width) > width + 32) return { right: 16, top: Math.max(16, vh * 0.2), width }
+    return { right: 24, bottom: 24, width }
+  }
   if (box.top + box.height < vh * 0.55) return { left, top: box.top + box.height + 16, width }
   if (box.top > vh * 0.45) return { left, bottom: vh - box.top + 16, width }
   return { right: 24, bottom: 24, width }
