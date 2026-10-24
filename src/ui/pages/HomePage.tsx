@@ -213,7 +213,7 @@ export const HomePage = () => {
                   <li><span>Zerodol-P</span><span>BD</span></li>
                 </ul>
                 <div className="home-alert">
-                  <span className="home-tier"><AlertIcon size={15} />Interrupt · Overdose</span>
+                  <span className="home-tier">Interrupt · Overdose</span>
                   <p>Paracetamol totals 4,100 mg/day across 3 brands, above the 4,000 mg/day limit. Review.</p>
                   <Limit bare />
                 </div>
