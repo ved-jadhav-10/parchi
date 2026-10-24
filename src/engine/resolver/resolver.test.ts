@@ -130,3 +130,21 @@ describe('resolver behaviour', () => {
     expect(r.canonicalId('not a drug at all')).toBeNull()
   })
 })
+
+describe('liquid strengths for the mL -> mg ledger', () => {
+  const r = testResolver()
+
+  it('flags a per-5-mL volume inferred for a syrup or suspension that did not state one', () => {
+    const res = r.resolve('Combiflam suspension')
+    expect(res.form).toBe('suspension')
+    for (const ing of res.ingredients) {
+      expect(ing.per_volume_ml).toBe(5)
+      expect(ing.per_volume_assumed).toBe(true)
+    }
+  })
+
+  it('keeps stated volumes unflagged (oral drops per 1 mL)', () => {
+    const res = r.resolve('Calpol Paediatric drops')
+    expect(res.ingredients).toEqual([{ id: 'paracetamol', mg: 100, per_volume_ml: 1 }])
+  })
+})

@@ -47,6 +47,8 @@ def _component_json(comp, index: dict[str, int]) -> list:
     if s.other_unit:
         return [i, 0, None, s.other_unit[0], _num(s.other_unit[1])]
     if s.per_volume_ml is not None:
+        if s.volume_assumed:
+            return [i, _num(s.mg), _num(s.per_volume_ml), "~"]  # "~": volume inferred, not stated
         return [i, _num(s.mg), _num(s.per_volume_ml)]
     return [i, _num(s.mg)]
 

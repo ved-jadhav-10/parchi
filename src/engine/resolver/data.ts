@@ -99,7 +99,8 @@ function decodeIngredient(entry: CompEntry, ids: string[]): Ingredient {
   const [i, mg, perMl, unit, amount] = entry as [number, number, number | null | undefined, string?, number?]
   const out: Ingredient = { id: ids[i], mg }
   if (perMl != null) out.per_volume_ml = perMl
-  if (unit === '?') out.strength_unknown = true
+  if (unit === '~') out.per_volume_assumed = true
+  else if (unit === '?') out.strength_unknown = true
   else if (unit) out.other_unit = { unit, amount: amount ?? 0 }
   return out
 }

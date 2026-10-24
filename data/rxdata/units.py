@@ -28,6 +28,7 @@ class Strength:
     other_unit: tuple[str, float] | None = None
     known: bool = True
     raw: str = ""
+    volume_assumed: bool = False  # per_volume_ml inferred (labelling convention or sibling ingredient)
 
     def as_json(self) -> dict:
         out: dict = {"mg": _clean(self.mg)}
@@ -37,6 +38,8 @@ class Strength:
             out["other_unit"] = {"unit": self.other_unit[0], "amount": _clean(self.other_unit[1])}
         if not self.known:
             out["strength_unknown"] = True
+        if self.volume_assumed:
+            out["per_volume_assumed"] = True
         return out
 
 

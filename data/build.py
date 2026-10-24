@@ -64,6 +64,33 @@ PARITY_EXAMPLES = [
 ]
 
 
+LIQUID_FORMS = ("syrup", "suspension", "dry_syrup", "oral_solution", "oral_drops")
+
+
+def liquid_report(brands, path: Path) -> None:
+    """Liquid brands in the app index whose ingredients still cannot be converted mL -> mg."""
+    rows, stats = [], Counter()
+    for b in brands:
+        if b.form not in LIQUID_FORMS:
+            continue
+        missing = [c for c in b.components if c.strength.per_volume_ml is None]
+        assumed = any(c.strength.volume_assumed for c in b.components)
+        stats["total"] += 1
+        stats["missing" if missing else "assumed" if assumed else "stated"] += 1
+        for c in missing:
+            s = c.strength
+            reason = ("strength not given" if not s.known else f"unit {s.other_unit[0]}" if s.other_unit
+                      else "no volume stated (drops/oral solution: per mL vs per 5 mL is ambiguous)")
+            rows.append([popularity_tier(b.rank), b.display, b.form, c.id, s.raw, reason, b.source])
+    rows.sort(key=lambda r: (r[0], r[1]))
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f, lineterminator="\n")
+        w.writerow(["popularity_tier", "brand", "form", "ingredient", "strength_as_listed", "reason", "source"])
+        w.writerows(rows)
+    print(f"liquids in index: {stats['total']}; volume stated {stats['stated']}, inferred {stats['assumed']}, "
+          f"still missing {stats['missing']} (data/reports/{path.name})")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", type=Path, default=DEFAULT_SOURCE)
@@ -137,6 +164,8 @@ def main() -> int:
                     hits += 1
                     w.writerow([e.so_number, e.list, b.display, b.form, b.discontinued, b.complete,
                                 popularity_tier(b.rank), (b.display, b.form) in in_index])
+
+    liquid_report(brands, HERE / "reports" / "liquid_strength_gaps.csv")
 
     sizes = {p.name: p.stat().st_size for p in sorted(args.out.glob("*.json"))}
     print("brands:", b_stats)
