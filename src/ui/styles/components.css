@@ -156,7 +156,7 @@
 /* Chips */
 .chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .chip {
-  padding: 2px var(--space-2); border-radius: var(--radius-sm); background: var(--color-tint);
+  padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); background: var(--color-tint);
   color: var(--color-accent-strong); font-size: var(--text-xs); line-height: var(--leading-xs); font-weight: 600;
 }
 .chip--source { background: var(--color-surface); box-shadow: var(--ring); color: var(--color-ink-muted); }
@@ -173,7 +173,7 @@
 .xray__flag { display: block; margin-top: var(--space-1); font-weight: 400; }
 .xray__line { display: block; margin-top: var(--space-1); color: var(--color-ink-muted); font-size: var(--text-xs); line-height: var(--leading-xs); }
 .xray__basis { margin-top: var(--space-1); font-size: var(--text-xs); line-height: var(--leading-xs); color: var(--color-ink-muted); }
-.xray__basis summary { cursor: pointer; }
+.xray__basis summary { display: flex; align-items: center; min-height: var(--tap-min); cursor: pointer; }
 .xray__basis p { margin: var(--space-1) 0 0; }
 .xray__notes { margin-top: var(--space-4); color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
 .xray__notes summary { min-height: var(--tap-min); display: flex; align-items: center; cursor: pointer; font-weight: 600; }

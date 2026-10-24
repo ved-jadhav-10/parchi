@@ -35,7 +35,7 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
 
   return (
     <div className="tl" role="group" aria-label="Timeline of every medicine on this order, by doctor">
-      <div className="tl__scroll">
+      <div className="tl__scroll" tabIndex={0} role="region" aria-label="Timeline, scrolls sideways">
         <div className="tl__grid" style={{ ['--days' as string]: days, ...(placedAt !== null && { ['--at' as string]: placedAt }) }}>
           <div className="tl__corner" />
           {dates.map((d, i) => (
@@ -93,7 +93,9 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
         </li>
       </ul>
 
-      <table className="sr-only">
+      {/* A table keeps its content width inside a 1px box and would widen the page, so the clipped box is a div around it. */}
+      <div className="sr-only">
+      <table>
         <caption>Medicines on this order</caption>
         <thead>
           <tr>
@@ -119,6 +121,7 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
           })}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

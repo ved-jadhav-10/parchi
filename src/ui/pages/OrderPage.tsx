@@ -12,7 +12,8 @@ import { Timeline } from '../components/Timeline'
 import { TierBadge } from '../components/Icons'
 import { XrayTable } from '../components/XrayTable'
 import { latestLab } from '../history/check'
-import { doctorName, longDate, rangeLabel, shortDate, todayIso } from '../history/labels'
+import { doctorName, longDate, rangeLabel, shortDate, STATUS_TIER, todayIso } from '../history/labels'
+import { leadFinding } from '../history/queue'
 import { runHistory } from '../history/run'
 import type { AlertChange, HistoryAlert, HistoryResult, LabResult, Order } from '../history/types'
 import { downloadText } from '../lib/csv'
@@ -62,7 +63,8 @@ const KidneyCard = ({ order, result, onAdd }: { order: Order; result: HistoryRes
   const [date, setDate] = useState(todayIso())
   const ok = Number(value) > 0 && date !== ''
   return (
-    <Card title="Kidney function" icon="user">
+    <div className="kidney">
+      <h3 className="order__sub">Kidney function</h3>
       <p className="hint kidney__now">
         {result.crcl !== null && lab
           ? `Estimated creatinine clearance ${result.crcl.toFixed(0)} mL/min, from creatinine ${lab.value} mg/dL on ${longDate(lab.date)}.`
@@ -99,7 +101,28 @@ const KidneyCard = ({ order, result, onAdd }: { order: Order; result: HistoryRes
           Add and re-check
         </button>
       </form>
-    </Card>
+    </div>
+  )
+}
+
+/** The answer first: what Parchi suggests, how many findings, and the one that weighs most. The decision itself sits beside the evidence. */
+const Verdict = ({ result }: { result: HistoryResult }) => {
+  const lead = leadFinding(result)
+  const unverified = result.unverified.length
+  return (
+    <section className="verdict" data-tier={STATUS_TIER[result.status]} aria-labelledby="verdict-title">
+      <h2 id="verdict-title" className="sr-only">
+        What Parchi suggests
+      </h2>
+      <StatusBadge status={result.status} />
+      <p className="verdict__lead">{lead.text}</p>
+      <p className="verdict__counts">
+        {count(result, 'interrupt')} Interrupt, {count(result, 'inform')} Inform
+        {unverified > 0 && `, ${unverified} unverified ${unverified === 1 ? 'brand' : 'brands'}`}
+        {lead.more > 0 && ` · ${lead.more} more below`}
+      </p>
+      <p className="hint verdict__note">Parchi suggests; the pharmacist decides. Limits and alert rules are drafts until a pharmacist signs them off.</p>
+    </section>
   )
 }
 
@@ -150,6 +173,25 @@ export const OrderPage = () => {
   }, [order])
 
   const last = useMemo(() => decisions.find((d) => d.order_id === id), [decisions, id])
+
+  // On a phone the decision sits below the evidence; a bar at the bottom of the screen reaches it until it is in view.
+  const [decisionInView, setDecisionInView] = useState(false)
+  const hasResult = result !== null
+  useEffect(() => {
+    const el = document.getElementById('decision')
+    if (!el || typeof IntersectionObserver === 'undefined') return
+    const io = new IntersectionObserver(([entry]) => setDecisionInView(entry.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [hasResult])
+
+  const goDecide = () => {
+    const el = document.getElementById('decision')
+    if (!el) return
+    el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+    const radio = el.querySelector<HTMLInputElement>('input[type=radio]:checked') ?? el.querySelector<HTMLInputElement>('input[type=radio]')
+    radio?.focus({ preventScroll: true })
+  }
 
   const addLab = async (lab: LabResult) => {
     if (!order) return
@@ -216,43 +258,12 @@ export const OrderPage = () => {
       {!failed && !result && <p className="hint">Checking…</p>}
 
       {result && w && (
-        <div className="workspace">
-          <div className="workspace__input workspace__input--tall">
-            <Card title="Suggested status" icon="shield">
-              <StatusBadge status={result.status} />
-              <p className="hint order__summary">
-                {count(result, 'interrupt')} Interrupt, {count(result, 'inform')} Inform
-                {result.unverified.length > 0 && `, ${result.unverified.length} unverified ${result.unverified.length === 1 ? 'brand' : 'brands'}`}. Parchi suggests; the pharmacist decides.
-              </p>
-            </Card>
-            <Card title="Your decision" icon="log">
-              <DecisionPanel order={order} result={result} last={last} onSaved={refreshDecisions} />
-            </Card>
-            <KidneyCard order={order} result={result} onAdd={addLab} />
-            {saveFailed && <p className="dialog__error">Could not save on this device. The result was not added.</p>}
-            <p className="hint">
-              <a href={`#/history/${encodeURIComponent(order.id)}`}>Edit prescriptions and labs</a>
-            </p>
-            <div className="actions">
-              <button
-                type="button"
-                className="btn btn--secondary"
-                onClick={() => downloadText(`${order.id}.fhir.json`, JSON.stringify(orderToFhir(order), null, 2), 'application/json')}
-              >
-                Download as FHIR (draft)
-              </button>
-            </div>
-          </div>
-
+        <div className="workspace order">
           <div className="workspace__result">
             <div aria-live="polite" className="result">
-              <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off. The default window for a line with no written duration is an unverified placeholder.</p>
+              <Verdict result={result} />
 
               {changes && <Changes changes={changes} />}
-
-              <Card title="Timeline" icon="chart" description="Every medicine, by doctor and day. Where bars from different doctors overlap, doses add up.">
-                <Timeline lines={result.lines} alerts={result.alerts} placed={order.placed} />
-              </Card>
 
               <div className="alerts">
                 {result.alerts.filter((a) => a.tier !== 'silent').length === 0 && (
@@ -274,6 +285,10 @@ export const OrderPage = () => {
               </div>
 
               <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
+
+              <Card title="Timeline" icon="chart" description="Every medicine, by doctor and day. Where bars from different doctors overlap, doses add up. A line with no written duration uses an unverified default window.">
+                <Timeline lines={result.lines} alerts={result.alerts} placed={order.placed} />
+              </Card>
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient for the days chosen, against the limit on file">
                 <div className="windows" role="group" aria-label="Days to show">
@@ -308,19 +323,62 @@ export const OrderPage = () => {
 
               <LeafletCard lines={result.lines} />
 
-              {order.prescriptions.map((rx) => (
-                <Card key={rx.id} title={`${doctorName(rx.doctor)}, ${longDate(rx.date)}`} description="What was written and what each line was matched to. Select a line for details.">
-                  <ul className="matches">
-                    {result.lines
-                      .filter((l) => l.rx_id === rx.id)
-                      .map((l) => (
-                        <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} />
-                      ))}
-                  </ul>
-                </Card>
-              ))}
+              <Card title="What was written" icon="log" description="Each line as written and what it was matched to. Select a line for details.">
+                {order.prescriptions.map((rx) => (
+                  <div key={rx.id} className="order__rx">
+                    <h3 className="order__sub">
+                      {doctorName(rx.doctor)}, {longDate(rx.date)}
+                    </h3>
+                    <ul className="matches">
+                      {result.lines
+                        .filter((l) => l.rx_id === rx.id)
+                        .map((l) => (
+                          <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} />
+                        ))}
+                    </ul>
+                  </div>
+                ))}
+              </Card>
             </div>
           </div>
+
+          <div className="workspace__input order__rail">
+            <Card id="decision" title="Your decision" icon="log">
+              <DecisionPanel order={order} result={result} last={last} onSaved={refreshDecisions} />
+            </Card>
+            <details className="card order__tools" open={(order.incoming_labs ?? []).length > 0 || undefined}>
+              <summary>Kidney result, edit and export</summary>
+              <div className="order__tools-body">
+                <KidneyCard order={order} result={result} onAdd={addLab} />
+                {saveFailed && (
+                  <p className="dialog__error" role="alert">
+                    Could not save on this device. The result was not added.
+                  </p>
+                )}
+                <a className="order__link" href={`#/history/${encodeURIComponent(order.id)}`}>
+                  Edit prescriptions and labs
+                </a>
+                <div className="actions">
+                  <button
+                    type="button"
+                    className="btn btn--secondary"
+                    onClick={() => downloadText(`${order.id}.fhir.json`, JSON.stringify(orderToFhir(order), null, 2), 'application/json')}
+                  >
+                    Download as FHIR (draft)
+                  </button>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          {!decisionInView && (
+            <div className="decide-bar">
+              <StatusBadge status={result.status} compact />
+              <button type="button" className="btn btn--primary" onClick={goDecide}>
+                Decide
+              </button>
+            </div>
+          )}
         </div>
       )}
 

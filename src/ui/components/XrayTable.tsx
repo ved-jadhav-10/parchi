@@ -33,7 +33,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
     ([, a], [, b]) => (b.limit_mg_day ? b.total_mg_day / b.limit_mg_day : 0) - (a.limit_mg_day ? a.total_mg_day / a.limit_mg_day : 0),
   )
   return (
-    <div className="xray">
+    <div className="xray" tabIndex={0} role="region" aria-label="Prescription X-ray, scrolls sideways">
       <table>
         <thead>
           <tr>
