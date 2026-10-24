@@ -34,6 +34,8 @@ NSQ_MONTHS = ["APR-2026", "MAY-2026", "JUN-2026", "JUL-2026", "AUG-2026", "SEP-2
 for _m in NSQ_MONTHS:
     FILES[f"cdsco/nsq_{_m}.json"] = f"{NSQ_BASE}/filteredNsqDrugTable?month={_m}&source=All&tab=nsq"
     FILES[f"cdsco/spurious_{_m}.json"] = f"{NSQ_BASE}/filteredSpuriousDrugTable?month={_m}&source=All&tab=spurious"
+# Jan Aushadhi (PMBJP) product list, PIB annexure to a Lok Sabha reply (drug code, generic name, unit size).
+FILES["janaushadhi/pmbjp_list_2025-12-31.pdf"] = "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/feb/doc202626781701.pdf"
 
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 

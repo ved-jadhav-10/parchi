@@ -1,7 +1,7 @@
 """Build public/data/*.json from the curated CSVs and the raw sources.
 
     python data/fetch_raw.py      # once, downloads into data/raw/ (gitignored)
-    python data/build.py          # writes public/data/{ingredients,brands,banned_fdc,ddi,nsq}.json
+    python data/build.py          # writes public/data/{ingredients,brands,banned_fdc,ddi,nsq,janaushadhi}.json
 
 Deterministic: same inputs, same bytes. See docs/track-a-data.md.
 """
@@ -19,8 +19,9 @@ sys.path.insert(0, str(HERE))
 from rxdata.banned_fdc import EXCIPIENT_LIKE, load_all as load_banned  # noqa: E402
 from rxdata.brands import DEFAULT_SOURCE, read_curated, read_dataset, select  # noqa: E402
 from rxdata.ddinter import load_pairs as load_ddi  # noqa: E402
-from rxdata.export import banned_matches, popularity_tier, write_banned, write_brands, write_ddi, write_ingredients, write_nsq  # noqa: E402
+from rxdata.export import banned_matches, popularity_tier, write_banned, write_brands, write_ddi, write_ingredients, write_janaushadhi, write_nsq  # noqa: E402
 from rxdata.ingredients import Registry  # noqa: E402
+from rxdata.janaushadhi import SOURCE_URL as JAN_URL, load_items as load_jan  # noqa: E402
 from rxdata.nsq import load_month_files as load_nsq  # noqa: E402
 
 ROOT = HERE.parent
@@ -42,6 +43,13 @@ NSQ_SOURCE = {
     "name": "CDSCO monthly NSQ (not of standard quality) and spurious drug alerts",
     "url": "https://cdsco.gov.in/opencms/opencms/en/Notifications/nsq-drugs/",
     "note": "Batch-specific. A failed batch says nothing about other batches of the same brand; about half the rows name no brand.",
+}
+
+JAN_SOURCE = {
+    "name": "PMBJP list of 2110 generic medicines till 31.12.2025 (PIB annexure to a Lok Sabha reply, Feb 2026)",
+    "url": JAN_URL,
+    "note": "No prices. Only items with a readable mass strength for every ingredient are kept; creams, %, IU and vitamins "
+    "are in data/reports/janaushadhi_unparsed.csv. A match is the same ingredients and strengths: the pharmacist confirms equivalence.",
 }
 
 # Fixed raw -> id pairs; the TS port of the canonicaliser must reproduce them (parity test).
@@ -87,6 +95,12 @@ def main() -> int:
         print("no NSQ files in data/raw/cdsco; run fetch_raw.py", file=sys.stderr)
         return 1
 
+    jan_pdf = args.raw / "janaushadhi" / "pmbjp_list_2025-12-31.pdf"
+    if not jan_pdf.exists():
+        print(f"missing {jan_pdf}; run python data/fetch_raw.py", file=sys.stderr)
+        return 1
+    jan_items, jan_unparsed = load_jan(jan_pdf, reg)
+
     meta = {"sources": SOURCES, "top_per_letter": args.top_per_letter}
     b_stats = write_brands(args.out / "brands.json", brands, meta)
     used = {c.id for b in brands for c in b.components} | {i for e in banned for i in e.ingredients}
@@ -95,6 +109,13 @@ def main() -> int:
     f_stats = write_banned(args.out / "banned_fdc.json", banned, {})
     d_stats = write_ddi(args.out / "ddi.json", ddi_pairs, ddinter_id, used | set(reg.meta), {"source": DDI_SOURCE})
 
+    j_stats = write_janaushadhi(args.out / "janaushadhi.json", jan_items, used | set(reg.meta), {"source": JAN_SOURCE})
+    j_stats["unparsed"] = len(jan_unparsed)
+    (HERE / "reports").mkdir(exist_ok=True)
+    with open(HERE / "reports" / "janaushadhi_unparsed.csv", "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f, lineterminator="\n")
+        w.writerow(["drug_code", "name", "unit"])
+        w.writerows(jan_unparsed)
     n_stats = write_nsq(args.out / "nsq.json", nsq_rows, {"source": NSQ_SOURCE})
 
     # Report: which products in the (2022) market dataset match a banned combination.
@@ -122,6 +143,7 @@ def main() -> int:
     print("ingredients:", i_stats)
     print("ddi:", d_stats)
     print("nsq:", n_stats)
+    print("janaushadhi:", j_stats)
     print("banned:", f_stats, f"- {hits} dataset rows match a banned FDC (data/reports/banned_fdc_matches.csv)")
     print("incomplete compositions in index:", sum(1 for b in brands if not b.complete), "of", len(brands))
     print("forms:", dict(Counter(b.form for b in brands).most_common(8)))

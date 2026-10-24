@@ -178,6 +178,26 @@ def write_nsq(path: Path, rows: list[dict], meta: dict) -> dict:
 _MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 
 
+def write_janaushadhi(path: Path, items: list, keep: set[str], meta: dict) -> dict:
+    """PMBJP items whose ingredients are all known to the app, as [code, name, unit, form, release, [[ing, mg, per_ml?]...]]."""
+    kept = [i for i in items if all(iid in keep for iid, _, _ in i.ingredients)]
+    ids = sorted({iid for i in kept for iid, _, _ in i.ingredients})
+    index = {iid: n for n, iid in enumerate(ids)}
+    doc = {
+        "schema": SCHEMA,
+        **meta,
+        "columns": ["code", "name", "unit", "form", "release", "ingredients"],
+        "ingredients": ids,
+        "items": [
+            [i.code, i.name, i.unit, i.form, i.release,
+             [[index[iid], _num(mg)] + ([_num(pv)] if pv is not None else []) for iid, mg, pv in i.ingredients]]
+            for i in sorted(kept, key=lambda x: x.code)
+        ],
+    }
+    _dump(path, doc)
+    return {"items": len(kept), "ingredients": len(ids)}
+
+
 def banned_matches(entry: BannedFdc, brand: Brand) -> bool:
     """Same rule as src/engine/resolver/banned.ts (kept in sync by a parity test)."""
     ids = sorted({c.id for c in brand.components} - EXCIPIENT_LIKE)

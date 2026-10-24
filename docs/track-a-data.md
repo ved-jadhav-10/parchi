@@ -34,6 +34,7 @@ ddi.covers('domperidone')                        // false: not in DDInter, so "n
 | `flags` | `banned_fdc`, `lasa` (look-alike with different ingredients), `discontinued`, `nsq` | C |
 | `banned_fdc[]` | `{so, date, list, text, certain}` for the source chip, e.g. `S.O. 3385(E)`. `certain: false` = composition may be incomplete | C |
 | `nsq[]` | `{batch, month, result, product, manufacturer, spurious}`: CDSCO failed/spurious batches (Apr-Sep 2026) of this brand name. Batch-specific, so Silent/Inform and "check the batch on the strip", never Interrupt. Matches by brand name (and strength when the alert names one); ~half the CDSCO rows name no brand and are not matched. Demo Rx: Pan-D has one (Jul 2026) | C, D |
+| `jan_aushadhi[]` | `{code, name, unit, release?}`: PMBJP generics with the same ingredients and strengths (list of 31.12.2025, no prices). Only for complete compositions with mg strengths; modified-release and plain are kept apart. `release` (e.g. gastro-resistant) is for the pharmacist to confirm. Not a safety flag | D |
 | `composition_complete` | `false` = source shows at most two ingredients and may hide more. ~34% of dataset brands. Suggest Silent/Inform, never Interrupt by itself | C, D |
 | `candidates`, `notes` | what else the text could mean, and one-line reasons for the pharmacist | D |
 
@@ -52,6 +53,7 @@ Rules worth knowing:
 | `ingredients.json` | 1,377 ids, 1,777 aliases, classes, ATC, parity examples | 0.15 MB |
 | `banned_fdc.json` | 172 banned FDCs: 156 (S.O. 3285-3440(E), 02.08.2024) + 16 (S.O. 3068-3083(E), 11.06.2026) | 0.04 MB |
 | `nsq.json` | 1,272 CDSCO NSQ/spurious rows, Apr-Sep 2026 (652 name a brand). Optional at load: the resolver works without it | 0.30 MB |
+| `janaushadhi.json` | 1,475 of the 2,110 PMBJP items (oral/injectable with mg strengths); creams, %, IU and vitamin mixes are in `data/reports/janaushadhi_unparsed.csv`. Optional at load | 0.14 MB |
 | `ddi.json` | 70,144 DDInter pairs (major/moderate/minor/unknown) among 770 of our ingredients, CC BY-NC-SA 4.0 | 0.86 MB |
 
 All stay under Workbox's 2 MiB per-file precache limit. Decoder: `src/engine/resolver/data.ts`.
