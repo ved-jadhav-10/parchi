@@ -54,6 +54,25 @@ export interface BannedFdcRef {
   certain: boolean
 }
 
+/**
+ * Track A, Phase 2: best guess at what an unrecognised product contains. Always unverified; it must never enter the
+ * dose totals until a pharmacist confirms it.
+ */
+export interface ProposedComposition {
+  /** Product the guess is based on (closest brand name), or null when it comes from composition text the buyer supplied. */
+  brand: string | null
+  form: string
+  route?: Route
+  systemic?: boolean
+  ingredients: Ingredient[]
+  /** 0..1 belief that `ingredients` is right. Lower when the next-best matches have a different composition. */
+  confidence: number
+  basis: 'similar_brand_name' | 'buyer_composition_text'
+  unverified: true
+  /** Why the pharmacist should look, e.g. "Two similar brands have different compositions". */
+  caution?: string
+}
+
 /** Track A output */
 export interface ResolvedBrand {
   raw: string
@@ -83,6 +102,8 @@ export interface ResolvedBrand {
   schedule_source?: string
   /** Short reasons for the pharmacist, e.g. "Assumed 650 mg; Dolo is also sold as 500 mg". */
   notes?: string[]
+  /** Track A, Phase 2: set only when the brand is not recognised (`match: 'none'`) and a guess exists. */
+  proposed_composition?: ProposedComposition
 }
 
 /**
