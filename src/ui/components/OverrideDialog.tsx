@@ -12,9 +12,9 @@ export const OVERRIDE_REASONS = [
   'Other',
 ]
 
-type Props = { alert: Alert | null; onCancel: () => void; onSave: (reason: string, note: string) => Promise<void> }
+type Props = { alert: Alert | null; orderId?: string; onCancel: () => void; onSave: (reason: string, note: string) => Promise<void> }
 
-export const OverrideDialog = ({ alert, onCancel, onSave }: Props) => {
+export const OverrideDialog = ({ alert, orderId, onCancel, onSave }: Props) => {
   const ref = useRef<HTMLDialogElement>(null)
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
@@ -68,6 +68,8 @@ export const OverrideDialog = ({ alert, onCancel, onSave }: Props) => {
             <span className="field__label">Note{needsNote ? ' (required)' : ' (optional)'}</span>
             <textarea className="rx-input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
           </label>
+
+          <p className="hint">Saved to the override log on this device, with the time{orderId ? ` and order ${orderId}` : ''}.</p>
 
           {failed && <p className="dialog__error" role="alert">Could not save on this device. The override was not recorded.</p>}
 

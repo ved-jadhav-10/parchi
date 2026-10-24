@@ -14,6 +14,7 @@ import { XrayTable } from '../components/XrayTable'
 import { latestLab } from '../history/check'
 import { doctorName, longDate, rangeLabel, shortDate, STATUS_TIER, todayIso } from '../history/labels'
 import { leadFinding } from '../history/queue'
+import { useNextWaiting } from '../history/useNext'
 import { runHistory } from '../history/run'
 import type { AlertChange, HistoryAlert, HistoryResult, LabResult, Order } from '../history/types'
 import { downloadText } from '../lib/csv'
@@ -173,6 +174,7 @@ export const OrderPage = () => {
   }, [order])
 
   const last = useMemo(() => decisions.find((d) => d.order_id === id), [decisions, id])
+  const nextWaiting = useNextWaiting(orders, decisions, id)
 
   // On a phone the decision sits below the evidence; a bar at the bottom of the screen reaches it until it is in view.
   const [decisionInView, setDecisionInView] = useState(false)
@@ -217,7 +219,8 @@ export const OrderPage = () => {
       alert_reason: overriding.reason,
       source: overriding.source,
       override_reason: reason,
-      ...(note && { note: `${order?.id}: ${note}` }),
+      order_id: order?.id,
+      ...(note && { note }),
     })
     setOverridden({ ...overridden, [overriding.type + overriding.ingredients.join()]: reason })
     setOverriding(null)
@@ -344,7 +347,7 @@ export const OrderPage = () => {
 
           <div className="workspace__input order__rail">
             <Card id="decision" title="Your decision" icon="log">
-              <DecisionPanel order={order} result={result} last={last} onSaved={refreshDecisions} />
+              <DecisionPanel key={order.id} order={order} result={result} last={last} onSaved={refreshDecisions} next={nextWaiting.next} othersWaiting={nextWaiting.othersWaiting} />
             </Card>
             <details className="card order__tools" open={(order.incoming_labs ?? []).length > 0 || undefined}>
               <summary>Kidney result, edit and export</summary>
@@ -382,7 +385,7 @@ export const OrderPage = () => {
         </div>
       )}
 
-      <OverrideDialog alert={overriding} onCancel={() => setOverriding(null)} onSave={saveOverride} />
+      <OverrideDialog alert={overriding} orderId={order.id} onCancel={() => setOverriding(null)} onSave={saveOverride} />
     </>
   )
 }

@@ -11,6 +11,8 @@ export interface OverrideRecord {
   source: string
   override_reason: string
   note?: string
+  /** The order the override was made on. Absent on overrides saved before this field existed and on the single-prescription checker. */
+  order_id?: string
 }
 
 const DB = 'parchi'

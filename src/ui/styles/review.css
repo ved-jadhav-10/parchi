@@ -132,6 +132,15 @@
 .decision__option input { margin-top: 2px; flex: none; }
 .decision__hint { display: block; color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
 .decision__note { min-height: 72px; }
+.decision__key {
+  display: inline-block; min-width: 1.5em; padding: 0 var(--space-1); border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  background: var(--color-surface); color: var(--color-ink-muted); font: inherit; font-size: var(--text-xs); text-align: center;
+}
+.decision__confirm { margin: 0; padding: var(--space-3); border-radius: var(--radius-sm); background: var(--color-tint); color: var(--color-ink); }
+.decision .actions { margin-top: 0; }
+.decision .hint { margin-top: 0; }
+/* The key hints are for a keyboard; a touch screen has none. */
+@media (hover: none) { .decision__key, .decision__keys { display: none; } }
 
 /* Timeline: one lane per doctor, one row per medicine, one column per day. Rows are subgrids so a bar shares its row with the day cells. */
 .tl__scroll { overflow-x: auto; }

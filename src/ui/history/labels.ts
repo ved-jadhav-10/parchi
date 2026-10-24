@@ -32,6 +32,18 @@ export const DECISIONS: { value: OrderStatus; label: string; hint: string }[] = 
   { value: 'clear', label: 'Release', hint: 'Dispatch with nothing further to note.' },
 ]
 
+/**
+ * Why a pharmacist's decision differs from Parchi's suggestion. Starting list only: replace with the pharmacist's real
+ * reasons after the session. Deliberately separate from the per-alert override reasons, which describe a finding, not an order.
+ */
+export const DECISION_REASONS = [
+  'Prescriber confirmed by phone',
+  'Customer confirmed the medicine was stopped or changed',
+  'Dose already adjusted on this order',
+  'Finding reviewed and not relevant to this customer',
+  'Other',
+]
+
 export const decisionLabel = (s: OrderStatus) => DECISIONS.find((d) => d.value === s)?.label ?? s
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']

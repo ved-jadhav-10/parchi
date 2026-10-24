@@ -9,7 +9,7 @@ import { decisionLabel, STATUS_LABEL } from '../history/labels'
 import { useOverrides } from '../storage/overrides'
 import { useDecisions } from '../storage/orders'
 
-const columns = ['at', 'tier', 'type', 'ingredients', 'alert_reason', 'source', 'override_reason', 'note']
+const columns = ['at', 'order_id', 'tier', 'type', 'ingredients', 'alert_reason', 'source', 'override_reason', 'note']
 
 export const LogPage = () => {
   const { rows, ready, error } = useOverrides()
@@ -91,6 +91,11 @@ export const LogPage = () => {
                             ))}
                             <span className="chip chip--source">{r.source}</span>
                           </span>
+                          {r.order_id && (
+                            <p className="log__text">
+                              Order <a href={`#/order/${encodeURIComponent(r.order_id)}`}>{r.order_id}</a>
+                            </p>
+                          )}
                         </td>
                         <td>
                           <strong>{r.override_reason}</strong>
