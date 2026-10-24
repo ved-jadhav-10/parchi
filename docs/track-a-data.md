@@ -76,7 +76,8 @@ All stay under Workbox's 2 MiB per-file precache limit. Decoder: `src/engine/res
 ## Quality numbers (from the tests)
 
 - Demo Rx: all 7 lines resolve as the fixture expects; hidden paracetamol totals 4,100 mg/day.
-- 74 hand-written misspellings: 100% top-1. 810 held-out generated typos of popular brands: 97.9% top-1, 8.1% routed to the pharmacist, 0.25% confidently wrong. ~0.35 ms per lookup.
+- 74 hand-written misspellings: 100% top-1. 818 held-out generated typos of popular brands: 97.9% top-1, 9.0% routed to the pharmacist, 0.12% confidently wrong. ~0.35 ms per lookup.
+- **Brands we do not have** (`external.test.ts`, 1,092 brands from Eka.Care's 2025 list, MIT): 72% of comparable brands get a name, 50% of those with the same composition as Eka's. Before the open-set guard 11.6% were confidently a different composition; now 1.4% (one-letter look-alikes such as Aritep/Aricep). The guard routes a fuzzy match to the pharmacist when the brand word differs in its first letter or by two or more typo edits, or when the typed name has a word the matched product lacks ("Plus", "MD", "D", "XT"). See `docs/DATA_RELIABILITY.md`.
 - TS and Python agree on every canonical id example and on every banned-FDC match in the index (parity tests).
 
 ## Rebuild
@@ -108,4 +109,4 @@ All offline TypeScript; nothing here decides or substitutes. Fixture: `tests/fix
 
 ## Curated interaction supplement
 
-`public/data/ddi_supplement.json` is hand-edited (not built from DDInter): rules `{id, a[], b[], level, note, source, pharmacist_approved}`, each expanding to every a x b pair. It exists because DDInter's bulk files lack several cardiovascular pairs and Indian-only drugs. Every rule is unverified. Keep ids canonical; `ddiSupplement.test.ts` checks that.
+`public/data/ddi_supplement.json` is hand-edited (not built from DDInter): rules `{id, a[], b[], level, note, source, pharmacist_approved}`, each expanding to every a x b pair. It exists because DDInter's bulk files lack several cardiovascular pairs and Indian-only drugs. 19 rules, including domperidone with strong CYP3A4 inhibitors and with QT-prolonging drugs (EMA 2014 contraindications; DDInter has no domperidone at all) and verapamil/diltiazem with beta-blockers, digoxin and ivabradine. Every rule is unverified. Keep ids canonical; `ddiSupplement.test.ts` checks that. `highPriorityDdi.test.ts` checks the ONC high-priority list (Phansalkar 2012) for the members sold in India.

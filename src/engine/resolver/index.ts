@@ -8,7 +8,7 @@ import { createJanAushadhiIndex } from './janaushadhi'
 import { createScheduleIndex } from './schedule'
 import { createNsqIndex } from './nsq'
 import { fetchResolverData, type BrandRecord, type IngredientInfo, type ResolverData } from './data'
-import { HINT_FORMS, MODIFIERS, canonicalize, normaliseText, parseName, type ParsedName } from './normalize'
+import { HINT_FORMS, MODIFIERS, canonicalize, normaliseText, parseName, typoDistance, type ParsedName } from './normalize'
 import { splitBrandAndSig, splitRx } from './segment'
 
 export { splitBrandAndSig, splitRx } from './segment'
@@ -289,6 +289,24 @@ export function createResolver(data: ResolverData): Resolver {
     return out
   }
 
+  /**
+   * Why a close but inexact name may be a different product rather than a typo, or null. The index is a 2022 snapshot, so
+   * newer brands are missing and their nearest neighbour is often another medicine (measured against an independent 2025
+   * brand list in external.test.ts). Typists rarely change a word's first letter and usually make one edit; a word after
+   * the brand that the matched product lacks ("Plus", "MD", "D", "XT") usually marks extra ingredients. A word only the
+   * product has is fine: typists leave out "Duo" or "Tablet" more often than they add one.
+   */
+  function unlistedReason(q: ParsedName, line: Line): string | null {
+    const [qStem, ...qRest] = q.tokens
+    const [lStem, ...lRest] = line.tokens
+    const extra = qRest.filter((t) => !lRest.includes(t))
+    if (extra.length) return `"${extra.join(' ')}" is not in that name and often means a different composition; confirm it on the strip.`
+    if (qStem && lStem && qStem !== lStem && (qStem[0] !== lStem[0] || typoDistance(qStem, lStem) >= 2)) {
+      return 'it may be a brand missing from the data (built from 2022 listings); confirm the composition on the strip.'
+    }
+    return null
+  }
+
   function toResolved(raw: string, rec: BrandRecord): ResolvedBrand {
     return {
       raw,
@@ -492,6 +510,11 @@ export function createResolver(data: ResolverData): Resolver {
     )
     const res = toResolved(raw, best.v.rec)
     const exact = best.name === 1
+    const unlisted = exact ? null : unlistedReason(q, best.v.line)
+    if (unlisted) {
+      needsPharmacist = true
+      confidence = Math.min(confidence, NEEDS_PHARMACIST_BELOW - 0.01)
+    }
     if (rivals.length) {
       res.flags.push('lasa')
       needsPharmacist = true
@@ -503,7 +526,7 @@ export function createResolver(data: ResolverData): Resolver {
       confidence = best.v.rec.curated ? Math.min(1, confidence) : Math.min(0.97, confidence)
     } else {
       confidence = Math.min(confidence, 0.95)
-      if (!exact) notes.unshift(`Read "${raw}" as ${best.v.rec.display}.`)
+      if (!exact) notes.unshift(unlisted ? `Read "${raw}" as ${best.v.rec.display}, but ${unlisted}` : `Read "${raw}" as ${best.v.rec.display}.`)
     }
     res.confidence = round(confidence)
     res.match = exact ? (best.v.rec.curated ? 'curated' : 'exact') : 'fuzzy'
