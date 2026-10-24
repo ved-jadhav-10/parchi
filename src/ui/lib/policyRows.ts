@@ -5,7 +5,16 @@ import type { AlertRules } from '../../engine/rules'
 import type { DataRow } from './dataFiles'
 import { mg, titleCase } from './format'
 
-const row = (name: string, detail: string, value: string, source: string, approved: boolean | undefined): DataRow => ({ name, detail, value, source, approved })
+const row = (name: string, detail: string, value: string, source: string, approved: boolean | undefined, checked?: string): DataRow => ({
+  name, detail, value, source, approved, ...(checked ? { checked } : {}),
+})
+
+/** "Label quote checked 25 Oct 2026": a script found the cited sentence in the label. Says nothing about a pharmacist. */
+const labelChecked = (iso: string | undefined) => {
+  if (!iso) return undefined
+  const d = new Date(`${iso}T00:00:00Z`)
+  return Number.isNaN(d.getTime()) ? 'Label quote checked' : `Label quote checked ${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}`
+}
 
 const perDay = (n: number) => `${mg(n)} mg/day`
 
@@ -15,9 +24,9 @@ export function limitRows(limits: LimitsData): DataRow[] {
   const rows: DataRow[] = []
   for (const [id, l] of Object.entries(limits.ingredients)) {
     const name = titleCase(id)
-    if (l.adult) rows.push(row(name, 'Adult', perDay(l.adult.max_mg_day), l.adult.source, l.adult.pharmacist_approved))
-    if (l.elderly) rows.push(row(name, `Age ${old} and over`, perDay(l.elderly.max_mg_day), l.elderly.source, l.elderly.pharmacist_approved))
-    if (l.paediatric) rows.push(row(name, `Under ${young} years, by weight`, `${mg(l.paediatric.max_mg_per_kg_day)} mg/kg/day`, l.paediatric.source, l.paediatric.pharmacist_approved))
+    if (l.adult) rows.push(row(name, 'Adult', perDay(l.adult.max_mg_day), l.adult.source, l.adult.pharmacist_approved, labelChecked(l.adult.label_checked)))
+    if (l.elderly) rows.push(row(name, `Age ${old} and over`, perDay(l.elderly.max_mg_day), l.elderly.source, l.elderly.pharmacist_approved, labelChecked(l.elderly.label_checked)))
+    if (l.paediatric) rows.push(row(name, `Under ${young} years, by weight`, `${mg(l.paediatric.max_mg_per_kg_day)} mg/kg/day`, l.paediatric.source, l.paediatric.pharmacist_approved, labelChecked(l.paediatric.label_checked)))
     for (const rc of l.risk_caps ?? []) {
       const detail = { low_weight: `Weight under ${rc.weight_below} kg`, liver_disease: 'Liver disease', heavy_alcohol_use: 'Heavy alcohol use' }[rc.factor]
       rows.push(row(name, detail, rc.max_mg_per_kg_day !== undefined ? `${mg(rc.max_mg_per_kg_day)} mg/kg/day` : perDay(rc.max_mg_day ?? 0), rc.source, rc.pharmacist_approved))
@@ -78,9 +87,12 @@ const awareRows = (rules: AlertRules): DataRow[] => {
 export function supplementRows(json: unknown): DataRow[] {
   const rules = (json as { rules?: unknown } | null)?.rules
   if (!Array.isArray(rules)) return []
-  return rules.map((r: { id?: string; a?: string[]; b?: string[]; level?: string; note?: string; source?: string; pharmacist_approved?: boolean; interrupt?: boolean }) =>
-    row(titleCase(String(r.id ?? '')), `${(r.a ?? []).join(', ')} with ${(r.b ?? []).join(', ')}: ${r.note ?? ''}`, r.interrupt ? 'Interrupt (contraindicated)' : titleCase(String(r.level ?? '')), String(r.source ?? ''), r.pharmacist_approved),
-  )
+  type Rule = { id?: string; a?: string[]; b?: string[]; level?: string; note?: string; source?: string; pharmacist_approved?: boolean; interrupt?: boolean; effect?: string; reduces?: string[]; evidence?: unknown[] }
+  return rules.map((r: Rule) => {
+    const level = r.interrupt ? 'Interrupt (contraindicated)' : titleCase(String(r.level ?? ''))
+    const value = r.effect === 'reduces_effect' && r.reduces?.length ? `${level}: may weaken ${r.reduces.map(titleCase).join(', ')}` : r.effect === 'adds_effect' ? `${level}: effects add up` : level
+    return row(titleCase(String(r.id ?? '')), `${(r.a ?? []).join(', ')} with ${(r.b ?? []).join(', ')}: ${r.note ?? ''}`, value, String(r.source ?? ''), r.pharmacist_approved, r.evidence?.length ? 'Label quote checked' : undefined)
+  })
 }
 
 /** Alerts the pharmacist chose to log without showing. */

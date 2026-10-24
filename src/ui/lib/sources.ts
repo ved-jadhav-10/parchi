@@ -16,7 +16,7 @@ export const SOURCES: Source[] = [
   },
   {
     name: 'Curated brands',
-    usedFor: '37 brands checked against their pack pages. They override the dataset.',
+    usedFor: '39 brands checked against their pack pages. They override the dataset, and can drop a wrong dataset row.',
     asOf: 'Pharmacist approval pending',
     terms: 'Own work',
   },
@@ -43,6 +43,18 @@ export const SOURCES: Source[] = [
     usedFor: 'Drug interactions: 70,144 pairs among 770 ingredients. Some groups, such as cardiovascular-only pairs, are not covered, and "no interaction found" is not "safe".',
     asOf: 'Bulk files, ATC groups A, B, D, H, L, P, R and V',
     terms: 'CC BY-NC-SA 4.0: credit required, non-commercial',
+  },
+  {
+    name: 'Drug labels: US FDA (DailyMed via openFDA), UK SmPCs, 21 CFR 341, EMA, one Indian pack insert',
+    usedFor: 'Daily dose maximums and the interactions where one drug weakens another. Each cites the label sentence, checked word for word against the label. Labels differ (ibuprofen 2,400 mg UK, 3,200 mg US): the lower is used. Not Indian labels, except one pack insert.',
+    asOf: 'Checked 25 Oct 2026',
+    terms: 'Public regulator documents',
+  },
+  {
+    name: 'Kaggle India Medicines (1mg, 2025)',
+    usedFor: 'A review list only: where its compositions differ from ours, a person checks the pack. It never feeds the app.',
+    asOf: '2025 scrape',
+    terms: 'CC BY-NC-SA 4.0: not used as app data',
   },
   {
     name: 'WHO ATC/DDD index',
