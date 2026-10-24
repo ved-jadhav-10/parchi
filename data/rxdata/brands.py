@@ -60,11 +60,22 @@ class Brand:
 _STRENGTH_TOKEN = re.compile(r"^\d+(?:\.\d+)?(?:mg|mcg|g|gm|ml|iu|%)?(?:/\d+(?:\.\d+)?(?:mg|mcg|g|gm|ml)?)*$")
 
 
+# Words that only describe the dosage form when a form word follows ("Oral Suspension", "Soft Gelatin Capsule").
+PRE_FORM_WORDS = frozenset("oral soft hard gelatin gelatine chewable effervescent dispersible mouth dissolving enteric coated film".split())
+
+
 def display_name(name: str) -> str:
-    """"Dolo 650 Tablet" -> "Dolo 650"; "Pan-D Capsule PR" -> "Pan-D"; keeps names that start with a form word."""
+    """"Dolo 650 Tablet" -> "Dolo 650"; "Pan-D Capsule PR" -> "Pan-D"; "Ulgel Oral Suspension" -> "Ulgel".
+
+    Names that start with a form word are kept whole.
+    """
     words = name.strip().split()
-    for i, w in enumerate(words):
-        if i > 0 and re.sub(r"[^a-z]", "", w.lower()) in FORM_WORDS:
+    plain = [re.sub(r"[^a-z]", "", w.lower()) for w in words]
+    for i in range(1, len(words)):
+        j = i
+        while j < len(words) and plain[j] in PRE_FORM_WORDS:
+            j += 1
+        if j < len(words) and plain[j] in FORM_WORDS:
             words = words[:i]
             break
     out = " ".join(words).strip(" -,")
