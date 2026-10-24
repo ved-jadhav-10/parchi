@@ -23,10 +23,10 @@ Today: no T4 exists. Every disagreement between the engine and a T1 source goes 
 | ONC high-priority DDI list (Phansalkar 2012) | pair is on file | published | **Built** (`highPriorityDdi.test.ts`) |
 | ONC list, **end to end** | the pair, prescribed as real Indian brands, actually reaches an Interrupt | published | **Built** (`rules/oncEndToEnd.test.ts`): found 13 of 16 not stopping; fixed 10 with curated rules, 3 documented deviations |
 | Eka NFI MCQA, 925 questions from the National Formulary of India | our adult max doses vs the Indian formulary | MIT | **Built** (`limits/nfiDose.test.ts`): 5 of 5 comparable drugs agree |
-| Eka NFI MCQA, 166 pregnancy-category answers | which drugs the formulary rates pregnancy D/X (FIX_PLAN 2) | MIT | Next, with the pregnancy rule |
+| Eka NFI MCQA, 166 pregnancy-category answers | which drugs the formulary rates pregnancy D/X (FIX_PLAN 2) | MIT | **Built** (`rules/pregnancyEvidence.test.ts`): 18 X/D drugs in our table, 16 covered, 2 excluded with reasons |
 | Eka NFI MCQA, 166 contraindication answers | contraindications we do not yet check | MIT | Next |
 | AGS Beers 2023 tables | elderly rules, expected answers | published | Next (needs the table text) |
-| openFDA labels | max doses and contraindicated pairs by label text | public domain | Next |
+| openFDA labels | pregnancy boxed warnings and contraindications (used); max doses and contraindicated pairs (next) | public domain | **Partly built** |
 | Synthea synthetic patients | false-alarm rate and FHIR import at scale (T2) | unrestricted | Next |
 | TWOSIDES / DrugBank via TDC | coverage gaps only, never an answer key | non-commercial | Optional |
 | n2c2 2018 (US discharge summaries) | dose and frequency reading | data-use agreement | Later, outside Round 1 |

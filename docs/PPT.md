@@ -2,6 +2,8 @@
 
 Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, branch `v1`: Tracks A to D are built and in the app. 814 automated tests (Vitest, re-run 24 Oct late) and 102 Python tests pass; the app builds and runs offline. The engine, the Phase 2 review desk (history timeline, kidney re-check, unverified brands, ranked queue), FHIR import and draft export, and an online customer-leaflet function are working. The benchmark has run the engine on a 54-case **draft** gold set (labels written by the team from drug labels and guidelines, not yet reviewed by a pharmacist); no chatbot has been scored yet. All limits and rules are still unapproved drafts. The pitch targets e-pharmacies and pharmacy chains (`BUSINESS_MODEL.md`); the demo script is `docs/DEMO.md`.
 
+**Phase 2 update (24-25 Oct 2026):** built and tested: allergy check through combination brands, pregnancy rules (FDA boxed warnings and the National Formulary of India), lab eGFR input, paracetamol limit by weight, liver disease and alcohol. The demo's paracetamol limit is now the 4,000 mg adult maximum. 992 tests pass. See `docs/TEST_PLAN.md` and `docs/VERIFIED.md`.
+
 **Clinical review update (24 Oct 2026, late):** a clinical-realism review found severity problems (contraindicated pairs only Inform; the per-Rx cap can demote a third real Interrupt; any NSAID below CrCl 60 Interrupts; no allergy/pregnancy fields; test cases mostly one molecule under two brands). The fixes are planned in `docs/FIX_PLAN.md` (Phases 0-6) and **not yet built**. This file now follows Phase 0: no claim on a slide goes beyond what the app does today.
 
 Template: official HYPNEXIS '26 deck (`HYPNEXIS26_Official_PPT_Template.pptx`), 9 slides, 13.33 × 7.5 in. Every content slide (2–8) shows "Team Name | Team ID" top right: fill as `[Team name] | [Team ID]`.
@@ -26,7 +28,7 @@ Status tags used on every feature: **(built)** = working code with automated tes
 | F9 | LLMs invent interactions in cases with none | Sicard et al., 2025 | [69], Key Finding 3 | S3 Core technologies 4 |
 | F8 | Alert-budget target: at most 1 Interrupt per prescription on average (a target, not a result) | PS_ANALYSIS §7 | §7 | S3 Unique points 3 |
 | F10 | Demo: "Brufan 400" expected to resolve to Brufen 400 (ibuprofen) | `tests/fixtures/demo_rx.json` | §5 | S4 User flow 1 |
-| F11 | Demo: paracetamol 4,100 mg/day expected; for the 68-year-old the engine applies its draft age-65+ cap of 3,000 mg/day (adult label max 4,000) | fixture; `limits.json` | §5, [81] | S4 User flow 2 |
+| F11 | Demo: paracetamol 4,100 mg/day expected against the 4,000 mg/day adult maximum (age alone no longer lowers it; low weight, liver disease and heavy alcohol use do) | fixture; `limits.json` | §5, [81] | S4 User flow 2 |
 | F12 | Demo: CrCl ≈34 mL/min (68 y, 55 kg, SCr 1.6) | PS_ANALYSIS §5 (Cockcroft-Gault) | §5 | S4 User flow 2 |
 | F14 | Demo: expected 2 Interrupts, 3–4 Informs | fixture | §5 | S4 User flow 3 |
 | F15 | DDInter is non-commercial (CC BY-NC-SA 4.0) | PS_ANALYSIS Key Finding 1 | [1], Key Finding 1 | S5 Economic 3 |
@@ -175,7 +177,7 @@ Fit: 12 pt, plain, 2.80 × 1.15 in
 
 #### Step 2
 Fit: 12 pt, plain, 2.80 × 1.15 in
-> **Parchi counts and checks:** two NSAIDs (painkillers) plus aspirin with CrCl ≈34 mL/min; paracetamol 4,100 mg/day hidden in three brands, over the 65+ cap.
+> **Parchi counts and checks:** two NSAIDs (painkillers) plus aspirin with CrCl ≈34 mL/min; paracetamol 4,100 mg/day hidden in three brands, over the 4,000 mg adult maximum.
 
 #### Step 3
 Fit: 12 pt, plain, 2.80 × 1.15 in
@@ -192,7 +194,7 @@ Fit: 14 pt, plain, 3.40 × 1.60 in
 
 Wireframe area (template placeholder, 3.40 × 1.80 in): [Screenshot of the Prescription X-ray screen from the running app].
 
-*Presenter note: lead with the painkiller + aspirin + kidney story; the paracetamol excess is the "hidden ingredient" reveal, not the clinical headline. The adult label maximum is 4,000 mg/day; the 3,000 mg cap the engine applies at 65+ is a draft, and FIX_PLAN 2.4 replaces it with risk factors (weight under 50 kg, alcohol, liver disease). Both need sign-off and an Indian reference (NFI 2021). Paracetamol liver-failure statistics are US data (Larson 2005), so do not quote them as Indian.*
+*Presenter note: lead with the painkiller + aspirin + kidney story; the paracetamol excess is the "hidden ingredient" reveal, not the clinical headline. The engine applies the 4,000 mg/day adult maximum; age alone no longer lowers it, but weight under 50 kg, liver disease and heavy alcohol use do (FIX_PLAN 2.4, built). Every cap is a draft and needs sign-off and an Indian reference (NFI 2021). Paracetamol liver-failure statistics are US data (Larson 2005), so do not quote them as Indian.*
 
 ---
 
