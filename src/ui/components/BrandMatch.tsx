@@ -9,6 +9,8 @@ const flagText: Record<Flag, { label: string; tier: 'interrupt' | 'inform' }> = 
   banned_fdc: { label: 'Banned FDC', tier: 'interrupt' },
   lasa: { label: 'Look-alike name', tier: 'inform' },
   discontinued: { label: 'Discontinued', tier: 'inform' },
+  // Batch-specific (CDSCO failed or spurious batches), so never Interrupt: the pharmacist checks the batch on the strip.
+  nsq: { label: 'Check batch (NSQ)', tier: 'inform' },
 }
 
 export const FlagBadge = ({ flag }: { flag: Flag }) => (
