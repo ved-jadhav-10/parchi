@@ -1,0 +1,192 @@
+{
+  "_meta": {
+    "status": "UNVERIFIED. Starter set built from the sources named on each rule. Every rule has pharmacist_approved=false. Absence of a rule is NOT evidence of safety.",
+    "evidence_grades": {
+      "established": "A regulator's herbal monograph, a published measurement study, or an Indian multicentre case series.",
+      "limited": "A single small human study, case reports, or interaction databases without controlled data. Shown as a note, not an alert."
+    },
+    "excluded": "Anything supported only by animal or laboratory data is left out. Examples we looked at and did NOT include: ashwagandha with warfarin (no clinically significant interaction established).",
+    "brand_products": "No brand-name Ayurvedic product has a verified ingredient list yet. Names are matched as herb or formulation names; unknown Ayurvedic products are reported as unrecognised.",
+    "added": "24 Oct 2026"
+  },
+  "herbs": {
+    "liquorice": { "name": "Liquorice (mulethi)", "latin": "Glycyrrhiza glabra", "aliases": ["mulethi", "mulaithi", "yashtimadhu", "jethimadh", "jethimad", "licorice", "liquorice", "glycyrrhiza"] },
+    "guggul": { "name": "Guggul", "latin": "Commiphora wightii (Commiphora mukul)", "aliases": ["guggul", "guggulu", "gugul", "guggal", "guggulipid", "gugulipid", "commiphora"] },
+    "black_pepper": { "name": "Black pepper (kali mirch)", "latin": "Piper nigrum", "aliases": ["black pepper", "kali mirch", "kalimirch", "kali mirchi", "marich", "piperine", "bioperine"] },
+    "long_pepper": { "name": "Long pepper (pippali)", "latin": "Piper longum", "aliases": ["long pepper", "pippali", "pipli"] },
+    "bitter_melon": { "name": "Bitter melon (karela)", "latin": "Momordica charantia", "aliases": ["karela", "karele", "bitter gourd", "bitter melon", "momordica"] },
+    "gymnema": { "name": "Gymnema (gudmar)", "latin": "Gymnema sylvestre", "aliases": ["gudmar", "gurmar", "gymnema", "madhunashini"] },
+    "fenugreek": { "name": "Fenugreek (methi)", "latin": "Trigonella foenum-graecum", "aliases": ["methi", "methi dana", "methidana", "fenugreek", "trigonella", "methika"] },
+    "ashwagandha": { "name": "Ashwagandha", "latin": "Withania somnifera", "aliases": ["ashwagandha", "ashvagandha", "aswagandha", "asgandh", "withania", "winter cherry"] },
+    "giloy": { "name": "Giloy (guduchi)", "latin": "Tinospora cordifolia", "aliases": ["giloy", "giloe", "guduchi", "gudoochi", "tinospora"] },
+    "turmeric": { "name": "Turmeric (haldi)", "latin": "Curcuma longa", "aliases": ["haldi", "turmeric", "curcumin", "haridra", "curcuma"] },
+    "garlic": { "name": "Garlic (lahsun)", "latin": "Allium sativum", "aliases": ["lahsun", "lehsun", "lasun", "lasuna", "garlic"] },
+    "ginger": { "name": "Ginger (adrak, sonth)", "latin": "Zingiber officinale", "aliases": ["adrak", "sonth", "saunth", "shunthi", "ginger"] },
+    "tulsi": { "name": "Tulsi (holy basil)", "latin": "Ocimum tenuiflorum", "aliases": ["tulsi", "holy basil", "ocimum"] },
+    "neem": { "name": "Neem", "latin": "Azadirachta indica", "aliases": ["neem", "nimba", "azadirachta"] },
+    "amla": { "name": "Amla (Indian gooseberry)", "latin": "Phyllanthus emblica", "aliases": ["amla", "amalaki", "aonla", "indian gooseberry", "emblica"] }
+  },
+  "formulations": {
+    "triphala": { "name": "Triphala", "aliases": ["triphala"], "herbs": [], "composition_note": "Classical three-fruit formulation (Terminalia chebula, Terminalia bellirica, Phyllanthus emblica). None of our rules apply to these herbs." },
+    "trikatu": { "name": "Trikatu", "aliases": ["trikatu", "trikatuk"], "herbs": ["ginger", "black_pepper", "long_pepper"], "composition_note": "Classical formulation of dry ginger, black pepper and long pepper. The piperine content of a given product is not known." }
+  },
+  "ambiguous": {
+    "brahmi": { "name": "Brahmi", "aliases": ["brahmi"], "candidates": ["Bacopa monnieri", "Centella asiatica"], "note": "The name is used for two different plants; ask which one the product contains." }
+  },
+  "ayurvedic_form_words": ["churna", "vati", "ghan vati", "ghanvati", "kwath", "kadha", "arishta", "asava", "avaleha", "lehyam", "ghrita", "ayurvedic", "herbal", "rasayana"],
+  "herbo_mineral": {
+    "keywords": ["bhasma", "parpati", "kajjali", "makaradhwaja", "makardhwaj", "rasa sindura", "kupipakwa"],
+    "rule": "herbo_mineral_metals"
+  },
+  "rules": [
+    {
+      "id": "liquorice_potassium",
+      "herbs": ["liquorice"],
+      "with": { "ingredients": ["digoxin", "bisacodyl"], "classes": ["loop_diuretic", "thiazide_diuretic", "corticosteroid"] },
+      "effect": "Liquorice can lower potassium and raise blood pressure. The EU herbal monograph advises against using it with diuretics, digoxin, corticosteroids or stimulant laxatives, because potassium loss can get worse.",
+      "evidence": "established",
+      "tier": "inform",
+      "sources": [
+        { "label": "EMA/HMPC EU herbal monograph, Glycyrrhiza (liquorice root), revision 1", "url": "https://www.ema.europa.eu/en/documents/herbal-monograph/final-european-union-herbal-monograph-glycyrrhiza-glabra-l-glycyrrhiza-inflata-bat-glycyrrhiza-uralensis-fisch-radix-revision-1_en.pdf" },
+        { "label": "Systematic review and meta-analysis of chronic licorice intake, blood pressure and potassium, J Hum Hypertens 2017", "url": "https://pubmed.ncbi.nlm.nih.gov/28660884/" }
+      ],
+      "caveat": "Read from search summaries of the monograph (section 4.4); the full interaction section 4.5 was not read.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "liquorice_blood_pressure",
+      "herbs": ["liquorice"],
+      "with": { "classes": ["ccb", "arb", "ace_inhibitor", "beta_blocker"] },
+      "effect": "The EU herbal monograph does not recommend liquorice for people with high blood pressure, because it can raise it. A patient taking blood-pressure medicine probably has high blood pressure; that link is our inference, not a finding.",
+      "evidence": "established",
+      "inferred": true,
+      "tier": "inform",
+      "sources": [
+        { "label": "EMA/HMPC EU herbal monograph, Glycyrrhiza (liquorice root), revision 1", "url": "https://www.ema.europa.eu/en/documents/herbal-monograph/final-european-union-herbal-monograph-glycyrrhiza-glabra-l-glycyrrhiza-inflata-bat-glycyrrhiza-uralensis-fisch-radix-revision-1_en.pdf" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "guggul_beta_blocker_ccb",
+      "herbs": ["guggul"],
+      "with": { "ingredients": ["propranolol", "diltiazem"] },
+      "effect": "In one small study of healthy volunteers, guggul extract lowered the blood levels of propranolol and diltiazem, which could weaken their effect. No patient data.",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "Dalvi et al., J Assoc Physicians India, 1994 (abstract only; 10 volunteers for propranolol, 7 for diltiazem)", "url": "https://search.bvsalud.org/gim/resource/en/sea-95588" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "piperine_levels",
+      "herbs": ["black_pepper", "long_pepper"],
+      "with": { "ingredients": ["propranolol", "theophylline", "phenytoin"] },
+      "effect": "Piperine (in black and long pepper) raised blood levels of propranolol and theophylline in a small study of 6 healthy volunteers. Phenytoin levels also rose in reports we could only see second-hand. What normal food amounts do is unclear.",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "Piperine with propranolol and theophylline, healthy volunteers (PubMed 1815977)", "url": "https://pubmed.ncbi.nlm.nih.gov/1815977" },
+        { "label": "Pharmacy Times review of piperine interactions (secondary source, used for phenytoin)", "url": "https://www.pharmacytimes.com/view/piperine-drug-interactions/1000" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "blood_sugar_herbs",
+      "herbs": ["bitter_melon", "gymnema", "fenugreek"],
+      "with": { "classes": ["sulfonylurea", "biguanide", "dpp4_inhibitor", "alpha_glucosidase_inhibitor", "sglt2_inhibitor"] },
+      "effect": "These herbs can lower blood sugar, so with diabetes medicines the effect may add up and cause low sugar. The evidence is small studies, case reports and interaction databases, not controlled trials.",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "Fenugreek and HbA1c: systematic review and meta-analysis of 14 trials (efficacy only, not interactions)", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9962665/" },
+        { "label": "HelloPharmacist interaction database entries for bitter melon and gymnema (secondary source)", "url": "https://hellopharmacist.com/drug-herbal-interactions/bitter-melon-with-acarbose" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "ashwagandha_thyroid",
+      "herbs": ["ashwagandha"],
+      "with": { "classes": ["thyroid_hormone"] },
+      "effect": "The US National Institutes of Health says ashwagandha might interact with thyroid medicines. One small trial found it raised thyroid hormone levels.",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "NIH Office of Dietary Supplements, Ashwagandha fact sheet", "url": "https://ods.od.nih.gov/factsheets/Ashwagandha-Consumer/" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "ashwagandha_sedatives",
+      "herbs": ["ashwagandha"],
+      "with": { "classes": ["benzodiazepine", "hypnotic"] },
+      "effect": "The US National Institutes of Health lists sedatives among the medicines ashwagandha might interact with (more drowsiness).",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "NIH Office of Dietary Supplements, Ashwagandha fact sheet", "url": "https://ods.od.nih.gov/factsheets/Ashwagandha-Consumer/" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "ashwagandha_immunosuppressants",
+      "herbs": ["ashwagandha"],
+      "with": { "ingredients": ["tacrolimus", "mycophenolate", "azathioprine"], "classes": ["immunosuppressant"] },
+      "effect": "The US National Institutes of Health lists medicines that suppress the immune system among those ashwagandha might interact with.",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "NIH Office of Dietary Supplements, Ashwagandha fact sheet", "url": "https://ods.od.nih.gov/factsheets/Ashwagandha-Consumer/" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "ashwagandha_diabetes_blood_pressure",
+      "herbs": ["ashwagandha"],
+      "with": { "classes": ["sulfonylurea", "biguanide", "dpp4_inhibitor", "ccb", "arb", "ace_inhibitor", "beta_blocker"] },
+      "effect": "The US National Institutes of Health lists diabetes and blood-pressure medicines among those ashwagandha might interact with.",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "NIH Office of Dietary Supplements, Ashwagandha fact sheet", "url": "https://ods.od.nih.gov/factsheets/Ashwagandha-Consumer/" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "giloy_liver",
+      "herbs": ["giloy"],
+      "with": {},
+      "effect": "Reports from India link giloy to liver injury: 43 cases in a 2022 nationwide multicentre study. The study's methods have been criticised, and some authors argue a look-alike plant may be involved.",
+      "evidence": "limited",
+      "tier": "inform",
+      "sources": [
+        { "label": "Kulkarni et al., Tinospora cordifolia (giloy) liver injury, multicentre study from India, Hepatol Commun 2022", "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9348287/" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "bleeding_herbs",
+      "herbs": ["turmeric", "garlic", "ginger"],
+      "with": { "classes": ["anticoagulant", "antiplatelet"] },
+      "effect": "These may raise the tendency to bleed when taken with blood thinners. Human evidence is small and mixed, and clinically significant bleeding is rarely reported.",
+      "evidence": "limited",
+      "tier": "silent",
+      "sources": [
+        { "label": "Review sorting 47 supplements by bleeding association and evidence strength (PMC9586694)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9586694/" }
+      ],
+      "pharmacist_approved": false
+    },
+    {
+      "id": "herbo_mineral_metals",
+      "herbs": [],
+      "with": {},
+      "effect": "Some Ayurvedic herbo-mineral preparations contain lead, mercury or arsenic. In a 2008 study of Ayurvedic products bought online, about 1 in 5 contained detectable amounts, and 40% of the rasa shastra products did. That sample was not a random sample of products sold in India.",
+      "evidence": "established",
+      "tier": "inform",
+      "sources": [
+        { "label": "Saper et al., Lead, mercury and arsenic in US- and Indian-manufactured Ayurvedic medicines sold via the Internet, JAMA 2008;300(8):915-923", "url": "https://stacks.cdc.gov/view/cdc/223623" }
+      ],
+      "pharmacist_approved": false
+    }
+  ]
+}

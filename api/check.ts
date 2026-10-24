@@ -8,6 +8,7 @@
 // bundle (vercel.json "functions": { "api/check.ts": { "includeFiles": "public/data/**" } }).
 import type { CheckPrescription, HistoryResult, Patient } from '../src/engine/contracts'
 import type { CheckHistory } from '../src/engine/history'
+import { herbalHistory, herbalSingle, splitHistory, splitSingle, type HerbalDeps } from '../src/engine/herbal/orchestrate'
 import { createDoseDeps, type DoseResult, type LedgerLine } from '../src/engine/ledger'
 import { checkRxText, parseHistoryRequest, parsePatient } from '../src/engine/ledger/requests'
 import { createResolver } from '../src/engine/resolver'
@@ -28,8 +29,12 @@ export interface CheckDeps {
   check: CheckPrescription
   history: CheckHistory
   dose: (lines: LedgerLine[], patient: Patient) => DoseResult
+  /** Ayurvedic / herbal check. Absent = herbal lines are left to the ordinary resolver, as before. */
+  herbal?: HerbalDeps
   apiKeys: string[]
 }
+
+const NO_DOSE: DoseResult = { ledger: {}, findings: [], needs: [], crcl: null, notes: [] }
 
 /** Constant-time string comparison, so a wrong key does not leak how much of it matched. */
 function sameKey(a: string, b: string): boolean {
@@ -64,8 +69,15 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
     const h = parseHistoryRequest(body)
     if ('error' in h) return json({ error: h.error }, 400)
     try {
-      const result: HistoryResult = await deps.history(h.request.prescriptions, p.patient, h.request.labs, h.request.options)
-      return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, ...result, ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
+      const split = deps.herbal ? splitHistory(h.request.prescriptions, deps.herbal) : undefined
+      const engineRx = split ? split.engine : h.request.prescriptions
+      const result: HistoryResult | undefined = engineRx.length ? await deps.history(engineRx, p.patient, h.request.labs, h.request.options) : undefined
+      const herbal = split && deps.herbal ? herbalHistory(split.herbal, result?.lines ?? [], deps.herbal) : undefined
+      if (!result) {
+        // Only herbal items were sent: there is no ordinary medicine to check, and that is not a "clear".
+        return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, alerts: [], lines: [], windows: [], ledger: {}, status: 'clear_with_note', priority: 0, ...(herbal && { herbal }), ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
+      }
+      return json({ schema: 1, mode: 'history', disclaimer: DISCLAIMER, ...result, ...(herbal && { herbal }), ...(h.request.warnings.length ? { import_warnings: h.request.warnings } : {}) })
     } catch {
       return json({ error: 'Check failed' }, 500)
     }
@@ -74,8 +86,11 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
   const bad = checkRxText(body.rx_text)
   if (bad) return json({ error: bad }, 400)
   try {
-    const result = await deps.check(body.rx_text as string, p.patient)
-    const dose = deps.dose(result.lines, p.patient)
+    const split = deps.herbal ? splitSingle(body.rx_text as string, deps.herbal) : undefined
+    const rxText = split ? split.restText : (body.rx_text as string)
+    const result = rxText.trim() ? await deps.check(rxText, p.patient) : { lines: [], ledger: {}, alerts: [] }
+    const dose = result.lines.length ? deps.dose(result.lines, p.patient) : NO_DOSE
+    const herbal = split && deps.herbal ? herbalSingle(split.herbal, result.lines, deps.herbal) : undefined
     return json({
       schema: 1,
       mode: 'single',
@@ -87,16 +102,17 @@ export async function handle(request: Request, deps: CheckDeps): Promise<Respons
       needs: dose.needs,
       crcl_ml_min: dose.crcl,
       notes: dose.notes,
+      ...(herbal && { herbal }),
     })
   } catch {
     return json({ error: 'Check failed' }, 500)
   }
 }
 
-let cached: Promise<Pick<CheckDeps, 'check' | 'history' | 'dose'>> | undefined
+let cached: Promise<Pick<CheckDeps, 'check' | 'history' | 'dose' | 'herbal'>> | undefined
 
 /** Read the committed JSON data from disk once per server instance. */
-function load(): Promise<Pick<CheckDeps, 'check' | 'history' | 'dose'>> {
+function load(): Promise<Pick<CheckDeps, 'check' | 'history' | 'dose' | 'herbal'>> {
   cached ??= (async () => {
     const mod = 'node:fs/promises' // variable specifier: this file is typechecked without Node typings
     const fs = (await import(mod)) as { readFile(path: string, encoding: string): Promise<string> }
@@ -123,7 +139,12 @@ function load(): Promise<Pick<CheckDeps, 'check' | 'history' | 'dose'>> {
       ddi: createDdiIndex((await read<DdiJson>('ddi.json'))!),
       rules: parseAlertRules(await read('alert_rules.json')),
     })
-    return { check: engine.check, history: engine.checkHistory, dose: createDoseDeps(resolver).computeDose }
+    return {
+      check: engine.check,
+      history: engine.checkHistory,
+      dose: createDoseDeps(resolver).computeDose,
+      herbal: { isKnownBrand: (b) => resolver.resolve(b).confidence >= 0.97, classesOf: (id) => resolver.ingredient(id)?.classes },
+    }
   })()
   cached.catch(() => (cached = undefined)) // a failed load is retried on the next request
   return cached

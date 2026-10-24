@@ -24,7 +24,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | Buyer | **E-pharmacies and chains only** (decision a). Local chemists are not a paying customer; H24 stays open | decision |
 | Expert time | **10 minutes only**, no extra questions (sheet in `docs/expert-review/`). Answers to real-world questions come from published sources | decision |
 | Demo story | One memorable reveal (the 68-year-old, hidden paracetamol), and it must be a case that really happens, not a rare one | decision |
-| Planned extra | Ayurvedic name mapping and conflict detection with ordinary medicines. See H26 | open |
+| Ayurveda | **Full name mapping and conflict engine chosen** (grill 4, decision c). Starter version built by Track B: 15 herbs, 2 formulations, 12 evidence-graded rules, all unverified. See H26 | built (starter) |
 | Judge-run hidden test set or baseline | **Unknown to the team** (none established so far) | unknown |
 | Deliverables | An official slide **template exists** (the team will share it). Other required items (repo, live URL, video) not confirmed | partly confirmed |
 | Hard rules (AI-assisted code, external APIs, scraped data) | not stated by the organisers as far as the team knows | unknown |
@@ -201,6 +201,10 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **Why it's a hole:** the feature has no solid frequency figure and weak interaction evidence, which is exactly the "assumption" the team wants to avoid. Ayurvedic brand-to-ingredient data and a cited interaction list are also unknown. The honest facts available are the gap itself (use is documented, harm is barely monitored).
 - **Sources:** NSS 2014 via ThePrint; PhcogMag 5(19s) (Maharashtra prescriptions); AIIMS CAM study; PvPI papers (PMC3117316, PMC8963644); BJCP 52(5) herb-drug review.
 - **Risk:** H. **Status:** open.
+
+- **Update (24 Oct 2026, Track B): starter engine built** (`src/engine/herbal/`). 15 herbs with Hindi, Sanskrit, English and Latin names, 2 formulations, 1 ambiguous name (Brahmi), 12 rules (3 established, 9 limited), each with its sources and `pharmacist_approved: false`. It matches names before the ordinary resolver, which used to turn "Triphala churna" into an inhaler and "Haldi doodh" into an antipsychotic. Zero false matches over all 31,978 brand names in the index. It is in `api/check` (single and history modes, history only for overlapping courses). It reports unknown Ayurvedic products as unrecognised and never says "safe".
+- **Still open:** no frequency figure for co-use was found, so the story still cannot claim how common this is; no brand-name Ayurvedic product has a verified composition; no pharmacist or doctor has reviewed the rules; the UI does not show the herbal result yet (Track D); the evidence is mostly limited, so most findings are notes, not alerts.
+- **Risk:** M (reduced from H: the feature now exists and is honest about its evidence; the frequency claim remains unbacked). **Status:** built (starter), evidence gap open.
 
 ## USP shortlist (pick 3-4 for the deck)
 Ranked by judge impact ÷ effort. Update after each council run.
