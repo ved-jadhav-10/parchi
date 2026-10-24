@@ -1,5 +1,5 @@
 {
-  "_note": "Phase 2 demo: the demo patient (68 y) seen by three doctors in October 2026, ordering from one e-pharmacy. Serum creatinine arrives after the orders. Dates are ISO; durations are in the sig (x10d). Each Rx is an order to review as of its own date. Additive only.",
+  "_note": "Phase 2 demo: the demo patient (68 y) seen by three doctors in October 2026, ordering from one e-pharmacy. Serum creatinine arrives after the orders. Dates are ISO; durations are in the sig (x10d). Each Rx is an order to review as of its own date. Additive only. Expected tiers follow FIX_PLAN Phase 1 (24 Oct 2026): two NSAIDs at 68 stop on age alone; CrCl 34 adds a kidney caution, not a stop.",
   "patient": { "age_years": 68, "weight_kg": 55, "sex": "M" },
   "prescriptions": [
     { "id": "rx-1", "doctor": "Dr Rao (GP)", "date": "2026-10-01", "text": "Dolo 650 1-1-1 x10d; Zerodol P BD x10d; Omez 20 OD x10d" },
@@ -13,16 +13,16 @@
     "unknown_brand": { "order": "rx-3", "raw": "Tab Foo 250", "proposed": "Alfoo 10mg" },
     "without_lab": {
       "rx-1": { "status": "clear_with_note", "interrupts": [] },
-      "rx-2": { "status": "hold_contact_doctor", "interrupts": ["dose_excess"] },
-      "rx-3": { "status": "hold_contact_doctor", "interrupts": ["dose_excess"] }
+      "rx-2": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_double_high_risk"] },
+      "rx-3": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_double_high_risk"] }
     },
     "with_lab": {
       "creatinine": { "value": 1.6, "date": "2026-10-09" },
-      "rx-1": { "status": "hold_contact_doctor", "interrupts": ["nsaid_renal"] },
-      "rx-2": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_renal"] },
-      "rx-3": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_renal"] },
+      "rx-1": { "status": "clear_with_note", "interrupts": [] },
+      "rx-2": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_double_high_risk"] },
+      "rx-3": { "status": "hold_contact_doctor", "interrupts": ["dose_excess", "nsaid_double_high_risk"] },
       "queue": ["rx-3", "rx-2", "rx-1"]
     },
-    "recheck_rx-2": { "added": ["nsaid_renal"], "cleared": ["input_needed"] }
+    "recheck_rx-2": { "added": ["nsaid_renal_caution"], "cleared": ["input_needed"] }
   }
 }

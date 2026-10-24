@@ -15,7 +15,8 @@ export interface DdiJson {
 /** Hand-curated rules for pairs DDInter lacks (public/data/ddi_supplement.json). Each expands to every a x b pair. */
 export interface DdiSupplementJson {
   schema: number
-  rules: { id: string; a: string[]; b: string[]; level: DdiLevel; note: string; source: string; pharmacist_approved: boolean }[]
+  /** `interrupt`: a contraindicated pair that stops the pharmacist; `basis` says why (label contraindication, ONC high-priority list, ...). */
+  rules: { id: string; a: string[]; b: string[]; level: DdiLevel; note: string; source: string; pharmacist_approved: boolean; interrupt?: boolean; basis?: string }[]
 }
 
 export interface DdiHit {
@@ -28,6 +29,8 @@ export interface DdiHit {
   note?: string
   /** false = a curated rule not yet checked by the pharmacist. Absent for DDInter pairs. */
   curated?: boolean
+  /** true = a curated contraindication: Track C raises it as an Interrupt whatever the level maps to. */
+  interrupt?: boolean
 }
 
 export interface DdiIndex {
@@ -51,8 +54,8 @@ export function createDdiIndex(json: DdiJson, supplement?: DdiSupplementJson): D
         if (p === q) continue
         const [x, y] = p < q ? [p, q] : [q, p]
         const have = curated.get(`${x}|${y}`)
-        if (!have || json.levels.indexOf(rule.level) > json.levels.indexOf(have.level)) {
-          curated.set(`${x}|${y}`, { a: x, b: y, level: rule.level, source: `Curated: ${rule.source}`, note: rule.note, curated: true })
+        if (!have || json.levels.indexOf(rule.level) > json.levels.indexOf(have.level) || (rule.interrupt && !have.interrupt)) {
+          curated.set(`${x}|${y}`, { a: x, b: y, level: rule.level, source: `Curated: ${rule.source}`, note: rule.note, curated: true, ...(rule.interrupt ? { interrupt: true } : {}) })
         }
       }
     }
@@ -65,7 +68,8 @@ export function createDdiIndex(json: DdiJson, supplement?: DdiSupplementJson): D
     const base: DdiHit | null = lv === undefined ? null : { a: x, b: y, level: json.levels[lv], source: `${json.ddinter_ids[x] ?? x} / ${json.ddinter_ids[y] ?? y}` }
     const extra = curated.get(`${x}|${y}`)
     // Where both list the pair, the more severe one wins (a curated rule never softens DDInter).
-    return extra && (!base || json.levels.indexOf(extra.level) > json.levels.indexOf(base.level)) ? extra : base
+    // A curated contraindication also wins, so its Interrupt flag and reason are not lost behind an equal DDInter level.
+    return extra && (!base || extra.interrupt || json.levels.indexOf(extra.level) > json.levels.indexOf(base.level)) ? extra : base
   }
 
   return {

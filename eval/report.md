@@ -4,11 +4,11 @@ Gold set: 54 cases. draft: expected alerts were written by the developer from dr
 
 ## Parchi engine
 
-alerts per Rx 0.87, interrupts per Rx 0.19, false alarms on clean Rx 0.0
+alerts per Rx 0.93, interrupts per Rx 0.17, false alarms on clean Rx 0.0
 
 Missed (expected, not raised):
 - none
 
 Extra (raised, not expected):
-- none
+- S13: qt_stack:ciprofloxacin+levofloxacin
 

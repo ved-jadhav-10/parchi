@@ -111,9 +111,9 @@ const gold = {
     alert_groups: {
       dose_excess: ['dose_excess', 'dose_excess_sos'],
       duplicate_ingredient: ['duplicate_ingredient'],
-      class_duplication: ['class_duplication'],
-      ddi: ['ddi'],
-      renal: ['nsaid_renal', 'renal_avoid', 'renal_caution'],
+      class_duplication: ['class_duplication', 'possible_switch', 'nsaid_double_high_risk'],
+      ddi: ['ddi', 'bleeding_anticoagulant_nsaid', 'bleeding_dual_antiplatelet_nsaid', 'hyperkalaemia_stack', 'serotonergic_stack', 'qt_stack'],
+      renal: ['nsaid_renal', 'nsaid_renal_caution', 'triple_whammy', 'renal_avoid', 'renal_caution'],
       geriatric: ['domperidone_elderly', 'beers_sedating_antihistamine', 'beers_benzodiazepine', 'beers_z_drug', 'anticholinergic_burden', 'cns_stacking', 'beers_ketorolac', 'beers_tricyclic', 'beers_sulfonylurea', 'beers_muscle_relaxant', 'beers_metoclopramide'],
       banned_fdc: ['banned_fdc'],
       input_needed: ['input_needed'],

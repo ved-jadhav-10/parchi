@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "_note": "Hand-curated interaction rules that DDInter lacks: its bulk files do not hold several cardiovascular pairs, and Indian-only drugs are missing. Each rule expands to every a x b pair. Where DDInter also lists a pair, the more severe level is used. Severity and wording are drafts for the pharmacist to confirm.",
+  "_note": "Hand-curated interaction rules that DDInter lacks: its bulk files do not hold several cardiovascular pairs, and Indian-only drugs are missing. Each rule expands to every a x b pair. Where DDInter also lists a pair, the more severe level is used. Severity and wording are drafts for the pharmacist to confirm. A rule with \"interrupt\": true is a contraindicated pair that stops the pharmacist (FIX_PLAN 1.1); \"basis\" names the label or list behind it, still to be verified by a pharmacist.",
   "rules": [
     {
       "id": "acei_arb_dual_blockade",
@@ -72,9 +72,11 @@
         "lisinopril"
       ],
       "level": "major",
-      "note": "contraindicated: risk of angioedema (leave 36 hours between them)",
+      "note": "contraindicated together: risk of angioedema (the label sets a 36-hour gap between them)",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: US/EU labels contraindicate use within 36 hours of an ACE inhibitor"
     },
     {
       "id": "simvastatin_clarithromycin",
@@ -87,7 +89,9 @@
       "level": "major",
       "note": "contraindicated: raises simvastatin levels, risk of muscle breakdown",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: simvastatin label contraindicates strong CYP3A4 inhibitors"
     },
     {
       "id": "pde5_nitrate",
@@ -103,7 +107,9 @@
       "level": "major",
       "note": "contraindicated: severe fall in blood pressure",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: sildenafil/tadalafil labels contraindicate nitrates"
     },
     {
       "id": "methotrexate_trimethoprim",
@@ -117,7 +123,9 @@
       "level": "major",
       "note": "bone-marrow suppression: low blood counts",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "clinical_consensus: widely taught as a serious interaction (additive bone-marrow suppression); a search of the FDA label sections did not find the sentence, and it is not on the ONC list. Kept as an Interrupt for the reviewer to confirm (eval/reviewer_list.md section H)"
     },
     {
       "id": "linezolid_ssri",
@@ -134,7 +142,9 @@
       "level": "major",
       "note": "risk of serotonin syndrome",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 8 (SSRI + MAOI; linezolid is an MAO inhibitor)"
     },
     {
       "id": "digoxin_amiodarone",
@@ -145,7 +155,7 @@
         "amiodarone"
       ],
       "level": "major",
-      "note": "raises digoxin levels (the digoxin dose usually needs halving)",
+      "note": "raises digoxin levels: risk of digoxin toxicity; any change to the digoxin dose is for the prescriber",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
       "pharmacist_approved": false
     },
@@ -175,7 +185,9 @@
       "level": "major",
       "note": "contraindicated: raises tizanidine levels, low blood pressure and sedation",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: tizanidine label contraindicates ciprofloxacin and fluvoxamine"
     },
     {
       "id": "theophylline_ciprofloxacin",
@@ -203,7 +215,9 @@
       "level": "major",
       "note": "raises colchicine levels: toxicity, can be fatal in kidney or liver impairment",
       "source": "Product labelling (US FDA / EMA SmPC). Added by the developer, not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: colchicine label contraindicates strong CYP3A4 inhibitors in kidney or liver impairment; fatal cases reported"
     },
     {
       "id": "domperidone_strong_cyp3a4",
@@ -221,7 +235,9 @@
       "level": "major",
       "note": "contraindicated: raises domperidone levels; risk of QT prolongation, serious ventricular arrhythmia and sudden cardiac death",
       "source": "EMA domperidone referral 2014 and Direct Healthcare Professional Communication (contraindicated with potent CYP3A4 inhibitors); members from the US FDA list of strong CYP3A inhibitors. DDInter has no domperidone entry. Added by the developer (24 Oct 2026), not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: EMA 2014 domperidone restrictions"
     },
     {
       "id": "domperidone_qt",
@@ -240,7 +256,9 @@
       "level": "major",
       "note": "contraindicated: both prolong the QT interval; risk of serious ventricular arrhythmia",
       "source": "EMA domperidone referral 2014 and Direct Healthcare Professional Communication (contraindicated with QT-prolonging drugs); members are examples named in the domperidone SmPC, not a complete list. Added by the developer (24 Oct 2026), not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: EMA 2014 domperidone restrictions"
     },
     {
       "id": "amiodarone_sotalol",
@@ -253,7 +271,9 @@
       "level": "major",
       "note": "both prolong the QT interval: risk of torsade de pointes",
       "source": "ONC high-priority DDI list (Phansalkar et al., JAMIA 2012;19:735, rule: QT-prolonging agents); product labelling. Added by the developer (24 Oct 2026), not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 21 (two QT-prolonging antiarrhythmics)"
     },
     {
       "id": "ivabradine_rate_ccb",
@@ -267,7 +287,9 @@
       "level": "major",
       "note": "contraindicated in the EU (avoid per the US label): raises ivabradine levels and adds to heart-rate lowering",
       "source": "Ivabradine SmPC section 4.3 (medicines.org.uk/emc/product/9609); US prescribing information. Added by the developer (24 Oct 2026), not yet checked by a pharmacist",
-      "pharmacist_approved": false
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "label_contraindication: EU SmPC contraindicates verapamil and diltiazem"
     },
     {
       "id": "rate_ccb_beta_blocker",
@@ -301,6 +323,159 @@
       "note": "raises digoxin levels and slows AV conduction: digoxin toxicity, heart block",
       "source": "Verapamil SmPC section 4.5 (measure the digoxin level, reduce the dose if needed); product labelling. Added by the developer (24 Oct 2026), not yet checked by a pharmacist",
       "pharmacist_approved": false
+    },
+    {
+      "id": "onc_ssri_maoi",
+      "a": [
+        "fluoxetine",
+        "sertraline",
+        "escitalopram",
+        "paroxetine",
+        "fluvoxamine"
+      ],
+      "b": [
+        "selegiline",
+        "rasagiline",
+        "safinamide",
+        "tranylcypromine",
+        "linezolid"
+      ],
+      "level": "major",
+      "note": "serotonin syndrome (high fever, confusion, muscle rigidity); this combination is contraindicated",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 8"
+    },
+    {
+      "id": "onc_opioid_maoi",
+      "a": [
+        "tramadol"
+      ],
+      "b": [
+        "selegiline",
+        "rasagiline",
+        "safinamide",
+        "tranylcypromine",
+        "linezolid"
+      ],
+      "level": "major",
+      "note": "serotonin syndrome and seizures; tramadol is contraindicated with MAO inhibitors",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 16"
+    },
+    {
+      "id": "onc_tca_maoi",
+      "a": [
+        "amitriptyline",
+        "imipramine",
+        "clomipramine",
+        "nortriptyline"
+      ],
+      "b": [
+        "selegiline",
+        "rasagiline",
+        "safinamide",
+        "tranylcypromine",
+        "linezolid"
+      ],
+      "level": "major",
+      "note": "serotonin syndrome and dangerous blood-pressure swings; contraindicated",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 20"
+    },
+    {
+      "id": "onc_stimulant_maoi",
+      "a": [
+        "methylphenidate"
+      ],
+      "b": [
+        "selegiline",
+        "rasagiline",
+        "safinamide",
+        "tranylcypromine",
+        "linezolid"
+      ],
+      "level": "major",
+      "note": "hypertensive crisis; methylphenidate is contraindicated with MAO inhibitors",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 3"
+    },
+    {
+      "id": "onc_triptan_maoi",
+      "a": [
+        "sumatriptan",
+        "rizatriptan",
+        "zolmitriptan"
+      ],
+      "b": [
+        "selegiline",
+        "rasagiline",
+        "safinamide",
+        "tranylcypromine",
+        "linezolid"
+      ],
+      "level": "major",
+      "note": "raised triptan levels and serotonin syndrome; labels contraindicate triptans with MAO inhibitors",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 31"
+    },
+    {
+      "id": "onc_febuxostat_azathioprine",
+      "a": [
+        "febuxostat"
+      ],
+      "b": [
+        "azathioprine"
+      ],
+      "level": "major",
+      "note": "raises azathioprine exposure: severe bone-marrow suppression; contraindicated",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 5"
+    },
+    {
+      "id": "onc_tranylcypromine_procarbazine",
+      "a": [
+        "tranylcypromine"
+      ],
+      "b": [
+        "procarbazine"
+      ],
+      "level": "major",
+      "note": "hypertensive crisis; procarbazine is itself an MAO inhibitor",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 30"
+    },
+    {
+      "id": "onc_ergot_cyp3a4",
+      "a": [
+        "ergotamine"
+      ],
+      "b": [
+        "clarithromycin",
+        "ketoconazole",
+        "itraconazole",
+        "voriconazole",
+        "ritonavir"
+      ],
+      "level": "major",
+      "note": "strong CYP3A4 inhibitors raise ergotamine levels: ergotism, with severe vessel spasm and gangrene; contraindicated",
+      "source": "Phansalkar S et al., JAMIA 2012;19:735 (ONC high-priority list; class table in Kim et al., PMC5102850; rule numbers as in highPriorityDdi.test.ts). Added by the developer from the published list, not yet checked by a pharmacist",
+      "pharmacist_approved": false,
+      "interrupt": true,
+      "basis": "onc_high_priority: rule 27"
     }
   ]
 }

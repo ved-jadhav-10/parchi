@@ -89,7 +89,7 @@ export const QueuePage = () => {
   const waitingHint = [running > 0 && `${running} still being checked`, failed > 0 && `${failed} not checked`].filter(Boolean).join(', ')
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: 'waiting', label: 'Waiting', count: waiting.length },
-    { id: 'hold_contact_doctor', label: 'Hold', count: counts.hold_contact_doctor },
+    { id: 'hold_contact_doctor', label: 'Needs attention', count: counts.hold_contact_doctor },
     { id: 'clear_with_note', label: 'With note', count: counts.clear_with_note },
     { id: 'clear', label: 'No alerts', count: counts.clear },
     { id: 'decided', label: 'Decided', count: done.length },

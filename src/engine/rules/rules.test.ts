@@ -111,7 +111,7 @@ describe('patient rules', () => {
   })
   it('uses the female factor when deciding the renal rule', () => {
     const p = { age_years: 60, weight_kg: 70, serum_creatinine: 1.2 }
-    const fires = (sex: 'M' | 'F') => runRules(context('Brufen 400 BD', { ...p, sex })).some((a) => a.type === 'nsaid_renal')
+    const fires = (sex: 'M' | 'F') => runRules(context('Brufen 400 BD', { ...p, sex })).some((a) => a.type === 'nsaid_renal_caution')
     expect(Math.round(cockcroftGault({ ...p, sex: 'M' })!)).toBe(65)
     expect(fires('M')).toBe(false)
     expect(fires('F')).toBe(true) // 64.8 x 0.85 = 55 < 60

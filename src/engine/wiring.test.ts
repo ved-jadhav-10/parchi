@@ -17,15 +17,15 @@ describe('demo Rx through the real engine', () => {
     const n = (t: string) => out.alerts.filter((a) => a.tier === t).length
     expect(n('interrupt')).toBe(demo.expected.alerts.interrupt_count)
     expect(n('inform')).toBe(4)
-    expect(out.alerts.filter((a) => a.tier === 'interrupt').map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_renal'])
+    expect(out.alerts.filter((a) => a.tier === 'interrupt').map((a) => a.type).sort()).toEqual(['dose_excess', 'nsaid_double_high_risk'])
     expect(byType(out.alerts, 'nsq')[0].tier).toBe('silent')
   })
 
-  it('takes the 65+ paracetamol cap and its basis from the limits data, shown as unverified', async () => {
+  it('takes the paracetamol limit and its basis from the limits data (age alone no longer lowers it), shown as unverified', async () => {
     const { alerts, ledger } = await check(demo.rx_text, patient)
-    expect(ledger.paracetamol.limit_mg_day).toBe(3000)
+    expect(ledger.paracetamol.limit_mg_day).toBe(4000)
     const a = byType(alerts, 'dose_excess')[0]
-    expect(a.reason).toContain('3,000 mg/day limit (age 65+ cap)')
+    expect(a.reason).toContain('4,000 mg/day limit (adult maximum)')
     expect(a.approved).toBe(false)
   })
 
@@ -99,12 +99,15 @@ describe('alerts from Track B dose facts', () => {
     expect(byType(alerts, 'schedule_mismatch')).toHaveLength(0)
   })
 
-  it('flags a sig that had to be guessed', async () => {
-    const { alerts } = await check('Omez 20', adult())
-    const a = byType(alerts, 'sig_unclear')
+  it('says dosing was not entered instead of guessing a frequency, and leaves the line out of the totals', async () => {
+    const { alerts, ledger } = await check('Omez 20', adult())
+    const a = byType(alerts, 'dosing_not_entered')
     expect(a).toHaveLength(1)
     expect(a[0].tier).toBe('inform')
-    expect(a[0].reason).toContain('once daily')
+    expect(a[0].reason).toContain('dosing not entered')
+    expect(a[0].brands).toEqual(['Omez'])
+    expect(ledger.omeprazole).toBeUndefined()
+    expect(byType(alerts, 'sig_unclear')).toHaveLength(0)
   })
 
   it('does not flag a clearly written sig', async () => {

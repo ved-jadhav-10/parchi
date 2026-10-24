@@ -7,6 +7,7 @@ import { HerbalCard } from '../components/HerbalCard'
 import { LeafletCard } from '../components/LeafletCard'
 import { DecisionPanel } from '../components/DecisionPanel'
 import { DecisionSheet } from '../components/DecisionSheet'
+import { HistoryCalendar } from '../components/HistoryCalendar'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { QueryDraftCard } from '../components/QueryDraftCard'
@@ -353,7 +354,6 @@ export const OrderPage = () => {
 
   const w = result ? result.windows[windowIdx ?? result.peak] : null
   const doctors = new Set(order.prescriptions.map((p) => doctorName(p.doctor)))
-
   const shownAlerts = result?.alerts.filter((a) => a.tier !== 'silent') ?? []
   const silentAlerts = result?.alerts.filter((a) => a.tier === 'silent') ?? []
   const lead = result ? leadAlert(result) : undefined
@@ -448,8 +448,24 @@ export const OrderPage = () => {
               <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
 
               <details className="card workings" open={workingsOpen || undefined} onToggle={(e) => setWorkingsOpen(e.currentTarget.open)}>
-                <summary>Workings: timeline, daily totals and what was written</summary>
+                <summary>Workings: calendar, timeline, daily totals and what was written</summary>
                 <div className="workings__body">
+                  <section aria-labelledby="w-calendar">
+                    <h3 id="w-calendar" className="order__sub">
+                      History calendar
+                    </h3>
+                    <p className="hint">Every day with a medicine, a prescription or an alert. Choose a day to see what is taken then.</p>
+                    <HistoryCalendar
+                      key={`${order.id}-${result.windows.length}`}
+                      lines={result.lines}
+                      windows={result.windows}
+                      placed={order.placed}
+                      initial={result.windows[result.peak].start}
+                      onPickWindow={setWindowIdx}
+                      onOpenXray={() => document.getElementById('w-xray')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })}
+                    />
+                  </section>
+
                   <section aria-labelledby="w-timeline">
                     <h3 id="w-timeline" className="order__sub">
                       Timeline

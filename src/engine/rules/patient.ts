@@ -53,6 +53,7 @@ export const patientRule: Rule = (ctx) => {
         continue
       }
       if (crcl >= rule.crcl_below) continue
+      if (rule.crcl_at_least !== undefined && crcl < rule.crcl_at_least) continue
     }
     alerts.push({
       ...base,

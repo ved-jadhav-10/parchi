@@ -32,17 +32,45 @@ describe('suppression list', () => {
 
 describe('alert budget', () => {
   const stops = [
-    alert({ tier: 'interrupt', type: 'nsaid_renal', ingredients: ['a'] }),
+    alert({ tier: 'interrupt', type: 'nsaid_renal', ingredients: ['a'], confidence: 0.8 }),
     alert({ tier: 'interrupt', type: 'dose_excess', ingredients: ['b'] }),
-    alert({ tier: 'interrupt', type: 'banned_fdc', ingredients: ['c'] }),
+    alert({ tier: 'interrupt', type: 'duplicate_ingredient', ingredients: ['c'], confidence: 0.9 }),
   ]
 
-  it('keeps the most serious interrupts and demotes the rest to inform', () => {
+  it('keeps the most serious routine interrupts and demotes the rest to inform', () => {
     const out = finalizeAlerts(stops, ctx(2))
-    expect(out.filter((a) => a.tier === 'interrupt').map((a) => a.type)).toEqual(['banned_fdc', 'dose_excess'])
+    expect(out.filter((a) => a.tier === 'interrupt').map((a) => a.type)).toEqual(['dose_excess', 'duplicate_ingredient'])
     const demoted = out.find((a) => a.type === 'nsaid_renal')!
     expect(demoted.tier).toBe('inform')
     expect(demoted.budget_demoted).toBe(true)
+  })
+
+  it('never demotes a contraindication or kidney "avoid", and they do not use up the budget', () => {
+    const protectedStops = [
+      alert({ tier: 'interrupt', type: 'ddi', ingredients: ['p', 'q'] }),
+      alert({ tier: 'interrupt', type: 'schedule_mismatch', ingredients: ['r'] }),
+      alert({ tier: 'interrupt', type: 'banned_fdc', ingredients: ['s'] }),
+    ]
+    const out = finalizeAlerts([...protectedStops, ...stops], ctx(2))
+    const kept = out.filter((a) => a.tier === 'interrupt').map((a) => a.type)
+    expect(kept).toEqual(expect.arrayContaining(['ddi', 'schedule_mismatch', 'banned_fdc', 'dose_excess', 'duplicate_ingredient']))
+    expect(kept).toHaveLength(5)
+    expect(out.find((a) => a.type === 'nsaid_renal')!.budget_demoted).toBe(true)
+  })
+
+  it('lets a stacking alert replace the plain alert it covers', () => {
+    const out = finalizeAlerts(
+      [
+        alert({ tier: 'inform', type: 'class_duplication', ingredients: ['aceclofenac', 'ibuprofen'] }),
+        alert({ tier: 'interrupt', type: 'nsaid_double_high_risk', ingredients: ['aceclofenac', 'ibuprofen'] }),
+        alert({ tier: 'inform', type: 'class_duplication', ingredients: ['omeprazole', 'pantoprazole'] }),
+      ],
+      ctx(),
+    )
+    expect(out.map((a) => `${a.type}:${a.ingredients.join('+')}`)).toEqual([
+      'nsaid_double_high_risk:aceclofenac+ibuprofen',
+      'class_duplication:omeprazole+pantoprazole',
+    ])
   })
 
   it('does nothing when within budget', () => {

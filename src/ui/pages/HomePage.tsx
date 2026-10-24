@@ -9,7 +9,9 @@
 import { useState } from 'react'
 import { LogoMark } from '../components/LogoMark'
 import { scrollToTarget, useSmoothScroll } from '../lib/smoothScroll'
+import { SlipCompare } from '../components/SlipCompare'
 import { StackedSections } from '../components/StackedSections'
+import { TrailerVideo } from '../components/TrailerVideo'
 import { useOnline } from '../route'
 
 const SECTIONS = [
@@ -244,6 +246,8 @@ export const HomePage = () => {
           </section>
         </div>
 
+        <TrailerVideo />
+
         <StackedSections>
         <section className="home-section home-section--white home-how" id="how" aria-labelledby="how-title">
           <div className="home-how__head">
@@ -268,6 +272,14 @@ export const HomePage = () => {
             </div>
             <Limit withLabel />
           </div>
+        </section>
+
+        <section className="home-section home-section--white home-compare-section" id="compare" aria-labelledby="compare-title">
+          <div className="home-compare-section__head">
+            <h2 id="compare-title" tabIndex={-1}>Three brands. One ingredient.</h2>
+            <p className="home-lead">Paracetamol is never written on this slip. Parchi finds it in all three brands and adds it up.</p>
+          </div>
+          <SlipCompare />
         </section>
 
         <section className="home-section home-section--tint home-how" id="desk" aria-labelledby="desk-title">

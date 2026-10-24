@@ -118,7 +118,7 @@ describe('sig wording from Track B', () => {
     expect(sigLabel(parseSig('once weekly'))).toBe('about once every 7 days')
   })
   it('passes Track B assumptions on to the pharmacist', () => {
-    expect(sigNotes(parseSig('')).join(' ')).toMatch(/once daily/i)
+    expect(sigNotes(parseSig('')).join(' ')).toMatch(/no dosing written/i)
     expect(sigNotes(parseSig('1-0-1'))).toEqual([])
   })
 })

@@ -8,11 +8,12 @@ export type AlertKey = (a: Alert) => string
 export const alertKey: AlertKey = (a) => `${a.type}|${[...a.ingredients].sort().join(',')}`
 
 /**
- * A patient rule (e.g. nsaid_renal) is one finding about the patient however many of its drugs are active, so it is
- * keyed by rule only: when one NSAID ends, the alert does not split in two.
+ * A patient rule (e.g. nsaid_renal), a stacking rule (e.g. serotonergic_stack) or a burden scale is one finding about the
+ * patient however many of its drugs are active, so it is keyed by rule only: when one drug ends, the alert does not split in two.
  */
 export function alertKeyFor(config: AlertRules): AlertKey {
-  const ruleIds = new Set(config.patient_rules.map((r) => r.id))
+  // Stacking and burden rules are the same kind of finding: one about the patient, however the active drugs shift over the dates.
+  const ruleIds = new Set([...config.patient_rules.map((r) => r.id), ...config.stack_rules.map((r) => r.id), ...config.burden_scales.map((b) => b.id)])
   return (a) => (ruleIds.has(a.type) ? a.type : alertKey(a))
 }
 

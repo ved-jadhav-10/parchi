@@ -5,3 +5,4 @@ export { orderPriority, orderStatus, rankQueue, type QueueItem, type RankedItem 
 export { buildWindows, type Span, type Window } from './timeline'
 export { dayNumber, isoDay } from './dates'
 export { fhirToHistory, type FhirImport, type FhirPatient } from './fhir'
+export { checkByPatient, groupByPatient, patientKey, type AccountCheck, type PatientCheck, type PatientGroup } from './patients'

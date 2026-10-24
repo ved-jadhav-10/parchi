@@ -25,7 +25,7 @@ describe('createPipeline with Track B injected', () => {
     const r = await check(demo.rx_text, demo.patient as Patient)
     const over = r.alerts.find((a) => a.type === 'dose_excess' && a.ingredients.includes('paracetamol'))!
     expect(over.tier).toBe('interrupt')
-    expect(r.ledger.paracetamol.limit_mg_day).toBe(3000)
+    expect(r.ledger.paracetamol.limit_mg_day).toBe(4000)
     expect(r.ledger.paracetamol.limit_pharmacist_approved).toBe(false)
   })
 

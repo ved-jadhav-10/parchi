@@ -12,7 +12,9 @@ describe('policy rows for the Data page', () => {
     expect(rows.length).toBeGreaterThan(Object.keys(LIMITS.ingredients).length)
     const adult = rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Adult')
     expect(adult?.value).toBe('4,000 mg/day')
-    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail.startsWith('Age 65'))?.value).toBe('3,000 mg/day')
+    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Adult')?.value).toBe('4,000 mg/day')
+    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Liver disease')?.value).toBe('3,000 mg/day')
+    expect(rows.find((r) => r.name === 'Paracetamol' && r.detail === 'Weight under 50 kg')?.value).toBe('60 mg/kg/day')
     expect(rows.every((r) => r.source.length > 0 && typeof r.approved === 'boolean')).toBe(true)
   })
 
@@ -36,7 +38,9 @@ describe('policy rows for the Data page', () => {
     expect(rows[0].name).toBe('Alert budget')
     expect(rows[0].value).toMatch(/Interrupts a prescription$/)
     expect(rows.some((r) => r.name === 'Interactions')).toBe(true)
-    expect(rows.some((r) => r.name === 'Nsaid renal' && /CrCl below 60/.test(r.detail))).toBe(true)
+    expect(rows.some((r) => r.name === 'Nsaid renal' && /CrCl below 30/.test(r.detail))).toBe(true)
+    expect(rows.some((r) => r.name === 'Nsaid renal caution' && /CrCl 30 to below 60/.test(r.detail))).toBe(true)
+    expect(rows.find((r) => r.name === 'ACE inhibitor/ARB + diuretic + NSAID')?.value).toBe('Interrupt')
   })
 
   it('lists the suppression rules, and counts approvals', () => {

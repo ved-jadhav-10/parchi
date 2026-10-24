@@ -1,0 +1,317 @@
+{
+  "_note": "Realistic multi-drug scenarios (FIX_PLAN Phase 5). The danger comes from different compositions prescribed together, often hidden inside a combination brand, not from one molecule under two names. Brands and compositions are from public/data/brands.json. Provenance tier T3 (docs/TEST_PLAN.md): the cases and the expected tiers are ours; 'review' stays null until a named reviewer judges the case. 'expect' lists alerts that must appear with that exact tier; 'interrupts' is the exact set of Interrupt types (empty = none allowed); 'forbid' lists alert types that must not appear; 'clean' means nothing above Silent. Rows marked question:true are judgement calls listed in eval/reviewer_list.md section H.",
+  "scenarios": [
+    {
+      "id": "R01", "title": "Post-MI patient, knee pain from a different doctor",
+      "realism": "Dual antiplatelets plus a statin and beta-blocker after a heart attack; an orthopaedic surgeon later adds a combination painkiller.",
+      "kind": "history", "patient": { "age_years": 62, "weight_kg": 70, "serum_creatinine": 0.9, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Iyer (cardiology)", "date": "2026-10-01", "text": "Ecosprin-AV 75 OD x30d; Clopikind 75 OD x30d; Metolar 25 BD x30d; Cardace 5 OD x30d" },
+        { "id": "b", "doctor": "Dr Mehta (orthopaedics)", "date": "2026-10-10", "text": "Zerodol-P BD x7d" }
+      ], "asOf": "2026-10-10",
+      "expect": [{ "type": "bleeding_dual_antiplatelet_nsaid", "tier": "interrupt", "ingredients": ["aceclofenac"] }],
+      "interrupts": ["bleeding_dual_antiplatelet_nsaid"], "forbid": []
+    },
+    {
+      "id": "R02", "title": "Same patient, a GP adds acidity cover",
+      "realism": "Omeprazole is the commonest PPI added for gastric protection.",
+      "kind": "history", "patient": { "age_years": 62, "weight_kg": 70, "serum_creatinine": 0.9, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Iyer (cardiology)", "date": "2026-10-01", "text": "Ecosprin-AV 75 OD x30d; Clopikind 75 OD x30d; Metolar 25 BD x30d; Cardace 5 OD x30d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-08", "text": "Omez 20 OD x30d" }
+      ], "asOf": "2026-10-08",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["clopidogrel", "omeprazole"] }],
+      "interrupts": [], "forbid": ["bleeding_dual_antiplatelet_nsaid"]
+    },
+    {
+      "id": "R03", "title": "Triple whammy: blood pressure pill with a hidden diuretic, plus a painkiller",
+      "realism": "A chronic telmisartan-hydrochlorothiazide tablet and a short course of aceclofenac-paracetamol for joint pain.",
+      "kind": "history", "patient": { "age_years": 70, "weight_kg": 52, "serum_creatinine": 1.1, "sex": "F" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Rao (GP)", "date": "2026-09-01", "text": "Telma H OD x90d" },
+        { "id": "b", "doctor": "Dr Mehta (orthopaedics)", "date": "2026-10-05", "text": "Hifenac-P BD x10d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "triple_whammy", "tier": "interrupt", "ingredients": ["telmisartan", "hydrochlorothiazide", "aceclofenac"] }],
+      "interrupts": ["triple_whammy"], "forbid": []
+    },
+    {
+      "id": "R04", "title": "Warfarin, then co-trimoxazole for a urine infection",
+      "realism": "A patient with atrial fibrillation on warfarin gets a common UTI antibiotic from a GP.",
+      "kind": "history", "patient": { "age_years": 66, "weight_kg": 68, "serum_creatinine": 1.0, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Iyer (cardiology)", "date": "2026-09-01", "text": "Warf 5 OD x90d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-05", "text": "Septran DS BD x5d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["warfarin", "sulfamethoxazole"] }],
+      "interrupts": [], "forbid": [], "question": true
+    },
+    {
+      "id": "R05", "title": "Warfarin, then metronidazole from a dentist",
+      "realism": "Metronidazole is routine after dental work.",
+      "kind": "history", "patient": { "age_years": 66, "weight_kg": 68, "serum_creatinine": 1.0, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Iyer (cardiology)", "date": "2026-09-01", "text": "Warf 5 OD x90d" },
+        { "id": "b", "doctor": "Dr Kapoor (dentist)", "date": "2026-10-05", "text": "Metrogyl 400 TDS x5d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["warfarin", "metronidazole"] }],
+      "interrupts": [], "forbid": [], "question": true
+    },
+    {
+      "id": "R06", "title": "Weekly methotrexate with co-trimoxazole",
+      "realism": "Rheumatoid arthritis on methotrexate; a GP treats a UTI with co-trimoxazole.",
+      "kind": "history", "patient": { "age_years": 52, "weight_kg": 60, "serum_creatinine": 0.9, "sex": "F" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Nair (rheumatology)", "date": "2026-09-01", "text": "Folitrax 7.5 once weekly x90d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-05", "text": "Septran DS BD x7d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "ddi", "tier": "interrupt", "ingredients": ["methotrexate", "trimethoprim"] }],
+      "interrupts": ["ddi"], "forbid": []
+    },
+    {
+      "id": "R06b", "title": "Methotrexate written as a daily medicine",
+      "realism": "The classic fatal error: a weekly drug transcribed as OD.",
+      "kind": "single", "patient": { "age_years": 52, "weight_kg": 60, "serum_creatinine": 0.9, "sex": "F" },
+      "rx": "Folitrax 7.5 OD",
+      "expect": [{ "type": "schedule_mismatch", "tier": "interrupt", "ingredients": ["methotrexate"] }],
+      "interrupts": ["schedule_mismatch"], "forbid": []
+    },
+    {
+      "id": "R07", "title": "Gout colchicine with a hidden clarithromycin in an H. pylori kit",
+      "realism": "Pylokit is a common triple-therapy pack; the macrolide is not in its name.",
+      "kind": "history", "patient": { "age_years": 60, "weight_kg": 72, "serum_creatinine": 1.0, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Rao (GP)", "date": "2026-10-01", "text": "Zycolchin BD x10d" },
+        { "id": "b", "doctor": "Dr Sen (gastroenterology)", "date": "2026-10-04", "text": "Pylokit BD x14d" }
+      ], "asOf": "2026-10-04",
+      "expect": [{ "type": "ddi", "tier": "interrupt", "ingredients": ["colchicine", "clarithromycin"] }],
+      "interrupts": ["ddi"], "forbid": []
+    },
+    {
+      "id": "R08", "title": "An older woman with three sedating medicines from three doctors",
+      "realism": "Anxiety, neuropathy and poor sleep treated separately; a benzodiazepine hides inside an antidepressant combination.",
+      "kind": "history", "patient": { "age_years": 74, "weight_kg": 58, "serum_creatinine": 0.9, "sex": "F" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Bose (psychiatry)", "date": "2026-10-01", "text": "Nexito Plus OD x30d" },
+        { "id": "b", "doctor": "Dr Das (neurology)", "date": "2026-10-03", "text": "Pregaba-M 75 HS x30d" },
+        { "id": "c", "doctor": "Dr Rao (GP)", "date": "2026-10-06", "text": "Alprax 0.25 HS x30d" }
+      ], "asOf": "2026-10-06",
+      "expect": [{ "type": "cns_stacking", "tier": "inform" }, { "type": "beers_benzodiazepine", "tier": "inform" }],
+      "interrupts": [], "forbid": []
+    },
+    {
+      "id": "R09", "title": "Antidepressant with tramadol and a cough syrup",
+      "realism": "Two serotonergic drugs are hidden in a combination painkiller and a cough syrup.",
+      "kind": "history", "patient": { "age_years": 45, "weight_kg": 70, "serum_creatinine": 0.9, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Bose (psychiatry)", "date": "2026-09-15", "text": "Nexito 10 OD x60d" },
+        { "id": "b", "doctor": "Dr Mehta (orthopaedics)", "date": "2026-10-03", "text": "Ultracet BD x5d" },
+        { "id": "c", "doctor": "Dr Rao (GP)", "date": "2026-10-04", "text": "Grilinctus 10 ml TDS x5d" }
+      ], "asOf": "2026-10-04",
+      "expect": [{ "type": "serotonergic_stack", "tier": "inform" }],
+      "interrupts": [], "forbid": []
+    },
+    {
+      "id": "R10", "title": "Four QT-prolonging medicines in a woman of 66",
+      "realism": "Hydroxychloroquine for arthritis, then azithromycin, domperidone and ondansetron for a chest infection and nausea.",
+      "kind": "history", "patient": { "age_years": 66, "weight_kg": 60, "serum_creatinine": 0.9, "sex": "F" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Nair (rheumatology)", "date": "2026-09-01", "text": "HCQS 200 BD x90d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-04", "text": "Azithral 500 OD x3d; Domstal 10mg TDS x3d; Emeset 4 SOS x3d" }
+      ], "asOf": "2026-10-04",
+      "expect": [{ "type": "qt_stack", "tier": "interrupt" }],
+      "interrupts": ["qt_stack"], "forbid": []
+    },
+    {
+      "id": "R11", "title": "Theophylline combination with ciprofloxacin",
+      "realism": "A COPD patient on Deriphyllin gets ciprofloxacin for a UTI.",
+      "kind": "history", "patient": { "age_years": 63, "weight_kg": 62, "serum_creatinine": 1.0, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Gill (chest)", "date": "2026-09-01", "text": "Deriphyllin BD x90d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-05", "text": "Ciplox 500 BD x5d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["theophylline", "ciprofloxacin"] }],
+      "interrupts": [], "forbid": [], "question": true
+    },
+    {
+      "id": "R12", "title": "Phenytoin with a single fluconazole dose",
+      "realism": "A one-off antifungal dose for vaginal thrush in a woman on long-term phenytoin.",
+      "kind": "history", "patient": { "age_years": 34, "weight_kg": 58, "serum_creatinine": 0.8, "sex": "F" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Das (neurology)", "date": "2026-09-01", "text": "Eptoin 100 TDS x90d" },
+        { "id": "b", "doctor": "Dr Pillai (gynaecology)", "date": "2026-10-05", "text": "Forcan 150 stat" }
+      ], "asOf": "2026-10-05", "pregnancy": "no",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["phenytoin", "fluconazole"] }],
+      "interrupts": [], "forbid": []
+    },
+    {
+      "id": "R13", "title": "Lithium with ibuprofen hidden in Combiflam",
+      "realism": "A dentist prescribes a common ibuprofen-paracetamol tablet to a patient on lithium.",
+      "kind": "history", "patient": { "age_years": 41, "weight_kg": 72, "serum_creatinine": 0.9, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Bose (psychiatry)", "date": "2026-09-01", "text": "Lithosun 300 BD x90d" },
+        { "id": "b", "doctor": "Dr Kapoor (dentist)", "date": "2026-10-05", "text": "Combiflam TDS x5d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["lithium_carbonate", "ibuprofen"] }],
+      "interrupts": [], "forbid": [], "question": true
+    },
+    {
+      "id": "R14", "title": "Heart failure with weak kidneys: potassium-raising drugs stack",
+      "realism": "Spironolactone and an ARB for heart failure; a GP adds co-trimoxazole for a UTI.",
+      "kind": "history", "patient": { "age_years": 72, "weight_kg": 50, "serum_creatinine": 2.4, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Iyer (cardiology)", "date": "2026-09-01", "text": "Aldactone OD x90d; Telma 40 OD x90d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-05", "text": "Septran DS BD x5d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "hyperkalaemia_stack", "tier": "interrupt" }, { "type": "renal_avoid", "tier": "interrupt", "ingredients": ["spironolactone"] }],
+      "interrupts": ["hyperkalaemia_stack", "renal_avoid"], "forbid": []
+    },
+    {
+      "id": "R15", "title": "Diabetic kidney disease: sitagliptin above the kidney dose",
+      "realism": "Metformin-glimepiride, sitagliptin and an ARB in a 71-year-old with creatinine 1.9.",
+      "kind": "single", "patient": { "age_years": 71, "weight_kg": 60, "serum_creatinine": 1.9, "sex": "M" },
+      "rx": "Glycomet-GP 2 BD; Januvia 100mg OD; Telma 40 OD",
+      "expect": [{ "type": "dose_excess", "tier": "interrupt", "ingredients": ["sitagliptin"] }, { "type": "beers_sulfonylurea", "tier": "inform" }],
+      "interrupts": ["dose_excess"], "forbid": []
+    },
+    {
+      "id": "R16", "title": "Tuberculosis treatment with warfarin and a sulfonylurea",
+      "realism": "Rifampicin is a strong enzyme inducer; the four-drug TB pack hides isoniazid, pyrazinamide and ethambutol.",
+      "kind": "history", "patient": { "age_years": 55, "weight_kg": 58, "serum_creatinine": 0.9, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Gill (chest)", "date": "2026-10-01", "text": "Akt 4 OD x60d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-09-01", "text": "Glycomet-GP 2 BD x90d; Warf 5 OD x90d" }
+      ], "asOf": "2026-10-01",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["rifampicin", "warfarin"] }],
+      "interrupts": [], "forbid": [], "question": true
+    },
+    {
+      "id": "R17", "title": "Angina nitrate with an erectile dysfunction tablet",
+      "realism": "The man buys sildenafil himself; the nitrate is on his cardiology prescription.",
+      "kind": "single", "patient": { "age_years": 58, "weight_kg": 75, "serum_creatinine": 1.0, "sex": "M" },
+      "rx": "Sorbitrate 5 SOS; Manforce 50mg SOS",
+      "expect": [{ "type": "ddi", "tier": "interrupt", "ingredients": ["sildenafil", "isosorbide_dinitrate"] }],
+      "interrupts": ["ddi"], "forbid": []
+    },
+    {
+      "id": "R18", "title": "Digoxin with newly started amiodarone, weak kidneys",
+      "realism": "A rhythm-control drug is added to digoxin in an elderly man.",
+      "kind": "history", "patient": { "age_years": 76, "weight_kg": 60, "serum_creatinine": 1.6, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Iyer (cardiology)", "date": "2026-09-01", "text": "Lanoxin 0.25 OD x90d" },
+        { "id": "b", "doctor": "Dr Iyer (cardiology)", "date": "2026-10-05", "text": "Cordarone OD x30d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "ddi", "tier": "inform", "ingredients": ["digoxin", "amiodarone"] }],
+      "interrupts": [], "forbid": [], "question": true
+    },
+    {
+      "id": "R19", "title": "A child's fever: Meftal-P is not paracetamol",
+      "realism": "A paediatrician and a GP each give a syrup; the 'P' in Meftal-P is not paracetamol.",
+      "kind": "history", "patient": { "age_years": 4, "weight_kg": 16, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Anand (paediatrics)", "date": "2026-10-04", "text": "Calpol 250mg Paediatric 5 ml QID x3d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-05", "text": "Meftal-P 5 ml TDS x3d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "dose_excess", "tier": "interrupt", "ingredients": ["paracetamol"] }],
+      "interrupts": ["dose_excess"], "forbid": ["duplicate_ingredient"]
+    },
+    {
+      "id": "R20", "title": "An older woman with a cold, dizziness and a sleeping aid: many notes, no stop",
+      "realism": "Tests alert fatigue: several mild issues must not become Interrupts.",
+      "kind": "history", "patient": { "age_years": 78, "weight_kg": 55, "serum_creatinine": 0.9, "sex": "F" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Bhat (ENT)", "date": "2026-10-03", "text": "Vertin 16 TDS x10d" },
+        { "id": "b", "doctor": "Dr Rao (GP)", "date": "2026-10-05", "text": "Sinarest New TDS x3d; Alprax 0.25 HS x7d" }
+      ], "asOf": "2026-10-05",
+      "expect": [{ "type": "beers_benzodiazepine", "tier": "inform" }],
+      "interrupts": [], "forbid": []
+    },
+    {
+      "id": "R21", "title": "Busy but clean: diabetes, blood pressure, cholesterol, aspirin",
+      "realism": "Four chronic medicines for a 58-year-old, nothing wrong.",
+      "kind": "single", "patient": { "age_years": 58, "weight_kg": 78, "serum_creatinine": 1.0, "sex": "M" },
+      "rx": "Glycomet 500 SR BD; Telma-AM OD; Rosuvas 10 HS; Ecosprin 75 OD",
+      "expect": [], "interrupts": [], "forbid": [], "clean": true
+    },
+    {
+      "id": "R22", "title": "Busy but clean: a chest infection course",
+      "realism": "Antibiotic, a painkiller as needed, an antihistamine and a PPI for five days.",
+      "kind": "single", "patient": { "age_years": 30, "weight_kg": 58, "serum_creatinine": 0.8, "sex": "F" }, "pregnancy": "no",
+      "rx": "Augmentin 625 Duo BD x5d; Dolo 650 SOS; Allegra 120mg OD; Pan 40 OD x5d",
+      "expect": [], "interrupts": [], "forbid": [], "clean": true
+    },
+    {
+      "id": "R23", "title": "Two as-needed paracetamol products",
+      "realism": "A stomach-cramp tablet and a fever tablet, both bought as needed.",
+      "kind": "single", "patient": { "age_years": 25, "weight_kg": 70, "serum_creatinine": 0.9, "sex": "M" },
+      "rx": "Cyclopam SOS; Dolo 650 SOS",
+      "expect": [{ "type": "dose_excess_sos", "tier": "inform", "ingredients": ["paracetamol"] }],
+      "interrupts": [], "forbid": []
+    },
+    {
+      "id": "R24", "title": "Penicillin allergy and the amoxicillin hidden in Mox-CV",
+      "realism": "The brand name does not say 'amoxicillin'.",
+      "kind": "single", "patient": { "age_years": 28, "weight_kg": 58, "serum_creatinine": 0.8, "sex": "F", "allergies": ["penicillin"], "pregnancy": "no" },
+      "rx": "Mox CV 625 BD x5d",
+      "expect": [{ "type": "allergy", "tier": "interrupt", "ingredients": ["amoxicillin"] }],
+      "interrupts": ["allergy"], "forbid": []
+    },
+    {
+      "id": "R25", "title": "Pregnancy with an old blood-pressure and cholesterol prescription",
+      "realism": "A refill of medicines started before the pregnancy.",
+      "kind": "single", "patient": { "age_years": 28, "weight_kg": 62, "serum_creatinine": 0.8, "sex": "F", "pregnancy": "yes" },
+      "rx": "Telma 40 OD; Rosuvas 10 HS",
+      "expect": [{ "type": "pregnancy", "tier": "interrupt", "ingredients": ["telmisartan"] }, { "type": "pregnancy", "tier": "inform", "ingredients": ["rosuvastatin"] }],
+      "interrupts": ["pregnancy"], "forbid": []
+    },
+    {
+      "id": "R26", "title": "One family account, three people",
+      "realism": "A single phone number orders for a grandfather, a mother and a child.",
+      "kind": "account",
+      "patients": { "Ramesh K.": { "age_years": 68, "weight_kg": 55, "sex": "M" }, "Priya": { "age_years": 30, "weight_kg": 58, "sex": "F" }, "Aarav": { "age_years": 6, "weight_kg": 20, "sex": "M" } },
+      "fallback": { "age_years": 40 },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr Rao", "date": "2026-10-01", "text": "Ecosprin 75 OD x30d; Telma 40 OD x30d", "patient": "Ramesh K." },
+        { "id": "b", "doctor": "Dr Mehta", "date": "2026-10-02", "text": "Dolo 650 TDS x3d", "patient": "Priya" },
+        { "id": "c", "doctor": "Dr Shah", "date": "2026-10-02", "text": "Calpol 250mg Paediatric 5 ml TDS x3d", "patient": "Aarav" }
+      ],
+      "expect": [], "forbid": ["duplicate_ingredient"], "interrupts": []
+    },
+    {
+      "id": "R27", "title": "A second doctor replaces the PPI",
+      "realism": "A new doctor switches pantoprazole to rabeprazole-domperidone without writing 'stop'.",
+      "kind": "history", "patient": { "age_years": 45, "weight_kg": 70, "serum_creatinine": 0.9, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr A", "date": "2026-10-01", "text": "Pan 40 OD x30d" },
+        { "id": "b", "doctor": "Dr B", "date": "2026-10-15", "text": "Razo-D OD x30d" }
+      ], "asOf": "2026-10-15",
+      "expect": [{ "type": "possible_switch", "tier": "inform" }],
+      "interrupts": [], "forbid": ["class_duplication"]
+    },
+    {
+      "id": "R28", "title": "Two antibiotic courses a few weeks apart, one with no course length",
+      "realism": "A 30-day default would invent an overlap; the ordered quantity (10 tablets, twice a day) says five days.",
+      "kind": "history", "patient": { "age_years": 40, "weight_kg": 70, "serum_creatinine": 0.9, "sex": "M" },
+      "prescriptions": [
+        { "id": "a", "doctor": "Dr A", "date": "2026-09-01", "text": "Augmentin 625 Duo BD qty 10" },
+        { "id": "b", "doctor": "Dr B", "date": "2026-09-25", "text": "Taxim-O 200 BD x5d" }
+      ], "asOf": "2026-09-25",
+      "expect": [], "interrupts": [], "forbid": ["class_duplication", "possible_switch"]
+    },
+    {
+      "id": "R29", "title": "A cart with products and no dosing",
+      "realism": "E-pharmacy carts hold products and pack counts, not a frequency.",
+      "kind": "single", "patient": { "age_years": 40, "weight_kg": 70, "serum_creatinine": 0.9, "sex": "M" },
+      "rx": "Dolo 650; Calpol 500",
+      "expect": [{ "type": "dosing_not_entered", "tier": "inform" }, { "type": "duplicate_ingredient", "tier": "inform" }],
+      "interrupts": [], "forbid": ["dose_excess"]
+    },
+    {
+      "id": "R30", "title": "A lab eGFR with no weight or creatinine",
+      "realism": "The platform's lab reports eGFR; the pharmacy does not know the weight.",
+      "kind": "single", "patient": { "age_years": 71, "sex": "M", "egfr": 40 },
+      "rx": "Glycomet 500 TDS",
+      "expect": [{ "type": "dose_excess", "tier": "interrupt", "ingredients": ["metformin"] }],
+      "interrupts": ["dose_excess"], "forbid": ["input_needed"]
+    }
+  ]
+}
