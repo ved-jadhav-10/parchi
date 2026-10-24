@@ -1,0 +1,6 @@
+{
+  "_note": "Placeholder until Track C sets the rule (PLAN.md Phase 2: a default window for a line with no duration, in data, unverified). It decides how long a line with no written duration counts as taken, so it moves which prescriptions overlap. The pharmacist session sets the real value.",
+  "default_window_days": 14,
+  "source": "UI placeholder, not clinical guidance",
+  "pharmacist_approved": false
+}

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parchi paper palette preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* PREVIEW ONLY. Not wired into src/ui. Toggle top-right switches the two token sets. */
+:root, :root[data-look="current"] {
+  --ink: #122056;  --ink-muted: #5c6488;
+  --accent: #5b65dc; --accent-strong: #4a53c7; --on-accent: #fff;
+  --tint: #eeeffd; --bg: #fafafd; --surface: #fff; --border: #dcdff0;
+  --pen: #4a53c7;          /* handwriting colour (unused in current look) */
+  --page: linear-gradient(135deg,#e4e6f8 0%,#eeeffd 30%,#fafafd 60%,#e9ebfa 100%);
+  --rule: #dcdff0;
+  --label-font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --label-track: 0.02em; --label-case: none;
+  --slip-edge: 0;           /* 1 = perforated tear edge */
+  --radius-card: 12px;
+}
+:root[data-look="paper"] {
+  --ink: #122056;  --ink-muted: #5a5f7d;
+  --accent: #5b65dc; --accent-strong: #4a53c7; --on-accent: #fff;
+  --tint: #ebe9f7;
+  --bg: #f4f0e6;            /* bone paper */
+  --surface: #fbf9f3;       /* slip stock */
+  --border: #d8d0bd;        /* pencil-grey ruling */
+  --pen: #2f3fb0;           /* ballpoint blue */
+  --page: radial-gradient(circle at 20% 0%, #f8f5ec 0%, #f4f0e6 55%, #ece6d6 100%);
+  --rule: #cfc6b0;
+  --label-font: 'IBM Plex Mono', ui-monospace, monospace;
+  --label-track: 0.08em; --label-case: uppercase;
+  --slip-edge: 1;
+  --radius-card: 4px;
+}
+:root {
+  --t-interrupt:#b42318; --t-interrupt-bg:#fef0ee;
+  --t-inform:#9a4a00;    --t-inform-bg:#fff4e5;
+  --t-silent:#5c6488;    --t-silent-bg:#f1f2f8;
+  --ok:#1e7a46; --ok-bg:#eaf6ef;
+}
+:root[data-look="paper"] {
+  --t-interrupt-bg:#fbeae4; --t-inform-bg:#fbf0dc; --t-silent-bg:#ece9df; --ok-bg:#e6f0e4;
+}
+* { box-sizing: border-box; }
+body { margin:0; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:var(--ink); background:var(--page); min-height:100vh; line-height:1.5; }
+.lab { font-family:var(--label-font); letter-spacing:var(--label-track); text-transform:var(--label-case); font-size:.72rem; color:var(--ink-muted); font-weight:500; }
+.hand { font-family:'Caveat',cursive; color:var(--pen); font-weight:600; }
+header { display:flex; align-items:center; gap:16px; padding:12px 24px; background:var(--surface); border-bottom:1px solid var(--border); }
+.brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.25rem; letter-spacing:-.01em; }
+.brand svg { display:block; }
+.brand small { font-weight:400; }
+header .sp { flex:1; }
+.pill { display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--tint); font-size:.8rem; }
+.dot { width:8px; height:8px; border-radius:50%; background:var(--ink-muted); }
+.toggle { display:inline-flex; border:1px solid var(--border); border-radius:999px; overflow:hidden; background:var(--surface); }
+.toggle button { font:inherit; font-size:.8rem; font-weight:600; border:0; background:transparent; color:var(--ink); padding:8px 14px; cursor:pointer; min-height:36px; }
+.toggle button[aria-pressed="true"] { background:var(--accent); color:var(--on-accent); }
+main { max-width:1200px; margin:0 auto; padding:24px; display:grid; gap:24px; grid-template-columns:400px 1fr; }
+@media (max-width:959px){ main{grid-template-columns:1fr; padding:16px;} }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-card); padding:20px; position:relative; box-shadow:0 1px 2px rgb(18 32 86/.06),0 4px 12px rgb(18 32 86/.06); }
+/* the slip: perforated top edge + corner fold, paper look only */
+:root[data-look="paper"] .slip::before { content:""; position:absolute; left:0; right:0; top:-1px; height:6px;
+  background:radial-gradient(circle at 6px 0, var(--bg) 3px, transparent 3.5px) 0 0/12px 6px repeat-x; }
+:root[data-look="paper"] .slip { background-image:repeating-linear-gradient(transparent 0 31px, rgb(207 198 176/.35) 31px 32px); background-position:0 12px; }
+h2 { margin:0 0 12px; font-size:1.25rem; line-height:1.75rem; }
+.rx { font-family:'Plus Jakarta Sans'; font-weight:700; font-size:2rem; line-height:1; color:var(--ink); }
+.pad-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.field { border:1px solid var(--rule); border-radius:var(--radius-card); background:color-mix(in srgb,var(--surface) 70%, transparent); padding:8px 12px; margin-bottom:12px; }
+.field .v { font-size:1rem; min-height:24px; }
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+textarea { width:100%; min-height:150px; resize:vertical; border:1px solid var(--rule); border-radius:var(--radius-card); padding:12px; background:color-mix(in srgb,var(--surface) 60%, transparent); color:var(--ink); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:1rem; line-height:1.6; }
+textarea:focus-visible, button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.btn { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:0 20px; border-radius:var(--radius-card); border:0; background:var(--accent); color:var(--on-accent); font:600 1rem 'Plus Jakarta Sans'; cursor:pointer; }
+.btn.sec { background:var(--tint); color:var(--accent-strong); }
+.actions { display:flex; gap:12px; margin-top:12px; flex-wrap:wrap; }
+.prompt { margin-top:12px; padding:10px 12px; background:var(--tint); border-radius:var(--radius-card); font-size:.875rem; }
+.summary { display:flex; flex-wrap:wrap; gap:8px 16px; align-items:baseline; margin-bottom:16px; }
+.summary b { font-size:1.75rem; line-height:2.25rem; }
+.alert { display:grid; grid-template-columns:4px 1fr; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-card); margin-bottom:12px; overflow:hidden; }
+.alert .bar { background:var(--c); } .alert .body { padding:14px 16px; }
+.alert.int { --c:var(--t-interrupt); background:var(--t-interrupt-bg); }
+.alert.inf { --c:var(--t-inform); background:var(--t-inform-bg); }
+.tier { display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:.8rem; color:var(--c); font-family:var(--label-font); letter-spacing:var(--label-track); text-transform:uppercase; }
+.alert .reason { margin:4px 0 8px; font-size:1rem; }
+.chip { display:inline-block; padding:2px 8px; border-radius:6px; background:var(--tint); color:var(--accent-strong); font:500 .75rem 'IBM Plex Mono',monospace; }
+:root[data-look="paper"] .chip { border:1px dashed var(--accent); background:transparent; }
+.btn-sm { min-height:36px; padding:0 14px; font-size:.875rem; }
+table { width:100%; border-collapse:collapse; font-size:.875rem; }
+th { text-align:left; padding:8px; border-bottom:1px solid var(--rule); }
+td { padding:10px 8px; border-bottom:1px solid var(--border); vertical-align:middle; font-variant-numeric:tabular-nums; }
+.bar-wrap { position:relative; height:10px; background:var(--tint); border-radius:999px; min-width:120px; }
+.bar-fill { position:absolute; left:0; top:0; bottom:0; border-radius:999px; background:var(--f); }
+.bar-mark { position:absolute; left:80%; top:-3px; bottom:-3px; width:2px; background:var(--ink); }
+.val { font-size:.8rem; margin-top:4px; }
+details { margin-top:12px; } summary { cursor:pointer; color:var(--ink-muted); font-size:.875rem; }
+.stamp { position:absolute; right:20px; top:18px; transform:rotate(-8deg); border:2px solid var(--pen); color:var(--pen); border-radius:6px; padding:2px 10px; font:600 .75rem 'IBM Plex Mono',monospace; letter-spacing:.14em; opacity:.8; display:none; }
+:root[data-look="paper"] .stamp { display:block; }
+.sign { display:none; margin-top:12px; align-items:baseline; gap:10px; }
+:root[data-look="paper"] .sign { display:flex; }
+.sign .hand { font-size:1.6rem; line-height:1; }
+.sign .line { flex:1; border-bottom:1px solid var(--rule); }
+footer { max-width:1200px; margin:0 auto; padding:0 24px 32px; color:var(--ink-muted); font-size:.8rem; }
+/* swatches */
+.sw { max-width:1200px; margin:0 auto; padding:0 24px 24px; }
+.sw-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
+.sw-item { border:1px solid var(--border); border-radius:var(--radius-card); overflow:hidden; background:var(--surface); font-size:.75rem; }
+.sw-item i { display:block; height:48px; border-bottom:1px solid var(--border); }
+.sw-item span { display:block; padding:6px 8px; } .sw-item code { font-family:'IBM Plex Mono',monospace; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+      <path d="M7 3h20a2 2 0 0 1 2 2v21l-3-2-3 2-3-2-3 2-3-2-3 2-3-2-3 2V5a2 2 0 0 1 2-2z" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.6" stroke-linejoin="round"/>
+      <text x="10" y="19" font-family="Plus Jakarta Sans" font-weight="700" font-size="12" fill="var(--ink)">R</text>
+      <path d="M19 11l3 3.5L27 9" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" transform="translate(-2 4)"/>
+    </svg>
+    <span>Parchi <small class="lab">· पर्ची</small></span>
+  </div>
+  <span class="sp"></span>
+  <span class="pill"><span class="dot"></span> Offline: all checks still run</span>
+  <div class="toggle" role="group" aria-label="Palette">
+    <button type="button" data-look="current" aria-pressed="true">Current</button>
+    <button type="button" data-look="paper" aria-pressed="false">Paper blend</button>
+  </div>
+</header>
+
+<main>
+  <section aria-label="Input" style="display:grid;gap:24px;align-content:start">
+    <div class="card slip">
+      <span class="stamp">PHARMACIST REVIEW</span>
+      <div class="pad-head">
+        <div class="rx">℞</div>
+        <div class="lab" style="text-align:right">Prescription<br>No. 0042</div>
+      </div>
+      <div class="field"><div class="lab">Patient name</div><div class="v hand" style="font-size:1.4rem">Ramesh K.</div></div>
+      <div class="row2">
+        <div class="field"><div class="lab">Age</div><div class="v">68</div></div>
+        <div class="field"><div class="lab">Sex</div><div class="v">Male</div></div>
+      </div>
+      <label class="lab" for="rx">Prescription text</label>
+      <textarea id="rx">Dolo 650 1-1-1 x5d
+Brufan 400 TDS SOS
+Cetzine 1-0-1</textarea>
+      <div class="prompt">Creatinine needed because NSAIDs are present. <a href="#" style="color:var(--accent-strong)">Skip</a></div>
+      <div class="actions"><button class="btn">Check prescription</button><button class="btn sec">Load demo case</button></div>
+      <div class="sign"><span class="lab">Checked by</span><span class="hand">R. Mehta</span><span class="line"></span></div>
+    </div>
+  </section>
+
+  <section aria-label="Result" style="display:grid;gap:24px;align-content:start">
+    <div class="card slip">
+      <div class="summary"><b>1 Interrupt</b><span>· 1 Inform · 4 logged</span></div>
+
+      <article class="alert int" role="alert"><div class="bar"></div><div class="body">
+        <span class="tier">⚠ Interrupt</span>
+        <p class="reason" style="font-weight:700">Paracetamol 4,100 mg/day is above the 4,000 mg/day limit. Review.</p>
+        <span class="chip">DDInter #1234</span> &nbsp;<span class="lab">confidence 92%</span>
+        <div class="actions" style="margin-top:10px"><button class="btn btn-sm">Acknowledge</button><button class="btn sec btn-sm">Override…</button></div>
+      </div></article>
+
+      <article class="alert inf"><div class="bar"></div><div class="body">
+        <span class="tier">ⓘ Inform</span>
+        <p class="reason">Matched “Brufan 400” to Brufen 400 (82%). Check match.</p>
+        <span class="chip">Beers 2023</span>
+      </div></article>
+
+      <details><summary>4 logged (not shown)</summary></details>
+    </div>
+
+    <div class="card slip">
+      <h2>Prescription X-ray</h2>
+      <table>
+        <thead><tr><th class="lab">Ingredient</th><th class="lab">From</th><th class="lab" style="width:34%">Daily total vs limit</th></tr></thead>
+        <tbody>
+          <tr><td>Paracetamol</td><td>Dolo 650, Cold-X</td><td>
+            <div class="bar-wrap"><div class="bar-fill" style="width:100%;--f:var(--t-interrupt)"></div><div class="bar-mark"></div></div>
+            <div class="val" style="color:var(--t-interrupt)">4,100 / 4,000 mg</div></td></tr>
+          <tr><td>Ibuprofen</td><td>Brufen 400</td><td>
+            <div class="bar-wrap"><div class="bar-fill" style="width:60%;--f:var(--ok)"></div><div class="bar-mark"></div></div>
+            <div class="val" style="color:var(--ok)">1,200 / 2,400 mg</div></td></tr>
+          <tr><td>Cetirizine</td><td>Cetzine</td><td>
+            <div class="bar-wrap" style="background:transparent;border:1px dashed var(--ink-muted)"></div>
+            <div class="val" style="color:var(--ink-muted)">No limit on file</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<div class="sw">
+  <h2 style="margin-top:8px">Palette in this look</h2>
+  <div class="sw-grid" id="sw"></div>
+</div>
+<footer>Decision support for a pharmacist. Not a substitute for professional judgement. · Sample data for a visual preview only, not clinical values.</footer>
+
+<script>
+const root = document.documentElement;
+const names = [['ink','Ink'],['ink-muted','Ink muted'],['accent','Accent'],['accent-strong','Accent strong'],['tint','Tint'],['bg','Page'],['surface','Slip'],['border','Ruling'],['pen','Pen']];
+function paintSwatches(){
+  const cs = getComputedStyle(root), el = document.getElementById('sw');
+  el.innerHTML = names.map(([k,n]) => { const v = cs.getPropertyValue('--'+k).trim();
+    return `<div class="sw-item"><i style="background:${v}"></i><span>${n}<br><code>${v}</code></span></div>`; }).join('');
+}
+function setLook(l){ root.dataset.look = l;
+  document.querySelectorAll('.toggle button').forEach(b => b.setAttribute('aria-pressed', b.dataset.look===l));
+  paintSwatches(); }
+document.querySelectorAll('.toggle button').forEach(b => b.addEventListener('click', () => setLook(b.dataset.look)));
+setLook(new URLSearchParams(location.search).get('look') || 'current');
+</script>
+</body>
+</html>
