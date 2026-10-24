@@ -101,6 +101,15 @@ export interface Alert {
   reason: string
   source: string
   confidence: number
+  // Optional Track C detail. Absent fields mean "not applicable".
+  /** Brand names (as resolved) the alert is about, for highlighting rows in the X-ray. */
+  brands?: string[]
+  /** false = the rule behind this alert is a draft not yet signed off by the pharmacist. */
+  approved?: boolean
+  /** Id of the suppression-list entry that moved this alert to 'silent'. */
+  suppressed?: string
+  /** true = was 'interrupt' but the alert budget moved it to 'inform'. */
+  budget_demoted?: boolean
 }
 
 export interface Patient {
