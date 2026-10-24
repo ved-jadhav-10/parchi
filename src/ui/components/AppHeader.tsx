@@ -19,6 +19,8 @@ const ConnectionPill = () => {
 /** The queue pill stays lit on the order and history pages it leads to. */
 const current = (route: Route, id: Route) => id === route || (id === 'queue' && (route === 'order' || route === 'history'))
 
+const MORE_ICON: Partial<Record<Route, 'chart' | 'log' | 'shield'>> = { benchmark: 'chart', catalogue: 'log', data: 'shield' }
+
 const PillNav = ({ route, onNavigate }: { route: Route; onNavigate: () => void }) => {
   const [more, setMore] = useState(false)
   const box = useRef<HTMLLIElement>(null)
@@ -64,7 +66,22 @@ const PillNav = ({ route, onNavigate }: { route: Route; onNavigate: () => void }
           </button>
           <ul className="pillnav__list">
             {rest.map((r) => (
-              <li key={r.id}>{link(r)}</li>
+              <li key={r.id}>
+                <a
+                  href={`#/${r.id}`}
+                  className="pillnav__item"
+                  aria-current={current(route, r.id) ? 'page' : undefined}
+                  onClick={() => (setMore(false), onNavigate())}
+                >
+                  <span className="pillnav__icon">
+                    <Icon name={MORE_ICON[r.id] ?? 'log'} size={18} />
+                  </span>
+                  <span className="pillnav__text">
+                    <strong>{r.label}</strong>
+                    {r.hint && <small>{r.hint}</small>}
+                  </span>
+                </a>
+              </li>
             ))}
           </ul>
         </li>

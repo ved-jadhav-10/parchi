@@ -6,14 +6,14 @@ export type Route = 'home' | 'check' | 'demo' | 'queue' | 'order' | 'history' | 
  * The pages in the navigation. `main` are the pharmacist's daily tools and sit in the bar; `more` (the walkthrough, the
  * measured comparison and the data behind the checks) sit under "More". `order` and `history` are reached from the queue.
  */
-export const routes: { id: Route; label: string; group: 'main' | 'more' }[] = [
+export const routes: { id: Route; label: string; group: 'main' | 'more'; hint?: string }[] = [
   { id: 'demo', label: 'Demo', group: 'main' },
   { id: 'queue', label: 'Review queue', group: 'main' },
   { id: 'check', label: 'Check', group: 'main' },
   { id: 'log', label: 'Override log', group: 'main' },
-  { id: 'benchmark', label: 'Benchmark', group: 'more' },
-  { id: 'catalogue', label: 'Catalogue', group: 'more' },
-  { id: 'data', label: 'Data & limits', group: 'more' },
+  { id: 'benchmark', label: 'Benchmark', group: 'more', hint: 'How the checks score on the same prescriptions' },
+  { id: 'catalogue', label: 'Catalogue', group: 'more', hint: 'Your brands, matched and reviewed' },
+  { id: 'data', label: 'Data & limits', group: 'more', hint: 'Every limit and rule, with its source' },
 ]
 
 /** `#/order/ORD-1087` -> ['order', 'ORD-1087']. Only `order` and `history` take a second segment. */
