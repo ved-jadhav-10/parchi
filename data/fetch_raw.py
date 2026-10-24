@@ -19,6 +19,11 @@ GIT_SOURCES = {
     "junioralive": "https://github.com/junioralive/Indian-Medicine-Dataset.git",
 }
 FILES = {
+    # DDInter (CC BY-NC-SA 4.0): bulk files exist only for these ATC groups (no C, J, M, N).
+    **{
+        f"ddinter/ddinter_downloads_code_{c}.csv": f"https://ddinter.scbdd.com/static/media/download/ddinter_downloads_code_{c}.csv"
+        for c in "ABDHLPRV"
+    },
     "cdsco/fdc156_2024.pdf": "https://cdsco.gov.in/opencms/resources/UploadCDSCOWeb/2018/UploadNewsFiles/List%20of%20Prohibited%20FDC%20drugs_%20156%20FDCs_%20dated%2002.08.2024.pdf",
     "cdsco/fdc16_2026.html": "https://medicaldialogues.in/news/industry/pharma/health-ministry-bans-16-fdcs-including-amoxicillin-serratiopeptidase-see-full-list-173339",
 }

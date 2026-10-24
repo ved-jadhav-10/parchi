@@ -142,6 +142,25 @@ def write_banned(path: Path, entries: list[BannedFdc], meta: dict) -> dict:
     return {"entries": len(entries)}
 
 
+def write_ddi(path: Path, pairs: dict[tuple[str, str], int], ddinter_id: dict[str, str], keep: set[str], meta: dict) -> dict:
+    """Pairs where both ingredients are in `keep`, as [i, j, level] over a sorted id table."""
+    from .ddinter import LEVELS
+
+    kept = sorted((a, b, lv) for (a, b), lv in pairs.items() if a in keep and b in keep)
+    ids = sorted({x for a, b, _ in kept for x in (a, b)})
+    index = {iid: n for n, iid in enumerate(ids)}
+    doc = {
+        "schema": SCHEMA,
+        **meta,
+        "levels": LEVELS,
+        "ingredients": ids,
+        "ddinter_ids": {iid: ddinter_id[iid] for iid in ids if iid in ddinter_id},
+        "pairs": [[index[a], index[b], lv] for a, b, lv in kept],
+    }
+    _dump(path, doc)
+    return {"pairs": len(kept), "ingredients": len(ids)}
+
+
 def banned_matches(entry: BannedFdc, brand: Brand) -> bool:
     """Same rule as src/engine/resolver/banned.ts (kept in sync by a parity test)."""
     ids = sorted({c.id for c in brand.components} - EXCIPIENT_LIKE)

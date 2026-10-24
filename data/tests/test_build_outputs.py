@@ -39,7 +39,7 @@ def decode(doc, display):
     return out
 
 
-@pytest.mark.parametrize("name", ["brands.json", "ingredients.json", "banned_fdc.json"])
+@pytest.mark.parametrize("name", ["brands.json", "ingredients.json", "banned_fdc.json", "ddi.json"])
 def test_files_fit_the_offline_precache(name):
     assert (DATA / name).stat().st_size < WORKBOX_LIMIT
 
@@ -105,3 +105,15 @@ def test_form_route_mapping_marks_topicals_non_systemic(brands):
     assert route["tablet"] in systemic and route["syrup"] in systemic
     for form in ("cream", "gel", "eye_drops", "ear_drops", "ointment"):
         assert route[form] not in systemic
+
+
+def test_ddi_subset_is_consistent():
+    ddi = load("ddi.json")
+    ids = ddi["ingredients"]
+    assert ddi["source"]["licence"].startswith("CC BY-NC-SA")
+    assert len(ddi["pairs"]) > 50_000
+    pairs = {(ids[i], ids[j]): ddi["levels"][lv] for i, j, lv in ddi["pairs"]}
+    assert all(a < b for a, b in pairs)  # canonical order, each pair once
+    assert pairs[("aspirin", "ibuprofen")] == "major"
+    known = set(load("ingredients.json")["ingredients"])
+    assert set(ids) <= known
