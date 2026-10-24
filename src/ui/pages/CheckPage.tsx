@@ -229,7 +229,7 @@ export const CheckPage = () => {
                 ))}
               </div>
 
-              <CoverageNote gaps={result.ddi_gaps} />
+              <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
                 <XrayTable ledger={result.ledger} alerts={result.alerts} />

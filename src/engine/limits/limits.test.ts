@@ -149,7 +149,7 @@ describe('kidney bands for more drugs (Phase 2)', () => {
     expect(g30.findings.map((f) => f.kind)).toEqual(['over_limit'])
     expect(applyLimits({ gabapentin: entry(200) }, at(5)).ledger.gabapentin.limit_mg_day).toBe(300) // 11.7
     expect(applyLimits({ pregabalin: entry(300) }, at(2.5)).ledger.pregabalin.limit_mg_day).toBe(150)
-    expect(applyLimits({ gabapentin: entry(3600) }, at(0.7)).ledger.gabapentin.limit_mg_day).toBeUndefined() // 83: no kidney cap, no adult limit in data
+    expect(applyLimits({ gabapentin: entry(3600) }, at(0.7)).ledger.gabapentin.limit_mg_day).toBe(3600) // 83: no kidney cap, so the adult maximum
   })
   it('flags avoid and caution drugs, and each NSAID in the list gets the NSAID rule', () => {
     expect(applyLimits({ nitrofurantoin: entry(200) }, at(2.5)).findings.map((f) => f.kind)).toEqual(['renal_avoid'])
@@ -163,7 +163,7 @@ describe('kidney bands for more drugs (Phase 2)', () => {
   })
   it('caps tramadol, allopurinol, cefixime and sitagliptin only in their bands', () => {
     expect(applyLimits({ tramadol: entry(300) }, at(2.5)).ledger.tramadol.limit_mg_day).toBe(200)
-    expect(applyLimits({ tramadol: entry(300) }, at(1.2)).ledger.tramadol.limit_mg_day).toBeUndefined()
+    expect(applyLimits({ tramadol: entry(300) }, at(1.2)).ledger.tramadol.limit_mg_day).toBe(400) // no kidney cap, so the adult maximum
     expect(applyLimits({ sitagliptin: entry(100) }, at(1.8)).ledger.sitagliptin.limit_mg_day).toBe(50) // 32.4
     expect(applyLimits({ sitagliptin: entry(100) }, at(2.5)).ledger.sitagliptin.limit_mg_day).toBe(25)
     expect(applyLimits({ allopurinol: entry(300) }, at(5)).ledger.allopurinol.limit_mg_day).toBe(200)

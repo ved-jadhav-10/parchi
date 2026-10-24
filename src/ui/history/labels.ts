@@ -8,6 +8,16 @@ export const STATUS_LABEL: Record<OrderStatus, string> = {
   clear: 'No alerts from the checks run',
 }
 
+/**
+ * Short forms for rows too narrow for STATUS_LABEL (the queue on a phone); wider rows show the full label. Screen readers
+ * always get STATUS_LABEL. "Clear" is avoided on its own: read alone it sounds like a go-ahead.
+ */
+export const STATUS_SHORT: Record<OrderStatus, string> = {
+  hold_contact_doctor: 'Hold',
+  clear_with_note: 'With note',
+  clear: 'No alerts',
+}
+
 /** The tier whose colours and icon a status borrows. "Clear" is neutral, never green: it is not a statement that the order is safe. */
 export const STATUS_TIER: Record<OrderStatus, Tier> = {
   hold_contact_doctor: 'interrupt',

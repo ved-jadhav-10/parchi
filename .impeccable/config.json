@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/ui/styles/components.css"
+        ],
+        "createdAt": "2026-10-24T16:22:56.928Z",
+        "reason": "DESIGN.md lines 8, 23, 30 mandate the 4 px left bar: tier colour on KPI tiles and alert cards, accent on clickable tiles (.match). Decided by the design doc, not confirmed by the user this session."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/ui/styles/review.css"
+        ],
+        "createdAt": "2026-10-24T16:22:57.181Z",
+        "reason": "review.css:130 is .tl__placed, a 2 px vertical 'placed' marker line on the timeline, not a card accent border. False positive from the evidence in the selector."
+      }
+    ]
+  }
+}

@@ -273,7 +273,7 @@ export const OrderPage = () => {
                   ))}
               </div>
 
-              <CoverageNote gaps={result.ddi_gaps} />
+              <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient for the days chosen, against the limit on file">
                 <div className="windows" role="group" aria-label="Days to show">

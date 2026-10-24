@@ -9,6 +9,15 @@
   clip: rect(0 0 0 0); white-space: nowrap;
 }
 
+/* Skip link: off screen until focused, then the first thing on the page. */
+.skip-link {
+  position: absolute; z-index: 30; top: var(--space-2); left: var(--gutter); transform: translateY(-200%);
+  display: inline-flex; align-items: center; min-height: var(--tap-min); padding: 0 var(--space-4);
+  border-radius: var(--radius-pill); background: var(--color-surface); box-shadow: var(--ring); font-weight: 600;
+}
+.skip-link:focus { transform: none; }
+.page:focus { outline: none; }
+
 /* Header */
 .app-header {
   position: relative; display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
@@ -26,7 +35,7 @@
   background: var(--color-surface); border-radius: var(--radius-pill);
 }
 .pillnav__link {
-  display: block; padding: var(--space-2) var(--space-4); border: 1px solid transparent;
+  display: flex; align-items: center; min-height: var(--tap-min); padding: 0 var(--space-4); border: 1px solid transparent;
   border-radius: var(--radius-pill); color: var(--color-ink); font-weight: 500; text-decoration: none;
   transition: background 150ms;
 }
@@ -83,7 +92,7 @@
 /* Card */
 .card {
   min-width: 0; padding: var(--space-4); border-radius: var(--radius-md); background: var(--color-surface);
-  box-shadow: var(--shadow-card), var(--ring); scroll-margin-top: var(--space-4);
+  border: 1px solid var(--color-border); scroll-margin-top: var(--space-4);
 }
 .card__head { margin-bottom: var(--space-4); }
 .card__title { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-lg); }
@@ -98,6 +107,22 @@
 .kpi__label { margin: 0; color: var(--color-ink-muted); font-size: var(--text-sm); font-weight: 600; }
 .kpi__value { margin: 0; font-size: 2.25rem; line-height: 1.1; font-weight: 600; color: var(--t, var(--color-ink)); }
 .kpi__hint { margin: 0; color: var(--color-ink-muted); font-size: var(--text-xs); line-height: var(--leading-xs); }
+.kpi__short { display: none; }
+/* A tile that filters: a toggle button that keeps the tile's look. Pressed = the accent border, like a selected pill. */
+.kpi--toggle { width: 100%; margin: 0; font: inherit; text-align: left; color: inherit; cursor: pointer; }
+.kpi--toggle:hover { background: var(--color-tint); }
+.kpi--toggle[aria-pressed='true'] { border-color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
+.kpis--queue .kpi__value { font-size: var(--text-lg); line-height: var(--leading-lg); }
+/* Queue: on a phone the four counts become one short strip with one-word labels, so the first order stays on the first screen. */
+@media (max-width: 719px) {
+  .kpis--queue { grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
+  .kpis--queue .kpi { gap: 0; padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3); }
+  .kpis--queue .kpi__label { font-size: var(--text-xs); line-height: var(--leading-xs); }
+  .kpis--queue .kpi__long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .kpis--queue .kpi__short { display: inline; }
+  .kpis--queue .kpi__value { font-size: var(--text-lg); line-height: var(--leading-lg); }
+  .kpis--queue .kpi__hint { display: none; }
+}
 
 /* Alerts */
 .alerts { display: grid; gap: var(--space-3); }
