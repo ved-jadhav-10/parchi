@@ -3,6 +3,7 @@ import { AlertCard } from '../components/AlertCard'
 import { BrandMatch } from '../components/BrandMatch'
 import { Card } from '../components/Card'
 import { CoverageNote } from '../components/CoverageNote'
+import { HerbalCard } from '../components/HerbalCard'
 import { LeafletCard } from '../components/LeafletCard'
 import { DecisionPanel } from '../components/DecisionPanel'
 import { OverrideDialog } from '../components/OverrideDialog'
@@ -432,6 +433,8 @@ export const OrderPage = () => {
               <SilentLog alerts={silentAlerts} />
 
               <UnverifiedBrands result={result} onConfirm={confirmBrand} onUndo={undoConfirm} />
+
+              <HerbalCard report={result.herbal} />
 
               <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
 

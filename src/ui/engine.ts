@@ -1,4 +1,6 @@
 import type { Alert, Ledger, Patient, ResolvedBrand, Sig } from '../engine/contracts'
+import type { HerbalReport } from '../engine/herbal'
+import { herbalSingle, splitSingle } from '../engine/herbal/orchestrate'
 import { computeDose, type DoseResult } from '../engine/ledger'
 import { createPipeline } from '../engine/pipeline'
 import { loadResolver, type Resolver } from '../engine/resolver'
@@ -6,6 +8,7 @@ import { loadDdi, type DdiIndex } from '../engine/resolver/ddi'
 import { loadAlertRules, type AlertRules } from '../engine/rules'
 import { parseSig } from '../engine/sig'
 import { ddiGapNames, limitGapNames } from './lib/coverage'
+import { herbalDepsFor } from './lib/herbal'
 
 /** Ask-only-when-needed: a patient field the engine wants before it can apply a limit, with the reason to show. */
 export interface PatientPrompt {
@@ -32,6 +35,8 @@ export interface CheckResult {
   ddi_gaps: string[]
   /** Totalled ingredients with no daily limit applied: "no dose alert" means not checked for these. */
   limit_gaps: string[]
+  /** Ayurvedic and herbal items on the prescription, checked on their own and against the ordinary medicines. Not part of the alert tiers. */
+  herbal?: HerbalReport
 }
 
 export interface EngineDeps {
@@ -50,9 +55,14 @@ export function createCheck(deps: EngineDeps) {
   // computeDose (not just a ledger) lets the pipeline raise Track B's findings as alerts: weekly drugs written daily,
   // kidney warnings, unclear sigs, liquids with no known volume. Without it those are silently dropped.
   const check = createPipeline({ resolver, ddi, rules, parseSig: (text) => parseSig(text), computeDose })
+  const herbalDeps = herbalDepsFor(resolver)
   return async (rxText: string, patient: Patient): Promise<CheckResult> => {
-    const { lines, ledger, alerts, needs, crcl, notes } = await check(rxText, patient)
-    if (lines.length === 0) throw new Error('No medicines found in the text')
+    // Herbal lines come out first so the ordinary resolver never guesses a drug for them.
+    const split = splitSingle(rxText, herbalDeps)
+    const rest = split.restText.trim()
+    const { lines, ledger, alerts, needs, crcl, notes } = rest ? await check(split.restText, patient) : { lines: [], ledger: {}, alerts: [], needs: [], crcl: null, notes: [] }
+    const herbal = herbalSingle(split.herbal, lines, herbalDeps)
+    if (lines.length === 0 && !herbal) throw new Error('No medicines found in the text')
     return {
       lines,
       ledger,
@@ -63,6 +73,7 @@ export function createCheck(deps: EngineDeps) {
       notes,
       ddi_gaps: ddiGapNames(lines, ddi, resolver),
       limit_gaps: limitGapNames([ledger], resolver),
+      ...(herbal && { herbal }),
     }
   }
 }

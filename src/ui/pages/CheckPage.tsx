@@ -9,6 +9,7 @@ import { EmptyState, PageIntro } from '../components/PageIntro'
 import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
 import { CoverageNote } from '../components/CoverageNote'
+import { HerbalCard } from '../components/HerbalCard'
 import { LeafletCard } from '../components/LeafletCard'
 import { SilentLog } from '../components/SilentLog'
 import { downloadText } from '../lib/csv'
@@ -253,6 +254,8 @@ export const CheckPage = () => {
               </div>
 
               <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
+
+              <HerbalCard report={result.herbal} />
 
               <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
                 <XrayTable ledger={result.ledger} alerts={result.alerts} />

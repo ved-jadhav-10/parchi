@@ -2,9 +2,11 @@
 // doses per window, cross-doctor alerts, status, priority and the re-check diff. This file only maps its result onto the
 // shapes the screens use (indices into lines, the prescribers named, days per alert), so the UI never decides an alert.
 import type { Alert, HistoryResult as EngineResult, Patient, Tier } from '../../engine/contracts'
+import { herbalHistory, splitHistory } from '../../engine/herbal/orchestrate'
 import { cockcroftGault } from '../../engine/limits/crcl'
 import { createRealEngine } from '../../engine/wiring'
 import { ddiGapNames, limitGapNames } from '../lib/coverage'
+import { herbalDepsFor } from '../lib/herbal'
 import type { EngineDeps, PatientPrompt } from '../engine'
 import type { AlertChange, HistoryAlert, HistoryLine, HistoryResult, HistoryWindow, LabResult, Order, Prescribed } from './types'
 
@@ -41,11 +43,14 @@ function appliesIn(a: Alert, w: { start: string; end: string; ledger: HistoryWin
 
 export function createHistoryCheck(deps: EngineDeps) {
   const { checkHistory } = createRealEngine(deps)
+  const herbalDeps = herbalDepsFor(deps.resolver)
   return async (order: Order, previous?: HistoryResult): Promise<HistoryResult> => {
     const { resolver } = deps
     const earliest = order.prescriptions.map((p) => p.date).sort()[0]
     // `from` = the first prescription date, so overlaps that have already ended still show on the timeline.
-    const r: EngineResult = await checkHistory(order.prescriptions, patientFor(order), order.labs, {
+    // Herbal lines come out first so the ordinary resolver never guesses a drug for them; a prescription with nothing left is dropped.
+    const split = splitHistory(order.prescriptions, herbalDeps)
+    const r: EngineResult = await checkHistory(split.engine, patientFor(order), order.labs, {
       ...(earliest && { from: earliest }),
       ...(previous && { previous: previous.engine }),
       ...(order.confirmations && Object.keys(order.confirmations).length > 0 && { confirmations: order.confirmations }),
@@ -72,7 +77,7 @@ export function createHistoryCheck(deps: EngineDeps) {
     }
 
     // The sig wording of each line, in the order the resolver reads them, for the timeline tooltip.
-    const readings = new Map(order.prescriptions.map((p) => [p.id, resolver.resolveText(p.text, { age_years: order.customer.age_years }).map((l) => ({ sig: l.sig_text, written: l.resolved.raw }))]))
+    const readings = new Map(split.engine.map((p) => [p.id, resolver.resolveText(p.text, { age_years: order.customer.age_years }).map((l) => ({ sig: l.sig_text, written: l.resolved.raw }))]))
     const seenPerRx = new Map<string, number>()
     const lines: HistoryLine[] = r.lines.map((l, index) => {
       const n = seenPerRx.get(l.rx_id) ?? 0
@@ -110,6 +115,7 @@ export function createHistoryCheck(deps: EngineDeps) {
       ...r.changes.changed.map((c): AlertChange => ({ kind: 'tier_changed', alert: asHistoryAlert(c.after), was: c.before.tier })),
     ].sort((a, b) => RANK[a.alert.tier] - RANK[b.alert.tier])
 
+    const herbal = herbalHistory(split.herbal, lines, herbalDeps)
     const lab = latestLab(order.labs)
     const crcl = cockcroftGault({ ...patientFor(order), ...(lab && { serum_creatinine: lab.value }) }).value
     const prompts: PatientPrompt[] = (r.needs ?? []).filter((n): n is typeof n & { field: PatientPrompt['field'] } => n.field !== 'sex').map((n) => ({ field: n.field, reason: n.reason }))
@@ -126,6 +132,7 @@ export function createHistoryCheck(deps: EngineDeps) {
       crcl,
       ddi_gaps: ddiGapNames(lines, deps.ddi, resolver),
       limit_gaps: limitGapNames(windows.map((w) => w.ledger), resolver),
+      ...(herbal && { herbal }),
       ...(changes && { changes }),
       engine: r,
     }

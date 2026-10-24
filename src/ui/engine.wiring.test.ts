@@ -60,3 +60,25 @@ describe('the UI and the real wiring agree', () => {
     expect(r.prompts.map((p) => p.field).sort()).toEqual(['serum_creatinine', 'weight_kg'])
   })
 })
+
+describe('herbal and Ayurvedic lines are taken out before the ordinary resolver sees them', () => {
+  it('does not turn Triphala churna into a medicine, and reports it as a herbal item', async () => {
+    const r = await ui('Triphala churna 1 tsp HS; Dolo 650 TDS', { age_years: 40 })
+    expect(r.lines.map((l) => l.resolved.raw.toLowerCase()).join(' ')).not.toContain('triphala')
+    expect(r.lines.some((l) => /dolo/i.test(l.resolved.raw))).toBe(true)
+    expect(r.herbal?.items.map((i) => i.raw.toLowerCase()).join(' ')).toContain('triphala')
+    expect(r.herbal?.note).toBeTruthy()
+  })
+
+  it('checks a prescription that is only herbal instead of failing it', async () => {
+    const r = await ui('Ashwagandha churna BD', { age_years: 40 })
+    expect(r.lines).toHaveLength(0)
+    expect(r.herbal?.items.length).toBeGreaterThan(0)
+  })
+
+  it('leaves a prescription with no herbal line unchanged', async () => {
+    const r = await ui('Dolo 650 TDS', { age_years: 40 })
+    expect(r.herbal).toBeUndefined()
+    expect(r.lines).toHaveLength(1)
+  })
+})

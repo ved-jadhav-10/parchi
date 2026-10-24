@@ -170,3 +170,25 @@ describe('confirming an unrecognised brand', () => {
     expect(after.changes).toBeDefined()
   })
 })
+
+describe('herbal items on an order', () => {
+  const withHerbal: Order = {
+    ...demoOrders[1],
+    id: 'ORD-HERBAL',
+    prescriptions: [{ id: 'rx-h', doctor: 'Dr Sharma (general physician)', date: '2026-10-23', text: 'Dolo 650 TDS x3d; Triphala churna 1 tsp HS x10d' }],
+  }
+
+  it('keeps the herbal line out of the ordinary check and reports it separately', async () => {
+    const r = await run(withHerbal)
+    expect(r.lines.map((l) => l.resolved.raw.toLowerCase()).join(' ')).not.toContain('triphala')
+    expect(r.herbal?.items[0]?.raw.toLowerCase()).toContain('triphala')
+    expect(r.herbal?.items[0]?.rx_id).toBe('rx-h')
+  })
+
+  it('keeps confirmations keyed to the ordinary lines, not shifted by a herbal line before them', async () => {
+    const o: Order = { ...withHerbal, prescriptions: [{ id: 'rx-h', doctor: 'Dr Sharma', date: '2026-10-23', text: 'Triphala churna 1 tsp HS; Dolo 650 TDS x3d' }] }
+    const r = await run(o)
+    expect(r.lines[0].rx_line).toBe(0)
+    expect(r.lines[0].resolved.brand).toBe('Dolo 650')
+  })
+})

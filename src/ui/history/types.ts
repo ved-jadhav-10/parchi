@@ -2,6 +2,7 @@
 // The rest are what the screens need around them: an order, a line with its dates, an alert with the prescribers named.
 // src/ui/history/check.ts maps Track C's `checkHistory` result onto these.
 import type { Alert, HistoryResult as EngineHistoryResult, Ledger, ResolvedBrand, Sig, Tier } from '../../engine/contracts'
+import type { HerbalReport } from '../../engine/herbal'
 import type { PatientPrompt } from '../engine'
 
 // Contracts 5 and 6 and the status of contract 7 now live in src/engine/contracts.ts (Track C landed them).
@@ -96,6 +97,8 @@ export interface HistoryResult {
   ddi_gaps: string[]
   /** Totalled ingredients with no daily limit applied in any window. */
   limit_gaps: string[]
+  /** Ayurvedic and herbal items, checked on their own and against the ordinary medicines taken on the same days. Not part of the status. */
+  herbal?: HerbalReport
   /** Set when the check was given the previous result: what the new data added, cleared or moved. */
   changes?: AlertChange[]
   /** The engine's own result (contract 7), kept so a re-check can pass it back as `previous`. */
