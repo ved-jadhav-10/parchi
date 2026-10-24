@@ -3,17 +3,9 @@ import './styles/components.css'
 import './styles/nav.css'
 import './styles/home.css'
 import './styles/review.css'
-import { useEffect, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, type ComponentType } from 'react'
 import { AppHeader } from './components/AppHeader'
-import { BenchmarkPage } from './pages/BenchmarkPage'
-import { CheckPage } from './pages/CheckPage'
-import { DataPage } from './pages/DataPage'
-import { DemoPage } from './pages/DemoPage'
 import { HomePage } from './pages/HomePage'
-import { HistoryPage } from './pages/HistoryPage'
-import { LogPage } from './pages/LogPage'
-import { OrderPage } from './pages/OrderPage'
-import { QueuePage } from './pages/QueuePage'
 import { routes, useRoute, useRouteParam, type Route } from './route'
 
 /** "Review queue - Parchi"; an order or a history edit names its id. The landing page is just the name. */
@@ -24,15 +16,19 @@ const pageTitle = (route: Route, param: string) => {
   return `${routes.find((r) => r.id === route)?.label ?? 'Check'} - Parchi`
 }
 
-const pages: Record<Exclude<Route, 'home'>, () => React.JSX.Element> = {
-  check: CheckPage,
-  demo: DemoPage,
-  queue: QueuePage,
-  order: OrderPage,
-  history: HistoryPage,
-  log: LogPage,
-  benchmark: BenchmarkPage,
-  data: DataPage,
+// The working pages load on demand: the landing page (and a first visit) does not pay for the engine, the history form or the data tables.
+// Every chunk is in the service worker's precache, so a page still opens offline.
+const page = <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) => lazy(() => load().then((m) => ({ default: m[name] })))
+
+const pages: Record<Exclude<Route, 'home'>, ComponentType> = {
+  check: page(() => import('./pages/CheckPage'), 'CheckPage'),
+  demo: page(() => import('./pages/DemoPage'), 'DemoPage'),
+  queue: page(() => import('./pages/QueuePage'), 'QueuePage'),
+  order: page(() => import('./pages/OrderPage'), 'OrderPage'),
+  history: page(() => import('./pages/HistoryPage'), 'HistoryPage'),
+  log: page(() => import('./pages/LogPage'), 'LogPage'),
+  benchmark: page(() => import('./pages/BenchmarkPage'), 'BenchmarkPage'),
+  data: page(() => import('./pages/DataPage'), 'DataPage'),
 }
 
 export default function App() {
@@ -56,6 +52,13 @@ export default function App() {
     else main.current?.focus({ preventScroll: true })
   }, [route, param])
 
+  // Once someone is in the app, read the brand and rule data in the background so the first check does not wait on about 2 MB of JSON.
+  useEffect(() => {
+    if (route === 'home') return
+    const idle = window.requestIdleCallback ?? ((f: () => void) => setTimeout(f, 1500))
+    idle(() => void import('./engine').then((m) => m.getDeps()).catch(() => {}))
+  }, [route])
+
   // The landing page brings its own navigation and footer.
   if (route === 'home') return <HomePage />
   const Page = pages[route]
@@ -74,7 +77,9 @@ export default function App() {
       </a>
       <AppHeader route={route} />
       <main className="page" id="main" ref={main} tabIndex={-1}>
-        <Page />
+        <Suspense fallback={<p className="hint" role="status">Loading…</p>}>
+          <Page />
+        </Suspense>
       </main>
       <footer className="disclaimer">
         <span>Decision support for a pharmacist. Not a substitute for professional judgement.</span>

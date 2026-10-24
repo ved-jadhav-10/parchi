@@ -8,14 +8,18 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      workbox: { globPatterns: ['**/*.{js,css,html,json,svg,png,woff2}'] },
+      // brands.json is over 1 MB; Workbox skips anything above 2 MiB by default, which would silently break offline checks as the data grows.
+      workbox: { globPatterns: ['**/*.{js,css,html,json,svg,png,woff2}'], maximumFileSizeToCacheInBytes: 8 * 1024 * 1024 },
       manifest: {
         name: 'Parchi',
         short_name: 'Parchi',
         theme_color: '#122056',
         background_color: '#fafafd',
         display: 'standalone',
-        // An installed app opens straight on the checker; the landing page is for first-time visitors.
+        id: '/',
+        scope: '/',
+        description: 'Decision support for the verifying pharmacist: checks Indian brand-name prescriptions, offline.',
+        // An installed app opens straight on the review queue; the landing page is for first-time visitors.
         start_url: '/#/queue',
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },

@@ -222,6 +222,7 @@
 
 .actions { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-4); }
 .btn {
+  display: inline-flex; align-items: center; justify-content: center; text-decoration: none;
   min-height: var(--tap-min); padding: 0 var(--space-5); border: 0; border-radius: var(--radius-pill);
   font-weight: 600; cursor: pointer; transition: background 150ms;
 }
