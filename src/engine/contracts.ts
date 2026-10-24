@@ -1,7 +1,7 @@
 // Shared contracts. Additive changes only (new optional fields). See PLAN.md.
 // Ingredient id = canonical lowercase INN slug owned by Track A, e.g. "paracetamol".
 
-export type Flag = 'banned_fdc' | 'lasa' | 'discontinued'
+export type Flag = 'banned_fdc' | 'lasa' | 'discontinued' | 'nsq'
 export type Tier = 'interrupt' | 'inform' | 'silent'
 
 export interface Ingredient {
@@ -18,6 +18,17 @@ export interface Ingredient {
 export type Route =
   | 'oral' | 'parenteral' | 'inhaled' | 'rectal' | 'transdermal'
   | 'topical' | 'ophthalmic' | 'otic' | 'nasal' | 'vaginal' | 'other'
+
+/** Track A, optional detail: a CDSCO NSQ / spurious alert for a batch of this brand name (monthly lists). */
+export interface NsqRef {
+  batch: string
+  month: string
+  /** what failed, as published */
+  result: string
+  product: string
+  manufacturer: string
+  spurious: boolean
+}
 
 /** Track A, optional detail: a banned-FDC notification the product matches. */
 export interface BannedFdcRef {
@@ -48,6 +59,8 @@ export interface ResolvedBrand {
   /** What else the text could mean (look-alikes, other strengths), best first. */
   candidates?: { brand: string; form: string; score: number; ingredients: Ingredient[] }[]
   banned_fdc?: BannedFdcRef[]
+  /** Failed batches of this brand name in the CDSCO lists. Batch-specific: the pharmacist checks the strip. */
+  nsq?: NsqRef[]
   /** Short reasons for the pharmacist, e.g. "Assumed 650 mg; Dolo is also sold as 500 mg". */
   notes?: string[]
 }
