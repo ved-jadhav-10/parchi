@@ -119,5 +119,5 @@ Right: standards (HL7 FHIR for ABDM, Cockcroft-Gault, WHO AWaRe); datasets (DDIn
 - "India's 2026 software rules ... lowest-risk group" rests on secondary summaries of the CDSCO guidance (National Law Review, MedDeviceGuide). Confirm on cdsco.gov.in before saying a class letter aloud.
 - The Lapi 2013 citation was written from memory. Look it up before the deck is printed.
 - No chatbot has been scored. Do not say "beats ChatGPT". Slide 2 quotes published studies only.
-- One human review so far: an MBBS GP, 24 Oct, covering `eval/reviewer_list.md` sections A-D. Say exactly that if asked.
+- Human reviews so far, both by doctors (not pharmacists): an MBBS GP on 24 Oct (`eval/reviewer_list.md` sections A, B, D), and Dr. Sanjay Dhanushkar (community medicine practitioner, Wardha) on the test cases and the doses of 19 everyday medicines. Not covered: paracetamol with alcohol, less common medicines. Say exactly that if asked.
 - Open items: live prototype link and idea video link (slide 9 has none); open-source licence undecided; slide 7 is a proposal, not a signed pilot.

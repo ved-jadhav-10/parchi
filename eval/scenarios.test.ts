@@ -1,5 +1,5 @@
 // FIX_PLAN Phase 5: realistic multi-drug scenarios (eval/scenarios.json), run through the real engine with exact tier
-// expectations. Tier T3 (docs/TEST_PLAN.md): the cases and expected answers are ours, reviewed by nobody yet, so a pass
+// expectations. Tier T3 (docs/TEST_PLAN.md): the cases and expected answers are ours, reviewed with a doctor (not a pharmacist), so a pass
 // means "the engine does what we wrote down", not that what we wrote down is right. Set SCENARIO_REPORT=1 to write
 // eval/scenarios_report.md.
 import { writeFileSync } from 'node:fs'
@@ -44,7 +44,7 @@ async function alertsFor(s: Scenario): Promise<Alert[]> {
 
 const sharesIngredient = (a: Alert, want?: string[]) => !want || want.some((id) => a.ingredients.includes(id))
 
-describe('realistic scenarios (T3: ours, unreviewed)', () => {
+describe('realistic scenarios (T3: ours, reviewed with a doctor, not a pharmacist)', () => {
   it('has the 28 planned scenarios plus the later workflow cases', () => {
     expect(scenarios.length).toBeGreaterThanOrEqual(30)
     expect(new Set(scenarios.map((s) => s.id)).size).toBe(scenarios.length)
@@ -75,7 +75,7 @@ describe('realistic scenarios (T3: ours, unreviewed)', () => {
     }
     writeFileSync(
       new URL('./scenarios_report.md', import.meta.url),
-      `# Realistic scenarios: what the engine raises\n\nTier T3 (written by the team, not reviewed by anyone). ${scenarios.length} scenarios, ${stops} Interrupts in total, ${scenarios.filter((s) => s.clean).length} busy-but-clean cases.\nRows marked "judgement call" are listed in \`reviewer_list.md\` section H.\n\n| # | Scenario | Raised above Silent |\n|---|---|---|\n${rows.join('\n')}\n`,
+      `# Realistic scenarios: what the engine raises\n\nTier T3 (written by the team, reviewed with a doctor who is not a pharmacist; no pharmacist has reviewed them). ${scenarios.length} scenarios, ${stops} Interrupts in total, ${scenarios.filter((s) => s.clean).length} busy-but-clean cases.\nRows marked "judgement call" are listed in \`reviewer_list.md\` section H.\n\n| # | Scenario | Raised above Silent |\n|---|---|---|\n${rows.join('\n')}\n`,
     )
     expect(rows.length).toBe(scenarios.length)
   })

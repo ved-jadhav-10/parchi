@@ -91,6 +91,7 @@ const DataTable = ({ title, description, all, filter, empty }: { title: string; 
                     </td>
                     <td>
                       <Approval approved={r.approved} />
+                      {r.approved && r.approvedBy ? <div className="hint">Signed off by {r.approvedBy}</div> : null}
                       {r.checked ? <div className="hint">{r.checked}</div> : null}
                     </td>
                   </tr>
@@ -146,11 +147,11 @@ export const DataPage = () => {
       <div className="workspace workspace--single">
         <div className="kpis">
           <KpiCard label="Rows listed" value={everything.length} hint="limits, rules, policy, herbal" />
-          <KpiCard label="Signed off" value={everything.length - unsigned} hint="by a pharmacist" />
+          <KpiCard label="Signed off" value={everything.length - unsigned} hint="by a named reviewer" />
           <KpiCard label="Drafts" value={unsigned} hint="each marked, with its source" tier="inform" />
         </div>
         <p className="hint" role="status">
-          Nothing marked Draft should be relied on. “Label quote checked” means a script found the cited sentence in the label; it is not a pharmacist’s approval. Each table opens below.
+          {unsigned} of {everything.length} numbers and rules here are not signed off yet. Each is marked, with its source. “Label quote checked” means a script found the cited sentence in the label; it is not a sign-off. {approvedCount(everything)} dose limits for everyday medicines were signed off by Dr. Sanjay Dhanushkar; less common medicines, kidney bands, paracetamol with alcohol or liver disease, and as-needed caps were not covered. Each table opens below.
         </p>
         <div className="toolbar">
           <label className="field">

@@ -68,9 +68,9 @@ describe('applyLimits', () => {
   it('reports an over-limit finding with its source and approval status (68 years: no age cap for paracetamol)', () => {
     const r = applyLimits({ paracetamol: entry(4100, { scheduled_mg_day: 4100, sources: ['Dolo', 'Crocin', 'Zerodol-P'] }) }, demo)
     expect(r.ledger.paracetamol.limit_mg_day).toBe(4000)
-    expect(r.ledger.paracetamol.limit_pharmacist_approved).toBe(false)
+    expect(r.ledger.paracetamol.limit_pharmacist_approved).toBe(true)
     const f = r.findings.find((x) => x.kind === 'over_limit')!
-    expect(f).toMatchObject({ ingredient: 'paracetamol', total_mg_day: 4100, limit_mg_day: 4000, basis: 'Adult maximum', pharmacist_approved: false })
+    expect(f).toMatchObject({ ingredient: 'paracetamol', total_mg_day: 4100, limit_mg_day: 4000, basis: 'Adult maximum', pharmacist_approved: true })
     expect(f.sos_dependent).toBe(false)
     expect(f.message).toMatch(/4100 mg\/day across 3 lines/)
   })
@@ -193,8 +193,8 @@ describe('kidney bands for more drugs (Phase 2)', () => {
 })
 
 describe('limits data', () => {
-  it('every number carries a source and a pharmacist_approved flag, and none is pre-approved', () => {
-    const rules: { source?: string; pharmacist_approved?: boolean }[] = []
+  it('every number carries a source and a pharmacist_approved flag', () => {
+    const rules: { source?: string; pharmacist_approved?: boolean; approved_by?: string }[] = []
     for (const lim of Object.values(LIMITS.ingredients)) {
       for (const r of [lim.adult, lim.elderly, lim.paediatric, ...(lim.renal ?? [])]) if (r) rules.push(r)
     }
@@ -204,8 +204,24 @@ describe('limits data', () => {
       expect(typeof r.source).toBe('string')
       expect(r.source!.length).toBeGreaterThan(10)
       expect(typeof r.pharmacist_approved).toBe('boolean')
-      expect(r.pharmacist_approved).toBe(false)
+      if (r.pharmacist_approved) expect(r.approved_by).toBeTruthy()
     }
+  })
+  it('only the signed-off medicines are approved, each names its signer, and caps, kidney bands and SOS stay unapproved', () => {
+    const so = LIMITS._meta.signoff as { common_signed_off: string[]; reviewer: string }
+    const signed: string[] = []
+    for (const [id, lim] of Object.entries(LIMITS.ingredients)) {
+      for (const r of [lim.adult, lim.elderly, lim.paediatric]) {
+        if (r?.pharmacist_approved) {
+          signed.push(id)
+          expect(r.approved_by, id).toMatch(/Dhanushkar/)
+        }
+      }
+      for (const r of [...(lim.renal ?? []), ...(lim.risk_caps ?? [])]) expect(r.pharmacist_approved, id).toBe(false)
+    }
+    expect([...new Set(signed)].sort()).toEqual([...so.common_signed_off].sort())
+    for (const c of [...Object.values(LIMITS.sos.by_ingredient), ...Object.values(LIMITS.sos.by_class), LIMITS.sos.fallback]) expect(c.pharmacist_approved).toBe(false)
+    expect(so.common_signed_off).not.toContain('nimesulide')
   })
   it('SOS caps fall back from ingredient to class to the default', () => {
     expect(sosCapFor('paracetamol', ['analgesic_antipyretic']).max_doses_per_day).toBe(4)
