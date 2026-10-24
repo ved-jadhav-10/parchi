@@ -10,7 +10,10 @@ Hash routes (`#/check`), no router dependency, installable PWA. Pill nav on desk
 | (none) / `#/home` | Start screen: what Parchi is, Check a prescription, See a worked example (`#/demo`), how a prescription is checked. Not a nav pill (footer link "About Parchi"); the installed app opens on `#/check` (`start_url`). | Built |
 | `#/check` | Prescription check: Rx + patient in, KPI row, alerts, X-ray, brand matches (expandable), silent log, FHIR draft export | Built, runs on mock engine output |
 | `#/demo` | Guided 5-step walkthrough of the 68-year-old case for the pitch. Runs through `runCheck`, so it turns real with the engine; every sentence is built from the result. Arrow keys work. | Built |
-| `#/log` | Override log: IndexedDB, filter by tier and date, CSV export | Built, fully working |
+| `#/queue` | Review queue (Phase 2): the buyer's orders ranked by Parchi's priority, each with its suggested status, alert counts and the pharmacist's decision. Sample account until real orders are connected. | Built, on a UI-side history check |
+| `#/order/<id>` | One order: suggested status, the decision (a different one needs a reason), kidney function with the incoming result and a re-check, a timeline by doctor, alerts that name the doctors and days, X-ray by window, unverified brands, each prescription's brand matches. | Built |
+| `#/history[/<id>]` | History input: customer, one prescription per doctor and date, lab results. Creates or edits an order on this device. | Built |
+| `#/log` | Override log: IndexedDB, filter by tier and date, CSV export; plus the order decisions | Built, fully working |
 | `#/data` | Dose limits and suppression list with `source` and approval status | Built, waits for B/C files |
 | `#/benchmark` | Engine vs chatbots: alerts per Rx, precision/recall per alert type | Built, waits for `eval/` output |
 
@@ -34,7 +37,8 @@ Visual inspiration only (github.com/MandyTrl/meditec, no licence, so nothing cop
 
 ## Left to do
 - Swap mock for the real engine (needs C's `pipeline.ts`).
-- Phase 2 screens (review console, history input, e-pharmacy demo data) once contracts 5 to 7 are agreed; until then on mock history.
+- Swap `src/ui/history/check.ts` for Track C's `checkHistory` once contracts 5 to 7 are agreed (the shapes are in `src/ui/history/types.ts`, the demo account in `tests/fixtures/demo_history.json`). The default window for a line with no written duration is a placeholder in `src/ui/history/defaults.json`, unverified.
+- FHIR import for orders: no track has it yet.
 - Interaction coverage: once C's alerts exist, list the ingredients the interaction data does not cover ("no hit" is not "safe").
 - Run the pharmacist session; put real reasons, limits and suppression rules into the files above.
 - Produce `benchmark.json` from `eval/` (needs the gold set).

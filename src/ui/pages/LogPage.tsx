@@ -5,12 +5,15 @@ import { Icon, TierBadge } from '../components/Icons'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { downloadText, toCsv } from '../lib/csv'
 import { titleCase } from '../lib/format'
+import { decisionLabel, STATUS_LABEL } from '../history/labels'
 import { useOverrides } from '../storage/overrides'
+import { useDecisions } from '../storage/orders'
 
 const columns = ['at', 'tier', 'type', 'ingredients', 'alert_reason', 'source', 'override_reason', 'note']
 
 export const LogPage = () => {
   const { rows, ready, error } = useOverrides()
+  const { decisions } = useDecisions()
   const [tier, setTier] = useState<'' | Tier>('')
   const [from, setFrom] = useState('')
 
@@ -92,6 +95,58 @@ export const LogPage = () => {
                         <td>
                           <strong>{r.override_reason}</strong>
                           {r.note && <p className="log__text">{r.note}</p>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </Card>
+
+          <Card title="Order decisions" icon="shield" description="What the pharmacist decided on each order in the review queue, and what Parchi had suggested">
+            <div className="toolbar">
+              <button
+                className="btn btn--secondary toolbar__end"
+                disabled={decisions.length === 0}
+                onClick={() =>
+                  downloadText(
+                    'order-decisions.csv',
+                    toCsv(['at', 'order_id', 'customer', 'suggested', 'decision', 'reason', 'note', 'interrupts', 'informs'], decisions as unknown as Record<string, unknown>[]),
+                    'text/csv',
+                  )
+                }
+              >
+                <Icon name="download" size={16} /> Export CSV
+              </button>
+            </div>
+            {decisions.length === 0 ? (
+              <p className="hint">No decisions yet. They appear here when a pharmacist saves one on an order.</p>
+            ) : (
+              <div className="xray">
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">When</th>
+                      <th scope="col">Order</th>
+                      <th scope="col">Decision</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {decisions.map((d) => (
+                      <tr key={d.id}>
+                        <th scope="row">{new Date(d.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</th>
+                        <td>
+                          <a href={`#/order/${encodeURIComponent(d.order_id)}`}>{d.customer}</a>
+                          <p className="log__text">
+                            {d.order_id} · {d.interrupts} Interrupt, {d.informs} Inform
+                          </p>
+                        </td>
+                        <td>
+                          <strong>{decisionLabel(d.decision)}</strong>
+                          <p className="log__text">
+                            Parchi suggested: {STATUS_LABEL[d.suggested]}. Reason: {d.reason}.{d.note ? ` ${d.note}` : ''}
+                          </p>
                         </td>
                       </tr>
                     ))}

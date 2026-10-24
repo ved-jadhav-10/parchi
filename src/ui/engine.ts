@@ -65,13 +65,13 @@ export function createCheck(deps: EngineDeps) {
   }
 }
 
-let loaded: Promise<ReturnType<typeof createCheck>> | null = null
+let loaded: Promise<EngineDeps> | null = null
 /** Fetched once from public/data (service-worker cached, so it works offline after the first load). */
-const getCheck = () =>
+export const getDeps = (): Promise<EngineDeps> =>
   (loaded ??= Promise.all([loadResolver(), loadDdi(), loadAlertRules()])
-    .then(([resolver, ddi, rules]) => createCheck({ resolver, ddi, rules }))
+    .then(([resolver, ddi, rules]) => ({ resolver, ddi, rules }))
     .catch((e) => ((loaded = null), Promise.reject(e))))
 
 export async function runCheck(rxText: string, patient: Patient): Promise<CheckResult> {
-  return (await getCheck())(rxText, patient)
+  return createCheck(await getDeps())(rxText, patient)
 }

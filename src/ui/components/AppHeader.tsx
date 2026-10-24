@@ -21,7 +21,7 @@ const PillNav = ({ route, onNavigate }: { route: Route; onNavigate: () => void }
           <a
             href={`#/${r.id}`}
             className="pillnav__link"
-            aria-current={r.id === route ? 'page' : undefined}
+            aria-current={r.id === route || (r.id === 'queue' && (route === 'order' || route === 'history')) ? 'page' : undefined}
             onClick={onNavigate}
           >
             {r.label}

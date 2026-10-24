@@ -1,10 +1,11 @@
+import type { ReactNode } from 'react'
 import type { Alert } from '../../engine/contracts'
 import { alertTypeLabel, movedBecause } from '../lib/resolved'
 import { TierBadge } from './Icons'
 
-type Props = { alert: Alert; onOverride?: () => void; overriddenReason?: string }
+type Props = { alert: Alert; onOverride?: () => void; overriddenReason?: string; extra?: ReactNode }
 
-export const AlertCard = ({ alert, onOverride, overriddenReason }: Props) => {
+export const AlertCard = ({ alert, onOverride, overriddenReason, extra }: Props) => {
   const moved = movedBecause(alert)
   return (
     <article className="card alert" data-tier={alert.tier} role={alert.tier === 'interrupt' ? 'alert' : undefined}>
@@ -14,6 +15,7 @@ export const AlertCard = ({ alert, onOverride, overriddenReason }: Props) => {
         <span className="alert__conf num">{Math.round(alert.confidence * 100)}%</span>
       </header>
       <p className="alert__reason">{alert.reason}</p>
+      {extra}
       {moved && <p className="alert__moved">{moved}</p>}
       <footer className="chips">
         {alert.ingredients.map((i) => (
