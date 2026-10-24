@@ -16,7 +16,7 @@ export const SOURCES: Source[] = [
   },
   {
     name: 'Curated brands',
-    usedFor: '13 brands checked against their pack pages. They override the dataset.',
+    usedFor: '37 brands checked against their pack pages. They override the dataset.',
     asOf: 'Pharmacist approval pending',
     terms: 'Own work',
   },
@@ -46,7 +46,7 @@ export const SOURCES: Source[] = [
   },
   {
     name: 'WHO ATC/DDD index',
-    usedFor: 'Drug classes and ATC codes for the 271 curated ingredients.',
+    usedFor: 'Drug classes and ATC codes for the 275 curated ingredients.',
     asOf: 'Each code verified against the index',
     terms: 'Reference only',
   },

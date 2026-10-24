@@ -22,7 +22,7 @@ const SECTIONS = [
 const STEPS = [
   { title: 'Read the slip', text: 'Brand names and doses are matched the way they are written, misspellings included, and each medicine is split into its ingredients.' },
   { title: 'Add it up', text: 'Every ingredient is totalled per day across all brands, so a drug hidden inside a cold tablet still counts.' },
-  { title: 'Compare', text: 'Totals are held against dose limits and rules that come from data files, each with a source and whether a pharmacist approved it.' },
+  { title: 'Compare', text: 'Totals are held against dose limits and rules that come from data files, each with a source and whether a pharmacist has signed it off.' },
   { title: 'Alert, sparingly', text: 'Three tiers: Interrupt, Inform and Silent. Interrupts are kept rare, and overriding one needs a reason that is logged.' },
 ]
 
@@ -45,7 +45,7 @@ const CHECKS = [
 const PROOF = [
   { title: 'The same prescriptions, every system', text: 'The engine and each chatbot are given the same slips and scored the same way.' },
   { title: 'Alert load counts', text: 'Alerts per prescription and false alarms on clean ones are measured, because too many alerts get ignored.' },
-  { title: 'Every limit has a source', text: 'Dose limits and rules are shown with where they come from, and whether a pharmacist has approved them.' },
+  { title: 'Every limit has a source', text: 'Dose limits and rules are shown with where they come from, and whether a pharmacist has signed them off.' },
 ]
 
 /** The torn bottom edge of the slip: 20 teeth, 12px deep. */

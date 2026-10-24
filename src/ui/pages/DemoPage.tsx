@@ -144,7 +144,7 @@ export const DemoPage = () => {
       <ul className="demo__points">
         <li>Checks run on this device, so they work offline at the counter.</li>
         <li>An Interrupt can only be overridden with a reason, which is kept in the override log.</li>
-        <li>Limits and rules come from data files that show their source and whether a pharmacist approved them.</li>
+        <li>Limits and rules come from data files that show their source and whether a pharmacist has signed them off.</li>
       </ul>
       <div className="actions">
         <a className="btn btn--primary" href="#/check">
@@ -174,7 +174,7 @@ export const DemoPage = () => {
           </ol>
         </nav>
 
-        <section className="card demo" aria-live="polite">
+        <section className="card demo">
           <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off.</p>
           <p className="demo__eyebrow">
             Step {step + 1} of {titles.length}

@@ -1,7 +1,7 @@
 // "Save and open next": which waiting order follows the one on screen, in the queue's own order.
 import { useEffect, useMemo, useState } from 'react'
 import { byQueueOrder } from './queue'
-import { runHistory } from './run'
+import { runAll } from './run'
 import type { Decision, HistoryResult, Order } from './types'
 
 /**
@@ -14,7 +14,7 @@ export function useNextWaiting(orders: Order[], decisions: Decision[], currentId
 
   useEffect(() => {
     let live = true
-    Promise.all(orders.map(async (o) => [o.id, await runHistory(o).catch(() => 'failed' as const)] as const)).then((entries) => live && setResults(Object.fromEntries(entries)))
+    runAll(orders, () => live).then((out) => live && setResults(out))
     return () => {
       live = false
     }

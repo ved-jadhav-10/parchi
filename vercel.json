@@ -1,0 +1,5 @@
+{
+  "functions": {
+    "api/check.ts": { "includeFiles": "public/data/**" }
+  }
+}

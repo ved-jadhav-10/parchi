@@ -4,7 +4,7 @@ import { StatusBadge } from '../components/StatusBadge'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { decisionLabel, doctorName, shortDate } from '../history/labels'
 import { byQueueOrder, leadFinding, suggestionCounts, waitedLabel } from '../history/queue'
-import { runHistory } from '../history/run'
+import { runAll } from '../history/run'
 import type { Decision, HistoryResult, Order, OrderStatus } from '../history/types'
 import { queueShortcut, targetOf, useSingleKeys } from '../lib/shortcuts'
 import { useDecisions, useOrders } from '../storage/orders'
@@ -50,7 +50,7 @@ export const QueuePage = () => {
 
   useEffect(() => {
     let live = true
-    Promise.all(orders.map(async (o) => [o.id, await runHistory(o).catch(() => 'failed' as const)] as const)).then((entries) => live && setResults(Object.fromEntries(entries)))
+    runAll(orders, () => live).then((out) => live && setResults(out))
     return () => {
       live = false
     }
@@ -95,7 +95,7 @@ export const QueuePage = () => {
           <KpiCard label="No alerts" value={ready ? counts.clear : '–'} tier="silent" short="No alerts" pressed={view === 'waiting' && filter === 'clear'} onSelect={() => pick('clear')} />
         </div>
 
-        <Card title="Orders" icon="log" description="Sample account, not real orders.">
+        <Card title="Orders" icon="log" description="The sample account plus any order added on this device. None are real orders.">
           <div className="toolbar queue__toolbar">
             <div className="queue__views" role="group" aria-label="Show orders">
               {(['waiting', 'decided'] as const).map((v) => (
