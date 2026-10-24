@@ -7,6 +7,7 @@ Hash routes (`#/check`), no router dependency, installable PWA. Pill nav on desk
 
 | Route | Page | Status |
 |---|---|---|
+| (none) / `#/home` | Start screen: what Parchi is, Check a prescription, See a worked example (`#/demo`), how a prescription is checked. Not a nav pill (footer link "About Parchi"); the installed app opens on `#/check` (`start_url`). | Built |
 | `#/check` | Prescription check: Rx + patient in, KPI row, alerts, X-ray, brand matches (expandable), silent log, FHIR draft export | Built, runs on mock engine output |
 | `#/demo` | Guided 5-step walkthrough of the 68-year-old case for the pitch. Runs through `runCheck`, so it turns real with the engine; every sentence is built from the result. Arrow keys work. | Built |
 | `#/log` | Override log: IndexedDB, filter by tier and date, CSV export | Built, fully working |

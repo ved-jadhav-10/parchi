@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export type Route = 'check' | 'demo' | 'log' | 'benchmark' | 'data'
+export type Route = 'home' | 'check' | 'demo' | 'log' | 'benchmark' | 'data'
 
 export const routes: { id: Route; label: string }[] = [
   { id: 'check', label: 'Check' },
@@ -10,8 +10,10 @@ export const routes: { id: Route; label: string }[] = [
   { id: 'data', label: 'Data & limits' },
 ]
 
+/** No hash (or `#/home`) is the start screen. Home is not in `routes`, so it has no nav pill. An unknown hash is Check. */
 const read = (): Route => {
-  const id = location.hash.replace(/^#\//, '')
+  const id = location.hash.replace(/^#\/?/, '')
+  if (id === '' || id === 'home') return 'home'
   return routes.find((r) => r.id === id)?.id ?? 'check'
 }
 
