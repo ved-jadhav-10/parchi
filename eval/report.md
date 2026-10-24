@@ -11,5 +11,5 @@ Missed (expected, not raised):
 - S20: ddi:telmisartan+ramipril
 
 Extra (raised, not expected):
-- S43: renal_caution:metoclopramide
+- none
 

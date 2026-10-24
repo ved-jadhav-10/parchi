@@ -744,7 +744,7 @@
   {
    "id": "S43",
    "kind": "single",
-   "why": "Metoclopramide at 70 (Beers: avoid unless gastroparesis)",
+   "why": "Metoclopramide at 70 (Beers: avoid unless gastroparesis); CrCl is about 58, below the 60 where the label halves the dose",
    "rx": "Metoclopramide 10 TDS",
    "patient": {
     "age_years": 70,
@@ -755,6 +755,12 @@
    "expected": [
     {
      "type": "geriatric",
+     "ingredients": [
+      "metoclopramide"
+     ]
+    },
+    {
+     "type": "renal",
      "ingredients": [
       "metoclopramide"
      ]
