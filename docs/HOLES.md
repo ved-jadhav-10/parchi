@@ -18,7 +18,8 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | Finals format, panel make-up, Q&A length | not known | unknown |
 | Judges shared across tracks? | not known (nothing announced) | unknown |
 | Interactive demo (judge types own prescription) | **Yes, as long as it cannot produce a wrong answer** | decision |
-| Pharmacist / pharmacy-student help for the test set | A friend's grandfather has offered; his profession and background not yet confirmed | open |
+| Pharmacist / pharmacy-student help for the test set | A friend's grandfather has offered: **MBBS general doctor, 45 years of experience (not a pharmacist)**. The PS wording says "pharmacist or pharmacy student" | confirmed, see H25 |
+| **Provenance rule** | Every slide and doc states exactly who checked what and when (for example "reference-labelled from published sources; reviewed by an MBBS GP on [date]"). Nothing is described as expert-reviewed unless a named person did it. Reference-based work is labelled as such | rule |
 | Presentation work | **Deferred**: first clarify the PS and develop new things, then finalise the presentation | decision |
 | Judge-run hidden test set or baseline | **Unknown to the team** (none established so far) | unknown |
 | Deliverables | An official slide **template exists** (the team will share it). Other required items (repo, live URL, video) not confirmed | partly confirmed |
@@ -71,6 +72,8 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | H21 | "The local pharmacist has no time and no incentive to do any of this" | H | _not brainstormed yet_ | - | - | open |
 | H22 | "People buy medicines right after a diagnosis. Two doctors' prescriptions at once is rare. Where is the problem?" | H | _not brainstormed yet_ | - | - | open |
 | H23 | "If Parchi shows no alert, is it safe? Your interaction data has gaps" | M | _not brainstormed yet_ | - | - | open |
+| H24 | "Most Indians buy at local chemist shops. Your buyers (e-pharmacies, chains) are a small share" | H | _not brainstormed yet_ | - | - | open |
+| H25 | "The PS says a pharmacist or pharmacy student helped build the test set. Yours is a general doctor" | M | _not brainstormed yet_ | - | - | open |
 
 ## Details
 
@@ -178,6 +181,15 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **Why it's a hole:** DDInter has no entry for several common Indian drugs (aceclofenac, domperidone, nimesulide, etoricoxib, ambroxol) and some drug groups (`track-a-data.md`). The UI is careful ("No alerts from the checks run") and the Data page documents the gaps, but a result screen does not say which of the prescription's ingredients were not covered, so a quiet result can still read as reassurance.
 - **Risk:** M. **Status:** open.
 
+### H24. "Most Indians buy at local chemist shops. Your buyers (e-pharmacies, chains) are a small share"
+- **Raised by:** the team, on reviewing the "who is the user" answer (H21).
+- **Why it's a hole:** our paying-buyer story needs a pharmacist who is already paid to verify each order, which exists at e-pharmacies and chains. The cited market estimates put online pharmacy at about USD 3.7B against about USD 30B for all pharmacy retail (IMARC and Ken Research, two different reports, so only a rough ratio and both are estimates), which suggests the local store is where most buying happens. The independent chemist is the largest group and the one with the weakest incentive (H21), and our answer for them is the free tier. So the segment with the clearest business reason is a minority of the places medicines are bought, and judges may count that.
+- **Risk:** H. **Status:** open.
+
+### H25. "The PS says a pharmacist or pharmacy student helped build the test set. Yours is a general doctor"
+- **Why it's a hole:** the problem statement names a pharmacist or pharmacy student. Our available expert is an MBBS doctor with 45 years of general practice. He is a real clinician and can judge whether an alert is clinically sensible, but he is not a pharmacist, and the wording could be read strictly. We also cannot describe him as a pharmacist.
+- **Risk:** M. **Status:** open.
+
 ## USP shortlist (pick 3-4 for the deck)
 Ranked by judge impact ÷ effort. Update after each council run.
 1. Measured with a real pharmacist (H1)
@@ -191,3 +203,4 @@ Ranked by judge impact ÷ effort. Update after each council run.
 | 24 Oct 2026 | Initial list (Claude review of docs) | H1-H13 | Goal = win HM-02 |
 | 24 Oct 2026 | Grill 1: problem statement and parameters (Q1-Q7) | H14-H19 | PS text recorded verbatim. Round 1 = deck + prototype + presentation in 10 min. Win = first overall. Rubric, panel, finals format, hidden test and hard rules still unknown |
 | 24 Oct 2026 | Grill 2: pharmacist help, the judge's hardest questions | H20-H23 | Presentation work deferred until the PS and new features are clear. Interactive demo allowed only if it cannot give a wrong answer. Slide template exists (to be shared). Panel sharing across tracks unknown. H9 partly verified in code |
+| 24 Oct 2026 | Grill 3: expert access, who the buyer is | H24-H25 | Expert = MBBS GP, 45 years. **Provenance rule adopted: say exactly who checked what.** Alert fatigue and patient limits to be the strongest measured results. Interactive demo must show "not sure" and never guess |
