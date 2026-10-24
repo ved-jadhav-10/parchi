@@ -4,7 +4,7 @@ Measures the engine and, when their answers are saved here, general chatbots on 
 
 | File | What |
 |---|---|
-| `gold.json` | 50 cases (40 single prescriptions, 10 multi-doctor histories, 12 clean). Built by `build_gold.mjs`; each case has a `why` |
+| `gold.json` | 54 cases (44 single prescriptions, 10 multi-doctor histories, 13 clean). Built by `build_gold.mjs`; each case has a `why` |
 | `engine.test.ts` | `npm test` checks the gold file; `npm run eval` also runs the engine over it |
 | `outputs/<system>.json` | One system's alerts per case: `{"S01": {"alerts": [{"type", "tier", "ingredients"}], "ms": 12}}` |
 | `score.py` | Scores every file in `outputs/` and writes `public/data/benchmark.json` and `report.md` (misses and extras per system) |

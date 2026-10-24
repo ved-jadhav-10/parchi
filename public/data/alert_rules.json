@@ -156,6 +156,67 @@
       "reason": "{names} in a patient aged {age}: Z-drug sleep medicines are on the Beers list to avoid in older adults (falls, delirium). Pharmacist to review.",
       "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
       "pharmacist_approved": false
+    },
+    {
+      "id": "beers_ketorolac",
+      "ingredients": [
+        "ketorolac"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: ketorolac is on the Beers list to avoid in older adults (bleeding, kidney injury). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_tricyclic",
+      "ingredients": [
+        "amitriptyline",
+        "imipramine",
+        "doxepin"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: tricyclic antidepressants are on the Beers list to avoid (strong anticholinergic effect, sedation, orthostatic hypotension; doxepin only up to 6 mg is acceptable). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_sulfonylurea",
+      "ingredients": [
+        "glibenclamide",
+        "glimepiride"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: sulfonylureas, especially long-acting ones such as glibenclamide and glimepiride, carry a higher risk of prolonged low blood sugar in older adults (Beers: avoid, or prefer a short-acting one). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_muscle_relaxant",
+      "ingredients": [
+        "chlorzoxazone",
+        "methocarbamol",
+        "cyclobenzaprine",
+        "carisoprodol"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: skeletal muscle relaxants are on the Beers list to avoid (sedation, falls, weak benefit). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
+    },
+    {
+      "id": "beers_metoclopramide",
+      "ingredients": [
+        "metoclopramide"
+      ],
+      "age_at_least": 65,
+      "tier": "inform",
+      "reason": "{names} in a patient aged {age}: metoclopramide is on the Beers list to avoid unless for gastroparesis, and for no more than 12 weeks (movement disorders). Pharmacist to review.",
+      "source": "AGS Beers Criteria 2023 (J Am Geriatr Soc 2023;71:2052), potentially inappropriate in adults 65+. Draft entry, wording to confirm with the pharmacist.",
+      "pharmacist_approved": false
     }
   ],
   "suppression": [

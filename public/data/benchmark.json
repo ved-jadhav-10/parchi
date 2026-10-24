@@ -1,13 +1,13 @@
 {
- "n_rx": 50,
+ "n_rx": 54,
  "kappa": null,
  "label_status": "draft: expected alerts were written by the developer from drug labels and guidelines (the `why` of each case), independent of the engine, and have NOT yet been reviewed by a pharmacist",
  "systems": [
   {
    "name": "Parchi engine",
-   "n_rx": 50,
-   "alerts_per_rx": 0.82,
-   "interrupts_per_rx": 0.2,
+   "n_rx": 54,
+   "alerts_per_rx": 0.83,
+   "interrupts_per_rx": 0.19,
    "clean_fp_rate": 0.0,
    "by_type": {
     "dose_excess": {
@@ -27,7 +27,7 @@
      "recall": 0.8
     },
     "renal": {
-     "precision": 1.0,
+     "precision": 0.833,
      "recall": 1.0
     },
     "geriatric": {
@@ -47,7 +47,7 @@
      "recall": 1.0
     }
    },
-   "median_ms": 1.5
+   "median_ms": 1.33
   }
  ]
 }

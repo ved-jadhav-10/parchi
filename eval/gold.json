@@ -27,7 +27,12 @@
     "beers_benzodiazepine",
     "beers_z_drug",
     "anticholinergic_burden",
-    "cns_stacking"
+    "cns_stacking",
+    "beers_ketorolac",
+    "beers_tricyclic",
+    "beers_sulfonylurea",
+    "beers_muscle_relaxant",
+    "beers_metoclopramide"
    ],
    "banned_fdc": [
     "banned_fdc"
@@ -695,6 +700,79 @@
      ]
     }
    ]
+  },
+  {
+   "id": "S41",
+   "kind": "single",
+   "why": "Amitriptyline at 72 (Beers: avoid tricyclics)",
+   "rx": "Amitriptyline 10 HS",
+   "patient": {
+    "age_years": 72,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "amitriptyline"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S42",
+   "kind": "single",
+   "why": "Glimepiride at 75 (Beers: long-acting sulfonylurea, hypoglycaemia)",
+   "rx": "Glimepiride 2 OD",
+   "patient": {
+    "age_years": 75,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "glimepiride"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S43",
+   "kind": "single",
+   "why": "Metoclopramide at 70 (Beers: avoid unless gastroparesis)",
+   "rx": "Metoclopramide 10 TDS",
+   "patient": {
+    "age_years": 70,
+    "weight_kg": 60,
+    "serum_creatinine": 1,
+    "sex": "M"
+   },
+   "expected": [
+    {
+     "type": "geriatric",
+     "ingredients": [
+      "metoclopramide"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "S44",
+   "kind": "single",
+   "why": "Amitriptyline at 40 is not a geriatric flag",
+   "rx": "Amitriptyline 10 HS",
+   "patient": {
+    "age_years": 40,
+    "weight_kg": 70,
+    "serum_creatinine": 0.9,
+    "sex": "M"
+   },
+   "expected": []
   },
   {
    "id": "S34",

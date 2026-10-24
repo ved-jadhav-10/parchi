@@ -54,6 +54,11 @@ add('S31', 'Zolpidem at 70 (Beers: avoid Z-drugs)', 'Zolfresh 10 HS', elder({ ag
 add('S32', 'Alprazolam at 30 is not a geriatric flag', 'Alprax 0.25 HS', young)
 add('S33', 'Diphenhydramine cold tablet at 68 (Beers)', 'Cheston Cold TDS', elder({ age_years: 68 }), [e('geriatric', 'diphenhydramine')])
 
+add('S41', 'Amitriptyline at 72 (Beers: avoid tricyclics)', 'Amitriptyline 10 HS', elder(), [e('geriatric', 'amitriptyline')])
+add('S42', 'Glimepiride at 75 (Beers: long-acting sulfonylurea, hypoglycaemia)', 'Glimepiride 2 OD', elder({ age_years: 75 }), [e('geriatric', 'glimepiride')])
+add('S43', 'Metoclopramide at 70 (Beers: avoid unless gastroparesis); CrCl is about 58, below the 60 where the label halves the dose', 'Metoclopramide 10 TDS', elder({ age_years: 70 }), [e('geriatric', 'metoclopramide'), e('renal', 'metoclopramide')])
+add('S44', 'Amitriptyline at 40 is not a geriatric flag', 'Amitriptyline 10 HS', adult)
+
 // --- banned FDC (CDSCO list) and weekly drugs ---
 add('S34', 'Sinarest LP New is on the CDSCO banned list (S.O. 3388(E))', 'Sinarest LP New BD', adult, [e('banned_fdc', 'levocetirizine', 'paracetamol', 'phenylephrine')])
 add('S35', 'Methotrexate is weekly; written OD it is an overdose risk', 'Methotrexate 2.5 OD', adult, [e('schedule_mismatch', 'methotrexate')])
@@ -109,7 +114,7 @@ const gold = {
       class_duplication: ['class_duplication'],
       ddi: ['ddi'],
       renal: ['nsaid_renal', 'renal_avoid', 'renal_caution'],
-      geriatric: ['domperidone_elderly', 'beers_sedating_antihistamine', 'beers_benzodiazepine', 'beers_z_drug', 'anticholinergic_burden', 'cns_stacking'],
+      geriatric: ['domperidone_elderly', 'beers_sedating_antihistamine', 'beers_benzodiazepine', 'beers_z_drug', 'anticholinergic_burden', 'cns_stacking', 'beers_ketorolac', 'beers_tricyclic', 'beers_sulfonylurea', 'beers_muscle_relaxant', 'beers_metoclopramide'],
       banned_fdc: ['banned_fdc'],
       input_needed: ['input_needed'],
       schedule_mismatch: ['schedule_mismatch'],
