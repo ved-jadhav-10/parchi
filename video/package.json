@@ -1,0 +1,24 @@
+{
+  "name": "parchi-trailer",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "capture": "node scripts/capture.mjs",
+    "still": "remotion still src/index.ts Trailer",
+    "render": "remotion render src/index.ts Trailer out/parchi-trailer.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "@remotion/google-fonts": "4.0.484",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "remotion": "4.0.484"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17",
+    "playwright-core": "^1.50.0",
+    "typescript": "6.0.3"
+  }
+}

@@ -23,6 +23,30 @@ export function splitRx(text: string): string[] {
     .filter((l) => l.length > 0)
 }
 
+const BATCH = /\b(?:batch|lot)\s*(?:no\.?|number|#)?\s*[:#.\-]?\s*([A-Za-z0-9][A-Za-z0-9-]{2,})/i
+const QUANTITY = /\b(?:qty|quantity)\s*[:=.]?\s*(\d{1,4})\b/i
+
+/**
+ * Pull "batch AR5112" and "qty 10" out of a line before it is split into brand and dosing, so neither is mistaken for
+ * part of the brand or the sig. Both are optional and come from the buyer's order data, not from the doctor.
+ */
+export function extractLineMeta(line: string): { line: string; batch?: string; quantity?: number } {
+  let rest = line
+  const out: { line: string; batch?: string; quantity?: number } = { line }
+  const b = BATCH.exec(rest)
+  if (b) {
+    out.batch = b[1]
+    rest = rest.replace(b[0], ' ')
+  }
+  const q = QUANTITY.exec(rest)
+  if (q) {
+    out.quantity = Number(q[1])
+    rest = rest.replace(q[0], ' ')
+  }
+  out.line = rest.replace(/\s{2,}/g, ' ').replace(/[,;]\s*$/, '').trim()
+  return out
+}
+
 export function splitBrandAndSig(line: string): { brand: string; sig: string } {
   const re = /\S+/g
   const tokens: { text: string; start: number }[] = []

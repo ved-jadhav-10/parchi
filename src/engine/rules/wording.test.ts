@@ -39,3 +39,29 @@ describe('alert wording never recommends a dose', () => {
     for (const a of alerts) expect(a.reason, a.type).not.toMatch(DOSE_ADVICE)
   })
 })
+
+describe('nothing internal reaches the screen', () => {
+  const INTERNAL = /FIX_PLAN|limits\.json|alert_rules|ddi_supplement|TODO|n\/a mL/i
+
+  it.each(policyTexts)('%s', (_where, text) => {
+    expect(text).not.toMatch(INTERNAL)
+  })
+
+  it('source lines in the policy file carry no plan or file names', () => {
+    const sources: string[] = []
+    const walk = (o: unknown): void => {
+      if (Array.isArray(o)) o.forEach(walk)
+      else if (o && typeof o === 'object') for (const [k, v] of Object.entries(o)) (k === 'source' && typeof v === 'string' ? sources.push(v) : walk(v))
+    }
+    walk(rules)
+    expect(sources.length).toBeGreaterThan(40)
+    for (const s of sources) expect(s, s).not.toMatch(INTERNAL)
+  })
+
+  it('a two-NSAID alert without a creatinine does not print "CrCl n/a"', async () => {
+    const { alerts } = await realPipeline()('Zerodol-P BD; Brufen 400 TDS', { age_years: 68 })
+    const a = alerts.find((x) => x.type === 'nsaid_double_high_risk')!
+    expect(a.reason).toContain('(age 68)')
+    expect(a.reason).not.toMatch(/n\/a|CrCl/)
+  })
+})

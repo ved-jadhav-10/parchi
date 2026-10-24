@@ -1,7 +1,7 @@
 // checkHistory: a customer's dated prescriptions (several doctors) + lab values -> one timeline -> overlap windows ->
 // the usual pipeline per window -> merged, ranked alerts. Doses are added up only where the windows overlap.
 import type { Alert, HistoryLine, HistoryResult, HistoryWindow, LabResult, Ledger, Patient, Prescription, Tier } from '../contracts'
-import { lineWindow } from '../ledger/windows'
+import { inferWindow } from '../ledger/windows'
 import type { Engine } from '../pipeline'
 import type { LineOrigin } from '../rules'
 import { joinNames } from '../rules/types'
@@ -94,12 +94,14 @@ export function createHistoryChecker(engine: Engine): CheckHistory {
     const lines: DatedLine[] = []
     for (const { rx, day } of dated) {
       if (day > asOf) continue
-      resolver.resolveText(rx.text, { age_years: person.age_years }).forEach(({ resolved: first, sig_text }, i) => {
+      resolver.resolveText(rx.text, { age_years: person.age_years }).forEach(({ resolved: first, sig_text, quantity }, i) => {
         const confirmed = options.confirmations?.[`${rx.id}#${i}`]
         const resolved = confirmed ? resolver.resolve(confirmed, { age_years: person.age_years }) : first
         const sig = engine.sigFor(sig_text, resolved)
-        // Track B owns the window length: the written duration, else the default in limits.json (flagged as assumed).
-        const win = lineWindow(isoDay(day), sig)!
+        // Track B owns the window length: the written course, else the ordered quantity, else a class default, else the
+        // general default; only the last two are flagged as assumed.
+        const classes = resolved.ingredients.flatMap((ing) => resolver.ingredient(ing.id)?.classes ?? [])
+        const win = inferWindow(isoDay(day), sig, { quantity, classes })!
         const days = win.days
         lines.push({
           resolved,
@@ -112,6 +114,7 @@ export function createHistoryChecker(engine: Engine): CheckHistory {
           endDay: day + days,
           ...(resolved.match === 'none' && resolved.ingredients.length === 0 ? { unverified: true } : {}),
           ...(win.duration_assumed ? { default_window: true } : {}),
+          duration_source: win.source,
         })
       })
     }
@@ -186,7 +189,14 @@ export function createHistoryChecker(engine: Engine): CheckHistory {
       ]
     }
 
-    const alerts = engine.finalize(raw)
+    // Two doctors, two medicines of one class: often the second replaced the first, and an Rx rarely says "stop X". It stays a
+    // note, worded as a question. Done after finalize so a stacking rule (two NSAIDs in a high-risk patient) has already
+    // replaced the plain duplicate where the pair is dangerous.
+    const alerts = engine.finalize(raw).map((a) =>
+      a.type === 'class_duplication' && a.cross_doctor
+        ? { ...a, type: 'possible_switch', reason: `${a.reason} If the later prescription replaced the earlier one, confirm the earlier one was stopped; if both are being taken it is a duplicate.` }
+        : a,
+    )
     const result: HistoryResult = {
       lines: lines.map(({ startDay: _s, endDay: _e, ...line }) => line),
       ledger: worst,

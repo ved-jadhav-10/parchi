@@ -697,6 +697,10 @@
   "windows": {
     "default_duration_days": 30,
     "source": "Assumed: a one-month supply is the commonest course for a line with no duration written. Pharmacist to confirm or set per class.",
-    "pharmacist_approved": false
+    "pharmacist_approved": false,
+    "by_class": {
+      "antibacterial": 7
+    },
+    "by_class_source": "Assumed: an antibiotic course with no length written runs about a week, so a 30-day default does not invent overlaps with later courses. Not applied to painkillers or chronic medicines, where a short guess could hide a real overlap. Pharmacist to confirm."
   }
 }

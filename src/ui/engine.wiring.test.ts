@@ -28,7 +28,7 @@ describe('the UI engine raises Track B findings as alerts', () => {
   })
   it('a sig the rules cannot read is shown to the pharmacist', async () => {
     const r = await ui('Dolo 650 zzz qqq', { age_years: 40 })
-    expect(r.alerts.map((a) => a.type)).toContain('sig_unclear')
+    expect(r.alerts.map((a) => a.type)).toContain('dosing_not_entered')
   })
   it('a liquid with no known volume is called out instead of silently missing from the totals', async () => {
     const r = await ui('Wikoryl drops 1 ml BD', { age_years: 2, weight_kg: 12 })

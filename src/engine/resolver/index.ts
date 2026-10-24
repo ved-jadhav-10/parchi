@@ -9,9 +9,9 @@ import { createScheduleIndex } from './schedule'
 import { createNsqIndex } from './nsq'
 import { fetchResolverData, type BrandRecord, type IngredientInfo, type ResolverData } from './data'
 import { HINT_FORMS, MODIFIERS, canonicalize, normaliseText, parseName, typoDistance, type ParsedName } from './normalize'
-import { splitBrandAndSig, splitRx } from './segment'
+import { extractLineMeta, splitBrandAndSig, splitRx } from './segment'
 
-export { splitBrandAndSig, splitRx } from './segment'
+export { extractLineMeta, splitBrandAndSig, splitRx } from './segment'
 export { decodeData, type ResolverData } from './data'
 
 /** Below this the line goes to the pharmacist. */
@@ -29,7 +29,7 @@ export interface ResolverContext {
 export interface Resolver {
   resolve(raw: string, ctx?: ResolverContext): ResolvedBrand
   resolveLine(line: string, ctx?: ResolverContext): { resolved: ResolvedBrand; sig_text: string }
-  resolveText(rxText: string, ctx?: ResolverContext): { resolved: ResolvedBrand; sig_text: string }[]
+  resolveText(rxText: string, ctx?: ResolverContext): { resolved: ResolvedBrand; sig_text: string; quantity?: number }[]
   /** Canonical ingredient id for any spelling ("Acetaminophen" -> "paracetamol"); null if unknown. */
   canonicalId(name: string): string | null
   ingredient(id: string): IngredientInfo | undefined
@@ -546,9 +546,11 @@ export function createResolver(data: ResolverData): Resolver {
       return { resolved: resolve(brand, ctx), sig_text: sig }
     },
     resolveText(rxText, ctx) {
-      return splitRx(rxText).map((line) => {
+      return splitRx(rxText).map((full) => {
+        const { line, batch, quantity } = extractLineMeta(full)
         const { brand, sig } = splitBrandAndSig(line)
-        return { resolved: resolve(brand, ctx), sig_text: sig }
+        const resolved = resolve(brand, ctx)
+        return { resolved: batch ? { ...resolved, batch } : resolved, sig_text: sig, ...(quantity !== undefined ? { quantity } : {}) }
       })
     },
     canonicalId(name) {
