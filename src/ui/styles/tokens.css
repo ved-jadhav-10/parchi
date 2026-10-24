@@ -63,10 +63,10 @@
   --shadow-card: 0 1px 2px rgb(18 32 86 / 0.06), 0 4px 12px rgb(18 32 86 / 0.06);
 
   /* Layout */
-  --content-max: 1600px;
+  --content-max: 1200px;
   --sidebar-width: 400px;
   --tap-min: 44px;
-  --gutter: var(--space-3);
+  --gutter: var(--space-4);
 }
 
 @media (min-width: 960px) {
@@ -75,8 +75,3 @@
   }
 }
 
-@media (min-width: 1280px) {
-  :root {
-    --gutter: var(--space-6);
-  }
-}

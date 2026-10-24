@@ -274,31 +274,17 @@
 .home-proof span { font-weight: 600; }
 .home-proof small { color: var(--color-ink-muted); font-size: var(--text-sm); line-height: var(--leading-sm); }
 
-/* ---------- wide and one screen per section ---------- */
+/* ---------- one screen per section ---------- */
 @media (min-width: 901px) {
-  .home-page { max-width: 1800px; padding: 8px; gap: 8px; }
-  .home-frame { padding: 8px; border-radius: 28px; }
-  .home-hero { min-height: max(540px, calc(100dvh - 116px)); margin-top: 8px; padding: 48px 72px; }
-  .home-hero__copy { max-width: 680px; }
-  .home-hero__art { width: min(56%, 900px); }
+  .home-hero { min-height: max(540px, calc(100dvh - 120px)); }
+  .home-trailer__video { width: 100%; height: calc(100dvh - 160px); min-height: 360px; object-fit: contain; background: var(--color-accent); border-radius: 24px; }
+  .home-section { min-height: calc(100dvh - 120px); align-content: center; }
+  .home-cta { min-height: calc(100dvh - 120px); align-content: center; }
 
-  .home-trailer { padding: 8px; border-radius: 28px; }
-  .home-trailer__video { width: 100%; height: calc(100dvh - 150px); min-height: 360px; object-fit: contain; background: var(--color-accent); border-radius: 22px; }
-
-  .home-section { min-height: calc(100dvh - 120px); align-content: center; padding: 48px 72px; border-radius: 28px; }
-  .home-section.home-how, .home-section.home-compare-section { display: grid; align-content: center; padding: 40px 0 0; }
-  .home-how__head { padding: 0 72px 28px; }
-  .home-how .home-lead, .home-compare-section .home-lead { max-width: 80ch; }
-  .home-proof { border-radius: 28px; padding: 40px 72px; }
-  .home-cta { min-height: calc(100dvh - 120px); align-content: center; padding: 48px 72px; border-radius: 28px; }
-  .home-footer { border-radius: 28px; padding: 28px 72px; }
-}
-
-/* Wide sections: the heading and its closing note on the left, the content in a padded block on the right */
-@media (min-width: 901px) {
+  /* the heading and its closing note on the left, the content in a padded block on the right */
   .home-section.home-how, .home-section.home-compare-section {
-    display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); grid-template-rows: auto 1fr; gap: 28px 72px;
-    align-content: center; align-items: start; padding: 56px 72px;
+    display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); grid-template-rows: auto 1fr; gap: 28px 56px;
+    align-content: center; align-items: start; padding: 56px;
   }
   .home-how__head, .home-compare-section__head { grid-column: 1; grid-row: 1; padding: 0; position: static; }
   .home-how__grid { grid-column: 2; grid-row: 1 / span 2; margin: 0; border: 1px solid var(--color-border); border-radius: 20px; overflow: hidden; }
