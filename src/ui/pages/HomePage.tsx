@@ -267,8 +267,6 @@ export const HomePage = () => {
           </ul>
         </section>
 
-        </StackedSections>
-
         <section className="home-section home-section--tint" id="evidence" aria-labelledby="evidence-title">
           <div>
             <h2 id="evidence-title" tabIndex={-1}>Measured, not claimed</h2>
@@ -283,6 +281,7 @@ export const HomePage = () => {
             <a className="home-btn home-btn--ink" href="#/benchmark">See the benchmark</a>
           </div>
         </section>
+        </StackedSections>
 
         <section className="home-cta" aria-labelledby="cta-title">
           <svg className="home-cta__art" viewBox="0 0 700 420" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="#fff" strokeLinecap="round" aria-hidden="true">

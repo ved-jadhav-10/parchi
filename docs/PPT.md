@@ -1,12 +1,12 @@
 # Parchi: final deck content (HYPNEXIS '26, HM-02)
 
-Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, ~16:00 IST (after `git fetch`): `main` is a skeleton (shared types, demo test fixture, unverified PWA config); `dev/track-d` adds design docs/tokens only. No engine feature is built and no metric has been measured.
+Audience: hackathon judges (neither pharmacists nor developers). Build status stamp: 24 Oct 2026, ~18:00 IST (after `git fetch`): on `main`, Track A (brand resolver, banned FDC, NSQ, Jan Aushadhi data) and Track B (sig parser, ledger, limits, CrCl) are built with automated tests; Track C (alert rules, 3-tier engine, pipeline) is built and tested on `dev/track-c`, not yet merged or wired to B; no UI is built; no benchmark metric has been measured. Phase 2 of HM-02 (multi-doctor history, kidney re-check, unverified brands, severity ranking) is planned. The pitch targets e-pharmacies and pharmacy chains (`BUSINESS_MODEL.md`).
 
 Template: official HYPNEXIS '26 deck (`HYPNEXIS26_Official_PPT_Template.pptx`), 9 slides, 13.33 × 7.5 in. Every content slide (2–8) shows "Team Name | Team ID" top right: fill as `[Team name] | [Team ID]`.
 
 How to paste: only lines starting `- `, `1. ` or `> ` go on the slide (`> ` = plain paragraph, no bullet); everything else is an instruction. Each box has a **Fit:** line: font size, list style, and the text box's size in the template. Template body text is 14 pt Calibri, bullets with a 0.375 in hanging indent, 6 pt after each paragraph; a box marked 12 pt needs its font reduced to fit. Keep the template's box positions unless a Fit line says otherwise. Every box was checked to fit by wrapping its text with real Calibri metrics (see Checklist).
 
-Status tags used on every feature: **(designed)** = a typed interface for it exists in `src/engine/contracts.ts`, no working code yet; **(planned)** = no code or data yet (UI items are specified in `docs/DESIGN.md` on `dev/track-d`, still no code); **(proposed)** = business model idea. Square brackets `[ ]` = placeholder to fill before finals.
+Status tags used on every feature: **(built)** = working code with automated tests in the repo, not yet shown in the app; **(designed)** = a typed interface for it exists in `src/engine/contracts.ts`, no working code yet; **(planned)** = no code or data yet (UI items are specified in `docs/DESIGN.md` on `dev/track-d`, still no code); **(proposed)** = business model idea. Square brackets `[ ]` = placeholder to fill before finals.
 
 ## Fact allocation (each fact appears on exactly one slide)
 
@@ -15,7 +15,8 @@ Status tags used on every feature: **(designed)** = a typed interface for it exi
 | F1 | 'Medzol' = midazolam and pantoprazole; identical brand names contribute most to such errors | Neelakantan et al., Lancet RH SE Asia 2024 | [80] | S2 Problem 1 |
 | F2 | Paracetamol sits inside many fever, cold and pain FDCs (qualitative) | PS_ANALYSIS §5 compositions | §5, [21][59][60] | S2 Problem 2 |
 | F3 | Polypharmacy 49% of older Indian adults | Bhagavathula et al., 2021 | [78] | S2 Problem 3 |
-| F4 | Only the chemist counter sees every doctor's prescription | PS_ANALYSIS §9 core insight | §9 | S2 Problem 3 |
+| F4 | E-pharmacies and chains hold each customer's orders from every doctor | BUSINESS_MODEL §1 | §11 | S2 Problem 3 |
+| F33 | Tata 1mg's pharmacist team validates each prescription before dispatch | Tata 1mg FAQ | [98], §11 | S7 Target users 1 |
 | F5 | ChatGPT severity correct 214/574 = 37.3% (Nepal hospital) | Thapa et al., 2025 | [92], Key Finding 3 | S2 Problem 4 |
 | F6 | Alert override rates 46–96% in hospital prescribing systems | Poly et al., 2020 | [93], Key Finding 4 | S2 Problem 5 |
 | F22 | Sep 2026: 330 NSQ samples + 1 spurious | CDSCO alert via The News Mill, 23 Oct 2026 | [12][13] | S2 Did you know? callout |
@@ -90,7 +91,7 @@ Shorten the template's body box to 3.25 in tall (y 2.50 to 5.75 in) to make room
 Fit: 14 pt, bullets, 5.40 × 3.25 in
 - **Same name, different drug:** 'Medzol' is both midazolam (sedative) and pantoprazole (antacid); identical names contribute most to such errors (Neelakantan 2024).
 - **Ingredients hide in brands:** FDCs (multi-drug pills) hide repeats: paracetamol is in many fever, cold, pain brands.
-- **Many medicines, many doctors:** Polypharmacy hits 49% of older Indians (Bhagavathula 2021); only the chemist sees every prescription.
+- **Many medicines, many doctors:** Polypharmacy hits 49% of older Indians (Bhagavathula 2021); only the pharmacy's records join every Rx.
 - **Chatbots misjudge severity:** ChatGPT caught all interactions, but only 37.3% got the right severity (Thapa 2025, Nepal).
 - **Too many warnings:** 46–96% of drug alerts in hospital software are overridden and ignored (Poly 2020).
 
@@ -102,16 +103,16 @@ Fit: 12 pt, plain, 5.40 × 0.70 in, after 0
 ### OUR SOLUTION
 Body box 2.25 in tall (template 2.20); 3 pt after each bullet (template 6 pt).
 Fit: 12 pt, bullets, 5.40 × 2.25 in, after 3
-- **Brand unpacking:** Type the Rx as written; misspelt Indian brands match to ingredients and strengths, with a confidence score (designed).
-- **Reads shorthand:** 1-0-1 (morning, none, night), TDS (three times daily), SOS (only when needed), syrup mg per 5 mL (designed).
-- **Daily totals vs limits:** Sums each ingredient's mg/day across brands; checks this patient's age, weight and kidney limits (designed).
-- **Duplicates and clashes:** Two same-type drugs, drug interactions (planned); banned FDCs and look-alike brands (designed).
-- **Three tiers:** Interrupt (stop, check), Inform (FYI), Silent (logged) (designed); Interrupt only for overdose, kidney, banned FDC (planned).
+- **Brand unpacking:** Misspelt Indian brands match to ingredients and strengths, with confidence; unknown ones marked unverified (built).
+- **Reads shorthand:** 1-0-1 (morning, none, night), TDS (three times daily), SOS (only when needed), syrup mg per 5 mL (built).
+- **Whole history:** Sums mg/day per ingredient across brands and overlapping Rx from every doctor; re-checks on new kidney tests (planned).
+- **Duplicates and clashes:** Two same-type drugs, interactions, banned FDCs, look-alike brands, age and kidney limits (built).
+- **Three tiers, ranked:** Interrupt (stop, check), Inform (FYI), Silent (logged), most urgent first (built); riskiest orders first (planned).
 
 ### Image box
 Concept diagram, no numbers, labels 11 pt: prescription slip with brand names → each brand split into ingredients → one daily-total bar per ingredient against its limit → tier label (Interrupt / Inform / Silent). Tag it "concept".
 
-*Presenter note: "Parchi" means the prescription slip. Say "designed" means the data shapes are written and the code is in progress. Do not demo anything live unless it has been built and re-checked.*
+*Presenter note: "Parchi" means the prescription slip. "Built" means code and automated tests exist but the screen is not built yet. Do not demo anything live unless it has been built into the app and re-checked.*
 
 ---
 
@@ -121,17 +122,17 @@ Concept diagram, no numbers, labels 11 pt: prescription slip with brand names �
 The card holds a flow chart (top) and the pipeline steps (bottom).
 
 Flow chart: drawn with shapes in the area x 0.80 to 6.20 in, y 2.50 to 4.20 in; labels 10 pt. Three columns, left to right, with arrows labelled "Prescription in" and "Alerts out":
-- Left, **Inputs:** Typed Rx (Indian brands) · Age, sex, weight · Serum creatinine (kidney test) · Approved limits and suppression list
-- Middle, **Safety check layer** (interfaces designed, code planned), six stacked chips: 1 Brand Matcher · 2 Dosing Reader · 3 Dose Totals · 4 Patient Limits · 5 Duplicates & Interactions · 6 Alert Tiers. Strip under the chips: **Data, cached offline (planned):** brand table · source-tagged limits · interaction and banned lists
-- Right, **Parchi PWA:** "Prescription X-ray" screen (planned)
+- Left, **Inputs (from the e-pharmacy or chain):** Order and Rx history (brands, doctor, date) · Age, sex, weight · Kidney test results · Approved limits and suppression list
+- Middle, **Safety check layer** (built and tested; history merge planned), six stacked chips: 1 Brand Matcher · 2 Dosing Reader · 3 Dose Totals · 4 Patient Limits · 5 Duplicates & Interactions · 6 Alert Tiers & Ranking. Strip under the chips: **Data, cached offline (built):** brand table · source-tagged limits · interaction and banned lists
+- Right, **Pharmacist review console + check API:** ranked queue, "Prescription X-ray" (planned)
 
 #### Pipeline steps
 Move the template's body box down to y 4.30 in, height 2.25 in.
 Fit: 12 pt, bullets, 5.40 × 2.25 in
-- **Read (1):** Match each brand, even misspelt, to ingredients and strength; doubtful matches go to the pharmacist (designed).
-- **Count (2–3):** Turn 1-1-1, TDS and SOS into doses per day; sum milligrams per ingredient (designed).
-- **Check (4):** Estimate CrCl (how well kidneys clear drugs) by Cockcroft-Gault; apply age and weight limits (designed).
-- **Sort and explain (5–6):** Each alert gets a one-line reason and source; routine duplicates go to Inform, as 82–98% of their overrides were appropriate (two studies, Poly 2020) (designed).
+- **Read (1):** Match each brand, even misspelt, to ingredients and strength; doubtful matches go to the pharmacist (built).
+- **Count (2–3):** Turn 1-1-1, TDS and SOS into doses per day; sum milligrams per ingredient (built).
+- **Check (4):** Estimate CrCl (how well kidneys clear drugs) by Cockcroft-Gault; apply age and weight limits (built).
+- **Sort and explain (5–6):** Each alert gets a one-line reason and source; routine duplicates go to Inform, as 82–98% of their overrides were appropriate (two studies, Poly 2020) (built).
 
 ### CORE TECHNOLOGIES
 Fit: 12 pt, bullets, 5.40 × 1.60 in
@@ -143,10 +144,10 @@ Fit: 12 pt, bullets, 5.40 × 1.60 in
 ### UNIQUE POINTS
 Body box starts at y 4.97 in (template 5.05) and is 1.65 in tall; 3 pt after each bullet.
 Fit: 12 pt, bullets, 5.40 × 1.65 in, after 3
-- **Counts, not pairs:** Total mg per ingredient, not pairs (designed).
-- **Worst-case SOS:** As-needed doses at daily maximum (designed).
-- **Alert budget:** Target ≤1 Interrupt per Rx on average; mutes routinely ignored alerts (planned).
-- **Works offline:** No internet; Rx stays on the device (planned).
+- **Counts, not pairs:** Total mg per ingredient, not pairs (built).
+- **Worst-case SOS:** As-needed doses at daily maximum (built).
+- **Alert budget:** Target ≤1 Interrupt per Rx on average; mutes routinely ignored alerts (built).
+- **Fits their stack:** Offline at counters; CSV and ABDM FHIR (planned).
 - **Hard to copy:** Pharmacist-curated Indian compositions, limits, SOS rules, suppression list (planned).
 
 ---
@@ -156,7 +157,7 @@ Fit: 12 pt, bullets, 5.40 × 1.65 in, after 3
 ### USER INTERFACE
 All items planned; specified in `docs/DESIGN.md`.
 Fit: 13 pt, bullets, 3.40 × 4.00 in
-- **Key screens:** Rx and patient input; Prescription X-ray (daily total vs limit per ingredient); alert cards.
+- **Key screens:** Review queue; history timeline; Prescription X-ray (daily total vs limit); alert cards.
 - **Alert cards:** Tier icon and word, one-line reason, source; Interrupts first, Silent collapsed.
 - **Minimal questions:** Asks weight or a kidney test only when a drug needs it, and says why.
 - **Override log:** Overrides need a reason; saved on the device.
@@ -164,11 +165,11 @@ Fit: 13 pt, bullets, 3.40 × 4.00 in
 - **Accessibility:** WCAG AA contrast; tiers not colour-only; keyboard use.
 
 ### USER FLOW
-Keep the three numbered dots. Make each step's text box 1.15 in tall, top-aligned with its dot (tops at y 2.50, 3.80, 5.10 in), text left-aligned. Demo = 68-year-old, 7 brands, 2 doctors; all values are expected targets from the test fixture, not results.
+Keep the three numbered dots. Make each step's text box 1.15 in tall, top-aligned with its dot (tops at y 2.50, 3.80, 5.10 in), text left-aligned. Demo = 68-year-old, 7 brands, 3 doctors; all values are expected targets from the test fixtures, not results.
 
 #### Step 1
 Fit: 12 pt, plain, 2.80 × 1.15 in
-> **Pharmacist types the Rx:** brands as written; 'Brufan 400' should resolve to Brufen 400 (ibuprofen, a painkiller).
+> **Order joins the queue:** 3 doctors' Rx merged; 'Brufan 400' should resolve to Brufen 400 (ibuprofen, a painkiller).
 
 #### Step 2
 Fit: 12 pt, plain, 2.80 × 1.15 in
@@ -176,12 +177,12 @@ Fit: 12 pt, plain, 2.80 × 1.15 in
 
 #### Step 3
 Fit: 12 pt, plain, 2.80 × 1.15 in
-> **Pharmacist reviews and decides:** 2 Interrupts (stop and check), 3–4 Informs (worth knowing), the rest logged silently.
+> **Pharmacist reviews and decides:** 2 Interrupts (stop and check), 3–4 Informs; suggested 'Hold, contact doctor'.
 
 #### Demo caption
 New text box at the bottom of the Flow card, y 6.30 in.
 Fit: 10 pt, plain, 3.40 × 0.32 in, after 0
-> Demo: 68 y, 7 brands, 2 doctors; targets, not results.
+> Demo: 68 y, 7 brands, 3 doctors; targets, not results.
 
 ### DESIGN GOAL
 Fit: 14 pt, plain, 3.40 × 1.60 in
@@ -197,8 +198,8 @@ Wireframe area (template placeholder, 3.40 × 1.80 in): [Screenshot of the Presc
 
 ### TECHNICAL FEASIBILITY
 Fit: 14 pt, bullets, 3.40 × 3.80 in
-- **Interfaces designed:** Typed hand-offs between all modules are written; engine code is next.
-- **Demo case specified:** A test file fixes the demo's expected outputs (slide 4).
+- **Engine built:** Brand matcher, dosing reader, dose totals, limits and alert rules pass [N] automated tests.
+- **Demo case tested:** A test file fixes the demo's expected outputs (slide 4); engine tests check them.
 - **Proven libraries:** Fuzzy-search, sound-alike and offline-caching libraries chosen; no new algorithms needed.
 - **Runs on what counters have:** Any phone, tablet or PC with a browser; no special hardware.
 
@@ -217,7 +218,7 @@ Fit: 12 pt, bullets, 3.40 × 4.05 in
 - **Privacy:** DPDP Act fines reach ₹250 crore; no central prescription store (planned).
 - **Risk: reads as dose advice** (regulated) → show 'above reference max, source, review'; never a dose.
 - **Risk: wrong limit** → every limit stores source + pharmacist-approved flag.
-- **Risk: slow typing** → import brands from billing software later (proposed).
+- **Risk: extra typing** → read the buyer's order data via CSV or FHIR (proposed).
 - **Risk: two strengths** (Zerodol-P 325/500 mg paracetamol) → if unclear, assume higher, ask (planned).
 
 *Presenter note: never say Parchi is "exempt" or "not a medical device". The class letters in CDSCO's Table 2 come from a secondary source; confirm on cdsco.gov.in before printing a class letter.*
@@ -231,7 +232,7 @@ Each body box is extended to the card's bottom padding: 4.50 × 1.30 in (templat
 ### 1 SOCIAL IMPACT
 Fit: 12 pt, bullets, 4.50 × 1.30 in, indent 0.2
 > Aims at UN SDG 3.8: safe, affordable medicines for all.
-- **Safer self-care:** 53.6% of Indians self-medicate (Rashid 2020); counter checks catch overlaps no doctor sees (planned).
+- **Safer self-care:** 53.6% of Indians self-medicate (Rashid 2020); order-history checks catch overlaps no doctor sees (planned).
 - **Safer care for elders:** 28% of older Indians use risky medicines (Bhagavathula 2021); Beers checks (planned).
 
 ### 2 ENVIRONMENTAL IMPACT
@@ -259,26 +260,26 @@ Fit: 12 pt, bullets, 4.50 × 1.30 in, indent 0.2
 
 ### TARGET USERS
 Fit: 12 pt, bullets, 3.40 × 3.80 in
-- **E-pharmacies (first paying buyer):** Their pharmacists verify Rx at scale; cited checks and override log (planned) could speed review, cut liability.
-- **Pharmacy chains (paying buyer):** One safety standard at every counter protects brand trust and store licences.
-- **Hospitals and EMR partners:** NABH accreditation's medication chapter (MOM) covers dispensing and look-alike drugs; EMRs (doctor record software) could embed checks.
-- **Independent chemists (free, early adopters):** Free offline app; flags banned combinations that risk their licence (planned). Doctors benefit but are not buyers.
+- **E-pharmacies (first buyer, design target):** Tata 1mg's pharmacists validate every Rx; a ranked queue and audit log could speed review, cut liability.
+- **Pharmacy chains (paying buyer):** One safety standard at every counter; customer history already joins every doctor's Rx.
+- **Hospitals (later):** NABH accreditation's medication chapter (MOM) covers dispensing and look-alike drugs.
+- **Independent chemists (free):** Offline app; flags banned combinations that risk their licence (planned). Doctors are not users.
 
 ### REVENUE & COST MODEL
 Fit: 14 pt, bullets, 3.40 × 3.80 in
 - **Pilot phase:** Free prototype at [pilot pharmacy: confirm]; costs on slide 5.
-- **Pricing:** Per-check fee for e-pharmacies; per-store licence for chains; free for independent chemists (proposed).
+- **Pricing:** Per-check API fee for e-pharmacies; per-store licence for chains; free for independent chemists (proposed).
 - **Long-term growth:** India pharmacy retail USD 30.1B (2025) → 52.8B (2031), Ken Research estimate.
 
 ### SUSTAINABILITY
 Fit: 12 pt, bullets, 3.40 × 3.80 in
-- **Partnerships:** Pharmacist panel keeps limits and suppression list approved; EMR vendors embed checks (proposed).
-- **Data upkeep:** Banned-combination and monthly quality lists refresh when online; every entry keeps its source (planned).
-- **Cheaper generics:** Jan Aushadhi generics (unbranded same medicines) cost 50–80% less (PMBJP claim); swap suggestions (planned).
-- **Future expansion:** Children's syrup doses by weight, antibiotic-stewardship checks, hospital-record (FHIR) export (planned).
+- **Partnerships:** Pharmacist panel keeps limits and suppression list approved; billing software via CSV, then APIs (proposed).
+- **Data upkeep:** Banned-combination and monthly quality lists refresh when online; every entry keeps its source (built).
+- **Cheaper options:** Same-salt swaps from the buyer's own catalogue; Jan Aushadhi (50–80% less, PMBJP claim) for government use (planned).
+- **Future expansion:** Children's syrup doses by weight, antibiotic-stewardship checks, more kidney rules (planned).
 - **Open source / community:** [Licence: team to decide]; open test set (slide 6) lets others check our claims.
 
-*Presenter note: in a private chemist, generic suggestions should come from the shop's own stock; Jan Aushadhi suggestions are for Kendras and government deployments only (PS_ANALYSIS §9.4).*
+*Presenter note: for e-pharmacies and chains, cheaper suggestions come from their own catalogue or own-label generics, so they keep the sale; Jan Aushadhi suggestions are for Kendras and government deployments only (`BUSINESS_MODEL.md` §4).*
 
 ---
 
@@ -347,8 +348,10 @@ Fit: 13 pt, bullets, 3.30 × 4.50 in
 
 **Facts used once:** see the Fact allocation table at the top. Each number is assigned to one slide; other slides refer back to it instead of repeating it.
 
+**Phase 2 / B2B update (24 Oct 2026, ~18:00):** reworded for e-pharmacy and chain buyers and Phase 2, and engine tags moved to *built* where code and tests exist. Edited boxes: slide 2 Problem 3 and Our Solution; slide 3 flow-chart labels, pipeline steps, Unique Points; slide 4 Key screens, Step 1, Step 3, demo caption; slide 5 Technical Feasibility 1–2, Operational risk 3; slide 6 Social 1; slide 7 Target Users, Pricing, Sustainability. Each edited box was kept at or below its old character count except Technical Feasibility (+~45 characters, box was not full), Partnerships (+11), Cheaper options (+8), Safer self-care (+6), Problem 3 (+1). **Fit was not re-measured:** run the fit script again before pasting.
+
 **Left out or uncertain:**
-- **Build status (most important):** at the 24 Oct 2026 audit, `main` was a skeleton, so every feature is tagged *planned* or *designed*. Update the tags and fill every `[placeholder]` metric (accuracy, alerts per Rx, ms, κ, gold-set size) from real runs before finals.
+- **Build status (most important):** see the stamp at the top. Tracks A and B are built and tested on `main`, Track C on `dev/track-c`; no UI and no benchmark yet. Phase 2 features are *planned*. Fill every `[placeholder]` metric (test count, accuracy, alerts per Rx, ms, κ, gold-set size) from real runs before finals.
 - **Dropped as unverified or self-reported:** Joshi 2007's 113,346 entries; the gazette number range for the 156 FDCs; the RxNav shutdown date; DrugBank checker retirement; AIOCD chemist count (~10 lakh, self-reported); Marg ERP user numbers; competitor self-claims.
 - **Corrected:** Thapa 2025 is a Nepal study; Poly's duplication figure is "82–98% in two studies"; paracetamol liver-failure data is US (Larson 2005), not India.
 - **Medication-error incidence (Govil 2025):** the figures come from a news summary. Check them against the paper before use.
