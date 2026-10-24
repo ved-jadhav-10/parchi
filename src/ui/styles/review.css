@@ -122,7 +122,7 @@
   min-height: var(--tap-min); padding: 0 var(--space-3); border: 1px solid var(--color-border-strong); border-radius: var(--radius-pill);
   background: var(--color-surface); color: var(--color-ink); cursor: pointer;
 }
-.windows__btn[aria-pressed='true'] { border-color: rgb(91 101 220 / 0.5); background: var(--color-tint); font-weight: 600; }
+.windows__btn[aria-pressed='true'] { border-color: color-mix(in srgb, var(--color-accent) 50%, transparent); background: var(--color-tint); font-weight: 600; }
 .windows__peak { color: var(--color-ink-muted); font-weight: 400; }
 
 /* Decision */
@@ -187,8 +187,8 @@
 /* The written leaflet: plain text, wraps, readable in any script. */
 .leaflet {
   margin: var(--space-3) 0 0; padding: var(--space-4); white-space: pre-wrap; word-break: break-word;
-  font: inherit; font-size: var(--text-base, 1rem); line-height: 1.7;
-  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.12)); border-radius: var(--radius-md);
+  font: inherit; font-size: var(--text-md); line-height: 1.7;
+  border: 1px solid var(--color-border); border-radius: var(--radius-md);
 }
 
 /* A button that reads as an inline link, for "Use this brand" inside a list. */
@@ -196,3 +196,6 @@
   padding: 0; border: 0; background: none; font: inherit; color: var(--color-accent, var(--color-ink)); text-decoration: underline; cursor: pointer;
 }
 .btn--link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+/* Reading measure: a sentence of prose stays under about 70 characters a line. */
+.coverage, .verdict__note, .verdict__counts { max-width: 70ch; }

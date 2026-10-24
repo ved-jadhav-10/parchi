@@ -191,14 +191,14 @@ export const HomePage = () => {
 
           <section className="home-hero" aria-labelledby="home-title">
             {/* the doctor's scribble, resolving into the clean lines on the slip */}
-            <svg className="home-hero__art" viewBox="0 0 760 640" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="#fff" strokeLinecap="round" aria-hidden="true">
+            <svg className="home-hero__art" viewBox="0 0 760 640" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden="true">
               <path className="home-draw" pathLength="1" strokeWidth="2.2" d="M250 36C410 78 590 140 760 238C610 262 450 228 346 262C276 288 292 340 410 366C530 390 654 408 760 452" />
               <path className="home-draw home-draw--2" pathLength="1" strokeWidth="1.6" strokeOpacity=".6" d="M262 540C330 494 424 496 522 528C620 558 702 592 760 612" />
               <path className="home-draw home-draw--3" pathLength="1" strokeWidth="2.2" d="M270 640C262 572 320 526 408 538C524 554 642 600 760 640" />
               <path className="home-draw home-draw--2" pathLength="1" strokeWidth="1.4" strokeOpacity=".45" d="M300 150C400 140 500 160 580 196" />
-              <circle cx="620" cy="150" r="11" fill="#fff" stroke="none" />
-              <circle cx="694" cy="476" r="8" fill="#fff" stroke="none" />
-              <circle cx="318" cy="596" r="5" fill="#fff" stroke="none" />
+              <circle cx="620" cy="150" r="11" fill="currentColor" stroke="none" />
+              <circle cx="694" cy="476" r="8" fill="currentColor" stroke="none" />
+              <circle cx="318" cy="596" r="5" fill="currentColor" stroke="none" />
             </svg>
 
             <div className="home-hero__copy">
@@ -322,11 +322,11 @@ export const HomePage = () => {
         </StackedSections>
 
         <section className="home-cta" aria-labelledby="cta-title">
-          <svg className="home-cta__art" viewBox="0 0 700 420" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="#fff" strokeLinecap="round" aria-hidden="true">
+          <svg className="home-cta__art" viewBox="0 0 700 420" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden="true">
             <path strokeWidth="2" d="M60 30C260 60 460 110 700 190C520 220 340 180 220 230C130 268 160 330 320 346C470 360 600 372 700 396" />
             <path strokeWidth="1.5" strokeOpacity=".5" d="M120 380C220 330 360 340 500 382" />
-            <circle cx="560" cy="90" r="9" fill="#fff" stroke="none" />
-            <circle cx="640" cy="330" r="6" fill="#fff" stroke="none" />
+            <circle cx="560" cy="90" r="9" fill="currentColor" stroke="none" />
+            <circle cx="640" cy="330" r="6" fill="currentColor" stroke="none" />
           </svg>
           <h2 id="cta-title">Put it on the counter.</h2>
           <p>Install Parchi on a phone or the counter PC, or open the review desk for orders that carry prescriptions from several doctors. After the first load it works without a connection.</p>
