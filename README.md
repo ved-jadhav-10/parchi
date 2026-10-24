@@ -8,6 +8,8 @@
 
 HYPNEXIS '26 · Problem Statement HM-02 · Team Plot Armor
 
+**[Live demo: parchi-lake.vercel.app](https://parchi-lake.vercel.app/)**
+
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-PWA-646CFF?logo=vite&logoColor=white)
