@@ -17,11 +17,13 @@ Palette reference: `docs/design/palette-reference.jpg`.
 | Token | Hex | Use |
 |---|---|---|
 | `--color-ink` | `#122056` | Body text, headings, icons |
-| `--color-accent` | `#5B65DC` | Primary buttons, links, focus ring, selected state |
+| `--color-accent` | `#5B65DC` | Primary buttons, links, focus ring, selected state, 4 px left bar on clickable tiles |
 | `--color-accent-strong` | `#4A53C7` | Hover/pressed accent; accent **text** on `--color-tint` |
-| `--color-tint` | `#EEEFFD` | Secondary buttons, list rows, chips |
+| `--color-tint` | `#EEEFFD` | Secondary buttons, ordered/list rows, chips |
 | `--color-bg` | `#FAFAFD` | Page background |
-| `--color-surface` | `#FFFFFF` | Header bar, cards, tiles |
+| `--color-surface` | `#FFFFFF` | Header/menu bar, cards, tiles |
+
+Clickable tiles (e.g. a `BrandMatch` row that opens detail) get the accent left bar; static cards don't. Alert cards use their tier colour for that bar instead, never the accent.
 | `--color-ink-muted` | `#5C6488` | Secondary text, captions, Silent tier |
 | `--color-border` | `#DCDFF0` | Card borders, dividers (non-text) |
 
