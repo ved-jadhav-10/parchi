@@ -25,6 +25,17 @@ describe('lineWindow', () => {
     for (const d of [0, -3, NaN]) expect(lineWindow('2026-10-01', { duration_days: d })?.duration_assumed).toBe(true)
     expect(LIMITS.windows.pharmacist_approved).toBe(false)
   })
+  it('never throws or returns a malformed date for absurd durations or dates at the edge of the calendar', () => {
+    for (const d of [1e9, 99999999999, Infinity, 3651]) {
+      const w = lineWindow('2026-10-01', { duration_days: d })
+      expect(w).toMatchObject({ duration_assumed: true, days: 30 })
+      expect(w!.end).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+    }
+    expect(lineWindow('2026-10-01', { duration_days: 3650 })).toMatchObject({ duration_assumed: false, days: 3650 })
+    const edge = lineWindow('9999-12-31', { duration_days: 30 })
+    expect(edge?.end).toBe('9999-12-31') // clamped, still a valid date
+    expect(fromDay(-1e12)).toMatch(/^1000-/)
+  })
   it('rounds a fractional duration up and rejects a bad start date', () => {
     expect(lineWindow('2026-10-01', { duration_days: 2.2 })?.days).toBe(3)
     expect(lineWindow('2026-02-30', { duration_days: 5 })).toBeNull()
