@@ -1,4 +1,6 @@
-# HM-02 Rx Safety Checker
+# Parchi
+
+Indian brand-name prescription safety checker (HYPNEXIS HM-02). Offline-capable PWA.
 
 Read `docs/CLAUDE.md` then `docs/PLAN.md`.
 

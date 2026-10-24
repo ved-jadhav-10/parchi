@@ -1,4 +1,4 @@
-# HM-02 Plan: Indian Prescription Safety Checker
+# Parchi (HM-02) Plan: Indian Prescription Safety Checker
 
 Source of truth for scope: `PS_ANALYSIS.md` (long, read only the section you need). This file is the work split.
 
