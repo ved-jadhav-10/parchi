@@ -3,9 +3,11 @@ import { AlertCard } from '../components/AlertCard'
 import { BrandMatch } from '../components/BrandMatch'
 import { Card } from '../components/Card'
 import { DecisionPanel } from '../components/DecisionPanel'
+import { HistoryCalendar } from '../components/HistoryCalendar'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { StatusBadge } from '../components/StatusBadge'
+import { panelId, tabId, Tabs, type TabItem } from '../components/Tabs'
 import { Timeline } from '../components/Timeline'
 import { TierBadge } from '../components/Icons'
 import { XrayTable } from '../components/XrayTable'
@@ -19,6 +21,7 @@ import { useRouteParam } from '../route'
 import { addOverride } from '../storage/overrides'
 import { saveOrder, useDecisions, useOrders } from '../storage/orders'
 
+type TabKey = 'alerts' | 'calendar' | 'timeline' | 'xray' | 'prescriptions'
 const count = (r: HistoryResult, tier: 'interrupt' | 'inform') => r.alerts.filter((a) => a.tier === tier).length
 const sameLab = (a: LabResult, b: LabResult) => a.date === b.date && a.value === b.value
 const PRESCRIBED_JOIN = (r: HistoryAlert) => r.prescribed.map((p) => `${doctorName(p.doctor)} (${shortDate(p.date)})`).join(' and ')
@@ -110,6 +113,7 @@ export const OrderPage = () => {
   const [failed, setFailed] = useState(false)
   const [changes, setChanges] = useState<AlertChange[] | null>(null)
   const [windowIdx, setWindowIdx] = useState<number | null>(null)
+  const [tab, setTab] = useState<TabKey>('alerts')
   const [overriding, setOverriding] = useState<HistoryAlert | null>(null)
   const [overridden, setOverridden] = useState<Record<string, string>>({})
   const [saveFailed, setSaveFailed] = useState(false)
@@ -119,6 +123,7 @@ export const OrderPage = () => {
   useEffect(() => {
     setResult(null)
     setChanges(null)
+    setTab('alerts')
     previous.current = null
     wantDiff.current = false
   }, [id])
@@ -192,6 +197,14 @@ export const OrderPage = () => {
 
   const w = result ? result.windows[windowIdx ?? result.peak] : null
   const doctors = new Set(order.prescriptions.map((p) => doctorName(p.doctor)))
+  const shown = result?.alerts.filter((a) => a.tier !== 'silent') ?? []
+  const tabs: TabItem<TabKey>[] = [
+    { id: 'alerts', label: 'Alerts', count: shown.length },
+    { id: 'calendar', label: 'Calendar' },
+    { id: 'timeline', label: 'Timeline' },
+    { id: 'xray', label: 'X-ray' },
+    { id: 'prescriptions', label: 'Prescriptions' },
+  ]
 
   return (
     <>
@@ -231,76 +244,100 @@ export const OrderPage = () => {
           </div>
 
           <div className="workspace__result">
-            <div aria-live="polite" className="result">
+            <div className="result">
               <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off. The default window for a line with no written duration is an unverified placeholder.</p>
 
-              {changes && <Changes changes={changes} />}
+              <div aria-live="polite">{changes && <Changes changes={changes} />}</div>
 
-              <Card title="Timeline" icon="chart" description="Every medicine, by doctor and day. Where bars from different doctors overlap, doses add up.">
-                <Timeline lines={result.lines} alerts={result.alerts} placed={order.placed} />
-              </Card>
-
-              <div className="alerts">
-                {result.alerts.filter((a) => a.tier !== 'silent').length === 0 && (
-                  <EmptyState title="No alerts from the checks run">
-                    <p>This is not a statement that the order is safe.</p>
-                  </EmptyState>
+              <Tabs prefix="order" label="Parts of the review" items={tabs} value={tab} onChange={setTab} />
+              <div className="tabpanel" role="tabpanel" id={panelId('order')} aria-labelledby={tabId('order', tab)} tabIndex={0}>
+                {tab === 'alerts' && (
+                  <div className="alerts">
+                    {shown.length === 0 && (
+                      <EmptyState title="No alerts from the checks run">
+                        <p>This is not a statement that the order is safe.</p>
+                      </EmptyState>
+                    )}
+                    {shown.map((a) => (
+                      <AlertCard
+                        key={a.type + a.ingredients.join()}
+                        alert={a}
+                        extra={<Prescribers alert={a} />}
+                        overriddenReason={overridden[a.type + a.ingredients.join()]}
+                        onOverride={a.tier === 'interrupt' ? () => setOverriding(a) : undefined}
+                      />
+                    ))}
+                  </div>
                 )}
-                {result.alerts
-                  .filter((a) => a.tier !== 'silent')
-                  .map((a) => (
-                    <AlertCard
-                      key={a.type + a.ingredients.join()}
-                      alert={a}
-                      extra={<Prescribers alert={a} />}
-                      overriddenReason={overridden[a.type + a.ingredients.join()]}
-                      onOverride={a.tier === 'interrupt' ? () => setOverriding(a) : undefined}
+
+                {tab === 'calendar' && (
+                  <Card title="History calendar" icon="chart" description="Every day with a medicine, a prescription or an alert. Choose a day to see what is taken then.">
+                    <HistoryCalendar
+                      key={`${order.id}-${result.windows.length}`}
+                      lines={result.lines}
+                      windows={result.windows}
+                      placed={order.placed}
+                      initial={result.windows[result.peak].start}
+                      onPickWindow={setWindowIdx}
+                      onOpenXray={() => setTab('xray')}
                     />
-                  ))}
-              </div>
+                  </Card>
+                )}
 
-              <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient for the days chosen, against the limit on file">
-                <div className="windows" role="group" aria-label="Days to show">
-                  {result.windows.map((win, i) => (
-                    <button key={win.start} className="windows__btn" aria-pressed={i === (windowIdx ?? result.peak)} onClick={() => setWindowIdx(i)}>
-                      {rangeLabel(win.start, win.end)}
-                      {i === result.peak && <span className="windows__peak"> · most serious</span>}
-                    </button>
-                  ))}
-                </div>
-                <XrayTable ledger={w.ledger} alerts={w.alerts} />
-              </Card>
+                {tab === 'timeline' && (
+                  <Card title="Timeline" icon="chart" description="Every medicine, by doctor and day. Where bars from different doctors overlap, doses add up.">
+                    <Timeline lines={result.lines} alerts={result.alerts} placed={order.placed} />
+                  </Card>
+                )}
 
-              {result.unverified.length > 0 && (
-                <Card title="Unverified brands" icon="inform" description="Not recognised, so left out of the totals until the pharmacist confirms them">
-                  <ul className="changes">
-                    {result.unverified.map((l) => {
-                      const best = l.resolved.candidates?.[0]
-                      return (
-                        <li key={l.index}>
-                          <strong>{l.resolved.raw}</strong>
-                          <span>
-                            {doctorName(l.doctor)}, {shortDate(l.start)}.{' '}
-                            {best ? `Closest match, unverified: ${candidateLabel(best)} (${pct(best.score)}).` : 'No close match in the brand list.'}
-                          </span>
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </Card>
-              )}
-
-              {order.prescriptions.map((rx) => (
-                <Card key={rx.id} title={`${doctorName(rx.doctor)}, ${longDate(rx.date)}`} description="What was written and what each line was matched to. Select a line for details.">
-                  <ul className="matches">
-                    {result.lines
-                      .filter((l) => l.rx_id === rx.id)
-                      .map((l) => (
-                        <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} />
+                {tab === 'xray' && (
+                  <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient for the days chosen, against the limit on file">
+                    <div className="windows" role="group" aria-label="Days to show">
+                      {result.windows.map((win, i) => (
+                        <button key={win.start} className="windows__btn" aria-pressed={i === (windowIdx ?? result.peak)} onClick={() => setWindowIdx(i)}>
+                          {rangeLabel(win.start, win.end)}
+                          {i === result.peak && <span className="windows__peak"> · most serious</span>}
+                        </button>
                       ))}
-                  </ul>
-                </Card>
-              ))}
+                    </div>
+                    <XrayTable ledger={w.ledger} alerts={w.alerts} />
+                  </Card>
+                )}
+
+                {tab === 'prescriptions' && (
+                  <>
+                    {result.unverified.length > 0 && (
+                      <Card title="Unverified brands" icon="inform" description="Not recognised, so left out of the totals until the pharmacist confirms them">
+                        <ul className="changes">
+                          {result.unverified.map((l) => {
+                            const best = l.resolved.candidates?.[0]
+                            return (
+                              <li key={l.index}>
+                                <strong>{l.resolved.raw}</strong>
+                                <span>
+                                  {doctorName(l.doctor)}, {shortDate(l.start)}.{' '}
+                                  {best ? `Closest match, unverified: ${candidateLabel(best)} (${pct(best.score)}).` : 'No close match in the brand list.'}
+                                </span>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      </Card>
+                    )}
+                    {order.prescriptions.map((rx) => (
+                      <Card key={rx.id} title={`${doctorName(rx.doctor)}, ${longDate(rx.date)}`} description="What was written and what each line was matched to. Select a line for details.">
+                        <ul className="matches">
+                          {result.lines
+                            .filter((l) => l.rx_id === rx.id)
+                            .map((l) => (
+                              <BrandMatch key={l.index} resolved={l.resolved} sig={l.sig} />
+                            ))}
+                        </ul>
+                      </Card>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
