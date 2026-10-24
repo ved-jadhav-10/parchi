@@ -1,4 +1,5 @@
 import type { Alert, Ledger, Tier } from '../../engine/contracts'
+import { ScrollRegion } from './ScrollRegion'
 import type { LedgerNote } from '../../engine/ledger'
 import { mg, titleCase } from '../lib/format'
 import { TierBadge } from './Icons'
@@ -33,21 +34,21 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
     ([, a], [, b]) => (b.limit_mg_day ? b.total_mg_day / b.limit_mg_day : 0) - (a.limit_mg_day ? a.total_mg_day / a.limit_mg_day : 0),
   )
   return (
-    <div className="xray" tabIndex={0} role="region" aria-label="Prescription X-ray, scrolls sideways">
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Ingredient</th>
-            <th scope="col">From brands</th>
-            <th scope="col">Daily total</th>
+    <ScrollRegion className="xray xray--stack" label="Prescription X-ray, scrolls sideways">
+      <table role="table">
+        <thead role="rowgroup">
+          <tr role="row">
+            <th scope="col" role="columnheader">Ingredient</th>
+            <th scope="col" role="columnheader">From brands</th>
+            <th scope="col" role="columnheader">Daily total</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody role="rowgroup">
           {rows.map(([id, row]) => {
             const flag = marked.get(id)
             return (
-              <tr key={id} data-tier={flag?.tier}>
-                <th scope="row">
+              <tr key={id} data-tier={flag?.tier} role="row">
+                <th scope="row" role="rowheader">
                   {titleCase(id)}
                   {flag && (
                     <span className="xray__flag">
@@ -55,7 +56,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
                     </span>
                   )}
                 </th>
-                <td>
+                <td role="cell">
                   <span className="chips">
                     {row.sources.map((s) => (
                       <span key={s} className={`chip${flag?.brands.has(brandOf(s)) ? ' chip--hit' : ''}`}>
@@ -64,7 +65,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
                     ))}
                   </span>
                 </td>
-                <td>
+                <td role="cell">
                   <LimitBar total={row.total_mg_day} limit={row.limit_mg_day} />
                   <span className="sr-only">{mg(row.total_mg_day)} milligrams per day</span>
                   {(row.sos_mg_day ?? 0) > 0 && <span className="xray__line">Includes up to {mg(row.sos_mg_day!)} mg as needed (worst case).</span>}
@@ -88,7 +89,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
           })}
         </tbody>
       </table>
-    </div>
+    </ScrollRegion>
   )
 }
 

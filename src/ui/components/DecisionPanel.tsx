@@ -14,13 +14,15 @@ type Props = {
   /** The next waiting order, in queue order, or null when none is left */
   next: string | null
   othersWaiting: number
+  /** Interrupts on this order and how many already have an override reason saved */
+  interrupts?: { total: number; acknowledged: number }
 }
 
 /**
  * The pharmacist's decision on an order. Parchi suggests a status; choosing a different one needs a reason. Saved to the audit log.
  * A suggested hold starts with nothing chosen, so agreeing with it is a choice rather than a default. Keys 1 to 3 choose, Ctrl+Enter saves.
  */
-export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaiting }: Props) => {
+export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaiting, interrupts }: Props) => {
   const [decision, setDecision] = useState<OrderStatus | null>(last?.decision ?? (result.status === 'hold_contact_doctor' ? null : result.status))
   const [reason, setReason] = useState('')
   const [note, setNote] = useState('')
@@ -83,6 +85,13 @@ export const DecisionPanel = ({ order, result, last, onSaved, next, othersWaitin
       {last && (
         <p className="decision__saved" role="status">
           Saved: <strong>{decisionLabel(last.decision)}</strong>, {new Date(last.at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}.
+        </p>
+      )}
+      {interrupts && interrupts.total > 0 && (
+        <p className="hint decision__ack">
+          {interrupts.acknowledged === interrupts.total
+            ? `All ${interrupts.total} ${interrupts.total === 1 ? 'Interrupt has' : 'Interrupts have'} an override reason saved.`
+            : `${interrupts.acknowledged} of ${interrupts.total} ${interrupts.total === 1 ? 'Interrupt has' : 'Interrupts have'} an override reason saved.`}
         </p>
       )}
       <fieldset className="reasons">

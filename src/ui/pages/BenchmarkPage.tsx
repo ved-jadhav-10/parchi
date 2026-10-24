@@ -1,4 +1,5 @@
 import { Card, KpiCard } from '../components/Card'
+import { ScrollRegion } from '../components/ScrollRegion'
 import { EmptyState, PageIntro } from '../components/PageIntro'
 import { normalizeBenchmark, useJson, type SystemResult } from '../lib/dataFiles'
 import { pct, titleCase } from '../lib/format'
@@ -84,7 +85,7 @@ export const BenchmarkPage = () => {
         </div>
 
         <Card title="Alert load" description="Fewer alerts and fewer false alarms on clean prescriptions mean less alert fatigue">
-          <div className="xray">
+          <ScrollRegion className="xray" label="Benchmark results, scrolls sideways">
             <table>
               <thead>
                 <tr>
@@ -107,7 +108,7 @@ export const BenchmarkPage = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </ScrollRegion>
         </Card>
 
         {types.map((t) => (

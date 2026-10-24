@@ -202,3 +202,27 @@
 
 /* Reading measure: a sentence of prose stays under about 70 characters a line. */
 .coverage, .verdict__note, .verdict__counts { max-width: 70ch; }
+
+/* Order page, second pass: the lead finding lives inside the verdict; unverified brands are actionable; workings fold away. */
+.verdict__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.alert--lead { border-left: 0; padding: 0; }
+.order__badge { margin-left: var(--space-2); }
+.order__rxhead { margin: 0 0 var(--space-2); font-size: var(--text-sm); line-height: var(--leading-sm); color: var(--color-ink-muted); font-weight: 600; }
+.order__rx + .order__rx { margin-top: var(--space-4); }
+.workings summary { display: flex; align-items: center; min-height: var(--tap-min); cursor: pointer; font-size: var(--text-lg); font-weight: 600; }
+.workings__body { display: grid; gap: var(--space-5); padding-top: var(--space-3); }
+.workings__body > section { min-width: 0; }
+.workings__body .hint { margin: 0 0 var(--space-3); }
+.unverified { display: grid; gap: var(--space-4); margin: 0; padding: 0; list-style: none; }
+.unverified__item { display: grid; gap: var(--space-2); padding-bottom: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.unverified__item:last-child { padding-bottom: 0; border-bottom: 0; }
+.unverified__line { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); margin: 0; }
+.unverified__line span { color: var(--color-ink-muted); font-size: var(--text-sm); }
+.unverified__options { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.unverified__options li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-3); }
+.unverified__score { color: var(--color-ink-muted); }
+.unverified__item--done { grid-auto-flow: row; }
+.unverified__item--done p { margin: 0; }
+.unverified__item--done .btn { justify-self: start; }
+.query__text { min-height: 220px; font-size: var(--text-sm); line-height: var(--leading-sm); }
+.decision__ack { margin: 0; }

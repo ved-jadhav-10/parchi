@@ -25,12 +25,16 @@ export interface Order {
   labs: LabResult[]
   /** Results that reached the platform but are not in the check yet; adding one triggers a re-check. */
   incoming_labs?: LabResult[]
+  /** Brands the pharmacist confirmed for lines the resolver did not recognise, keyed `${rx_id}#${line position within that prescription}`. */
+  confirmations?: Record<string, string>
 }
 
 export interface HistoryLine {
   /** Position in `HistoryResult.lines` */
   index: number
   rx_id: string
+  /** Position of this line within its prescription, from 0: the key part of `Order.confirmations` */
+  rx_line: number
   doctor: string
   /** ISO date the line starts (the prescription date) */
   start: string
@@ -46,6 +50,9 @@ export interface HistoryLine {
   sig: Sig
   /** Not recognised: shown as unverified and left out of the totals */
   unverified: boolean
+  /** The brand the pharmacist confirmed for this line, when one was, and the name as it was written */
+  confirmed?: string
+  written?: string
 }
 
 export interface Prescribed {

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ScrollRegion } from '../components/ScrollRegion'
 import type { Tier } from '../../engine/contracts'
 import { Card, KpiCard } from '../components/Card'
 import { Icon, TierBadge } from '../components/Icons'
@@ -64,7 +65,7 @@ export const LogPage = () => {
             {!ready ? null : shown.length === 0 ? (
               <p className="hint">{rows.length === 0 ? 'No overrides yet. They appear here when an Interrupt is overridden with a reason.' : 'No overrides match these filters.'}</p>
             ) : (
-              <div className="xray">
+              <ScrollRegion className="xray" label="Overrides, scrolls sideways">
                 <table>
                   <thead>
                     <tr>
@@ -105,7 +106,7 @@ export const LogPage = () => {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </ScrollRegion>
             )}
           </Card>
 
@@ -128,7 +129,7 @@ export const LogPage = () => {
             {decisions.length === 0 ? (
               <p className="hint">No decisions yet. They appear here when a pharmacist saves one on an order.</p>
             ) : (
-              <div className="xray">
+              <ScrollRegion className="xray" label="Order decisions, scrolls sideways">
                 <table>
                   <thead>
                     <tr>
@@ -157,7 +158,7 @@ export const LogPage = () => {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </ScrollRegion>
             )}
           </Card>
         </div>

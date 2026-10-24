@@ -3,16 +3,29 @@ import type { Alert } from '../../engine/contracts'
 import { alertTypeLabel, movedBecause } from '../lib/resolved'
 import { TierBadge } from './Icons'
 
-type Props = { alert: Alert; onOverride?: () => void; overriddenReason?: string; extra?: ReactNode }
+type Props = {
+  alert: Alert
+  onOverride?: () => void
+  overriddenReason?: string
+  /** Id of the "Overridden" line, so focus can return there after the override is saved */
+  overrideId?: string
+  extra?: ReactNode
+  /** Called by "Add it" on an alert that waits for an input (weight, creatinine) */
+  onNeedInput?: () => void
+  /** `lead` sits inside another block (the order verdict) instead of being a card of its own */
+  variant?: 'card' | 'lead'
+}
 
-export const AlertCard = ({ alert, onOverride, overriddenReason, extra }: Props) => {
+export const AlertCard = ({ alert, onOverride, overriddenReason, overrideId, extra, onNeedInput, variant = 'card' }: Props) => {
   const moved = movedBecause(alert)
   return (
-    <article className="card alert" data-tier={alert.tier} role={alert.tier === 'interrupt' ? 'alert' : undefined}>
+    <article className={`${variant === 'card' ? 'card ' : ''}alert${variant === 'lead' ? ' alert--lead' : ''}`} data-tier={alert.tier}>
       <header className="alert__head">
         <TierBadge tier={alert.tier} />
         <span className="alert__type">{alertTypeLabel(alert.type)}</span>
-        <span className="alert__conf num">{Math.round(alert.confidence * 100)}%</span>
+        <span className="alert__conf num" title="How sure the rule or match is that this applies">
+          Confidence {Math.round(alert.confidence * 100)}%
+        </span>
       </header>
       <p className="alert__reason">{alert.reason}</p>
       {extra}
@@ -30,13 +43,18 @@ export const AlertCard = ({ alert, onOverride, overriddenReason, extra }: Props)
           </span>
         )}
       </footer>
-      {alert.type === 'input_needed' && (
+      {alert.type === 'input_needed' && onNeedInput && (
         <p className="alert__moved">
-          <a href="#patient">Add it under Patient</a>, then check again.
+          <button type="button" className="btn--link" onClick={onNeedInput}>
+            Add it now
+          </button>
+          , then Parchi checks again.
         </p>
       )}
       {overriddenReason ? (
-        <p className="alert__overridden">Overridden: {overriddenReason}</p>
+        <p className="alert__overridden" id={overrideId} tabIndex={-1}>
+          Overridden: {overriddenReason}
+        </p>
       ) : (
         onOverride && (
           <button className="btn btn--secondary alert__action" onClick={onOverride}>

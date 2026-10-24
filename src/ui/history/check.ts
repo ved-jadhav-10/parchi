@@ -45,7 +45,11 @@ export function createHistoryCheck(deps: EngineDeps) {
     const { resolver } = deps
     const earliest = order.prescriptions.map((p) => p.date).sort()[0]
     // `from` = the first prescription date, so overlaps that have already ended still show on the timeline.
-    const r: EngineResult = await checkHistory(order.prescriptions, patientFor(order), order.labs, { ...(earliest && { from: earliest }), ...(previous && { previous: previous.engine }) })
+    const r: EngineResult = await checkHistory(order.prescriptions, patientFor(order), order.labs, {
+      ...(earliest && { from: earliest }),
+      ...(previous && { previous: previous.engine }),
+      ...(order.confirmations && Object.keys(order.confirmations).length > 0 && { confirmations: order.confirmations }),
+    })
     if (r.lines.length === 0) throw new Error('No medicines found in the prescriptions')
 
     const rxById = new Map(order.prescriptions.map((p) => [p.id, p]))
@@ -68,24 +72,27 @@ export function createHistoryCheck(deps: EngineDeps) {
     }
 
     // The sig wording of each line, in the order the resolver reads them, for the timeline tooltip.
-    const sigTexts = new Map(order.prescriptions.map((p) => [p.id, resolver.resolveText(p.text, { age_years: order.customer.age_years }).map((l) => l.sig_text)]))
+    const readings = new Map(order.prescriptions.map((p) => [p.id, resolver.resolveText(p.text, { age_years: order.customer.age_years }).map((l) => ({ sig: l.sig_text, written: l.resolved.raw }))]))
     const seenPerRx = new Map<string, number>()
     const lines: HistoryLine[] = r.lines.map((l, index) => {
       const n = seenPerRx.get(l.rx_id) ?? 0
       seenPerRx.set(l.rx_id, n + 1)
       const start = l.start
+      const confirmed = order.confirmations?.[`${l.rx_id}#${n}`]
       return {
         index,
         rx_id: l.rx_id,
+        rx_line: n,
         doctor: l.doctor,
         start,
         end: l.end ?? start,
         end_assumed: l.default_window === true,
         ...(l.refill_overlap_days && { refill_overlap_days: l.refill_overlap_days }),
-        text: `${l.resolved.raw} ${sigTexts.get(l.rx_id)?.[n] ?? ''}`.trim(),
+        text: `${l.resolved.raw} ${readings.get(l.rx_id)?.[n]?.sig ?? ''}`.trim(),
         resolved: l.resolved,
         sig: l.sig,
         unverified: l.unverified === true,
+        ...(confirmed && { confirmed, written: readings.get(l.rx_id)?.[n]?.written }),
       }
     })
 

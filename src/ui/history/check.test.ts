@@ -151,3 +151,22 @@ describe('review wording and dates', () => {
     expect(Object.values(STATUS_LABEL).join(' ')).not.toMatch(/safe|approved/i)
   })
 })
+
+describe('confirming an unrecognised brand', () => {
+  it('moves the line from unverified into the totals, and marks it as confirmed by the pharmacist', async () => {
+    const o = demoOrders.find((x) => x.prescriptions.length > 0 && x.id === 'ORD-1089') ?? demoOrders[2]
+    const before = await run(o)
+    const unknown = before.unverified[0]
+    expect(unknown, 'a sample order has an unverified brand').toBeDefined()
+    expect(unknown.rx_line).toBeGreaterThanOrEqual(0)
+
+    const pick = unknown.resolved.candidates![0].brand
+    const after = await run({ ...o, confirmations: { [`${unknown.rx_id}#${unknown.rx_line}`]: pick } }, before)
+    const line = after.lines.find((l) => l.rx_id === unknown.rx_id && l.rx_line === unknown.rx_line)!
+    expect(line.unverified).toBe(false)
+    expect(line.confirmed).toBe(pick)
+    expect(line.resolved.ingredients.length).toBeGreaterThan(0)
+    expect(after.unverified.length).toBe(before.unverified.length - 1)
+    expect(after.changes).toBeDefined()
+  })
+})

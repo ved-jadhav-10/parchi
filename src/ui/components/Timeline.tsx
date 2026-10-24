@@ -4,6 +4,7 @@ import { doctorName, longDate, shortDate } from '../history/labels'
 import type { HistoryAlert, HistoryLine } from '../history/types'
 import { brandLabel } from '../lib/resolved'
 import { tierLabel } from './Icons'
+import { ScrollRegion } from './ScrollRegion'
 
 const RANK: Record<Tier, number> = { interrupt: 0, inform: 1, silent: 2 }
 const DAY_MS = 86_400_000
@@ -35,7 +36,7 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
 
   return (
     <div className="tl" role="group" aria-label="Timeline of every medicine on this order, by doctor">
-      <div className="tl__scroll" tabIndex={0} role="region" aria-label="Timeline, scrolls sideways">
+      <ScrollRegion className="tl__scroll" label="Timeline, scrolls sideways">
         <div className="tl__grid" style={{ ['--days' as string]: days, ...(placedAt !== null && { ['--at' as string]: placedAt }) }}>
           <div className="tl__corner" />
           {dates.map((d, i) => (
@@ -76,7 +77,7 @@ export const Timeline = ({ lines, alerts, placed }: { lines: HistoryLine[]; aler
           ))}
           {placedAt !== null && <div className="tl__placed" aria-hidden="true" />}
         </div>
-      </div>
+      </ScrollRegion>
 
       <ul className="tl__legend">
         <li>

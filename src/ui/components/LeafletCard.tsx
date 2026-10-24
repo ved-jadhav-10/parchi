@@ -18,7 +18,7 @@ const errorFor = (status: number, retry: string | null): string =>
  * A plain-language leaflet for the customer in their language. Online only (the model runs on the server) and written
  * only from the medicine names, how each is taken and the points typed here; it never decides an alert.
  */
-export const LeafletCard = ({ lines }: { lines: { resolved: ResolvedBrand; sig: Sig | null }[] }) => {
+export const LeafletCard = ({ lines, inDetails }: { lines: { resolved: ResolvedBrand; sig: Sig | null }[]; inDetails?: boolean }) => {
   const online = useOnline()
   const [language, setLanguage] = useState('hi')
   const [points, setPoints] = useState('')
@@ -49,8 +49,8 @@ export const LeafletCard = ({ lines }: { lines: { resolved: ResolvedBrand; sig: 
     }
   }
 
-  return (
-    <Card title="Customer leaflet" icon="download" description="How to take each medicine, in the customer's language. Needs an internet connection.">
+  const body = (
+    <>
       {request.medicines.length === 0 ? (
         <p className="hint">No recognised medicine to write about yet.</p>
       ) : (
@@ -77,7 +77,10 @@ export const LeafletCard = ({ lines }: { lines: { resolved: ResolvedBrand; sig: 
             </button>
           </div>
           {!online && <p className="hint">You are offline. The leaflet is written online; everything else here keeps working.</p>}
-          <div aria-live="polite">
+          <p className="sr-only" role="status">
+            {phase.kind === 'done' ? 'Leaflet written.' : phase.kind === 'working' ? 'Writing the leaflet.' : ''}
+          </p>
+          <div>
             {phase.kind === 'error' && (
               <p className="dialog__error" role="alert">
                 {phase.message}
@@ -102,6 +105,17 @@ export const LeafletCard = ({ lines }: { lines: { resolved: ResolvedBrand; sig: 
           </div>
         </>
       )}
+    </>
+  )
+
+  return inDetails ? (
+    <details className="card order__tools">
+      <summary>Customer leaflet (needs a connection)</summary>
+      <div className="order__tools-body">{body}</div>
+    </details>
+  ) : (
+    <Card title="Customer leaflet" icon="download" description="How to take each medicine, in the customer's language. Needs an internet connection.">
+      {body}
     </Card>
   )
 }

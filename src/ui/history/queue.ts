@@ -56,7 +56,15 @@ export const shortFinding = (a: HistoryAlert, r: HistoryResult): string => {
   return trimReason(a.reason)
 }
 
-/** The finding that weighs most in an order's priority: the highest tier, a cross-doctor overlap before a single-prescription one. */
+/** The alert that weighs most in an order's priority: the highest tier, a cross-doctor overlap before a single-prescription one. */
+export const leadAlert = (r: HistoryResult): HistoryAlert | undefined => {
+  const shown = r.alerts.filter((a) => a.tier !== 'silent')
+  if (shown.length === 0) return undefined
+  const weight = (a: HistoryAlert) => rank[a.tier] * 2 + Number(a.cross_doctor)
+  return shown.reduce((best, a) => (weight(a) > weight(best) ? a : best))
+}
+
+/** The finding that weighs most in an order's priority, as the line the review queue shows. */
 export const leadFinding = (r: HistoryResult): LeadFinding => {
   const shown = r.alerts.filter((a) => a.tier !== 'silent')
   if (shown.length === 0) {
@@ -64,8 +72,7 @@ export const leadFinding = (r: HistoryResult): LeadFinding => {
     const text = n > 0 ? `${n} unverified ${n === 1 ? 'brand' : 'brands'}, left out of the totals` : 'No alerts from the checks run'
     return { text, full: text, tier: 'silent', more: 0 }
   }
-  const weight = (a: (typeof shown)[number]) => rank[a.tier] * 2 + Number(a.cross_doctor)
-  const lead = shown.reduce((best, a) => (weight(a) > weight(best) ? a : best))
+  const lead = leadAlert(r)!
   return { text: shortFinding(lead, r), full: lead.reason, tier: lead.tier, more: shown.length - 1 }
 }
 

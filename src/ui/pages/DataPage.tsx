@@ -1,4 +1,5 @@
 import { LIMITS } from '../../engine/limits'
+import { ScrollRegion } from '../components/ScrollRegion'
 import { parseAlertRules, type AlertRules } from '../../engine/rules'
 import { Card } from '../components/Card'
 import { EmptyState, PageIntro } from '../components/PageIntro'
@@ -29,7 +30,7 @@ const DataTable = ({ title, description, rows, empty }: { title: string; descrip
         <p className="hint">
           {approvedCount(rows)} of {rows.length} signed off by a pharmacist. Anything else is shown as not signed off and should not be relied on.
         </p>
-        <div className="xray">
+        <ScrollRegion className="xray" label="Limits and rules, scrolls sideways">
           <table>
             <thead>
               <tr>
@@ -54,7 +55,7 @@ const DataTable = ({ title, description, rows, empty }: { title: string; descrip
               ))}
             </tbody>
           </table>
-        </div>
+        </ScrollRegion>
       </>
     )}
   </Card>
@@ -95,7 +96,7 @@ export const DataPage = () => {
           empty="No curated rules could be read, so only DDInter pairs are checked."
         />
         <Card title="Sources and licences" icon="shield" description="Where the brand, ban, batch and interaction data comes from, and on what terms">
-          <div className="xray">
+          <ScrollRegion className="xray" label="Sources and licences, scrolls sideways">
             <table>
               <thead>
                 <tr>
@@ -116,7 +117,7 @@ export const DataPage = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </ScrollRegion>
         </Card>
       </div>
     </>

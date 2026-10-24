@@ -10,6 +10,7 @@ import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
 import { CoverageNote } from '../components/CoverageNote'
 import { LeafletCard } from '../components/LeafletCard'
+import { SilentLog } from '../components/SilentLog'
 import { downloadText } from '../lib/csv'
 import { toFhirBundle } from '../lib/fhir'
 import { needsReview, swapBrand, tidy } from '../lib/resolved'
@@ -83,6 +84,16 @@ export const CheckPage = () => {
   const prompts = result?.prompts ?? []
   const toCheck = result?.lines.filter((l) => needsReview(l.resolved)).length ?? 0
 
+  // "Add what is asked": bring the patient fields into view and put the cursor in the first one the engine asked for.
+  const focusNeeds = () => {
+    document.getElementById('patient')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
+    document.querySelector<HTMLInputElement>('#patient .prompt input')?.focus({ preventScroll: true })
+  }
+
+  const summary = !result
+    ? ''
+    : `${count('interrupt')} Interrupt, ${count('inform')} Inform, ${count('silent')} logged. ${shown.length === 0 ? 'No alerts from the checks run.' : ''}`
+
   const saveOverride = async (reason: string, note: string) => {
     if (overriding === null || !result) return
     const a = result.alerts[overriding]
@@ -149,6 +160,9 @@ export const CheckPage = () => {
                 </select>
               </label>
             </div>
+            {result?.crcl != null && (
+              <p className="hint">Estimated creatinine clearance about {Math.round(result.crcl)} mL/min (Cockcroft-Gault, from the age, weight and creatinine entered).</p>
+            )}
             {prompts.length > 0 && (
               <div className="prompt">
                 {prompts.map((p) => (
@@ -168,6 +182,9 @@ export const CheckPage = () => {
         </div>
 
         <div className="workspace__result" ref={resultRef}>
+          <p className="sr-only" role="status">
+            {failed ? 'Could not check this prescription.' : summary}
+          </p>
           {failed ? (
             <EmptyState title="Could not check this prescription">
               <p>Nothing was saved. Review the text and try again.</p>
@@ -199,18 +216,22 @@ export const CheckPage = () => {
               </ul>
             </EmptyState>
           ) : (
-            <div aria-live="polite" className="result">
+            <div className="result">
               <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off.</p>
               {prompts.length > 0 && (
                 <p className="result-note">
-                  Some limits are not adjusted yet. <a href="#patient">Add what is asked under Patient</a>, then check again.
+                  Some limits are not adjusted yet.{' '}
+                  <button type="button" className="btn--link" onClick={focusNeeds}>
+                    Add what is asked under Patient
+                  </button>
+                  , then check again.
                 </p>
               )}
 
               <div className="kpis">
                 <KpiCard label="Interrupt" value={count('interrupt')} hint="Target: 1 or fewer per Rx" tier="interrupt" />
                 <KpiCard label="Inform" value={count('inform')} tier="inform" />
-                <KpiCard label="Logged" value={count('silent')} hint="Silent, not shown" tier="silent" />
+                <KpiCard label="Logged" value={count('silent')} hint="Listed below, not raised" tier="silent" />
                 <KpiCard label="Brands to check" value={toCheck} hint="Low-confidence match" />
               </div>
 
@@ -225,6 +246,7 @@ export const CheckPage = () => {
                     key={i}
                     alert={alert}
                     overriddenReason={overridden[i]}
+                    onNeedInput={focusNeeds}
                     onOverride={alert.tier === 'interrupt' ? () => setOverriding(i) : undefined}
                   />
                 ))}
@@ -253,14 +275,7 @@ export const CheckPage = () => {
 
               <LeafletCard lines={result.lines} />
 
-              {silent.length > 0 && (
-                <details className="silent-log">
-                  <summary>{silent.length} logged (not shown)</summary>
-                  {silent.map(({ alert, i }) => (
-                    <AlertCard key={i} alert={alert} />
-                  ))}
-                </details>
-              )}
+              <SilentLog alerts={silent.map((x) => x.alert)} />
 
               <div className="actions">
                 <button
