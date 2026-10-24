@@ -2,6 +2,7 @@ import type { Alert, Ledger, Tier } from '../../engine/contracts'
 import { ScrollRegion } from './ScrollRegion'
 import type { LedgerNote } from '../../engine/ledger'
 import { mg, titleCase } from '../lib/format'
+import { alertTypeLabel } from '../lib/resolved'
 import { TierBadge } from './Icons'
 import { LimitBar } from './LimitBar'
 
@@ -9,14 +10,17 @@ const RANK: Record<Tier, number> = { interrupt: 0, inform: 1, silent: 2 }
 
 /** The strongest shown alert on each ingredient, and the brands those alerts name. Silent alerts mark nothing. */
 const attention = (alerts: Alert[]) => {
-  const out = new Map<string, { tier: Tier; brands: Set<string> }>()
+  const out = new Map<string, { tier: Tier; type: string; brands: Set<string> }>()
   for (const a of alerts) {
     if (a.tier === 'silent') continue
     for (const id of a.ingredients) {
       const cur = out.get(id)
-      if (!cur) out.set(id, { tier: a.tier, brands: new Set(a.brands ?? []) })
+      if (!cur) out.set(id, { tier: a.tier, type: a.type, brands: new Set(a.brands ?? []) })
       else {
-        if (RANK[a.tier] < RANK[cur.tier]) cur.tier = a.tier
+        if (RANK[a.tier] < RANK[cur.tier]) {
+          cur.tier = a.tier
+          cur.type = a.type
+        }
         for (const b of a.brands ?? []) cur.brands.add(b)
       }
     }
@@ -35,12 +39,13 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
   )
   return (
     <ScrollRegion className="xray xray--stack" label="Prescription X-ray, scrolls sideways">
-      <table role="table">
-        <thead role="rowgroup">
-          <tr role="row">
-            <th scope="col" role="columnheader">Ingredient</th>
-            <th scope="col" role="columnheader">From brands</th>
-            <th scope="col" role="columnheader">Daily total</th>
+      <p className="hint xray__key">The bar is the daily dose against the limit. The mark beside an ingredient is its strongest alert, which may be about something other than dose.</p>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Ingredient</th>
+            <th scope="col">From brands</th>
+            <th scope="col">Daily total</th>
           </tr>
         </thead>
         <tbody role="rowgroup">
@@ -53,6 +58,7 @@ export const XrayTable = ({ ledger, alerts = [] }: { ledger: Ledger; alerts?: Al
                   {flag && (
                     <span className="xray__flag">
                       <TierBadge tier={flag.tier} />
+                      <span className="xray__why">{alertTypeLabel(flag.type)}</span>
                     </span>
                   )}
                 </th>

@@ -5,6 +5,7 @@ import { demoOrders } from '../history/demoOrders'
 import { todayIso } from '../history/labels'
 import type { LabResult, Order } from '../history/types'
 import { importFhirText } from '../lib/fhirOrder'
+import { parsePastedOrder } from '../lib/pasteOrder'
 import { useRouteParam } from '../route'
 import { saveOrder, useOrders } from '../storage/orders'
 
@@ -68,6 +69,8 @@ export const HistoryPage = () => {
   const [draft, setDraft] = useState<Draft>(blank)
   const [failed, setFailed] = useState(false)
   const [imported, setImported] = useState<{ prescriptions: number; labs: number; warnings: string[] } | { error: string } | null>(null)
+  const [pasted, setPasted] = useState('')
+  const [pasteNote, setPasteNote] = useState<{ read: number; problems: string[] } | null>(null)
   const loaded = useRef('')
 
   useEffect(() => {
@@ -115,6 +118,13 @@ export const HistoryPage = () => {
     }
   }
 
+  /** One block, one prescription per "Dr Name, 19 Oct:" header. Replaces the blank prescription cards below it. */
+  const readBlock = () => {
+    const r = parsePastedOrder(pasted, todayIso())
+    if (r.prescriptions.length > 0) set('prescriptions', r.prescriptions)
+    setPasteNote({ read: r.prescriptions.length, problems: r.problems })
+  }
+
   const loadSample = () => {
     const s = demoOrders[0]
     setDraft({ ...toDraft(s), id: newId(), labs: [], name: `${s.customer.name} (sample)` })
@@ -129,6 +139,65 @@ export const HistoryPage = () => {
       </p>
       <PageIntro title={existing ? 'Edit history' : 'New order'} note="One prescription for each doctor and date, as the buyer holds them. Parchi checks them together." />
       <form className="workspace workspace--single" onSubmit={submit}>
+        <Card title="Paste prescriptions" icon="flask" description="Optional. Paste what the buyer holds, one prescription per doctor and date, and the cards below are filled in for you to check.">
+          <label className="field">
+            <span className="field__label">Prescriptions</span>
+            <textarea
+              className="rx-input"
+              rows={4}
+              value={pasted}
+              placeholder={'Dr Mehta, 19 Oct: Dolo 650 1-1-1 x5d; Crocin Cold & Flu TDS\nDr Rao, 21 Oct: Zerodol-P BD; Brufen 400 SOS'}
+              onChange={(e) => setPasted(e.target.value)}
+            />
+          </label>
+          <div className="actions">
+            <button type="button" className="btn btn--secondary" onClick={readBlock} disabled={pasted.trim() === ''}>
+              Fill in the prescriptions
+            </button>
+          </div>
+          <div aria-live="polite">
+            {pasteNote && pasteNote.read > 0 && (
+              <p className="hint">
+                Read {pasteNote.read} {pasteNote.read === 1 ? 'prescription' : 'prescriptions'}. Anything already in the cards below was replaced; check the doctor, date and medicines before saving.
+              </p>
+            )}
+            {pasteNote?.problems.map((x) => (
+              <p key={x} className="dialog__error" role="alert">
+                {x}
+              </p>
+            ))}
+          </div>
+        </Card>
+
+        <Card title="Import from FHIR" icon="flask" description="Optional. A FHIR R4 Bundle (for example an ABDM prescription record) fills in the form below; check it before saving.">
+          <label className="field">
+            <span className="field__label">FHIR file (.json)</span>
+            <input className="field__input" type="file" accept=".json,application/json,application/fhir+json" onChange={(e) => importFile(e.target.files?.[0])} />
+          </label>
+          <div aria-live="polite">
+            {imported && 'error' in imported && (
+              <p className="dialog__error" role="alert">
+                {imported.error}
+              </p>
+            )}
+            {imported && !('error' in imported) && (
+              <>
+                <p className="hint">
+                  Read {imported.prescriptions} {imported.prescriptions === 1 ? 'prescription' : 'prescriptions'} and {imported.labs} lab {imported.labs === 1 ? 'result' : 'results'}. Anything
+                  already in the form below was replaced.
+                </p>
+                {imported.warnings.length > 0 && (
+                  <ul className="changes">
+                    {imported.warnings.map((w) => (
+                      <li key={w}>{w}</li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
+          </div>
+        </Card>
+
         <Card title="Customer" icon="user">
           <div className="fields fields--4">
             <label className="field">
@@ -152,10 +221,13 @@ export const HistoryPage = () => {
               <input className="field__input" type="number" inputMode="decimal" min={0} value={draft.weight} onChange={(e) => set('weight', e.target.value)} />
             </label>
           </div>
-          <label className="field history__placed">
-            <span className="field__label">Order placed</span>
-            <input className="field__input" type="date" value={draft.placed} onChange={(e) => set('placed', e.target.value)} />
-          </label>
+          <details className="more">
+            <summary>Order date (today unless changed)</summary>
+            <label className="field history__placed">
+              <span className="field__label">Order placed</span>
+              <input className="field__input" type="date" value={draft.placed} onChange={(e) => set('placed', e.target.value)} />
+            </label>
+          </details>
         </Card>
 
         {draft.prescriptions.map((p, i) => (

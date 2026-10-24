@@ -1,21 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Alert, Patient } from '../../engine/contracts'
-import { AlertCard } from '../components/AlertCard'
+import { AlertCard, NestedAlert, type InputAction } from '../components/AlertCard'
+import { AlertGroups } from '../components/AlertGroups'
 import { BrandMatch } from '../components/BrandMatch'
 import { Card, KpiCard } from '../components/Card'
+import { FlagSummary } from '../components/FlagSummary'
 import { Icon } from '../components/Icons'
 import { OverrideDialog } from '../components/OverrideDialog'
 import { EmptyState, PageIntro } from '../components/PageIntro'
+import { panelId, tabId, Tabs, type TabItem } from '../components/Tabs'
 import { TotalsNotes, XrayTable } from '../components/XrayTable'
 import { runCheck, type CheckResult } from '../engine'
 import { CoverageNote } from '../components/CoverageNote'
 import { HerbalCard } from '../components/HerbalCard'
 import { LeafletCard } from '../components/LeafletCard'
-import { SilentLog } from '../components/SilentLog'
-import { TierKey } from '../components/TierKey'
 import { askTheCustomer } from '../lib/askCustomer'
 import { downloadText } from '../lib/csv'
-import { CLINICAL_DATA_VERSION } from '../../engine/rules'
 import { toFhirBundle } from '../lib/fhir'
 import { needsReview, swapBrand, tidy } from '../lib/resolved'
 import { isRunKey } from '../lib/shortcuts'
@@ -24,6 +24,8 @@ import { useCatalogue } from '../storage/catalogue'
 import { addOverride } from '../storage/overrides'
 
 const blank = { age: '', sex: '', weight: '', creatinine: '', egfr: '', allergies: '', pregnancy: '', liver: '', alcohol: '' }
+
+type TabKey = 'alerts' | 'xray' | 'brands' | 'leaflet'
 
 const Field = ({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) => (
   <label className="field">
@@ -44,19 +46,27 @@ const toPatient = (p: typeof blank): Patient => ({
   ...(p.alcohol && { heavy_alcohol_use: true }),
 })
 
+/** Moves the pharmacist to the first box the engine asked for (weight or creatinine). */
+const focusPrompt = () => {
+  const el = document.querySelector<HTMLInputElement>('.prompt input')
+  el?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  el?.focus({ preventScroll: true })
+}
+
 export const CheckPage = () => {
   const [rx, setRx] = useState('')
-  const [patient, setPatient] = useState(blank)
   const { catalogue } = useCatalogue()
+  const [patient, setPatient] = useState(blank)
   const [result, setResult] = useState<CheckResult | null>(null)
   const [failed, setFailed] = useState(false)
+  const [tab, setTab] = useState<TabKey>('alerts')
   const [overriding, setOverriding] = useState<number | null>(null)
   const [overridden, setOverridden] = useState<Record<number, string>>({})
   const resultRef = useRef<HTMLDivElement>(null)
 
   const ageOk = Number(patient.age) > 0
   const canCheck = rx.trim() !== '' && ageOk
-  const needs = rx.trim() === '' ? (ageOk ? 'Add the prescription to check.' : "Add the prescription and the patient's age to check.") : 'Age is needed before checking.'
+  const needs = rx.trim() === '' ? (ageOk ? 'Add the prescription to check.' : "Add the patient's age and the prescription to check.") : 'Age is needed before checking.'
 
   // One column below 960px puts the result under the form: bring it into view after a check.
   useEffect(() => {
@@ -82,6 +92,18 @@ export const CheckPage = () => {
     }
   }
 
+  // The engine asks for weight or creatinine only when a medicine needs it. Once a result is showing, filling those in runs the
+  // check again by itself (after a short pause for typing), so there is no separate "Check again" step to remember.
+  const asked = useRef({ weight: patient.weight, creatinine: patient.creatinine, egfr: patient.egfr })
+  useEffect(() => {
+    const was = asked.current
+    asked.current = { weight: patient.weight, creatinine: patient.creatinine, egfr: patient.egfr }
+    if (!result || (was.weight === patient.weight && was.creatinine === patient.creatinine && was.egfr === patient.egfr)) return
+    const t = setTimeout(() => void check(), 700)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [patient.weight, patient.creatinine, patient.egfr])
+
   /** The pharmacist picked another possible brand for a line: put it in the text and check again. */
   const pickBrand = (raw: string, brand: string) => {
     const next = swapBrand(rx, raw, brand)
@@ -96,16 +118,15 @@ export const CheckPage = () => {
   const count = (t: Alert['tier']) => alerts.filter((x) => x.alert.tier === t).length
   const prompts = result?.prompts ?? []
   const toCheck = result?.lines.filter((l) => needsReview(l.resolved)).length ?? 0
-
-  // "Add what is asked": bring the patient fields into view and put the cursor in the first one the engine asked for.
-  const focusNeeds = () => {
-    document.getElementById('patient')?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })
-    document.querySelector<HTMLInputElement>('#patient .prompt input')?.focus({ preventScroll: true })
-  }
-
-  const summary = !result
-    ? ''
-    : `${count('interrupt')} Interrupt, ${count('inform')} Inform, ${count('silent')} logged. ${shown.length === 0 ? 'No alerts from the checks run.' : ''}`
+  const ingredientIds = result?.lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id)) ?? []
+  const ask = askTheCustomer(ingredientIds)
+  const inputAction: InputAction = { label: 'Add what is asked', onClick: focusPrompt }
+  const tabs: TabItem<TabKey>[] = [
+    { id: 'alerts', label: 'Alerts', count: shown.length },
+    { id: 'xray', label: 'X-ray' },
+    { id: 'brands', label: 'Brand matches', count: result?.lines.length },
+    { id: 'leaflet', label: 'Leaflet' },
+  ]
 
   const saveOverride = async (reason: string, note: string) => {
     if (overriding === null || !result) return
@@ -130,41 +151,9 @@ export const CheckPage = () => {
 
       <div className="workspace">
         <div className="workspace__input">
-          <Card title="Prescription" icon="flask" description="Type it as written: one medicine per line, or separated by semicolons.">
-            <textarea
-              className="rx-input"
-              rows={6}
-              value={rx}
-              placeholder="Dolo 650 1-1-1 x5d; Pan D OD; ..."
-              onChange={(e) => setRx(e.target.value)}
-              onKeyDown={(e) => isRunKey(e) && check()}
-            />
-            <div className="actions">
-              <button className="btn btn--primary" onClick={() => check()} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
-                {result ? 'Check again' : 'Check prescription'}
-              </button>
-              <button
-                className="btn btn--secondary"
-                onClick={() => {
-                  setRx(demoRxText)
-                  setPatient({
-                    ...blank,
-                    age: String(demoPatient.age_years),
-                    sex: demoPatient.sex ?? '',
-                    weight: String(demoPatient.weight_kg ?? ''),
-                    creatinine: String(demoPatient.serum_creatinine ?? ''),
-                  })
-                }}
-              >
-                Load demo
-              </button>
-            </div>
-            {!canCheck && <p className="hint" id="check-needs">{needs}</p>}
-          </Card>
-
           <Card id="patient" title="Patient" icon="user">
             <div className="fields">
-              <Field label="Age (years)" type="number" inputMode="numeric" min={0} required value={patient.age} onChange={set('age')} />
+              <Field label="Age (years)" type="number" inputMode="numeric" min={0} value={patient.age} onChange={set('age')} />
               <label className="field">
                 <span className="field__label">Sex</span>
                 <select className="field__input" value={patient.sex} onChange={set('sex')}>
@@ -174,9 +163,6 @@ export const CheckPage = () => {
                 </select>
               </label>
             </div>
-            {result?.crcl != null && (
-              <p className="hint">Estimated creatinine clearance about {Math.round(result.crcl)} mL/min (Cockcroft-Gault, from the age, weight and creatinine entered).</p>
-            )}
             <details className="more">
               <summary>More about the patient (optional)</summary>
               <p className="hint">Checked only if filled in. Leaving a box empty means "not entered", never "none".</p>
@@ -211,23 +197,70 @@ export const CheckPage = () => {
                     )}
                   </div>
                 ))}
-                <p className="prompt__skip">Skipping means limits are not adjusted for these. Select Check again after filling in.</p>
+                <p className="prompt__skip">The check runs again by itself when you fill these in. Skipping means limits are not adjusted for them.</p>
               </div>
+            )}
+          </Card>
+
+          <Card title="Prescription" icon="flask" description="Type it as written: one medicine per line, or separated by semicolons.">
+            <textarea
+              className="rx-input"
+              rows={6}
+              value={rx}
+              placeholder="Dolo 650 1-1-1 x5d; Pan D OD; ..."
+              onChange={(e) => setRx(e.target.value)}
+              onKeyDown={(e) => isRunKey(e) && check()}
+            />
+            <div className="actions">
+              <button className="btn btn--primary" onClick={() => check()} disabled={!canCheck} aria-describedby={canCheck ? undefined : 'check-needs'}>
+                {result ? 'Check again' : 'Check prescription'}
+              </button>
+              <button
+                className="btn btn--secondary"
+                onClick={() => {
+                  setRx(demoRxText)
+                  setPatient({
+                    ...blank,
+                    age: String(demoPatient.age_years),
+                    sex: demoPatient.sex ?? '',
+                    weight: String(demoPatient.weight_kg ?? ''),
+                    creatinine: String(demoPatient.serum_creatinine ?? ''),
+                  })
+                }}
+              >
+                Load demo
+              </button>
+              {(rx !== '' || result) && (
+                <button
+                  className="btn btn--ghost"
+                  onClick={() => {
+                    setRx('')
+                    setPatient(blank)
+                    setResult(null)
+                    setFailed(false)
+                    setTab('alerts')
+                  }}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            {!canCheck && (
+              <p className="hint" id="check-needs">
+                {needs}
+              </p>
             )}
           </Card>
         </div>
 
         <div className="workspace__result" ref={resultRef}>
-          <p className="sr-only" role="status">
-            {failed ? 'Could not check this prescription.' : summary}
-          </p>
           {failed ? (
             <EmptyState title="Could not check this prescription">
               <p>Nothing was saved. Review the text and try again.</p>
             </EmptyState>
           ) : !result ? (
             <EmptyState title="No prescription checked yet">
-              <p>Enter a prescription and the patient's age, then select Check prescription. Each line is checked for:</p>
+              <p>Enter the patient's age and the prescription, then select Check prescription. Each line is checked for:</p>
               <ul className="checks">
                 <li>
                   <strong>Daily totals</strong>
@@ -252,79 +285,102 @@ export const CheckPage = () => {
               </ul>
             </EmptyState>
           ) : (
-            <div className="result">
-              <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off (clinical data version {CLINICAL_DATA_VERSION}).</p>
+            <div aria-live="polite" className="result">
               {prompts.length > 0 && (
                 <p className="result-note">
                   Some limits are not adjusted yet.{' '}
-                  <button type="button" className="btn--link" onClick={focusNeeds}>
+                  <button type="button" className="btn--link" onClick={focusPrompt}>
                     Add what is asked under Patient
                   </button>
-                  , then check again.
+                  ; the check runs again by itself.
                 </p>
               )}
 
               <div className="kpis">
                 <KpiCard label="Interrupt" value={count('interrupt')} hint="Target: 1 or fewer per Rx" tier="interrupt" />
                 <KpiCard label="Inform" value={count('inform')} tier="inform" />
-                <KpiCard label="Logged" value={count('silent')} hint="Listed below, not raised" tier="silent" />
+                <KpiCard label="Logged" value={count('silent')} hint="Silent, not shown" tier="silent" />
                 <KpiCard label="Brands to check" value={toCheck} hint="Low-confidence match" />
               </div>
 
-              <TierKey />
-
-              {shown.length === 0 && (
-                <EmptyState title="No alerts from the checks run">
-                  <p>This is not a statement that the prescription is safe.</p>
-                </EmptyState>
-              )}
-              <div className="alerts">
-                {shown.map(({ alert, i }) => (
-                  <AlertCard
-                    key={i}
-                    alert={alert}
-                    overriddenReason={overridden[i]}
-                    onNeedInput={focusNeeds}
-                    onOverride={alert.tier === 'interrupt' ? () => setOverriding(i) : undefined}
-                  />
-                ))}
-              </div>
-
-              <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
-
-              <HerbalCard report={result.herbal} />
-              {askTheCustomer(result.lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id))).length > 0 && (
-                <Card title="Ask the customer" description="Parchi only sees this order. These are commonly bought without a prescription.">
-                  <ul className="ask">
-                    {askTheCustomer(result.lines.flatMap((l) => l.resolved.ingredients.map((i) => i.id))).map((q) => (
-                      <li key={q}>{q}</li>
-                    ))}
-                  </ul>
-                </Card>
-              )}
-
-              <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
-                <XrayTable ledger={result.ledger} alerts={result.alerts} />
-                <TotalsNotes notes={result.notes} ledger={result.ledger} />
-              </Card>
-
-              <Card title="Brand matches" description="What was typed and what it was matched to. Select a line for details.">
-                <ul className="matches">
-                  {result.lines.map((l, i) => (
-                    <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} onUse={(brand) => pickBrand(l.resolved.raw, brand)} alternatives={catalogue?.alternatives(l.resolved)} />
-                  ))}
-                </ul>
-                {result.lines.some((l) => (l.resolved.jan_aushadhi?.length ?? 0) > 0) && (
-                  <p className="hint">
-                    Jan Aushadhi generics have the same ingredients and strengths. They are not a safety flag: the pharmacist confirms they are equivalent. The
-                    list has no prices.
-                  </p>
+              <Tabs prefix="check" label="Parts of the result" items={tabs} value={tab} onChange={setTab} />
+              <div className="tabpanel" role="tabpanel" id={panelId('check')} aria-labelledby={tabId('check', tab)} tabIndex={0}>
+                {tab === 'alerts' && (
+                  <>
+                    <FlagSummary lines={result.lines} />
+                    {shown.length === 0 && (
+                      <EmptyState title="No alerts from the checks run">
+                        <p>This is not a statement that the prescription is safe.</p>
+                      </EmptyState>
+                    )}
+                    <AlertGroups
+                      items={shown.map(({ alert, i }) => ({ alert, key: String(i) }))}
+                      render={({ alert, key }, nested) => {
+                        const i = Number(key)
+                        return (
+                          <AlertCard
+                            key={key}
+                            alert={alert}
+                            overriddenReason={overridden[i]}
+                            inputAction={inputAction}
+                            nested={nested.map((n) => (
+                              <NestedAlert key={n.key} alert={n.alert} inputAction={inputAction} />
+                            ))}
+                            onOverride={alert.tier === 'interrupt' ? () => setOverriding(i) : undefined}
+                          />
+                        )
+                      }}
+                    />
+                    <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
+                    <HerbalCard report={result.herbal} />
+                    {ask.length > 0 && (
+                      <Card title="Ask the customer" description="Parchi only sees this order. These are commonly bought without a prescription.">
+                        <ul className="ask">
+                          {ask.map((q) => (
+                            <li key={q}>{q}</li>
+                          ))}
+                        </ul>
+                      </Card>
+                    )}
+                    {silent.length > 0 && (
+                      <details className="silent-log">
+                        <summary>{silent.length} logged (not shown)</summary>
+                        {silent.map(({ alert, i }) => (
+                          <AlertCard key={i} alert={alert} />
+                        ))}
+                      </details>
+                    )}
+                  </>
                 )}
-              </Card>
 
-              <LeafletCard lines={result.lines} />
+                {tab === 'xray' && (
+                  <>
+                    <CoverageNote gaps={result.ddi_gaps} limitGaps={result.limit_gaps} />
+                    <Card title="Prescription X-ray" icon="chart" description="Daily total per ingredient across all brands, against the limit on file">
+                      <XrayTable ledger={result.ledger} alerts={result.alerts} />
+                      <TotalsNotes notes={result.notes} ledger={result.ledger} />
+                    </Card>
+                  </>
+                )}
 
-              <SilentLog alerts={silent.map((x) => x.alert)} />
+                {tab === 'brands' && (
+                  <Card title="Brand matches" description="What was typed and what it was matched to. Select a line for details.">
+                    <ul className="matches">
+                      {result.lines.map((l, i) => (
+                        <BrandMatch key={`${i}-${l.resolved.raw}`} resolved={l.resolved} sig={l.sig} onUse={(brand) => pickBrand(l.resolved.raw, brand)} alternatives={catalogue?.alternatives(l.resolved)} />
+                      ))}
+                    </ul>
+                    {result.lines.some((l) => (l.resolved.jan_aushadhi?.length ?? 0) > 0) && (
+                      <p className="hint">
+                        Jan Aushadhi generics have the same ingredients and strengths. They are not a safety flag: the pharmacist confirms they are equivalent. The
+                        list has no prices.
+                      </p>
+                    )}
+                  </Card>
+                )}
+
+                {tab === 'leaflet' && <LeafletCard lines={result.lines} />}
+              </div>
 
               <div className="actions">
                 <button

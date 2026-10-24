@@ -177,8 +177,7 @@ export const DemoPage = () => {
           </ol>
         </nav>
 
-        <section className="card demo">
-          <p className="mock-note">Limits and alert rules are drafts until a pharmacist signs them off.</p>
+        <section className="card demo" aria-live="polite">
           <p className="demo__eyebrow">
             Step {step + 1} of {titles.length}
           </p>
