@@ -20,7 +20,11 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | Interactive demo (judge types own prescription) | **Yes, as long as it cannot produce a wrong answer** | decision |
 | Pharmacist / pharmacy-student help for the test set | A friend's grandfather has offered: **MBBS general doctor, 45 years of experience (not a pharmacist)**. The PS wording says "pharmacist or pharmacy student" | confirmed, see H25 |
 | **Provenance rule** | Every slide and doc states exactly who checked what and when (for example "reference-labelled from published sources; reviewed by an MBBS GP on [date]"). Nothing is described as expert-reviewed unless a named person did it. Reference-based work is labelled as such | rule |
-| Presentation work | **Deferred**: first clarify the PS and develop new things, then finalise the presentation | decision |
+| Presentation work | **Deferred**: first clarify the PS and develop new things, then finalise the presentation. Also planned: landing page and a video | decision |
+| Buyer | **E-pharmacies and chains only** (decision a). Local chemists are not a paying customer; H24 stays open | decision |
+| Expert time | **10 minutes only**, no extra questions (sheet in `docs/expert-review/`). Answers to real-world questions come from published sources | decision |
+| Demo story | One memorable reveal (the 68-year-old, hidden paracetamol), and it must be a case that really happens, not a rare one | decision |
+| Planned extra | Ayurvedic name mapping and conflict detection with ordinary medicines. See H26 | open |
 | Judge-run hidden test set or baseline | **Unknown to the team** (none established so far) | unknown |
 | Deliverables | An official slide **template exists** (the team will share it). Other required items (repo, live URL, video) not confirmed | partly confirmed |
 | Hard rules (AI-assisted code, external APIs, scraped data) | not stated by the organisers as far as the team knows | unknown |
@@ -74,6 +78,7 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 | H23 | "If Parchi shows no alert, is it safe? Your interaction data has gaps" | M | _not brainstormed yet_ | - | - | open |
 | H24 | "Most Indians buy at local chemist shops. Your buyers (e-pharmacies, chains) are a small share" | H | _not brainstormed yet_ | - | - | open |
 | H25 | "The PS says a pharmacist or pharmacy student helped build the test set. Yours is a general doctor" | M | _not brainstormed yet_ | - | - | open |
+| H26 | "Where is the evidence that Ayurvedic and ordinary medicines are really taken together and really clash?" | H | _not brainstormed yet_ | - | - | open |
 
 ## Details
 
@@ -190,6 +195,13 @@ Goal: **win HM-02**, not build a company. Business thinking is here because judg
 - **Why it's a hole:** the problem statement names a pharmacist or pharmacy student. Our available expert is an MBBS doctor with 45 years of general practice. He is a real clinician and can judge whether an alert is clinically sensible, but he is not a pharmacist, and the wording could be read strictly. We also cannot describe him as a pharmacist.
 - **Risk:** M. **Status:** open.
 
+### H26. "Where is the evidence that Ayurvedic and ordinary medicines are really taken together and really clash?"
+- **Raised by:** the team, with the rule that the story must be real and not rare.
+- **What we found (24 Oct 2026, web searches, not a full literature review):** no national measure of how often Indian patients take Ayurvedic and allopathic medicines together. Fragments only: NSS 2014 outpatient data, 6.43% used AYUSH systems against 90.26% allopathy; one Maharashtra study of 401 prescriptions from AYUSH practitioners, about 4.7% mixed the two; an AIIMS Delhi cancer-patient study, 23.4% used Ayurvedic treatment (not specific to concurrent use); a Pune survey (low quality). On interactions: no Indian herb-drug interaction reports found; the national AYUSH pharmacovigilance programme had only 463 suspected adverse-event reports up to August 2020, and a Gujarat study called reporting negligible; a 2001 review found 68.5% of herb-drug case reports could not be evaluated; an ashwagandha-warfarin interaction is not established.
+- **Why it's a hole:** the feature has no solid frequency figure and weak interaction evidence, which is exactly the "assumption" the team wants to avoid. Ayurvedic brand-to-ingredient data and a cited interaction list are also unknown. The honest facts available are the gap itself (use is documented, harm is barely monitored).
+- **Sources:** NSS 2014 via ThePrint; PhcogMag 5(19s) (Maharashtra prescriptions); AIIMS CAM study; PvPI papers (PMC3117316, PMC8963644); BJCP 52(5) herb-drug review.
+- **Risk:** H. **Status:** open.
+
 ## USP shortlist (pick 3-4 for the deck)
 Ranked by judge impact ÷ effort. Update after each council run.
 1. Measured with a real pharmacist (H1)
@@ -204,3 +216,4 @@ Ranked by judge impact ÷ effort. Update after each council run.
 | 24 Oct 2026 | Grill 1: problem statement and parameters (Q1-Q7) | H14-H19 | PS text recorded verbatim. Round 1 = deck + prototype + presentation in 10 min. Win = first overall. Rubric, panel, finals format, hidden test and hard rules still unknown |
 | 24 Oct 2026 | Grill 2: pharmacist help, the judge's hardest questions | H20-H23 | Presentation work deferred until the PS and new features are clear. Interactive demo allowed only if it cannot give a wrong answer. Slide template exists (to be shared). Panel sharing across tracks unknown. H9 partly verified in code |
 | 24 Oct 2026 | Grill 3: expert access, who the buyer is | H24-H25 | Expert = MBBS GP, 45 years. **Provenance rule adopted: say exactly who checked what.** Alert fatigue and patient limits to be the strongest measured results. Interactive demo must show "not sure" and never guess |
+| 24 Oct 2026 | Grill 4: sheet, buyer, Ayurveda | H26 | Buyer = e-pharmacies and chains. Expert time = 10 min sheet. Ayurveda evidence is thin (H26). Generic syrup input found not totalled (Track A) |
