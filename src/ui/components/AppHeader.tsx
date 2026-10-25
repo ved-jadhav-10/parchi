@@ -107,7 +107,7 @@ export const AppHeader = ({ route }: { route: Route }) => {
   }, [open])
   return (
     <header className="app-header">
-      <a href="#/queue" className="brand">
+      <a href="#/home" className="brand" aria-label="Parchi, home">
         <span className="brand__mark">
           <LogoMark size={44} />
         </span>
