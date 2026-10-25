@@ -280,47 +280,50 @@ export const HomePage = () => {
           <SlipCompare />
         </section>
 
-        <section className="home-inform" id="checks" aria-labelledby="checks-title">
-          <div>
-            <h2 id="checks-title" tabIndex={-1}>It informs. The pharmacist decides.</h2>
-            <p className="home-lead">It never approves or blocks a prescription. It shows what deserves a second look, with the source beside it.</p>
-          </div>
-          <div>
-            <ul className="home-tiers" aria-label="The three alert tiers">
-              <li><span className="home-tier-chip" data-tier="interrupt"><AlertIcon size={14} />Interrupt</span><span>Act before dispensing</span></li>
-              <li><span className="home-tier-chip" data-tier="inform"><InfoIcon />Inform</span><span>Worth knowing</span></li>
-              <li><span className="home-tier-chip" data-tier="silent"><BellOffIcon />Silent</span><span>Logged only</span></li>
-            </ul>
-            <ul className="home-card__chips" aria-label="What it checks">
-              {CHECKS.map((c) => (
-                <li key={c}>{c}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        {/* one stack card, so each card in the stack is a full screen and covers the one before it */}
+        <div className="home-finale">
+          <section className="home-inform" id="checks" aria-labelledby="checks-title">
+            <div>
+              <h2 id="checks-title" tabIndex={-1}>It informs. The pharmacist decides.</h2>
+              <p className="home-lead">It never approves or blocks a prescription. It shows what deserves a second look, with the source beside it.</p>
+            </div>
+            <div>
+              <ul className="home-tiers" aria-label="The three alert tiers">
+                <li><span className="home-tier-chip" data-tier="interrupt"><AlertIcon size={14} />Interrupt</span><span>Act before dispensing</span></li>
+                <li><span className="home-tier-chip" data-tier="inform"><InfoIcon />Inform</span><span>Worth knowing</span></li>
+                <li><span className="home-tier-chip" data-tier="silent"><BellOffIcon />Silent</span><span>Logged only</span></li>
+              </ul>
+              <ul className="home-card__chips" aria-label="What it checks">
+                {CHECKS.map((c) => (
+                  <li key={c}>{c}</li>
+                ))}
+              </ul>
+            </div>
+          </section>
 
-        <section className="home-more" aria-label="For e-pharmacies and the evidence">
-          <article className="home-card" id="desk" aria-labelledby="desk-title">
-            <h2 id="desk-title" tabIndex={-1}>For e-pharmacies and pharmacy chains</h2>
-            <p className="home-card__lead">Your pharmacists already review every order. Parchi works on the data you hold, so the review is faster and written down.</p>
-            <ul className="home-card__list">
-              {DESK.map((d) => (
-                <li key={d}>{d}</li>
-              ))}
-            </ul>
-          </article>
+          <section className="home-more" aria-label="For e-pharmacies and the evidence">
+            <article className="home-card" id="desk" aria-labelledby="desk-title">
+              <h2 id="desk-title" tabIndex={-1}>For e-pharmacies and pharmacy chains</h2>
+              <p className="home-card__lead">Your pharmacists already review every order. Parchi works on the data you hold, so the review is faster and written down.</p>
+              <ul className="home-card__list">
+                {DESK.map((d) => (
+                  <li key={d}>{d}</li>
+                ))}
+              </ul>
+            </article>
 
-          <article className="home-card" id="evidence" aria-labelledby="evidence-title">
-            <h2 id="evidence-title" tabIndex={-1}>Measured, not claimed</h2>
-            <p className="home-card__lead">Parchi is scored on labelled prescriptions and against the chatbots a counter might reach for. The labels are a draft until a pharmacist reviews them.</p>
-            <ul className="home-card__list">
-              {PROOF.map((p) => (
-                <li key={p}>{p}</li>
-              ))}
-            </ul>
-            <a className="home-btn home-btn--ink home-card__cta" href="#/benchmark">See the benchmark</a>
-          </article>
-        </section>
+            <article className="home-card" id="evidence" aria-labelledby="evidence-title">
+              <h2 id="evidence-title" tabIndex={-1}>Measured, not claimed</h2>
+              <p className="home-card__lead">Parchi is scored on labelled prescriptions and against the chatbots a counter might reach for. The labels are a draft until a pharmacist reviews them.</p>
+              <ul className="home-card__list">
+                {PROOF.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ul>
+              <a className="home-btn home-btn--ink home-card__cta" href="#/benchmark">See the benchmark</a>
+            </article>
+          </section>
+        </div>
         </StackedSections>
 
         <section className="home-cta" aria-labelledby="cta-title">
