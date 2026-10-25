@@ -318,3 +318,7 @@
   .home-compare { grid-column: 2; grid-row: 1 / span 2; padding: 0; }
   .home-section.home-how > .home-how__grid:last-child { grid-row: 1; }
 }
+
+/* The last stack card holds the two short sections; it is as tall as the others so it fully covers the card beneath. */
+.home-finale { display: grid; gap: 12px; align-content: center; border-radius: 36px; background: var(--color-lilac); }
+@media (min-width: 901px) { .home-finale { min-height: calc(100dvh - 120px); } }
