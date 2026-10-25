@@ -12,14 +12,14 @@ import { scrollToTarget, useSmoothScroll } from '../lib/smoothScroll'
 import { ProofStrip } from '../components/ProofStrip'
 import { SlipCompare } from '../components/SlipCompare'
 import { StackedSections } from '../components/StackedSections'
-import { TrailerVideo } from '../components/TrailerVideo'
+import { HeroVideo } from '../components/HeroVideo'
 import { startTour } from '../tour/store'
 import { useOnline } from '../route'
 
 const SECTIONS = [
   { id: 'how', label: 'How it works' },
-  { id: 'desk', label: 'For buyers' },
   { id: 'checks', label: 'What it checks' },
+  { id: 'desk', label: 'For buyers' },
   { id: 'evidence', label: 'Evidence' },
 ]
 
@@ -31,25 +31,18 @@ const STEPS = [
 ]
 
 const DESK = [
-  { title: 'The whole history, not one slip', text: 'Prescriptions from several doctors go on one timeline. Doses are added up only where the dates overlap, and an alert names the doctors and the days.' },
-  { title: 'A kidney result re-checks the order', text: 'When a new creatinine arrives the order is checked again, and a short list shows which alerts were added, cleared or moved.' },
-  { title: 'The riskiest order first', text: 'Orders are ranked, each with a suggested status: clear, clear with a note, or hold and contact the doctor. The pharmacist decides, and every decision is logged.' },
-  { title: 'Fits what you already run', text: 'Catalogue import from CSV, FHIR R4 prescription records in and out (the export is a draft), and a JSON check API. No scanning, no tie to one vendor, and it runs offline at a store counter.' },
+  'Every doctor on one timeline',
+  'A new kidney result re-checks the order',
+  'Orders ranked riskiest first, every decision logged',
+  'CSV in, FHIR R4 in and out, a JSON API; works offline',
 ]
 
-const CHECKS = [
-  { title: 'Daily totals', text: 'Each ingredient added up across every brand on the slip, against the limit on file.' },
-  { title: 'Age and kidney function', text: 'Weight or creatinine is asked for only when a medicine needs it.' },
-  { title: 'Interactions', text: 'With a severity and the source it comes from.' },
-  { title: 'Duplicate classes', text: 'Two NSAIDs, two PPIs, or any other pair from one class.' },
-  { title: 'Banned combinations', text: 'Fixed-dose combinations on the banned list.' },
-  { title: 'Older patients and antibiotics', text: 'Beers-list medicines at 65 and over, and the WHO AWaRe group of an antibiotic.' },
-]
+const CHECKS = ['Daily totals', 'Age and kidney function', 'Interactions', 'Duplicate classes', 'Banned combinations', 'Older patients', 'Antibiotic groups']
 
 const PROOF = [
-  { title: 'The same prescriptions, every system', text: 'The engine and each chatbot are given the same slips and scored the same way.' },
-  { title: 'Alert load counts', text: 'Alerts per prescription and false alarms on clean ones are measured, because too many alerts get ignored.' },
-  { title: 'Every limit has a source', text: 'Dose limits and rules are shown with where they come from, and whether a pharmacist has signed them off.' },
+  'The engine and each chatbot are scored on the same slips',
+  'Alerts per prescription and false alarms are measured',
+  'Every limit shows its source and sign-off',
 ]
 
 /** The torn bottom edge of the slip: 20 teeth, 12px deep. */
@@ -58,7 +51,6 @@ const TORN = (() => {
   for (let i = 20; i >= 0; i--) pts.push(`${i * 5}% ${i % 2 ? 'calc(100% - 12px)' : '100%'}`)
   return `polygon(${pts.join(',')})`
 })()
-
 const scrollToId = (id: string) => {
   const el = document.getElementById(id)
   if (!el) return
@@ -140,7 +132,7 @@ export const HomePage = () => {
 
   return (
     <div className="home">
-      {/* Not href="#main": the hash is the router. The hero heading is the page's start; there is no single <main> around the framed hero and the sections after it. */}
+      {/* Not href="#main": the hash is the router. The heading above the video is the page's start; there is no single <main> around the framed hero and the sections after it. */}
       <a
         className="skip-link"
         href="#/home"
@@ -194,62 +186,63 @@ export const HomePage = () => {
             </button>
           </header>
 
-          <section className="home-hero" aria-labelledby="home-title">
-            {/* the doctor's scribble, resolving into the clean lines on the slip */}
-            <svg className="home-hero__art" viewBox="0 0 760 640" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden="true">
-              <path className="home-draw" pathLength="1" strokeWidth="2.2" d="M250 36C410 78 590 140 760 238C610 262 450 228 346 262C276 288 292 340 410 366C530 390 654 408 760 452" />
-              <path className="home-draw home-draw--2" pathLength="1" strokeWidth="1.6" strokeOpacity=".6" d="M262 540C330 494 424 496 522 528C620 558 702 592 760 612" />
-              <path className="home-draw home-draw--3" pathLength="1" strokeWidth="2.2" d="M270 640C262 572 320 526 408 538C524 554 642 600 760 640" />
-              <path className="home-draw home-draw--2" pathLength="1" strokeWidth="1.4" strokeOpacity=".45" d="M300 150C400 140 500 160 580 196" />
-              <circle cx="620" cy="150" r="11" fill="currentColor" stroke="none" />
-              <circle cx="694" cy="476" r="8" fill="currentColor" stroke="none" />
-              <circle cx="318" cy="596" r="5" fill="currentColor" stroke="none" />
-            </svg>
+          <HeroVideo
+            thumb={
+              <div className="home-hero">
+                {/* the doctor's scribble, resolving into the clean lines on the slip */}
+                <svg className="home-hero__art" viewBox="0 0 760 640" preserveAspectRatio="xMaxYMid slice" fill="none" stroke="currentColor" strokeLinecap="round" aria-hidden="true">
+                  <path className="home-draw" pathLength="1" strokeWidth="2.2" d="M250 36C410 78 590 140 760 238C610 262 450 228 346 262C276 288 292 340 410 366C530 390 654 408 760 452" />
+                  <path className="home-draw home-draw--2" pathLength="1" strokeWidth="1.6" strokeOpacity=".6" d="M262 540C330 494 424 496 522 528C620 558 702 592 760 612" />
+                  <path className="home-draw home-draw--3" pathLength="1" strokeWidth="2.2" d="M270 640C262 572 320 526 408 538C524 554 642 600 760 640" />
+                  <path className="home-draw home-draw--2" pathLength="1" strokeWidth="1.4" strokeOpacity=".45" d="M300 150C400 140 500 160 580 196" />
+                  <circle cx="620" cy="150" r="11" fill="currentColor" stroke="none" />
+                  <circle cx="694" cy="476" r="8" fill="currentColor" stroke="none" />
+                  <circle cx="318" cy="596" r="5" fill="currentColor" stroke="none" />
+                </svg>
 
-            <div className="home-hero__copy">
-              <p className="home-badge">
-                <span className="home-badge__icon"><PillIcon size={16} /></span>
-                Made for the verifying pharmacist
-              </p>
-              <h1 id="home-title" tabIndex={-1}>A second look at every parchi, before it leaves the counter.</h1>
-              <div className="home-hero__rule" aria-hidden="true" />
-              <p className="home-hero__text">
-                Give it a prescription the way it arrives: typed, or lines from an order. Parchi splits each brand into its ingredients, adds up the day's dose
-                across every brand and every doctor, and ranks the orders that need a pharmacist's closer look first. It works offline.
-              </p>
-              <div className="home-actions">
-                <button type="button" className="home-btn home-btn--white" onClick={() => startTour('hidden-dose', true)}>Watch it work <ArrowIcon /></button>
-                <a className="home-btn home-btn--ghost" href="#/check">Check a prescription</a>
-              </div>
-            </div>
-
-            <div className="home-hero__visual">
-              <span className="home-float home-float--a" aria-hidden="true"><PillIcon size={28} /></span>
-              <span className="home-float home-float--b" aria-hidden="true"><WifiIcon size={24} off /></span>
-              <div
-                className="home-slip"
-                style={{ clipPath: TORN }}
-                role="img"
-                aria-label="Sample prescription. Paracetamol totals 4,100 milligrams a day across three brands, above the 4,000 milligram limit. Interrupt."
-              >
-                <div className="home-slip__head"><span>Sample prescription</span><span><b>68 y</b> · Male · 55 kg</span></div>
-                <ul className="home-slip__rows">
-                  <li><span>Dolo 650</span><span>1-1-1 × 5 days</span></li>
-                  <li><span>Crocin Cold &amp; Flu Max</span><span>TDS</span></li>
-                  <li><span>Zerodol-P</span><span>BD</span></li>
-                </ul>
-                <div className="home-alert">
-                  <span className="home-tier">Interrupt · Overdose</span>
-                  <p>Paracetamol totals 4,100 mg/day across 3 brands, above the 4,000 mg/day limit. Review.</p>
-                  <Limit bare />
+                <div className="home-hero__copy">
+                  <p className="home-badge">
+                    <span className="home-badge__icon"><PillIcon size={16} /></span>
+                    Made for the verifying pharmacist
+                  </p>
+                  <h1 id="home-title" tabIndex={-1}>A second look at every parchi, before it leaves the counter.</h1>
+                  <div className="home-hero__rule" aria-hidden="true" />
+                  <p className="home-hero__text">
+                    Give it a prescription the way it arrives: typed, or lines from an order. Parchi splits each brand into its ingredients, adds up the day's dose
+                    across every brand and every doctor, and ranks the orders that need a pharmacist's closer look first. It works offline.
+                  </p>
                 </div>
-                <p className="home-slip__foot">Decision support for a pharmacist.</p>
-              </div>
-            </div>
-          </section>
-        </div>
 
-        <TrailerVideo />
+                <div className="home-hero__visual">
+                  <span className="home-float home-float--a" aria-hidden="true"><PillIcon size={28} /></span>
+                  <span className="home-float home-float--b" aria-hidden="true"><WifiIcon size={24} off /></span>
+                  <div
+                    className="home-slip"
+                    style={{ clipPath: TORN }}
+                    role="img"
+                    aria-label="Sample prescription. Paracetamol totals 4,100 milligrams a day across three brands, above the 4,000 milligram limit. Interrupt."
+                  >
+                    <div className="home-slip__head"><span>Sample prescription</span><span><b>68 y</b> · Male · 55 kg</span></div>
+                    <ul className="home-slip__rows">
+                      <li><span>Dolo 650</span><span>1-1-1 × 5 days</span></li>
+                      <li><span>Crocin Cold &amp; Flu Max</span><span>TDS</span></li>
+                      <li><span>Zerodol-P</span><span>BD</span></li>
+                    </ul>
+                    <div className="home-alert">
+                      <span className="home-tier">Interrupt · Overdose</span>
+                      <p>Paracetamol totals 4,100 mg/day across 3 brands, above the 4,000 mg/day limit. Review.</p>
+                      <Limit bare />
+                    </div>
+                    <p className="home-slip__foot">Decision support for a pharmacist.</p>
+                  </div>
+                </div>
+              </div>
+            }
+          >
+            <button type="button" className="home-btn home-btn--ink" onClick={() => startTour('hidden-dose', true)}>Watch it work <ArrowIcon /></button>
+            <a className="home-btn home-btn--tint" href="#/check">Check a prescription</a>
+          </HeroVideo>
+        </div>
 
         <ProofStrip />
 
@@ -287,54 +280,46 @@ export const HomePage = () => {
           <SlipCompare />
         </section>
 
-        <section className="home-section home-section--tint home-how" id="desk" aria-labelledby="desk-title">
-          <div className="home-how__head">
-            <h2 id="desk-title" tabIndex={-1}>For e-pharmacies and pharmacy chains</h2>
-            <p className="home-lead">Your pharmacists already review every order before it ships. Parchi works on the data you already hold, so the review is faster and written down.</p>
-          </div>
-          <ol className="home-how__grid">
-            {DESK.map((d, i) => (
-              <li key={d.title}>
-                <span className="home-how__tile" aria-hidden="true">{i + 1}</span>
-                <div>
-                  <h3>{d.title}</h3>
-                  <p>{d.text}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section className="home-section home-section--ink" id="checks" aria-labelledby="checks-title">
+        <section className="home-inform" id="checks" aria-labelledby="checks-title">
           <div>
-            <h2 id="checks-title" tabIndex={-1} className="home-big">It informs. The pharmacist decides.</h2>
-            <p className="home-lead">Parchi never approves or blocks a prescription. It shows what is worth a second look, and why, with the source beside it.</p>
+            <h2 id="checks-title" tabIndex={-1}>It informs. The pharmacist decides.</h2>
+            <p className="home-lead">It never approves or blocks a prescription. It shows what deserves a second look, with the source beside it.</p>
+          </div>
+          <div>
             <ul className="home-tiers" aria-label="The three alert tiers">
               <li><span className="home-tier-chip" data-tier="interrupt"><AlertIcon size={14} />Interrupt</span><span>Act before dispensing</span></li>
-              <li><span className="home-tier-chip" data-tier="inform"><InfoIcon />Inform</span><span>Worth knowing, no action required</span></li>
-              <li><span className="home-tier-chip" data-tier="silent"><BellOffIcon />Silent</span><span>Logged only, collapsed by default</span></li>
+              <li><span className="home-tier-chip" data-tier="inform"><InfoIcon />Inform</span><span>Worth knowing</span></li>
+              <li><span className="home-tier-chip" data-tier="silent"><BellOffIcon />Silent</span><span>Logged only</span></li>
             </ul>
-          </div>
-          <ul className="home-checks">
-            {CHECKS.map((c) => (
-              <li key={c.title}><h3>{c.title}</h3><p>{c.text}</p></li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="home-section home-section--tint" id="evidence" aria-labelledby="evidence-title">
-          <div>
-            <h2 id="evidence-title" tabIndex={-1}>Measured, not claimed</h2>
-            <p className="home-lead">Parchi is scored on a set of labelled prescriptions, and against the chatbots a counter might reach for instead. The labels are a draft until a pharmacist has reviewed them, and the benchmark page says so.</p>
-          </div>
-          <div>
-            <ul className="home-evidence">
-              {PROOF.map((p) => (
-                <li key={p.title}><h3>{p.title}</h3><p>{p.text}</p></li>
+            <ul className="home-card__chips" aria-label="What it checks">
+              {CHECKS.map((c) => (
+                <li key={c}>{c}</li>
               ))}
             </ul>
-            <a className="home-btn home-btn--ink" href="#/benchmark">See the benchmark</a>
           </div>
+        </section>
+
+        <section className="home-more" aria-label="For e-pharmacies and the evidence">
+          <article className="home-card" id="desk" aria-labelledby="desk-title">
+            <h2 id="desk-title" tabIndex={-1}>For e-pharmacies and pharmacy chains</h2>
+            <p className="home-card__lead">Your pharmacists already review every order. Parchi works on the data you hold, so the review is faster and written down.</p>
+            <ul className="home-card__list">
+              {DESK.map((d) => (
+                <li key={d}>{d}</li>
+              ))}
+            </ul>
+          </article>
+
+          <article className="home-card" id="evidence" aria-labelledby="evidence-title">
+            <h2 id="evidence-title" tabIndex={-1}>Measured, not claimed</h2>
+            <p className="home-card__lead">Parchi is scored on labelled prescriptions and against the chatbots a counter might reach for. The labels are a draft until a pharmacist reviews them.</p>
+            <ul className="home-card__list">
+              {PROOF.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+            <a className="home-btn home-btn--ink home-card__cta" href="#/benchmark">See the benchmark</a>
+          </article>
         </section>
         </StackedSections>
 
@@ -355,10 +340,10 @@ export const HomePage = () => {
 
         <footer className="home-footer">
           <div>
-            <div className="home-footer__brand">
+            <a className="home-footer__brand" href="#/home" onClick={top} aria-label="Parchi, back to the top">
               <LogoMark size={34} />
               Parchi
-            </div>
+            </a>
             <p>Decision support for a pharmacist. Not a substitute for professional judgement.</p>
           </div>
           <nav aria-label="App">
