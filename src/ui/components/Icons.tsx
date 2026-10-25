@@ -12,6 +12,9 @@ const paths = {
   chart: 'M4 20V10m6 10V4m6 16v-7m4 7H3',
   download: 'M12 4v11m0 0-4-4m4 4 4-4M4 20h16',
   shield: 'M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z',
+  chevron: 'm6 9 6 6 6-6',
+  check: 'm5 12.5 4.5 4.5L19 7.5',
+  play: 'M7 4.5v15l12-7.5z',
   log: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
 } as const
 

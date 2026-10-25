@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Select } from '../components/Select'
 import { Card } from '../components/Card'
 import { PageIntro } from '../components/PageIntro'
 import { demoOrders } from '../history/demoOrders'
@@ -208,14 +209,16 @@ export const HistoryPage = () => {
               <span className="field__label">Age (years)</span>
               <input className="field__input" type="number" inputMode="numeric" min={0} value={draft.age} onChange={(e) => set('age', e.target.value)} />
             </label>
-            <label className="field">
-              <span className="field__label">Sex</span>
-              <select className="field__input" value={draft.sex} onChange={(e) => set('sex', e.target.value as Draft['sex'])}>
-                <option value="">Not given</option>
-                <option value="M">Male</option>
-                <option value="F">Female</option>
-              </select>
-            </label>
+            <Select
+              label="Sex"
+              value={draft.sex}
+              onChange={(v) => set('sex', v)}
+              options={[
+                { value: '', label: 'Not given' },
+                { value: 'M', label: 'Male' },
+                { value: 'F', label: 'Female' },
+              ]}
+            />
             <label className="field">
               <span className="field__label">Weight (kg)</span>
               <input className="field__input" type="number" inputMode="decimal" min={0} value={draft.weight} onChange={(e) => set('weight', e.target.value)} />
